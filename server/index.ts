@@ -5,9 +5,10 @@ import axios from "axios";
 import path from "path";
 // import { Router } from "express";
 import { upload, interact } from "./controllers/interaction";
-import { Server as SocketIOServer } from "socket.io";
-// import router from "./routes/basicRouter";
-// import http from 'http'; // Load in http module
+import {socketEventHandler} from "./controllers/gameSocket";
+import { Server as SocketIOServer, Socket } from "socket.io";
+// // import router from "./routes/basicRouter";
+// // import http from 'http'; // Load in http module
 
 const port = 5000;
 const app = express();
@@ -15,9 +16,8 @@ const app = express();
 const server = http.createServer(app);
 const io = new SocketIOServer(server);
 
-io.on("connection", (socket) => {
-    console.log("a user connected");
-});
+io.on('connection', socketEventHandler);
+
 
 const allowedOrigins = [
     "http://127.0.0.1:3000",
@@ -38,7 +38,6 @@ app.get("/", function (req, res) {
 
 app.get("/npc_audio/*", function (req: Request, res: Response) {
     console.log(path.join(__dirname, "npc_audio", req.params[0]));
-
     res.sendFile(path.join(__dirname, "npc_audio", req.params[0]));
 });
 
