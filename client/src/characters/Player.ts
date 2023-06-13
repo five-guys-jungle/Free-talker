@@ -1,7 +1,6 @@
 export class Player {
     socketId!: string;
     nickname!: string;
-    playerTexture!: string;
     x: number;
     y: number;
     sprite: Phaser.Physics.Arcade.Sprite;
@@ -10,13 +9,11 @@ export class Player {
         socketId: string,
         name: string,
         sprite: Phaser.Physics.Arcade.Sprite,
-        texture: string,
         x: number,
         y: number
     ) {
         this.socketId = socketId;
         this.nickname = name;
-        this.playerTexture = texture;
         this.x = x;
         this.y = y;
         this.sprite = sprite;
@@ -31,7 +28,6 @@ export interface PlayerDictionary {
 export interface PlayerInfo {
     socketId: string;
     nickname: string;
-    playerTexture: string;
     x: number;
     y: number;
 }
@@ -39,7 +35,6 @@ export interface PlayerInfoDictionary {
     [key: string]: {
         socketId: string;
         nickname: string;
-        playerTexture: string;
         x: number;
         y: number;
     };
