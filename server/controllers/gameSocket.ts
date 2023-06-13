@@ -26,7 +26,9 @@ export function socketEventHandler(socket: Socket)
 
     socket.on('disconnect', (reason: string) => {
         const player: Player | undefined = getPlayer(socket.id);
+        delete players[player!.nickname];
         console.log('disconnect player: ', player);
+        console.log('All players: ', players);
         socket.broadcast.emit('playerDelete', player);// broadcast를 통해 자신을 제외한 모든 클라이언트에게 이벤트 전달(본인 제외)
         console.log('Client disconnected, id: ', socket.id,', reason: ', reason);
     });
