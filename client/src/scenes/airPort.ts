@@ -21,6 +21,15 @@ class AirPortScene extends BasicScene {
 
     preload() {
         super.preload();
+
+        this.load.image('generic','assets/tilesets/Generic.png')
+        this.load.image('basement','assets/tilesets/Basement.png')
+        this.load.image('floor','assets/tilesets/FloorAndGround.png')
+        this.load.image('interior','assets/tilesets/Interiors.png')
+        this.load.image('pixel','assets/tilesets/pixel-cyberpunk-interior.png')
+        this.load.image('classroom','assets/tilesets/Classroom_and_library.png')
+
+        this.load.tilemapTiledJSON('map','assets/maps/airport.json')
     }
 
     create() {
@@ -33,7 +42,31 @@ class AirPortScene extends BasicScene {
             up: { start: 9, end: 11 },
         };
         //배경이미지 추가
-        this.add.image(400, 300, "background");
+        // this.add.image(400, 300, "background");
+        const map= this.make.tilemap({key:'map'})
+        const tileset_generic= map.addTilesetImage('Generic', 'generic')!
+        const tileset_basement= map.addTilesetImage('Basement', 'basement')!
+        const tileset_interior= map.addTilesetImage('Interiors', 'interior')!
+        const tileset_classroom= map.addTilesetImage('Classroom_and_library', 'classroom')!
+        const tileset_floor= map.addTilesetImage('FloorAndGround', 'floor')!
+        const tileset_pixel= map.addTilesetImage('pixel-cyberpunk-interior', 'pixel')!
+
+        map.createLayer('floor/Floor', tileset_floor);
+        const platform2= map.createLayer('wall/Generic', tileset_generic)!;
+        const platform3= map.createLayer('chair_door/Generic', tileset_generic)!;
+        const platform4= map.createLayer('chair_table/Basement', tileset_basement)!;
+        const platform5= map.createLayer('office/Classroom', tileset_classroom)!;
+        const platform6= map.createLayer('interiors/Interiors', tileset_interior)!;
+        const platform7= map.createLayer('line/pixel', tileset_pixel)!;
+        
+        platform2.setCollisionByProperty({collides:true})
+        platform3.setCollisionByProperty({collides:true})
+        platform4.setCollisionByProperty({collides:true})
+        platform5.setCollisionByProperty({collides:true})
+        platform6.setCollisionByProperty({collides:true})
+        platform7.setCollisionByProperty({collides:true})
+
+        
         // this.player1 = this.physics.add.sprite(this.initial_x, this.initial_y, "player");
         // this.player1.setCollideWorldBounds(true);// player가 월드 경계를 넘어가지 않게 설정
 
@@ -48,6 +81,12 @@ class AirPortScene extends BasicScene {
         };
         this.player1 = this.createPlayer(playerInfo);
         this.player1.setCollideWorldBounds(true); // player가 월드 경계를 넘어가지 않게 설정
+        this.physics.add.collider(this.player1, platform2);
+        this.physics.add.collider(this.player1, platform3);
+        this.physics.add.collider(this.player1, platform4);
+        this.physics.add.collider(this.player1, platform5);
+        this.physics.add.collider(this.player1, platform6);
+        this.physics.add.collider(this.player1, platform7);
 
         this.npc = this.physics.add.sprite(500, 300, "npc");
         this.createAnimation("npc", frameInfo);
