@@ -135,6 +135,11 @@ function LoginDialog() {
                 onClose={handleClose}
                 onOpen={openLoginWarn}
             />
+            <img
+                src="assets/logo/logo_transparent.png"
+                alt="Free Talker"
+                style={{ maxWidth: "350px", height: "auto" }}
+            />
             <Content onSubmit={handleSubmit} id="login">
                 {/* <ServiceTitle>Free Talker</ServiceTitle> */}
                 <Left>
