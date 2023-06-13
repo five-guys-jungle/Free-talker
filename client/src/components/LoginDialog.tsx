@@ -74,6 +74,7 @@ function LoginDialog() {
     const setPlayerTexture = useSetRecoilState(playerTextureState);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        // console.log("handleSubmit");
         e.preventDefault();
         if (userId === "") {
             setUserIdFieldEmpty(true);
@@ -88,9 +89,10 @@ function LoginDialog() {
             };
 
             try {
+                // console.log("try");
                 const response = await axios.post(`${DB_URL}/user/login`, body);
-
-                if (response.data.statue === 200) {
+                // console.log(response);
+                if (response.data.status === 200) {
                     const { payload } = response.data;
 
                     const userId = payload.userId;
@@ -100,6 +102,7 @@ function LoginDialog() {
                     setPlayerId(userId);
                     setPlayerNickname(userNickname);
                     setPlayerTexture(userAvatar);
+                    console.log("login success!!!!!!!!!!");
 
                     changeScene("airport");
 
