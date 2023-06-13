@@ -130,4 +130,5 @@ dist
 .pnp.*
 
 # audioFiles
-audio/
+audio/npc_audio/
+audio/user_audio/

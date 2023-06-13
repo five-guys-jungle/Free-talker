@@ -61,7 +61,7 @@ export const signup = async (req: Request, res: Response) => {
                     message: "Failed to create new user",
                 });
             } else {
-                const object = await User.findOne({ userId: "test" });
+                const object = await User.findOne({ userId: userId });
                 console.log("조회된 객체:", object);
             }
         }
@@ -79,16 +79,18 @@ export const login = async (req: Request, res: Response) => {
         if (!userId || !userPw) {
             return res.status(400).send("Invalid userId or userPw");
         } else {
-            const foundUser = await User.findOne({
+            const foundUser: IUserInfo | null = await User.findOne({
                 userId: userId,
-                userPw: userPw,
             });
-
             if (!foundUser) {
                 return res.status(404).send("User not found");
             } else {
                 // when found User
-                if (typeof jwtKey === "string") {
+                const match = await bcrypt.compare(userPw, foundUser.userPw);
+                if (match) {
+                    console.log("비밀번호 일치");
+                }
+                if (typeof jwtKey === "string" && match) {
                     const accessToken = jwt.sign(
                         {
                             userId: foundUser.userId,
@@ -100,11 +102,13 @@ export const login = async (req: Request, res: Response) => {
                             expiresIn: "1h",
                         }
                     );
-
-                    return res.status(200).json({
+                    console.log("accessToken:", accessToken);
+                    return res.json({
                         status: 200,
                         message: "Login success",
                         data: accessToken,
+                        userId: foundUser.userId,
+                        userNickname: foundUser.userNickname,
                     });
                 } else {
                     console.log("Error : jwt is invalid!!");

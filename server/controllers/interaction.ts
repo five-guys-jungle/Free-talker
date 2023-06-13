@@ -26,7 +26,7 @@ const client = new texttoSpeech.TextToSpeechClient({
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, __dirname + "/../audio/uploads"); // 음성 파일을 저장할 폴더 경로 지정
+        cb(null, __dirname + "/../audio/user_audio"); // 음성 파일을 저장할 폴더 경로 지정
     },
     filename: (req, file, cb) => {
         cb(null, `${Date.now()}_${file.originalname}.mp3`); // 음성 파일 이름 지정

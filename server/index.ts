@@ -40,9 +40,9 @@ app.get("/", function (req, res) {
     res.sendFile(path.join(__dirname, "../client/build/index.html"));
 });
 
-app.get("/npc_audio/*", function (req: Request, res: Response) {
-    console.log(path.join(__dirname, "npc_audio", req.params[0]));
-    res.sendFile(path.join(__dirname, "npc_audio", req.params[0]));
+app.get("/audio/npc_audio/*", function (req: Request, res: Response) {
+    console.log(path.join(__dirname, "audio/npc_audio", req.params[0]));
+    res.sendFile(path.join(__dirname, "audio/npc_audio", req.params[0]));
 });
 
 app.post("/interact", upload.single("audio"), interact);

@@ -1,8 +1,13 @@
-import Phaser from 'phaser';
-import axios from 'axios';
-import io, { Socket } from 'socket.io-client';
-import { keyboard } from '@testing-library/user-event/dist/keyboard';
-import { Player, PlayerDictionary, PlayerInfo, PlayerInfoDictionary } from "../characters/Player";
+import Phaser from "phaser";
+import axios from "axios";
+import io, { Socket } from "socket.io-client";
+import { keyboard } from "@testing-library/user-event/dist/keyboard";
+import {
+    Player,
+    PlayerDictionary,
+    PlayerInfo,
+    PlayerInfoDictionary,
+} from "../characters/Player";
 import { frameInfo } from "./common/anims";
 import { BasicScene } from "./BasicScene";
 
@@ -11,7 +16,7 @@ let audioContext = new window.AudioContext();
 
 class AirPortScene extends BasicScene {
     constructor() {
-        super('AirPortScene');
+        super("AirPortScene");
     }
 
     preload() {
@@ -25,10 +30,10 @@ class AirPortScene extends BasicScene {
             down: { start: 0, end: 2 },
             left: { start: 3, end: 5 },
             right: { start: 6, end: 8 },
-            up: { start: 9, end: 11 }
-        }
+            up: { start: 9, end: 11 },
+        };
         //배경이미지 추가
-        this.add.image(400, 300, 'background');
+        this.add.image(400, 300, "background");
         // this.player1 = this.physics.add.sprite(this.initial_x, this.initial_y, "player");
         // this.player1.setCollideWorldBounds(true);// player가 월드 경계를 넘어가지 않게 설정
 
@@ -39,24 +44,41 @@ class AirPortScene extends BasicScene {
             socketId: this.socketHelper!.getSocketId()!,
             nickname: this.userNickname,
             x: this.initial_x,
-            y: this.initial_y
+            y: this.initial_y,
         };
         this.player1 = this.createPlayer(playerInfo);
-        this.player1.setCollideWorldBounds(true);// player가 월드 경계를 넘어가지 않게 설정
+        this.player1.setCollideWorldBounds(true); // player가 월드 경계를 넘어가지 않게 설정
 
         this.npc = this.physics.add.sprite(500, 300, "npc");
         this.createAnimation("npc", frameInfo);
 
         this.cursors = this.input.keyboard!.createCursorKeys();
-        this.interactKey = this.input.keyboard!.addKey('X');
-        this.interactText = this.add.text(10, 10, '', { color: 'white', fontSize: '16px' });
-        this.userIdText = this.add.text(10, 10, '', { color: 'white', fontSize: '16px' });
+        this.interactKey = this.input.keyboard!.addKey("X");
+        this.interactText = this.add.text(10, 10, "", {
+            color: "white",
+            fontSize: "16px",
+        });
+        this.userIdText = this.add.text(10, 10, "", {
+            color: "white",
+            fontSize: "16px",
+        });
 
-        this.input.keyboard!.on('keydown-X', async () => {
-            if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y, this.npc!.x, this.npc!.y) < 100) {
-                await navigator.mediaDevices.getUserMedia({ audio: true })
-                    .then(stream => {
-                        if (this.recorder === null || this.recorder === undefined) {
+        this.input.keyboard!.on("keydown-X", async () => {
+            if (
+                Phaser.Math.Distance.Between(
+                    this.player1!.x,
+                    this.player1!.y,
+                    this.npc!.x,
+                    this.npc!.y
+                ) < 100
+            ) {
+                await navigator.mediaDevices
+                    .getUserMedia({ audio: true })
+                    .then((stream) => {
+                        if (
+                            this.recorder === null ||
+                            this.recorder === undefined
+                        ) {
                             console.log("recorder is null, so create new one");
                             this.recorder = new MediaRecorder(stream);
                         }
@@ -67,31 +89,42 @@ class AirPortScene extends BasicScene {
                         };
                         this.recorder.onstop = () => {
                             // console.log("onstop_chunks: ", chunks);
-                            const blob = new Blob(chunks, { type: 'audio/wav' });
+                            const blob = new Blob(chunks, {
+                                type: "audio/wav",
+                            });
                             // const file = new File([blob], "recording.ogg", { type: blob.type });
                             const formData = new FormData();
                             chunks = [];
-                            formData.append('audio', blob, "recording.wav");
+                            formData.append("audio", blob, "recording.wav");
 
-                            axios.post('http://localhost:5000/comunicate', formData, {
-                                headers: {
-                                    'Content-Type': 'multipart/form-data'
-                                }
-                            })
+                            axios
+                                .post(
+                                    "http://localhost:5000/interact",
+                                    formData,
+                                    {
+                                        headers: {
+                                            "Content-Type":
+                                                "multipart/form-data",
+                                        },
+                                    }
+                                )
                                 .then((response) => {
                                     // console.log(response);
                                     console.log(response.data);
-                                    if (response.data.audioUrl) {  // If the audio URL is provided
-                                        const audio = new Audio(response.data.audioUrl);
+                                    if (response.data.audioUrl) {
+                                        // If the audio URL is provided
+                                        const audio = new Audio(
+                                            response.data.audioUrl
+                                        );
                                         audio.play();
                                     }
                                 })
-                                .catch(error => {
+                                .catch((error) => {
                                     console.log(error);
                                 });
                         };
                     })
-                    .catch(error => {
+                    .catch((error) => {
                         console.log(error);
                     });
                 if (this.recorder) {
@@ -106,7 +139,6 @@ class AirPortScene extends BasicScene {
     }
 
     update() {
-
         this.cursors = this.input.keyboard!.createCursorKeys();
         const speed = 200;
         let velocityX = 0;
@@ -114,18 +146,18 @@ class AirPortScene extends BasicScene {
 
         if (this.cursors!.left.isDown) {
             velocityX = -speed;
-            this.player1!.anims.play('left', true);
+            this.player1!.anims.play("left", true);
         } else if (this.cursors!.right.isDown) {
             velocityX = speed;
-            this.player1!.anims.play('right', true);
+            this.player1!.anims.play("right", true);
         }
 
         if (this.cursors!.up.isDown) {
             velocityY = -speed;
-            this.player1!.anims.play('up', true);
+            this.player1!.anims.play("up", true);
         } else if (this.cursors!.down.isDown) {
             velocityY = speed;
-            this.player1!.anims.play('down', true);
+            this.player1!.anims.play("down", true);
         }
 
         // If moving diagonally, adjust speed
@@ -138,7 +170,7 @@ class AirPortScene extends BasicScene {
         this.player1!.setVelocityY(velocityY);
 
         if (velocityX === 0 && velocityY === 0) {
-            this.player1!.anims.play('down');
+            this.player1!.anims.play("down");
         }
 
         this.userIdText!.setText(this.userNickname);
@@ -146,29 +178,50 @@ class AirPortScene extends BasicScene {
         this.userIdText!.setOrigin(0.5, 0);
         this.userIdText!.setX(this.player1!.x);
         this.userIdText!.setY(this.player1!.y - 70);
-        
+
         if (this.socketHelper && this.socketHelper.getSocket()) {
-            this.socketHelper!.emitPlayerMovement(this.userNickname, this.player1!.x, this.player1!.y);
+            this.socketHelper!.emitPlayerMovement(
+                this.userNickname,
+                this.player1!.x,
+                this.player1!.y
+            );
         }
 
         // Check distance between players
-        if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y, this.npc!.x, this.npc!.y) < 100) {
-            this.interactText!.setText('Press X to interact');
+        if (
+            Phaser.Math.Distance.Between(
+                this.player1!.x,
+                this.player1!.y,
+                this.npc!.x,
+                this.npc!.y
+            ) < 100
+        ) {
+            this.interactText!.setText("Press X to interact");
             // interactText position
             this.interactText!.setOrigin(0.5, 0);
             this.interactText!.setX(this.player1!.x);
             this.interactText!.setY(this.player1!.y - 50);
         } else {
-            this.interactText!.setText('');
+            this.interactText!.setText("");
         }
     }
-    createPlayer(playerInfo: PlayerInfo):Phaser.Physics.Arcade.Sprite {
+    createPlayer(playerInfo: PlayerInfo): Phaser.Physics.Arcade.Sprite {
         // Create a sprite for the player
         // Assuming you have an image asset called 'player'
-        let playerSprite = this.physics.add.sprite(playerInfo.x, playerInfo.y, 'player');
+        let playerSprite = this.physics.add.sprite(
+            playerInfo.x,
+            playerInfo.y,
+            "player"
+        );
 
         // Create a new player instance
-        const newPlayer = new Player(playerInfo.socketId, playerInfo.nickname, playerSprite, playerInfo.x, playerInfo.y);
+        const newPlayer = new Player(
+            playerInfo.socketId,
+            playerInfo.nickname,
+            playerSprite,
+            playerInfo.x,
+            playerInfo.y
+        );
 
         // Add the sprite to the Phaser scene
         this.add.existing(newPlayer.sprite);
