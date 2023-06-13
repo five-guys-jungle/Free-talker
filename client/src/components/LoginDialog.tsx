@@ -19,6 +19,8 @@ import {
     playerTextureState,
     playerNicknameState,
 } from "../recoil/user/atoms";
+import { gameSceneState } from "../recoil/game/atoms";
+
 import SignUpDialog from "./SignUpDialog";
 
 const DB_URL = "http://localhost:5000";
@@ -61,6 +63,12 @@ function LoginDialog() {
     const [userPwFieldEmpty, setUserPwFieldEmpty] = useState<boolean>(false);
     const [avatarIndex, setAvatarIndex] = useState<number>(0);
 
+    const [gameScene, setGameScene] = useRecoilState(gameSceneState);
+
+    const changeScene = (newScene: "login" | "airport") => {
+        setGameScene({ scene: newScene });
+    };
+
     const setPlayerId = useSetRecoilState(playerIdState);
     const setPlayerNickname = useSetRecoilState(playerNicknameState);
     const setPlayerTexture = useSetRecoilState(playerTextureState);
@@ -92,6 +100,8 @@ function LoginDialog() {
                     setPlayerId(userId);
                     setPlayerNickname(userNickname);
                     setPlayerTexture(userAvatar);
+
+                    changeScene("airport");
 
                     // handleScene(GAME_STATUS.LOBBY, {
                     //   playerId: payload.userNickname,
