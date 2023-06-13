@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios, { AxiosError } from "axios";
 import styled from "styled-components";
 
@@ -63,7 +63,8 @@ function LoginDialog() {
     const [userPwFieldEmpty, setUserPwFieldEmpty] = useState<boolean>(false);
     const [avatarIndex, setAvatarIndex] = useState<number>(0);
 
-    const [gameScene, setGameScene] = useRecoilState(gameSceneState);
+    // const [gameScene, setGameScene] = useRecoilState(gameSceneState);
+    const setGameScene = useSetRecoilState(gameSceneState);
 
     const changeScene = (newScene: "login" | "airport") => {
         setGameScene({ scene: newScene });
@@ -89,32 +90,26 @@ function LoginDialog() {
             };
 
             try {
-                // console.log("try");
+                console.log("try");
                 const response = await axios.post(`${DB_URL}/user/login`, body);
-                // console.log(response);
+                console.log(response.data);
                 if (response.data.status === 200) {
-                    const { payload } = response.data;
+                    // console.log("login success!!!!!!!!!!");
+                    const payload = response.data;
 
                     const userId = payload.userId;
                     const userNickname = payload.userNickname;
                     const userAvatar = avatars[avatarIndex].name;
+                    console.log(`"userID: ", ${payload.userId}"`);
 
                     setPlayerId(userId);
                     setPlayerNickname(userNickname);
                     setPlayerTexture(userAvatar);
-                    console.log("login success!!!!!!!!!!");
 
+                    // console.log("login success!!!!!!!!!!");
+                    console.log("code here");
+                    // setGameScene("airport");
                     changeScene("airport");
-
-                    // handleScene(GAME_STATUS.LOBBY, {
-                    //   playerId: payload.userNickname,
-                    //   playerTexture: avatars[avatarIndex].name,
-                    // });
-
-                    // in this part, we need to save the token to the local storage
-                    // and then redirect to the main page
-                    // and then we need to get the user info from the server
-                    // and save it to the recoil state
                 }
             } catch (e) {
                 if (e instanceof AxiosError && e.response?.status === 420) {
