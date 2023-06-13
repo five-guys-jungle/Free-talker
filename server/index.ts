@@ -9,6 +9,9 @@ import { socketEventHandler } from "./controllers/gameSocket";
 import { Server as SocketIOServer, Socket } from "socket.io";
 
 import { connectDB } from "./Database/db";
+
+import { signup, login } from "./controllers/userController";
+
 // // import router from "./routes/basicRouter";
 // // import http from 'http'; // Load in http module
 
@@ -43,6 +46,9 @@ app.get("/npc_audio/*", function (req: Request, res: Response) {
 });
 
 app.post("/interact", upload.single("audio"), interact);
+
+app.post("/user/login", login);
+app.post("/user/signup", signup);
 
 connectDB()
     .then((db) => {

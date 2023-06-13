@@ -7,14 +7,18 @@ import bcrypt from "bcrypt";
 const userIdRegex = /^[a-zA-Z0-9]+$/; // Allows only letters and numbers
 const userNicknameRegex = /^[ㄱ-ㅎ|가-힣|a-z|A-Z|0-9|]+$/; //hanguel, number, alphbet,  not allows special char and white space
 
-async function hashPw(password) {
+async function hashPw(password: string): Promise<string> {
     const saltRounds = 10;
 
     const hashedPw = await new Promise<string>((resolve, reject) => {
-        bcrypt.hash(password, saltRounds, (err, hash) => {
-            if (err) reject(err);
-            resolve(hash);
-        });
+        bcrypt.hash(
+            password,
+            saltRounds,
+            (err: Error | undefined, hash: string) => {
+                if (err) reject(err);
+                resolve(hash);
+            }
+        );
     });
     return hashedPw;
 }
@@ -22,6 +26,7 @@ async function hashPw(password) {
 export const signup = async (req: Request, res: Response) => {
     try {
         const { userId, userPw, userNickname } = req.body;
+
         if (
             !userIdRegex.test(userId) ||
             !userNicknameRegex.test(userNickname)
@@ -65,6 +70,8 @@ export const signup = async (req: Request, res: Response) => {
     }
 };
 
+const jwtKey = process.env.DB_HOST;
+
 export const login = async (req: Request, res: Response) => {
     try {
         const { userId, userPw } = req.body;
@@ -81,23 +88,27 @@ export const login = async (req: Request, res: Response) => {
                 return res.status(404).send("User not found");
             } else {
                 // when found User
-                const accessToken = jwt.sign(
-                    {
-                        userId: foundUser.userId,
-                        userNickname: foundUser.userNickname,
-                        uuid: uuidv4(),
-                    },
-                    process.env.JWT_SECRET,
-                    {
-                        expiresIn: "1h",
-                    }
-                );
+                if (typeof jwtKey === "string") {
+                    const accessToken = jwt.sign(
+                        {
+                            userId: foundUser.userId,
+                            userNickname: foundUser.userNickname,
+                            uuid: uuidv4(),
+                        },
+                        jwtKey,
+                        {
+                            expiresIn: "1h",
+                        }
+                    );
 
-                return res.status(200).json({
-                    status: 200,
-                    message: "Login success",
-                    data: accessToken,
-                });
+                    return res.status(200).json({
+                        status: 200,
+                        message: "Login success",
+                        data: accessToken,
+                    });
+                } else {
+                    console.log("Error : jwt is invalid!!");
+                }
             }
         }
     } catch (err) {
