@@ -1,17 +1,19 @@
 import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
-import GameComponent from "./PhaserGame";
+// import GameComponent from "./PhaserGame";
 import styled from "styled-components";
 // import SignUpDialog from "./components/SignUpDialog";
 import LoginDialog from "./components/LoginDialog";
 import bgImage from "./assets/images/frame2.jpeg";
+import Game from './components/Game'; // Game 컴포넌트를 불러옵니다.
 
 function App() {
     return (
         <div className="App">
             <StartDiv>
-                <LoginDialog />
+                <Game /> {/* Game 컴포넌트를 렌더링합니다. */}
+                {/* <LoginDialog /> */}
                 {/* <GameComponent /> */}
             </StartDiv>
         </div>

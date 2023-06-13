@@ -7,7 +7,7 @@ let players: PlayerDictionary = {};
 export function socketEventHandler(socket: Socket)
 {
     const userTempNickname: string = `${uuidv4()}`;; // Temperal nickname for user
-    console.log('New client connected, userTempNickname: , socketid', userTempNickname, socket.id);
+    console.log('New client connected, userTempNickname: ', userTempNickname, ', socketid: ', socket.id);
     socket.emit('connected', { socketId: socket.id, nickname: userTempNickname });
 
     // 클라이언트로부터 player가 생성되었다는 이벤트를 받으면 players에 추가
@@ -25,6 +25,6 @@ export function socketEventHandler(socket: Socket)
     });
 
     socket.on('disconnect', (reason: string) => {
-        console.log('Client disconnected, id, reason ', socket.id, reason);
+        console.log('Client disconnected, id: ', socket.id,', reason: ', reason);
     });
 }
