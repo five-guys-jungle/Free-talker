@@ -1,11 +1,23 @@
 import { Request, Response } from "express";
-import User from "../models/User";
-
+import { IUserInfo, User } from "../models/User";
+import { v4 as uuidv4 } from "uuid";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
 const userIdRegex = /^[a-zA-Z0-9]+$/; // Allows only letters and numbers
 const userNicknameRegex = /^[ㄱ-ㅎ|가-힣|a-z|A-Z|0-9|]+$/; //hanguel, number, alphbet,  not allows special char and white space
+
+async function hashPw(password) {
+    const saltRounds = 10;
+
+    const hashedPw = await new Promise<string>((resolve, reject) => {
+        bcrypt.hash(password, saltRounds, (err, hash) => {
+            if (err) reject(err);
+            resolve(hash);
+        });
+    });
+    return hashedPw;
+}
 
 export const signup = async (req: Request, res: Response) => {
     try {
@@ -32,9 +44,10 @@ export const signup = async (req: Request, res: Response) => {
                 });
             }
 
+            const hashedPw = await hashPw(userPw);
             const result = await User.collection.insertOne({
                 userId: userId,
-                userPw: userPw,
+                userPw: hashedPw,
                 userNickname: userNickname,
             });
             if (!result) {
@@ -65,20 +78,22 @@ export const login = async (req: Request, res: Response) => {
                 return res.status(404).send("User not found");
             } else {
                 // when found User
-                const token = jwt.sign(
+                const accessToken = jwt.sign(
                     {
-                        id: foundUser.userId,
+                        userId: foundUser.userId,
+                        userNickname: foundUser.userNickname,
+                        uuid: uuidv4(),
                     },
                     process.env.JWT_SECRET,
                     {
-                        expiresIn: "1d",
+                        expiresIn: "1h",
                     }
                 );
 
                 return res.status(200).json({
                     status: 200,
                     message: "Login success",
-                    data: token,
+                    data: accessToken,
                 });
             }
         }

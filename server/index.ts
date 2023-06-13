@@ -5,8 +5,10 @@ import axios from "axios";
 import path from "path";
 // import { Router } from "express";
 import { upload, interact } from "./controllers/interaction";
-import {socketEventHandler} from "./controllers/gameSocket";
+import { socketEventHandler } from "./controllers/gameSocket";
 import { Server as SocketIOServer, Socket } from "socket.io";
+
+import { connectDB } from "./Database/db";
 // // import router from "./routes/basicRouter";
 // // import http from 'http'; // Load in http module
 
@@ -16,8 +18,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new SocketIOServer(server);
 
-io.on('connection', socketEventHandler);
-
+io.on("connection", socketEventHandler);
 
 const allowedOrigins = [
     "http://127.0.0.1:3000",
@@ -43,9 +44,16 @@ app.get("/npc_audio/*", function (req: Request, res: Response) {
 
 app.post("/interact", upload.single("audio"), interact);
 
+connectDB()
+    .then((db) => {
+        server.listen(port);
+        console.log(`gameServer is listening on port ${port}`);
+    })
+    .catch(console.error);
+
 // export default router;
 
 // Start the server
-server.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-});
+// server.listen(port, () => {
+//     console.log(`Server is running on port ${port}`);
+// });
