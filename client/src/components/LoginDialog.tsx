@@ -161,6 +161,7 @@ function LoginDialog() {
                         onInput={(e) => {
                             setUserId((e.target as HTMLInputElement).value);
                         }}
+                        sx={{ height: 50 }}
                     />
                     <div style={{ height: "20px" }}></div>
                     <TextField
@@ -177,6 +178,7 @@ function LoginDialog() {
                         onInput={(e) => {
                             setUserPw((e.target as HTMLInputElement).value);
                         }}
+                        sx={{ height: 50 }}
                     />
                     <div style={{ height: "20px" }}></div>
                     <Bottom>
@@ -207,8 +209,7 @@ const Wrapper = styled.div`
     justify-content: center;
     background-color: rgba(255, 255, 255, 0);
     border-radius: 16px;
-    padding: 36px 60px;
-    // box-shadow: 0px 0px 5px #0000006f;
+    padding: 36px 45px;
     img {
         -webkit-user-select: none;
         -khtml-user-select: none;
@@ -270,7 +271,7 @@ const Bottom = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 5px;
+    // gap: 5px;
     margin-top: 20px;
 `;
 
