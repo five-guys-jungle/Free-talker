@@ -3,7 +3,7 @@ import axios from 'axios';
 import io, { Socket } from 'socket.io-client';
 import { keyboard } from '@testing-library/user-event/dist/keyboard';
 import { Player, PlayerDictionary, PlayerInfo, PlayerInfoDictionary } from "../characters/Player";
-import {createAnimation} from "./common/anims";
+import { frameInfo, createAnimation } from "./common/anims";
 
 let chunks: BlobPart[] = [];
 let audioContext = new window.AudioContext();
@@ -81,17 +81,24 @@ class airPortScene extends Phaser.Scene {
                 }
             });
         });
+        // about character frame
+        const frameInfo: frameInfo = {
+            down: { start: 0, end: 2 },
+            left: { start: 3, end: 5 },
+            right: { start: 6, end: 8 },
+            up: { start: 9, end: 11 }
+        }
         //배경이미지 추가
         this.add.image(400, 300, 'background');
         this.player1 = this.physics.add.sprite(this.initial_x, this.initial_y, "player");
         this.player1.setCollideWorldBounds(true);// player가 월드 경계를 넘어가지 않게 설정
 
-        createAnimation(this, "player");
+        createAnimation(this, "player", frameInfo);
 
         allPlayers[this.userNickname] = new Player(this.socket.id, this.userNickname, this.player1, this.initial_x, this.initial_y);
 
         this.npc = this.physics.add.sprite(500, 300, "npc");
-        createAnimation(this, "npc");
+        createAnimation(this, "npc", frameInfo);
 
         this.cursors = this.input.keyboard!.createCursorKeys();
         this.interactKey = this.input.keyboard!.addKey('X');
