@@ -3,84 +3,23 @@ import axios from 'axios';
 import io, { Socket } from 'socket.io-client';
 import { keyboard } from '@testing-library/user-event/dist/keyboard';
 import { Player, PlayerDictionary, PlayerInfo, PlayerInfoDictionary } from "../characters/Player";
-import { frameInfo, createAnimation } from "./common/anims";
+import { frameInfo } from "./common/anims";
+import { BasicScene } from "./BasicScene";
 
 let chunks: BlobPart[] = [];
 let audioContext = new window.AudioContext();
-let allPlayers: PlayerDictionary = {};
 
-class airPortScene extends Phaser.Scene {
-    player1: Phaser.Physics.Arcade.Sprite | null = null;
-    npc: Phaser.Physics.Arcade.Sprite | null = null;
-    cursors: Phaser.Types.Input.Keyboard.CursorKeys | null = null;
-    interactKey: Phaser.Input.Keyboard.Key | null = null;
-    interactText: Phaser.GameObjects.Text | null = null;
-    userIdText: Phaser.GameObjects.Text | null = null;
-    socket: Socket | null = null;
-    userNickname: string = '';
-    initial_x: number = 400;
-    initial_y: number = 300;
-
-    isRecording: boolean = false;
-    recorder: MediaRecorder | null = null;
-    // chunks: BlobPart[] = [];
+class AirPortScene extends BasicScene {
     constructor() {
-        super('airPortScene');
+        super('AirPortScene');
     }
 
     preload() {
-        this.load.image("background", "assets/backgrounds/space.png");
-        this.load.spritesheet("npc", "assets/characters/npc.png", {
-            frameWidth: 48,
-            frameHeight: 72,
-            startFrame: 0,
-            endFrame: 12,
-        });
-        this.load.spritesheet("player", "assets/characters/player.png", {
-            frameWidth: 48,
-            frameHeight: 72,
-            startFrame: 0,
-            endFrame: 12,
-        });
+        super.preload();
     }
 
     create() {
-        this.socket = io('http://localhost:5000');
-        this.socket.on('connected', (data) => {
-            this.userNickname = data.nickname;
-            // console.log("connected socket id: ", this.socket!.id);
-            // console.log("connected user nickname: ", this.userNickname);
-
-            // player가 생성되면 서버로 'created' 이벤트를 보냄
-            this.socket!.emit('created', {
-                // emit created player info
-                socketId: this.socket!.id,
-                nickname: this.userNickname,
-                x: this.initial_x,
-                y: this.initial_y
-            });
-
-            this.socket!.on('playerMoved', (serveredPlayers: PlayerInfoDictionary) => {
-                for (let otherPlayerNickname in serveredPlayers) {
-                    console.log("player moved called by ", otherPlayerNickname);
-                    if (otherPlayerNickname !== this.userNickname) {
-                        if (otherPlayerNickname in allPlayers) {
-                            allPlayers[otherPlayerNickname].sprite.x = serveredPlayers[otherPlayerNickname].x;
-                            allPlayers[otherPlayerNickname].sprite.y = serveredPlayers[otherPlayerNickname].y;
-                        }
-                        else {
-                            let tempPlayerInfo: PlayerInfo = serveredPlayers[otherPlayerNickname];
-                            allPlayers[otherPlayerNickname] = new Player(
-                                tempPlayerInfo.socketId, tempPlayerInfo.nickname,
-                                this.physics.add.sprite(this.initial_x, this.initial_y, "player"),
-                                tempPlayerInfo.x, tempPlayerInfo.y);
-
-                            allPlayers[otherPlayerNickname].sprite.setCollideWorldBounds(true);
-                        }
-                    }
-                }
-            });
-        });
+        super.create();
         // about character frame
         const frameInfo: frameInfo = {
             down: { start: 0, end: 2 },
@@ -93,26 +32,24 @@ class airPortScene extends Phaser.Scene {
         this.player1 = this.physics.add.sprite(this.initial_x, this.initial_y, "player");
         this.player1.setCollideWorldBounds(true);// player가 월드 경계를 넘어가지 않게 설정
 
-        createAnimation(this, "player", frameInfo);
+        this.createAnimation("player", frameInfo);
 
-        allPlayers[this.userNickname] = new Player(this.socket.id, this.userNickname, this.player1, this.initial_x, this.initial_y);
+        // this.allPlayers[this.userNickname] = new Player(this.socketHelper!.getSocketId()!, this.userNickname, this.player1, this.initial_x, this.initial_y);
+        const playerInfo: PlayerInfo = {
+            socketId: this.socketHelper!.getSocketId()!,
+            nickname: this.userNickname,
+            x: this.initial_x,
+            y: this.initial_y
+        };
+        this.createPlayer(playerInfo);
 
         this.npc = this.physics.add.sprite(500, 300, "npc");
-        createAnimation(this, "npc", frameInfo);
+        this.createAnimation("npc", frameInfo);
 
         this.cursors = this.input.keyboard!.createCursorKeys();
         this.interactKey = this.input.keyboard!.addKey('X');
         this.interactText = this.add.text(10, 10, '', { color: 'white', fontSize: '16px' });
         this.userIdText = this.add.text(10, 10, '', { color: 'white', fontSize: '16px' });
-
-        // this.interactKey = this.input.keyboard!.addKey('Z');
-        // this.input.keyboard!.on('keydown-Z', () => {
-        //     if (Phaser.Input.Keyboard.JustDown(this.interactKey!)) {
-        //         this.scene.start('airPortScene2'); // 씬 전환
-        //     }
-        // });
-
-
 
         this.input.keyboard!.on('keydown-X', async () => {
             if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y, this.npc!.x, this.npc!.y) < 100) {
@@ -208,14 +145,10 @@ class airPortScene extends Phaser.Scene {
         this.userIdText!.setOrigin(0.5, 0);
         this.userIdText!.setX(this.player1!.x);
         this.userIdText!.setY(this.player1!.y - 70);
-
-
-        this.socket!.emit('playerMovement', {
-            socketId: this.socket!.id,
-            id: this.userNickname,
-            x: this.player1!.x,
-            y: this.player1!.y
-        });
+        
+        if (this.socketHelper && this.socketHelper.getSocket()) {
+            this.socketHelper!.emitPlayerMovement(this.userNickname, this.player1!.x, this.player1!.y);
+        }
 
         // Check distance between players
         if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y, this.npc!.x, this.npc!.y) < 100) {
@@ -228,5 +161,19 @@ class airPortScene extends Phaser.Scene {
             this.interactText!.setText('');
         }
     }
+    createPlayer(playerInfo: PlayerInfo) {
+        // Create a sprite for the player
+        // Assuming you have an image asset called 'player'
+        let playerSprite = this.physics.add.sprite(playerInfo.x, playerInfo.y, 'player');
+
+        // Create a new player instance
+        const newPlayer = new Player(playerInfo.socketId, playerInfo.nickname, playerSprite, playerInfo.x, playerInfo.y);
+
+        // Add the sprite to the Phaser scene
+        this.add.existing(newPlayer.sprite);
+        this.physics.add.existing(newPlayer.sprite);
+
+        this.allPlayers[playerInfo.nickname] = newPlayer;
+    }
 }
-export default airPortScene;
+export default AirPortScene;
