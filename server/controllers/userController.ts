@@ -55,6 +55,9 @@ export const signup = async (req: Request, res: Response) => {
                     success: false,
                     message: "Failed to create new user",
                 });
+            } else {
+                const object = await User.findOne({ userId: "test" });
+                console.log("조회된 객체:", object);
             }
         }
     } catch (err) {
