@@ -6,13 +6,20 @@ import styled from "styled-components";
 // import SignUpDialog from "./components/SignUpDialog";
 import LoginDialog from "./components/LoginDialog";
 import bgImage from "./assets/images/frame2.jpeg";
-import Game from './components/Game'; // Game 컴포넌트를 불러옵니다.
+import Game from "./components/Game"; // Game 컴포넌트를 불러옵니다.
+
+import { useRecoilValue } from "recoil";
+import { gameSceneState } from "./recoil/game/atoms";
 
 function App() {
+    const gameScene = useRecoilValue(gameSceneState);
+
     return (
         <div className="App">
             <StartDiv>
-                <Game /> {/* Game 컴포넌트를 렌더링합니다. */}
+                {gameScene.scene === "login" && <LoginDialog />}
+                {gameScene.scene === "airport" && <Game />}
+                {/* <Game /> Game 컴포넌트를 렌더링합니다. */}
                 {/* <LoginDialog /> */}
                 {/* <GameComponent /> */}
             </StartDiv>

@@ -19,6 +19,8 @@ import {
     playerTextureState,
     playerNicknameState,
 } from "../recoil/user/atoms";
+import { gameSceneState } from "../recoil/game/atoms";
+
 import SignUpDialog from "./SignUpDialog";
 
 const DB_URL = "http://localhost:5000";
@@ -61,11 +63,18 @@ function LoginDialog() {
     const [userPwFieldEmpty, setUserPwFieldEmpty] = useState<boolean>(false);
     const [avatarIndex, setAvatarIndex] = useState<number>(0);
 
+    const [gameScene, setGameScene] = useRecoilState(gameSceneState);
+
+    const changeScene = (newScene: "login" | "airport") => {
+        setGameScene({ scene: newScene });
+    };
+
     const setPlayerId = useSetRecoilState(playerIdState);
     const setPlayerNickname = useSetRecoilState(playerNicknameState);
     const setPlayerTexture = useSetRecoilState(playerTextureState);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        // console.log("handleSubmit");
         e.preventDefault();
         if (userId === "") {
             setUserIdFieldEmpty(true);
@@ -80,9 +89,10 @@ function LoginDialog() {
             };
 
             try {
+                // console.log("try");
                 const response = await axios.post(`${DB_URL}/user/login`, body);
-
-                if (response.data.statue === 200) {
+                // console.log(response);
+                if (response.data.status === 200) {
                     const { payload } = response.data;
 
                     const userId = payload.userId;
@@ -92,6 +102,9 @@ function LoginDialog() {
                     setPlayerId(userId);
                     setPlayerNickname(userNickname);
                     setPlayerTexture(userAvatar);
+                    console.log("login success!!!!!!!!!!");
+
+                    changeScene("airport");
 
                     // handleScene(GAME_STATUS.LOBBY, {
                     //   playerId: payload.userNickname,
