@@ -21,10 +21,20 @@ export function socketEventHandler(socket: Socket)
     socket.on('playerMovement', (movementData: { socketId: string, nickname: string, x: number, y: number }) => {
         //cathcing player movement and updating player position
         players[movementData.nickname] = movementData;
-        socket.broadcast.emit('playerMoved', players);// broadcast를 통해 자신을 제외한 모든 클라이언트에게 이벤트 전달(본인 제외)
+        socket.broadcast.emit('playerMoved', movementData);// broadcast를 통해 자신을 제외한 모든 클라이언트에게 이벤트 전달(본인 제외)
     });
 
     socket.on('disconnect', (reason: string) => {
+        const player: Player | undefined = getPlayer(socket.id);
+        console.log('disconnect player: ', player);
+        socket.broadcast.emit('playerDelete', player);// broadcast를 통해 자신을 제외한 모든 클라이언트에게 이벤트 전달(본인 제외)
         console.log('Client disconnected, id: ', socket.id,', reason: ', reason);
     });
+}
+function getPlayer(socketId: string) {
+    for (let nickname in players) {
+        if (players[nickname].socketId === socketId) {
+            return players[nickname];
+        }
+    }
 }

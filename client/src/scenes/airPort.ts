@@ -29,8 +29,8 @@ class AirPortScene extends BasicScene {
         }
         //배경이미지 추가
         this.add.image(400, 300, 'background');
-        this.player1 = this.physics.add.sprite(this.initial_x, this.initial_y, "player");
-        this.player1.setCollideWorldBounds(true);// player가 월드 경계를 넘어가지 않게 설정
+        // this.player1 = this.physics.add.sprite(this.initial_x, this.initial_y, "player");
+        // this.player1.setCollideWorldBounds(true);// player가 월드 경계를 넘어가지 않게 설정
 
         this.createAnimation("player", frameInfo);
 
@@ -41,7 +41,8 @@ class AirPortScene extends BasicScene {
             x: this.initial_x,
             y: this.initial_y
         };
-        this.createPlayer(playerInfo);
+        this.player1 = this.createPlayer(playerInfo);
+        this.player1.setCollideWorldBounds(true);// player가 월드 경계를 넘어가지 않게 설정
 
         this.npc = this.physics.add.sprite(500, 300, "npc");
         this.createAnimation("npc", frameInfo);
@@ -161,7 +162,7 @@ class AirPortScene extends BasicScene {
             this.interactText!.setText('');
         }
     }
-    createPlayer(playerInfo: PlayerInfo) {
+    createPlayer(playerInfo: PlayerInfo):Phaser.Physics.Arcade.Sprite {
         // Create a sprite for the player
         // Assuming you have an image asset called 'player'
         let playerSprite = this.physics.add.sprite(playerInfo.x, playerInfo.y, 'player');
@@ -174,6 +175,7 @@ class AirPortScene extends BasicScene {
         this.physics.add.existing(newPlayer.sprite);
 
         this.allPlayers[playerInfo.nickname] = newPlayer;
+        return playerSprite;
     }
 }
 export default AirPortScene;

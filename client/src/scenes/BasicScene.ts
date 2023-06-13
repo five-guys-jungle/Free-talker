@@ -43,20 +43,41 @@ export class BasicScene extends Phaser.Scene {
             this.socketHelper!.emitCreated(this.userNickname, this.initial_x, this.initial_y);
         });
 
-        this.socketHelper.onPlayerMoved((serveredPlayers: PlayerInfoDictionary) => {
-            for (let otherPlayerNickname in serveredPlayers) {
-                if (otherPlayerNickname !== this.userNickname) {
-                    if (otherPlayerNickname in this.allPlayers) {
-                        this.allPlayers[otherPlayerNickname].sprite.x = serveredPlayers[otherPlayerNickname].x;
-                        this.allPlayers[otherPlayerNickname].sprite.y = serveredPlayers[otherPlayerNickname].y;
-                    }
-                    else {
-                        // You should define createPlayer method in each scene
-                        this.createPlayer(serveredPlayers[otherPlayerNickname]);
-                    }
+        this.socketHelper.onPlayerMoved((serveredPlayers: PlayerInfo) => {
+            if (serveredPlayers.nickname !== this.userNickname) {
+                if (serveredPlayers.nickname in this.allPlayers) {
+                    this.allPlayers[serveredPlayers.nickname].sprite.x = serveredPlayers.x;
+                    this.allPlayers[serveredPlayers.nickname].sprite.y = serveredPlayers.y;
+                }
+                else {
+                    // You should define createPlayer method in each scene
+                    this.createPlayer(serveredPlayers);
                 }
             }
         });
+        this.socketHelper.onPlayerDelete((player: PlayerInfo) => {
+            if (player.nickname !== this.userNickname) {
+                if (player.nickname in this.allPlayers) {
+                    this.allPlayers[player.nickname].sprite.destroy();
+                    delete this.allPlayers[player.nickname];
+                }
+            }
+        });
+
+        // this.socketHelper.onPlayerMoved((serveredPlayers: PlayerInfoDictionary) => {
+        //     for (let otherPlayerNickname in serveredPlayers) {
+        //         if (otherPlayerNickname !== this.userNickname) {
+        //             if (otherPlayerNickname in this.allPlayers) {
+        //                 this.allPlayers[otherPlayerNickname].sprite.x = serveredPlayers[otherPlayerNickname].x;
+        //                 this.allPlayers[otherPlayerNickname].sprite.y = serveredPlayers[otherPlayerNickname].y;
+        //             }
+        //             else {
+        //                 // You should define createPlayer method in each scene
+        //                 this.createPlayer(serveredPlayers[otherPlayerNickname]);
+        //             }
+        //         }
+        //     }
+        // });
     }
 
     createPlayer(playerInfo: PlayerInfo) {
@@ -75,21 +96,21 @@ export class BasicScene extends Phaser.Scene {
             frameRate: 10,
             repeat: -1
         });
-    
+
         this.anims.create({
             key: 'left',
             frames: this.anims.generateFrameNumbers(characterImageKey, { start: frameInfo.left.start, end: frameInfo.left.end }),
             frameRate: 10,
             repeat: -1
         });
-    
+
         this.anims.create({
             key: 'right',
             frames: this.anims.generateFrameNumbers(characterImageKey, { start: frameInfo.right.start, end: frameInfo.right.end }),
             frameRate: 10,
             repeat: -1
         });
-    
+
         this.anims.create({
             key: 'up',
             frames: this.anims.generateFrameNumbers(characterImageKey, { start: frameInfo.up.start, end: frameInfo.up.end }),
