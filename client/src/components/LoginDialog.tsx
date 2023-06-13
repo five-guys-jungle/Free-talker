@@ -21,7 +21,7 @@ import {
 } from "../recoil/user/atoms";
 import SignUpDialog from "./SignUpDialog";
 
-const DB_URL = process.env.REACT_APP_DB_URL || "http://localhost:3003";
+const DB_URL = "http://localhost:5000";
 
 interface Characters {
     [key: string]: string;

@@ -16,7 +16,7 @@ import MuiAlert, { AlertProps } from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
 // import MySnackbar from "./MySnackBar";
 
-const DB_URL = process.env.REACT_APP_DB_URL || "http://localhost:3003";
+const DB_URL = "http://localhost:5000";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     "& .MuiDialogContent-root": {
@@ -99,7 +99,7 @@ export default function SignUpDialog() {
         };
 
         try {
-            const response = await axios.post(`${DB_URL}/user/login`, body);
+            const response = await axios.post(`${DB_URL}/user/signup`, body);
 
             if (response.data.statue === 200) {
                 console.log("Success!!");

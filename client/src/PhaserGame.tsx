@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 // import { useDispatch } from "react-redux";
 import Phaser from "phaser";
-import Airport from "./scenes/Airport"; // 위에서 작성한 Game 클래스를 가져옵니다.
+import Airport from "./scenes/Airport copy"; // 위에서 작성한 Game 클래스를 가져옵니다.
 // import { setGameInstance } from "./stores/gameSlice";
 
 // const config = {
