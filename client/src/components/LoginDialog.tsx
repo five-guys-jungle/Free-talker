@@ -94,9 +94,7 @@ function LoginDialog() {
                 const response = await axios.post(`${DB_URL}/user/login`, body);
                 console.log(response.data);
                 if (response.data.status === 200) {
-                    // console.log("login success!!!!!!!!!!");
                     const payload = response.data;
-
                     const userId = payload.userId;
                     const userNickname = payload.userNickname;
                     const userAvatar = avatars[avatarIndex].name;
@@ -106,9 +104,6 @@ function LoginDialog() {
                     setPlayerNickname(userNickname);
                     setPlayerTexture(userAvatar);
 
-                    // console.log("login success!!!!!!!!!!");
-                    console.log("code here");
-                    // setGameScene("airport");
                     changeScene("airport");
                 }
             } catch (e) {
