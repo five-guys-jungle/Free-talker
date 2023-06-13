@@ -13,8 +13,12 @@ export class SocketHelper {
         this.socket.on('connected', callback);
       }
     }
-  
-    onPlayerMoved(callback: (players: PlayerInfoDictionary) => void) {
+    onPlayerDelete(callback: (data: any) => void) {
+        if (this.socket) {
+          this.socket.on('playerDelete', callback);
+        }
+      }
+    onPlayerMoved(callback: (player: PlayerInfo) => void) {
       if (this.socket) {
         this.socket.on('playerMoved', callback);
       }
