@@ -10,11 +10,23 @@ import {
 } from "../characters/Player";
 import { frameInfo } from "./common/anims";
 import { BasicScene } from "./BasicScene";
+import { useRecoilValue } from "recoil";
+import {
+    playerIdState,
+    playerNicknameState,
+    playerTextureState,
+} from "../recoil/user/atoms";
+// import { playerNicknameState } from '../recoil/user/atoms';
+import { createCharacterAnims } from "../anims/CharacterAnims";
 
 let chunks: BlobPart[] = [];
 let audioContext = new window.AudioContext();
 
 class AirPortScene extends BasicScene {
+    playerId = "";
+    userNickname = "";
+    texture = "";
+
     constructor() {
         super("AirPortScene");
     }
@@ -22,18 +34,58 @@ class AirPortScene extends BasicScene {
     preload() {
         super.preload();
 
-        this.load.image('generic','assets/tilesets/Generic.png')
-        this.load.image('basement','assets/tilesets/Basement.png')
-        this.load.image('floor','assets/tilesets/FloorAndGround.png')
-        this.load.image('interior','assets/tilesets/Interiors.png')
-        this.load.image('pixel','assets/tilesets/pixel-cyberpunk-interior.png')
-        this.load.image('classroom','assets/tilesets/Classroom_and_library.png')
+        this.load.image("generic", "assets/tilesets/Generic.png");
+        this.load.image("basement", "assets/tilesets/Basement.png");
+        this.load.image("floor", "assets/tilesets/FloorAndGround.png");
+        this.load.image("interior", "assets/tilesets/Interiors.png");
+        this.load.image(
+            "pixel",
+            "assets/tilesets/pixel-cyberpunk-interior.png"
+        );
+        this.load.image(
+            "classroom",
+            "assets/tilesets/Classroom_and_library.png"
+        );
 
-        this.load.tilemapTiledJSON('map','assets/maps/airport.json')
+        this.load.spritesheet("npc", "assets/characters/npc.png", {
+            frameWidth: 48,
+            frameHeight: 72,
+            startFrame: 0,
+            endFrame: 12,
+        });
+        this.load.spritesheet("adam", "assets/characters/adam.png", {
+            frameWidth: 32,
+            frameHeight: 48,
+        });
+        this.load.spritesheet("ash", "assets/characters/ash.png", {
+            frameWidth: 32,
+            frameHeight: 48,
+        });
+        this.load.spritesheet("lucy", "assets/characters/lucy.png", {
+            frameWidth: 32,
+            frameHeight: 48,
+        });
+        this.load.spritesheet("nancy", "assets/characters/nancy.png", {
+            frameWidth: 32,
+            frameHeight: 48,
+        });
+
+        this.load.tilemapTiledJSON("map", "assets/maps/airport.json");
+    }
+
+    init(data: any) {
+        this.playerId = data.playerId;
+        this.userNickname = data.playerNickname;
+        this.texture = data.playerTexture;
     }
 
     create() {
-        super.create();
+        super.create(this.texture);
+        console.log("this.texture : ", this.texture);
+
+        console.log(this.playerId);
+        console.log(this.userNickname);
+        console.log(this.texture); // 'ash'
         // about character frame
         const frameInfo: frameInfo = {
             down: { start: 0, end: 2 },
@@ -43,43 +95,65 @@ class AirPortScene extends BasicScene {
         };
         //배경이미지 추가
         // this.add.image(400, 300, "background");
-        const map= this.make.tilemap({key:'map'})
-        const tileset_generic= map.addTilesetImage('Generic', 'generic')!
-        const tileset_basement= map.addTilesetImage('Basement', 'basement')!
-        const tileset_interior= map.addTilesetImage('Interiors', 'interior')!
-        const tileset_classroom= map.addTilesetImage('Classroom_and_library', 'classroom')!
-        const tileset_floor= map.addTilesetImage('FloorAndGround', 'floor')!
-        const tileset_pixel= map.addTilesetImage('pixel-cyberpunk-interior', 'pixel')!
+        const map = this.make.tilemap({ key: "map" });
+        const tileset_generic = map.addTilesetImage("Generic", "generic")!;
+        const tileset_basement = map.addTilesetImage("Basement", "basement")!;
+        const tileset_interior = map.addTilesetImage("Interiors", "interior")!;
+        const tileset_classroom = map.addTilesetImage(
+            "Classroom_and_library",
+            "classroom"
+        )!;
+        const tileset_floor = map.addTilesetImage("FloorAndGround", "floor")!;
+        const tileset_pixel = map.addTilesetImage(
+            "pixel-cyberpunk-interior",
+            "pixel"
+        )!;
 
-        map.createLayer('floor/Floor', tileset_floor);
-        const platform2= map.createLayer('wall/Generic', tileset_generic)!;
-        const platform3= map.createLayer('chair_door/Generic', tileset_generic)!;
-        const platform4= map.createLayer('chair_table/Basement', tileset_basement)!;
-        const platform5= map.createLayer('office/Classroom', tileset_classroom)!;
-        const platform6= map.createLayer('interiors/Interiors', tileset_interior)!;
-        const platform7= map.createLayer('line/pixel', tileset_pixel)!;
-        
-        platform2.setCollisionByProperty({collides:true})
-        platform3.setCollisionByProperty({collides:true})
-        platform4.setCollisionByProperty({collides:true})
-        platform5.setCollisionByProperty({collides:true})
-        platform6.setCollisionByProperty({collides:true})
-        platform7.setCollisionByProperty({collides:true})
+        map.createLayer("floor/Floor", tileset_floor);
+        const platform2 = map.createLayer("wall/Generic", tileset_generic)!;
+        const platform3 = map.createLayer(
+            "chair_door/Generic",
+            tileset_generic
+        )!;
+        const platform4 = map.createLayer(
+            "chair_table/Basement",
+            tileset_basement
+        )!;
+        const platform5 = map.createLayer(
+            "office/Classroom",
+            tileset_classroom
+        )!;
+        const platform6 = map.createLayer(
+            "interiors/Interiors",
+            tileset_interior
+        )!;
+        const platform7 = map.createLayer("line/pixel", tileset_pixel)!;
 
-        
+        platform2.setCollisionByProperty({ collides: true });
+        platform3.setCollisionByProperty({ collides: true });
+        platform4.setCollisionByProperty({ collides: true });
+        platform5.setCollisionByProperty({ collides: true });
+        platform6.setCollisionByProperty({ collides: true });
+        platform7.setCollisionByProperty({ collides: true });
+
         // this.player1 = this.physics.add.sprite(this.initial_x, this.initial_y, "player");
         // this.player1.setCollideWorldBounds(true);// player가 월드 경계를 넘어가지 않게 설정
 
-        this.createAnimation("player", frameInfo);
+        // this.createAnimation("player", frameInfo);
 
         // this.allPlayers[this.userNickname] = new Player(this.socketHelper!.getSocketId()!, this.userNickname, this.player1, this.initial_x, this.initial_y);
         const playerInfo: PlayerInfo = {
             socketId: this.socketHelper!.getSocketId()!,
             nickname: this.userNickname,
+            playerTexture: this.texture,
             x: this.initial_x,
             y: this.initial_y,
         };
+
+        console.log("playerInfo.playerTexture: ", playerInfo.playerTexture);
+
         this.player1 = this.createPlayer(playerInfo);
+
         this.player1.setCollideWorldBounds(true); // player가 월드 경계를 넘어가지 않게 설정
         this.physics.add.collider(this.player1, platform2);
         this.physics.add.collider(this.player1, platform3);
@@ -94,11 +168,11 @@ class AirPortScene extends BasicScene {
         this.cursors = this.input.keyboard!.createCursorKeys();
         this.interactKey = this.input.keyboard!.addKey("X");
         this.interactText = this.add.text(10, 10, "", {
-            color: "white",
+            color: "black",
             fontSize: "16px",
         });
         this.userIdText = this.add.text(10, 10, "", {
-            color: "white",
+            color: "black",
             fontSize: "16px",
         });
 
@@ -183,20 +257,33 @@ class AirPortScene extends BasicScene {
         let velocityX = 0;
         let velocityY = 0;
 
+        // `${this.player1!.texture.key}_idle_left`
         if (this.cursors!.left.isDown) {
             velocityX = -speed;
-            this.player1!.anims.play("left", true);
+            this.player1!.anims.play(
+                `${this.player1!.texture.key}_run_left`,
+                true
+            );
         } else if (this.cursors!.right.isDown) {
             velocityX = speed;
-            this.player1!.anims.play("right", true);
+            this.player1!.anims.play(
+                `${this.player1!.texture.key}_run_right`,
+                true
+            );
         }
 
         if (this.cursors!.up.isDown) {
             velocityY = -speed;
-            this.player1!.anims.play("up", true);
+            this.player1!.anims.play(
+                `${this.player1!.texture.key}_run_up`,
+                true
+            );
         } else if (this.cursors!.down.isDown) {
             velocityY = speed;
-            this.player1!.anims.play("down", true);
+            this.player1!.anims.play(
+                `${this.player1!.texture.key}_run_down`,
+                true
+            );
         }
 
         // If moving diagonally, adjust speed
@@ -209,18 +296,20 @@ class AirPortScene extends BasicScene {
         this.player1!.setVelocityY(velocityY);
 
         if (velocityX === 0 && velocityY === 0) {
-            this.player1!.anims.play("down");
+            this.player1!.anims.play(`${this.player1!.texture.key}_idle_down`);
         }
 
-        this.userIdText!.setText(this.userNickname);
+        console.log("userNickname : ", this.userNickname);
+        // this.userIdText!.setText(this.userNickname);
         // interactText position
-        this.userIdText!.setOrigin(0.5, 0);
-        this.userIdText!.setX(this.player1!.x);
-        this.userIdText!.setY(this.player1!.y - 70);
+        // this.userIdText!.setOrigin(0.5, 0);
+        // this.userIdText!.setX(this.player1!.x);
+        // this.userIdText!.setY(this.player1!.y - 50);
 
         if (this.socketHelper && this.socketHelper.getSocket()) {
             this.socketHelper!.emitPlayerMovement(
                 this.userNickname,
+                this.texture,
                 this.player1!.x,
                 this.player1!.y
             );
@@ -239,7 +328,7 @@ class AirPortScene extends BasicScene {
             // interactText position
             this.interactText!.setOrigin(0.5, 0);
             this.interactText!.setX(this.player1!.x);
-            this.interactText!.setY(this.player1!.y - 50);
+            this.interactText!.setY(this.player1!.y - 70);
         } else {
             this.interactText!.setText("");
         }
@@ -247,25 +336,31 @@ class AirPortScene extends BasicScene {
     createPlayer(playerInfo: PlayerInfo): Phaser.Physics.Arcade.Sprite {
         // Create a sprite for the player
         // Assuming you have an image asset called 'player'
+        console.log(
+            "in function, playerInfo.playerTexture: ",
+            playerInfo.playerTexture
+        );
         let playerSprite = this.physics.add.sprite(
             playerInfo.x,
             playerInfo.y,
-            "player"
+            playerInfo.playerTexture
         );
 
         // Create a new player instance
         const newPlayer = new Player(
             playerInfo.socketId,
             playerInfo.nickname,
+            playerInfo.playerTexture,
             playerSprite,
             playerInfo.x,
             playerInfo.y
         );
 
         // Add the sprite to the Phaser scene
+        createCharacterAnims(this.anims);
         this.add.existing(newPlayer.sprite);
         this.physics.add.existing(newPlayer.sprite);
-
+        // this.anims.play(`${playerInfo.playerTexture}_idle_down`, true);
         this.allPlayers[playerInfo.nickname] = newPlayer;
         return playerSprite;
     }

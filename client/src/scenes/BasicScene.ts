@@ -1,6 +1,11 @@
-import { Player, PlayerDictionary, PlayerInfo, PlayerInfoDictionary } from "../characters/Player";
+import {
+    Player,
+    PlayerDictionary,
+    PlayerInfo,
+    PlayerInfoDictionary,
+} from "../characters/Player";
 import { SocketHelper } from "./common/socketHelper";
-import io, { Socket } from 'socket.io-client';
+import io, { Socket } from "socket.io-client";
 
 export class BasicScene extends Phaser.Scene {
     player1: Phaser.Physics.Arcade.Sprite | null = null;
@@ -9,9 +14,9 @@ export class BasicScene extends Phaser.Scene {
     interactKey: Phaser.Input.Keyboard.Key | null = null;
     interactText: Phaser.GameObjects.Text | null = null;
     userIdText: Phaser.GameObjects.Text | null = null;
-    userNickname: string = '';
-    initial_x: number = 400;
-    initial_y: number = 300;
+    userNickname: string = "";
+    initial_x: number = 400 + 220;
+    initial_y: number = 300 + 220;
     allPlayers: PlayerDictionary = {};
 
     recorder: MediaRecorder | null = null;
@@ -20,36 +25,30 @@ export class BasicScene extends Phaser.Scene {
     preload() {
         console.log("preload");
         this.load.image("background", "assets/backgrounds/space.png");
-        this.load.spritesheet("npc", "assets/characters/npc.png", {
-            frameWidth: 48,
-            frameHeight: 72,
-            startFrame: 0,
-            endFrame: 12,
-        });
-        this.load.spritesheet("player", "assets/characters/player.png", {
-            frameWidth: 48,
-            frameHeight: 72,
-            startFrame: 0,
-            endFrame: 12,
-        });
     }
 
-    create() {
+    create(texture: string) {
         this.socketHelper = new SocketHelper();
         this.socketHelper.initialize();
 
         this.socketHelper.onConnected((data) => {
             this.userNickname = data.nickname;
-            this.socketHelper!.emitCreated(this.userNickname, this.initial_x, this.initial_y);
+            this.socketHelper!.emitCreated(
+                this.userNickname,
+                texture,
+                this.initial_x,
+                this.initial_y
+            );
         });
 
         this.socketHelper.onPlayerMoved((serveredPlayers: PlayerInfo) => {
             if (serveredPlayers.nickname !== this.userNickname) {
                 if (serveredPlayers.nickname in this.allPlayers) {
-                    this.allPlayers[serveredPlayers.nickname].sprite.x = serveredPlayers.x;
-                    this.allPlayers[serveredPlayers.nickname].sprite.y = serveredPlayers.y;
-                }
-                else {
+                    this.allPlayers[serveredPlayers.nickname].sprite.x =
+                        serveredPlayers.x;
+                    this.allPlayers[serveredPlayers.nickname].sprite.y =
+                        serveredPlayers.y;
+                } else {
                     // You should define createPlayer method in each scene
                     this.createPlayer(serveredPlayers);
                 }
@@ -81,41 +80,57 @@ export class BasicScene extends Phaser.Scene {
     }
 
     createPlayer(playerInfo: PlayerInfo) {
-        throw new Error("You should implement createPlayer method in each scene.");
+        throw new Error(
+            "You should implement createPlayer method in each scene."
+        );
     }
-    createAnimation(characterImageKey: string,
+    createAnimation(
+        characterImageKey: string,
         frameInfo: {
-            down: { start: number, end: number },
-            left: { start: number, end: number },
-            right: { start: number, end: number },
-            up: { start: number, end: number }
-        }) {
+            down: { start: number; end: number };
+            left: { start: number; end: number };
+            right: { start: number; end: number };
+            up: { start: number; end: number };
+        }
+    ) {
         this.anims.create({
-            key: 'down',
-            frames: this.anims.generateFrameNumbers(characterImageKey, { start: frameInfo.down.start, end: frameInfo.down.end }),
+            key: "down",
+            frames: this.anims.generateFrameNumbers(characterImageKey, {
+                start: frameInfo.down.start,
+                end: frameInfo.down.end,
+            }),
             frameRate: 10,
-            repeat: -1
+            repeat: -1,
         });
 
         this.anims.create({
-            key: 'left',
-            frames: this.anims.generateFrameNumbers(characterImageKey, { start: frameInfo.left.start, end: frameInfo.left.end }),
+            key: "left",
+            frames: this.anims.generateFrameNumbers(characterImageKey, {
+                start: frameInfo.left.start,
+                end: frameInfo.left.end,
+            }),
             frameRate: 10,
-            repeat: -1
+            repeat: -1,
         });
 
         this.anims.create({
-            key: 'right',
-            frames: this.anims.generateFrameNumbers(characterImageKey, { start: frameInfo.right.start, end: frameInfo.right.end }),
+            key: "right",
+            frames: this.anims.generateFrameNumbers(characterImageKey, {
+                start: frameInfo.right.start,
+                end: frameInfo.right.end,
+            }),
             frameRate: 10,
-            repeat: -1
+            repeat: -1,
         });
 
         this.anims.create({
-            key: 'up',
-            frames: this.anims.generateFrameNumbers(characterImageKey, { start: frameInfo.up.start, end: frameInfo.up.end }),
+            key: "up",
+            frames: this.anims.generateFrameNumbers(characterImageKey, {
+                start: frameInfo.up.start,
+                end: frameInfo.up.end,
+            }),
             frameRate: 10,
-            repeat: -1
+            repeat: -1,
         });
     }
 }

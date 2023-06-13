@@ -35,10 +35,14 @@ export interface State extends SnackbarOrigin {
 
 const characters = chars as Characters;
 
-const avatars: { name: string; img: string }[] = Array.from(
-    new Array(4),
-    (d, idx) => ({ name: `char${idx}`, img: characters[`char${idx}`] })
-);
+// const avatars: { name: string; img: string }[] = Array.from(
+//     new Array(4),
+//     (d, idx) => ({ name: `char${idx}`, img: characters[`char${idx}`] })
+// );
+const avatars = Object.entries(characters).map(([key, img]) => ({
+    name: key,
+    img,
+}));
 
 function LoginDialog() {
     const [openLoginWarn, setOpenLoginWarn] = React.useState(false);
@@ -98,13 +102,17 @@ function LoginDialog() {
                     const userId = payload.userId;
                     const userNickname = payload.userNickname;
                     const userAvatar = avatars[avatarIndex].name;
-                    console.log(`"userID: ", ${payload.userId}"`);
+                    console.log(`"userAvatar: , ${userAvatar}"`);
+                    console.log(`"userID: , ${payload.userId}"`);
 
                     setPlayerId(userId);
                     setPlayerNickname(userNickname);
                     setPlayerTexture(userAvatar);
 
                     changeScene("airport");
+
+                    // playerId: payload.userNickname,
+                    // playerTexture: avatars[avatarIndex].name,
                 }
             } catch (e) {
                 if (e instanceof AxiosError && e.response?.status === 420) {
