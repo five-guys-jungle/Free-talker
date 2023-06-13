@@ -74,7 +74,10 @@ function LoginDialog() {
             setUserPwFieldEmpty(true);
             return;
         } else {
-            const body = { userId: userId, userPw: userPw };
+            const body = {
+                userId: userId,
+                userPw: userPw,
+            };
 
             try {
                 const response = await axios.post(`${DB_URL}/user/login`, body);
@@ -130,6 +133,7 @@ function LoginDialog() {
                 onOpen={openLoginWarn}
             />
             <Content onSubmit={handleSubmit} id="login">
+                {/* <ServiceTitle>Free Talker</ServiceTitle> */}
                 <Left>
                     <Swiper
                         modules={[Navigation]}
