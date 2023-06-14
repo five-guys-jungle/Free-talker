@@ -409,7 +409,7 @@ export default class AirPortScene extends Phaser.Scene {
                 this.socket!.emit("playerMovement", {
                     socketId: this.socket!.id,
                     nickname: this.userNickname,
-                    texture: this.playerTexture,
+                    playerTexture: this.playerTexture,
                     x: this.player1!.x,
                     y: this.player1!.y,
                 });
