@@ -8,7 +8,7 @@ import { upload, interact } from "./controllers/interaction";
 import { socketEventHandler } from "./controllers/gameSocket";
 import { Server as SocketIOServer, Socket } from "socket.io";
 
-import { connectDB } from "./Database/db";
+import { connectDB } from "./database/db";
 
 import { signup, login } from "./controllers/userController";
 
