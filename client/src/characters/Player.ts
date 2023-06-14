@@ -5,6 +5,8 @@ export class Player {
     x: number;
     y: number;
     sprite: Phaser.Physics.Arcade.Sprite;
+    textObj: Phaser.GameObjects.Text | null = null;
+    defaultVelocity: number = 200;
 
     constructor(
         socketId: string,
@@ -23,6 +25,21 @@ export class Player {
         this.sprite.texture.key = playerTexture;
         this.sprite.x = this.x;
         this.sprite.y = this.y;
+    }
+    move() {
+    }
+    moveText(scene: Phaser.Scene) {
+        if (this.textObj === null || this.textObj === undefined) {
+            this.textObj = scene.add.text(this.sprite.x, this.sprite.y - 45, this.nickname, {
+                color: "black",
+                fontSize: "16px",
+            });
+            this.textObj.setOrigin(0.5, 0);
+        }
+        else {
+            this.textObj!.setX(this.sprite.x);
+            this.textObj!.setY(this.sprite.y-50);
+        }
     }
 }
 
