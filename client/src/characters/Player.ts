@@ -9,17 +9,18 @@ export class Player {
     constructor(
         socketId: string,
         name: string,
-        texture: string,
+        playerTexture: string,
         sprite: Phaser.Physics.Arcade.Sprite,
         x: number,
         y: number
     ) {
         this.socketId = socketId;
         this.nickname = name;
-        this.playerTexture = texture;
+        this.playerTexture = playerTexture;
         this.x = x;
         this.y = y;
         this.sprite = sprite;
+        this.sprite.texture.key = playerTexture;
         this.sprite.x = this.x;
         this.sprite.y = this.y;
     }
