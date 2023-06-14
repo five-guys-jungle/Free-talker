@@ -162,3 +162,26 @@ async function convertTexttoSpeech(
         return { error: "text-to-speech request failed." };
     }
 }
+
+async function grammerCorrection(inputText: string): Promise<string> {
+    let response: any;
+    let correction: string;
+    try {
+        // ChatGPT API에 요청 보내기
+        response = await openai.createCompletion({
+            model: "text-davinci-003",
+            prompt: "Correct this to standard English:\n\nShe no went to the market.",
+            temperature: 0,
+            max_tokens: 60,
+            top_p: 1.0,
+            frequency_penalty: 0.0,
+            presence_penalty: 0.0,
+        });
+        // ChatGPT API의 결과 받기
+        correction = response.data.choices[0].message["content"];
+        return correction;
+    } catch (error) {
+        console.log(error);
+        return "ChatGPT API Error.";
+    }
+}
