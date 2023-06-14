@@ -180,21 +180,76 @@ export default class AirPortScene extends Phaser.Scene {
                         }
                         else {
                             console.log("updateAlluser, already exist, so just set position");
-                            this.allPlayers[otherPlayers[key].socketId].sprite.x = otherPlayers[key].x;
-                            this.allPlayers[otherPlayers[key].socketId].sprite.y = otherPlayers[key].y;
+                            // this.allPlayers[otherPlayers[key].socketId].sprite.x = otherPlayers[key].x;
+                            // this.allPlayers[otherPlayers[key].socketId].sprite.y = otherPlayers[key].y;
+                            this.allPlayers[otherPlayers[key].socketId].x = otherPlayers[key].x;
+                            this.allPlayers[otherPlayers[key].socketId].y = otherPlayers[key].y;
+
+                            let angle = Phaser.Math.Angle.Between(this.allPlayers[key].sprite.x, this.allPlayers[key].sprite.y,
+                                otherPlayers[key].x, otherPlayers[key].y);
+        
+                            this.allPlayers[key].sprite.setVelocity(
+                                Math.cos(angle) * this.allPlayers[key].defaultVelocity,
+                                Math.sin(angle) * this.allPlayers[key].defaultVelocity
+                            );
+                            
+                            // 스프라이트 방향에 따라 애니메이션 재생
+                            if (Math.abs(otherPlayers[key].x - this.allPlayers[key].sprite.x) > Math.abs(otherPlayers[key].y - this.allPlayers[key].sprite.y)) {
+                                // left or right
+                                if (otherPlayers[key].x > this.allPlayers[key].sprite.x) {
+                                    this.allPlayers[key].sprite.anims.play(`${this.allPlayers[key].playerTexture}_run_right`, true);
+                                } else {
+                                    this.allPlayers[key].sprite.anims.play(`${this.allPlayers[key].playerTexture}_run_left`, true);
+                                }
+                            } else {
+                                // up or down
+                                if (otherPlayers[key].y > this.allPlayers[key].sprite.y) {
+                                    this.allPlayers[key].sprite.anims.play(`${this.allPlayers[key].playerTexture}_run_down`, true);
+                                } else {
+                                    this.allPlayers[key].sprite.anims.play(`${this.allPlayers[key].playerTexture}_run_up`, true);
+                                }
+                            }
                         }
                     }
                 }
             });
-                
+
 
             this.socket!.on("newPlayerConnected", (playerInfo: PlayerInfo) => {
                 console.log("newPlayerConnected, playerInfo: ", playerInfo);
                 if (playerInfo.socketId in this.allPlayers) {
                     console.log("already exist, so just set position");
-                    this.allPlayers[playerInfo.socketId].sprite.x = playerInfo.x;
-                    this.allPlayers[playerInfo.socketId].sprite.y = playerInfo.y;
+                    // this.allPlayers[playerInfo.socketId].sprite.x = playerInfo.x;
+                    // this.allPlayers[playerInfo.socketId].sprite.y = playerInfo.y;
+                    this.allPlayers[playerInfo.socketId].x = playerInfo.x;
+                    this.allPlayers[playerInfo.socketId].y = playerInfo.y;
                     console.log("newPlayerConnected, playerSprite: ", this.allPlayers[playerInfo.socketId].sprite);
+                    
+                    let angle = Phaser.Math.Angle.Between(this.allPlayers[playerInfo.socketId].sprite.x, this.allPlayers[playerInfo.socketId].sprite.y,
+                        playerInfo.x, playerInfo.y);
+
+                    this.allPlayers[playerInfo.socketId].sprite.setVelocity(
+                        Math.cos(angle) * this.allPlayers[playerInfo.socketId].defaultVelocity,
+                        Math.sin(angle) * this.allPlayers[playerInfo.socketId].defaultVelocity
+                    );
+                    
+                    // 스프라이트 방향에 따라 애니메이션 재생
+                    if (Math.abs(playerInfo.x - this.allPlayers[playerInfo.socketId].sprite.x) > Math.abs(playerInfo.y - this.allPlayers[playerInfo.socketId].sprite.y)) {
+                        // left or right
+                        if (playerInfo.x > this.allPlayers[playerInfo.socketId].sprite.x) {
+                            this.allPlayers[playerInfo.socketId].sprite.anims.play(`${this.allPlayers[playerInfo.socketId].playerTexture}_run_right`, true);
+                        } else {
+                            this.allPlayers[playerInfo.socketId].sprite.anims.play(`${this.allPlayers[playerInfo.socketId].playerTexture}_run_left`, true);
+                        }
+                    } else {
+                        // up or down
+                        if (playerInfo.y > this.allPlayers[playerInfo.socketId].sprite.y) {
+                            this.allPlayers[playerInfo.socketId].sprite.anims.play(`${this.allPlayers[playerInfo.socketId].playerTexture}_run_down`, true);
+                        } else {
+                            this.allPlayers[playerInfo.socketId].sprite.anims.play(`${this.allPlayers[playerInfo.socketId].playerTexture}_run_up`, true);
+                        }
+                    }
+
                 }
                 else {
                     console.log("not exist, so create new one");
@@ -208,8 +263,36 @@ export default class AirPortScene extends Phaser.Scene {
                 console.log("playerMoved, playerInfo: ", playerInfo);
                 if (playerInfo.socketId in this.allPlayers) {
                     console.log("already exist, so just set position");
-                    this.allPlayers[playerInfo.socketId].sprite.x = playerInfo.x;
-                    this.allPlayers[playerInfo.socketId].sprite.y = playerInfo.y;
+                    // this.allPlayers[playerInfo.socketId].sprite.x = playerInfo.x;
+                    // this.allPlayers[playerInfo.socketId].sprite.y = playerInfo.y;
+                    this.allPlayers[playerInfo.socketId].x = playerInfo.x;
+                    this.allPlayers[playerInfo.socketId].y = playerInfo.y;
+
+                    let angle = Phaser.Math.Angle.Between(this.allPlayers[playerInfo.socketId].sprite.x, this.allPlayers[playerInfo.socketId].sprite.y,
+                        playerInfo.x, playerInfo.y);
+
+                    this.allPlayers[playerInfo.socketId].sprite.setVelocity(
+                        Math.cos(angle) * this.allPlayers[playerInfo.socketId].defaultVelocity,
+                        Math.sin(angle) * this.allPlayers[playerInfo.socketId].defaultVelocity
+                    );
+                    
+                    // 스프라이트 방향에 따라 애니메이션 재생
+                    if (Math.abs(playerInfo.x - this.allPlayers[playerInfo.socketId].sprite.x) > Math.abs(playerInfo.y - this.allPlayers[playerInfo.socketId].sprite.y)) {
+                        // left or right
+                        if (playerInfo.x > this.allPlayers[playerInfo.socketId].sprite.x) {
+                            this.allPlayers[playerInfo.socketId].sprite.anims.play(`${this.allPlayers[playerInfo.socketId].playerTexture}_run_right`, true);
+                        } else {
+                            this.allPlayers[playerInfo.socketId].sprite.anims.play(`${this.allPlayers[playerInfo.socketId].playerTexture}_run_left`, true);
+                        }
+                    } else {
+                        // up or down
+                        if (playerInfo.y > this.allPlayers[playerInfo.socketId].sprite.y) {
+                            this.allPlayers[playerInfo.socketId].sprite.anims.play(`${this.allPlayers[playerInfo.socketId].playerTexture}_run_down`, true);
+                        } else {
+                            this.allPlayers[playerInfo.socketId].sprite.anims.play(`${this.allPlayers[playerInfo.socketId].playerTexture}_run_up`, true);
+                        }
+                    }
+
                 }
                 else {
                     console.log("not exist, so create new one");
@@ -414,25 +497,24 @@ export default class AirPortScene extends Phaser.Scene {
                     y: this.player1!.y,
                 });
             }
+
+            for (let key in this.allPlayers) {
+                if (key !== this.socket.id) {
+                    let otherSprite: Phaser.Physics.Arcade.Sprite = this.allPlayers[key].sprite;
+                    let targetPosition: { x: number, y: number } = { x: this.allPlayers[key].x, y: this.allPlayers[key].y };
+                    if (targetPosition && Phaser.Math.Distance.Between(otherSprite.x, otherSprite.y,
+                        targetPosition.x, targetPosition.y) <= 1.5) {
+                        otherSprite.setVelocity(0, 0);
+                        otherSprite.anims.play(`${this.allPlayers[key].playerTexture}_idle_down`, true);
+                    }
+                    this.allPlayers[key].moveText(this);
+                }
+            }
         }
     }
     createPlayer(playerInfo: PlayerInfo): Phaser.Physics.Arcade.Sprite {
         // Create a sprite for the player
         // Assuming you have an image asset called 'player'
-        const tempTexture:string = playerInfo.playerTexture;
-        console.log('-------------Here-------------');
-        console.log('tempTexture: ', tempTexture);
-        console.log('-------------Here-------------');
-        console.log("createPlayer, playerInfo: ", playerInfo);
-        if (playerInfo.playerTexture === undefined || playerInfo.playerTexture === null) {
-            // playerInfo.playerTexture = "adam";
-            console.log('-------------Here-------------');
-            console.log("createPlayer, playerInfo: ", playerInfo);
-            console.log("playerInfo.playerTexture: ", playerInfo.playerTexture);
-            console.log("createPlayer, allPlayers: ", this.allPlayers);
-            playerInfo.playerTexture = "adam";
-            console.log('-------------Here-------------');
-        }
         this.socket!.emit("getTexture", playerInfo);
         let playerSprite = this.physics.add.sprite(
             playerInfo.x,
@@ -451,9 +533,6 @@ export default class AirPortScene extends Phaser.Scene {
         );
 
         // Add the sprite to the Phaser scene
-        // this.add.existing(newPlayer.sprite);
-        // this.physics.add.existing(newPlayer.sprite);
-        // this.anims.play(`${playerInfo.playerTexture}_idle_down`, true);
         console.log("createPlayer, newPlayer: ", newPlayer);
         this.allPlayers[playerInfo.socketId] = newPlayer;
         console.log("createPlayer, allPlayers: ", this.allPlayers);
