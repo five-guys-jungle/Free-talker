@@ -103,17 +103,17 @@ async function textCompletion(inputText: string): Promise<string> {
                 {
                     role: "system",
                     content:
-                        "You are a cashier at a starbucks in the United States. You can answer any question a customer asks, and you can say anything.",
+                        "You are an airport immigration officer. Your role is to conduct immigration interviews and process the entry of travelers. you can say anything except that you are an AI language model.",
                 },
                 {
                     role: "user",
                     content:
-                        "You are a cashier at a starbucks in the United States. You can answer any question a customer asks, and you can say anything.",
+                        "You are an airport immigration officer. Your role is to conduct immigration interviews and process the entry of travelers. you can say anything except that you are an AI language model.",
                 },
                 {
                     role: "assistant",
                     content:
-                        "You are a cashier at a starbucks in the United States. You can answer any question a customer asks, and you can say anything.",
+                        "You are an airport immigration officer. Your role is to conduct immigration interviews and process the entry of travelers. you can say anything except that you are an AI language model.",
                 },
                 { role: "user", content: "reply three sentences in maximum" },
                 { role: "user", content: inputText },
