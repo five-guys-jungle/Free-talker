@@ -46,6 +46,10 @@ export async function interact(req: Request, res: Response): Promise<void> {
         let outputText: string;
 
         inputText = await convertSpeechToText(audioFilePath);
+        const correctedText = await grammerCorrection(inputText);
+
+        console.log(`correctedText: ${correctedText}, inputText: ${inputText}`);
+
         outputText = await textCompletion(inputText);
         const response = await convertTexttoSpeech(inputText, outputText);
         // console.log("response: ", response);
@@ -163,14 +167,14 @@ async function convertTexttoSpeech(
     }
 }
 
-async function grammerCorrection(inputText: string): Promise<string> {
+export async function grammerCorrection(inputText: string): Promise<string> {
     let response: any;
     let correction: string;
     try {
         // ChatGPT API에 요청 보내기
         response = await openai.createCompletion({
             model: "text-davinci-003",
-            prompt: "Correct this to standard English:\n\nShe no went to the market.",
+            prompt: `"Correct this to standard English:\n\n${inputText}"`,
             temperature: 0,
             max_tokens: 60,
             top_p: 1.0,
@@ -178,7 +182,9 @@ async function grammerCorrection(inputText: string): Promise<string> {
             presence_penalty: 0.0,
         });
         // ChatGPT API의 결과 받기
-        correction = response.data.choices[0].message["content"];
+        console.log(response.data);
+        correction = response.data.choices[0].text.trimStart();
+        // return correction;
         return correction;
     } catch (error) {
         console.log(error);
