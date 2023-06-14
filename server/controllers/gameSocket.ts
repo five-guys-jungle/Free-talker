@@ -11,11 +11,12 @@ export function socketEventHandler(socket: Socket) {
         console.log("connected, data: ", data);
         data.socketId = socket.id;
         players[socket.id] = data;
-        if (players !== undefined && players !== null) {
-            console.log("All players, connected, updateAlluser: ", players);
-            socket.emit("updateAlluser", players);
-        }
-        socket.broadcast.emit("newPlayerConnected", data);
+        // if (players !== undefined && players !== null) {
+        //     console.log("All players, connected, updateAlluser: ", players);
+        //     socket.emit("updateAlluser", players);
+        // }
+        socket.emit("updateAlluser", players);
+        socket.broadcast.emit("newPlayerConnected", players[socket.id]);
     });
     socket.on("playerMovement", (data: Player) => {
         console.log("playerMovement, socketid: ", socket.id);
@@ -23,7 +24,7 @@ export function socketEventHandler(socket: Socket) {
         data.socketId = socket.id;
         players[socket.id] = data;
         console.log("All players, playerMovement: ", players);
-        socket.broadcast.emit("playerMoved", data);
+        socket.broadcast.emit("playerMoved", players[socket.id]);
     });
 
     socket.on("disconnect", (reason: string) => {
