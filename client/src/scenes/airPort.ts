@@ -163,7 +163,7 @@ export default class AirPortScene extends Phaser.Scene {
             this.socket!.emit("connected", {
                 socketId: this.socket!.id,
                 nickname: this.userNickname,
-                texture: this.playerTexture,
+                playerTexture: this.playerTexture,
                 x: this.initial_x,
                 y: this.initial_y,
             });
