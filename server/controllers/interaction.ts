@@ -182,10 +182,31 @@ export async function grammerCorrection(inputText: string): Promise<string> {
             presence_penalty: 0.0,
         });
         // ChatGPT API의 결과 받기
-        console.log(response.data);
+        // console.log(response.data);
         correction = response.data.choices[0].text.trimStart();
         // return correction;
         return correction;
+    } catch (error) {
+        console.log(error);
+        return "ChatGPT API Error.";
+    }
+}
+
+export async function recommendExpressions(place: string) {
+    let response: any;
+    let recommendations: string;
+    try {
+        response = await openai.createCompletion({
+            model: "text-davinci-003",
+            prompt: `Recommend me three expressions I can use in a ${place}."`,
+            temperature: 0,
+            max_tokens: 60,
+            top_p: 1.0,
+            frequency_penalty: 0.0,
+            presence_penalty: 0.0,
+        });
+        recommendations = response.data.choices[0].text.trimStart();
+        return recommendations;
     } catch (error) {
         console.log(error);
         return "ChatGPT API Error.";
