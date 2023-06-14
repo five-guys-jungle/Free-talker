@@ -65,9 +65,9 @@ export const signup = async (req: Request, res: Response) => {
                 const object = await User.findOne({ userId: userId });
                 console.log("조회된 객체:", object);
                 return res.json({
-                    success: true,  
+                    success: true,
                     message: "Successfully created new user",
-                    status: 200
+                    status: 200 // 200: 성공
                 });
             }
         }
