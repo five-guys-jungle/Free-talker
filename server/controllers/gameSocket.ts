@@ -26,6 +26,10 @@ export function socketEventHandler(socket: Socket) {
         console.log("All players, playerMovement: ", players);
         socket.broadcast.emit("playerMoved", players[socket.id]);
     });
+    socket.on("getTexture", (data: Player) => {
+        console.log("getTexture, socketid: ", socket.id);
+        socket.emit("updateTexture", players[socket.id]);
+    });
 
     socket.on("disconnect", (reason: string) => {
         console.log("Client disconnected, id: ", socket.id, ", reason: ", reason);

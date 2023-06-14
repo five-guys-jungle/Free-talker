@@ -157,7 +157,7 @@ export default class AirPortScene extends Phaser.Scene {
                 playerTexture: this.playerTexture,
                 x: this.initial_x,
                 y: this.initial_y,
-            }, this.playerTexture);
+            });
             this.player1.setCollideWorldBounds(true); // player가 월드 경계를 넘어가지 않게 설정
 
             this.socket!.emit("connected", {
@@ -174,7 +174,7 @@ export default class AirPortScene extends Phaser.Scene {
                     console.log("updateAlluser, key: ", key);
                     if (otherPlayers[key].socketId !== this.socket!.id) {
                         if (!(otherPlayers[key].socketId in this.allPlayers)) {
-                            let playerSprite: Phaser.Physics.Arcade.Sprite = this.createPlayer(otherPlayers[key], otherPlayers[key].playerTexture);
+                            let playerSprite: Phaser.Physics.Arcade.Sprite = this.createPlayer(otherPlayers[key]);
                             playerSprite.setCollideWorldBounds(true);
                             playerSprite.anims.play(`${otherPlayers[key].playerTexture}_idle_down`, true);
                         }
@@ -198,7 +198,7 @@ export default class AirPortScene extends Phaser.Scene {
                 }
                 else {
                     console.log("not exist, so create new one");
-                    let playerSprite: Phaser.Physics.Arcade.Sprite = this.createPlayer(playerInfo, playerInfo.playerTexture);
+                    let playerSprite: Phaser.Physics.Arcade.Sprite = this.createPlayer(playerInfo);
                     playerSprite.setCollideWorldBounds(true); // player가 월드 경계를 넘어가지 않게 설정;
                     playerSprite.anims.play(`${playerInfo.playerTexture}_idle_down`, true);
                 }
@@ -213,7 +213,7 @@ export default class AirPortScene extends Phaser.Scene {
                 }
                 else {
                     console.log("not exist, so create new one");
-                    let playerSprite: Phaser.Physics.Arcade.Sprite = this.createPlayer(playerInfo, playerInfo.playerTexture);
+                    let playerSprite: Phaser.Physics.Arcade.Sprite = this.createPlayer(playerInfo);
                     playerSprite.setCollideWorldBounds(true); // player가 월드 경계를 넘어가지 않게 설정;
                     playerSprite.anims.play(`${playerInfo.playerTexture}_idle_down`, true);
                 }
@@ -416,9 +416,10 @@ export default class AirPortScene extends Phaser.Scene {
             }
         }
     }
-    createPlayer(playerInfo: PlayerInfo, tempTexture:string): Phaser.Physics.Arcade.Sprite {
+    createPlayer(playerInfo: PlayerInfo): Phaser.Physics.Arcade.Sprite {
         // Create a sprite for the player
         // Assuming you have an image asset called 'player'
+        const tempTexture:string = playerInfo.playerTexture;
         console.log('-------------Here-------------');
         console.log('tempTexture: ', tempTexture);
         console.log('-------------Here-------------');
@@ -432,6 +433,7 @@ export default class AirPortScene extends Phaser.Scene {
             playerInfo.playerTexture = "adam";
             console.log('-------------Here-------------');
         }
+        this.socket!.emit("getTexture", playerInfo);
         let playerSprite = this.physics.add.sprite(
             playerInfo.x,
             playerInfo.y,
