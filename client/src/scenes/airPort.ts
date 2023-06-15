@@ -306,6 +306,7 @@ export default class AirPortScene extends Phaser.Scene {
                 console.log("playerDeleted, playerInfo: ", playerInfo);
                 if (playerInfo.socketId in this.allPlayers) {
                     console.log("exist, deleted");
+                    this.allPlayers[playerInfo.socketId].textObj?.destroy();
                     this.allPlayers[playerInfo.socketId].sprite.destroy();
                     delete this.allPlayers[playerInfo.socketId];
                 }
