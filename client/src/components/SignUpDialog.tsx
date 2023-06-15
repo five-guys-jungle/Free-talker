@@ -70,6 +70,8 @@ export default function SignUpDialog() {
         nickname: false,
     });
     const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false);
+    const [existingId, setExistingId] = useState(false);
+    const [existingNick, setExistingNick] = useState(false);
 
     const handleClickOpen = (): void => {
         setOpen(true);
@@ -79,7 +81,7 @@ export default function SignUpDialog() {
         setOpen(false);
     };
 
-    async function handleSignUp() {
+    const handleSignUp = async () => {
         // 빈칸 체크
         const errors: Record<string, boolean> = {
             userId: !userId,
@@ -96,20 +98,24 @@ export default function SignUpDialog() {
             userId: userId,
             userPw: password,
             userNickname: nickname,
-        };
-
-        try {
-            const response = await axios.post(`${DB_URL}/auth/signup`, body);
-
-            if (response.data.statue === 200) {
-                console.log("Success!!");
+            };
+       
+            try {
+                const response = await axios.post(`${DB_URL}/auth/signup`, body);
+                console.log(response);
+                if (response.data.status === 200) {
+                    console.log("Success!!");
+                    handleClose();
+                    setSuccessSnackbarOpen(true);
+                }
+                
+            } catch (e) {
+                console.log(e);
+                if (e instanceof AxiosError && e.response?.status === 409) {
+                    setExistingId(true); // 이미 존재하는 아이디일 경우 상태 업데이트
+                    setExistingNick(true); // 이미 존재하는 닉네임일 경우 상태 업데이트
+                }
             }
-        } catch (e) {
-            console.log(e);
-        }
-
-        setSuccessSnackbarOpen(true);
-        handleClose();
     }
 
     const handleSnackbarClose = (): void => {
@@ -145,11 +151,15 @@ export default function SignUpDialog() {
                         margin="normal"
                         value={userId}
                         onChange={(e) => setUserId(e.target.value)}
-                        error={formErrors.userId}
+                        error={formErrors.userId || existingId}
                         helperText={
-                            formErrors.userId ? "빈칸을 채워주세요" : ""
-                        }
-                    />
+                            formErrors.userId
+                              ? "빈칸을 채워주세요"
+                              : existingId
+                              ? "이미 존재하는 아이디 입니다"
+                              : ""
+                          }
+                        />
                     <TextField
                         label="비밀번호"
                         type="password"
@@ -169,11 +179,15 @@ export default function SignUpDialog() {
                         margin="normal"
                         value={nickname}
                         onChange={(e) => setNickname(e.target.value)}
-                        error={formErrors.nickname}
+                        error={formErrors.nickname || existingNick}
                         helperText={
-                            formErrors.nickname ? "빈칸을 채워주세요" : ""
-                        }
-                    />
+                            formErrors.nickname
+                              ? "빈칸을 채워주세요"
+                              : existingNick
+                              ? "이미 존재하는 닉네임 입니다"
+                              : ""
+                          }
+                        />
                 </DialogContent>
                 <DialogActions>
                     <Button
