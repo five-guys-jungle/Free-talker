@@ -23,7 +23,7 @@ import { gameSceneState } from "../recoil/game/atoms";
 
 import SignUpDialog from "./SignUpDialog";
 
-const DB_URL = "http://localhost:5000";
+const DB_URL = "https://seunghunshin.shop";
 
 interface Characters {
     [key: string]: string;
@@ -95,7 +95,7 @@ function LoginDialog() {
 
             try {
                 console.log("try");
-                const response = await axios.post(`${DB_URL}/auth/login`, body);
+                const response = await axios.post(`${DB_URL}/signup`, body);
                 console.log(response.data);
                 if (response.data.status === 200) {
                     const payload = response.data;
