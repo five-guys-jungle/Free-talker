@@ -15,7 +15,7 @@ import chars from "../assets/characters";
 import {
     setPlayerId,
     setPlayerTexture,
-    setUserLoginId,
+    setPlayerNickname
   } from '../stores/userSlice';
 import { gameSceneState } from "../recoil/game/atoms";
 import { useDispatch } from 'react-redux';
@@ -104,12 +104,14 @@ function LoginDialog() {
                     console.log(`"userAvatar: , ${userAvatar}"`);
                     console.log(`"userID: , ${payload.userId}"`);
 
-                    dispatch(openAirport())
-                    dispatch(setUserLoginId(userId));
-                    dispatch(setPlayerId(userNickname));
+                    
+                    dispatch(setPlayerId(userId));
+                    dispatch(setPlayerNickname(userNickname));
                     dispatch(setPlayerTexture(userAvatar));
                     handleScene(GAME_STATUS.airport,{
-                        playerId: payload.userNickname,
+                        playerId: payload.userId,
+                        plyerNickname: payload.userNickname,
+
                         playerTexture: avatars[avatarIndex].name,
                     })
                     console.log("handleScene");

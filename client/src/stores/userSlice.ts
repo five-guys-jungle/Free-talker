@@ -23,14 +23,11 @@ export const userSlice = createSlice({
             state.playerNickname = action.payload;
         }
         ,
-        setUserLoginId: (state, action: PayloadAction<string>) => {
-            state.userLoginId = action.payload;
-        }
-        ,
+       
     },
 });
 
-export const { setPlayerId, setPlayerTexture, setPlayerNickname, setUserLoginId } = userSlice.actions;
+export const { setPlayerId, setPlayerTexture, setPlayerNickname } = userSlice.actions;
 
 
 export const selectPlayerId = (state: any) => state.user.playerId;
