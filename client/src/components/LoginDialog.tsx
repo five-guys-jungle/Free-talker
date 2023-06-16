@@ -95,15 +95,18 @@ function LoginDialog() {
 
             try {
                 console.log("try");
-                const response = await axios.post(`${DB_URL}/signup`, body);
+                const response = await axios.post(`${DB_URL}/login`, body);
                 console.log(response.data);
                 if (response.data.status === 200) {
                     const payload = response.data;
+                    // console.log(`response: ${response}`);
+                    console.log(`payload : ${payload}`);
+
                     const userId = payload.userId;
                     const userNickname = payload.userNickname;
                     const userAvatar = avatars[avatarIndex].name;
                     console.log(`"userAvatar: , ${userAvatar}"`);
-                    console.log(`"userID: , ${payload.userId}"`);
+                    // console.log(`"userID: , ${userId}"`);
 
                     setPlayerId(userId);
                     setPlayerNickname(userNickname);

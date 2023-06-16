@@ -13,7 +13,7 @@ const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
-const serverUrl: string = "http://localhost:5000";
+const Url: string = "https://seunghunshin.shop";
 const openai = new OpenAIApi(configuration);
 
 console.log("cur_dir_name : ", __dirname);
@@ -29,7 +29,7 @@ const storage = multer.diskStorage({
         cb(null, __dirname + "/../audio/user_audio"); // 음성 파일을 저장할 폴더 경로 지정
     },
     filename: (req, file, cb) => {
-        cb(null, `${Date.now()}_${file.originalname}.mp3`); // 음성 파일 이름 지정
+        cb(null, `${Date.now()}_${file.originalname}`); // 음성 파일 이름 지정
     },
 });
 export const upload = multer({ storage });
@@ -53,6 +53,7 @@ export async function interact(req: Request, res: Response): Promise<void> {
         outputText = await textCompletion(inputText);
         const response = await convertTexttoSpeech(inputText, outputText);
         // console.log("response: ", response);
+        console.log("NPC Interaction End, response : \n", response);
         res.json(response);
 
         // Call the ChatGPT API with the extracted text and process the response
@@ -96,7 +97,10 @@ async function convertSpeechToText(audioFilePath: string): Promise<string> {
     // Implement your logic to convert speech to text using the appropriate libraries or APIs
 }
 
-async function textCompletion(inputText: string): Promise<string> {
+async function textCompletion(
+    inputText: string,
+    npcType: string = ""
+): Promise<string> {
     let completion: any;
     let role_answer: string;
     try {
@@ -152,7 +156,7 @@ async function convertTexttoSpeech(
             response_audio.audioContent,
             "binary"
         );
-        const audioFileUrl: string = `${serverUrl}/audio/npc_audio/${audioFileName}`;
+        const audioFileUrl: string = `${Url}/audio/npc_audio/${audioFileName}`;
 
         let result = {
             user: inputText,

@@ -1,19 +1,14 @@
-import AWS from "aws-sdk";
-import { User } from "../models/User";
+import {
+    DynamoDBClient,
+    CreateTableCommand,
+    ListTablesCommand,
+} from "@aws-sdk/client-dynamodb";
+
+// import { User } from "../models/User";
 import "dotenv/config";
 
 const tableName = process.env.DYNAMODB_TABLE_NAME;
-
-const aws_key = {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    region: process.env.AWS_REGION,
-};
-
-AWS.config.update(aws_key);
-// const dynamoDBClient = new AWS.DynamoDB.DocumentClient();
-
-const dynamoDB = new AWS.DynamoDB();
+const client = new DynamoDBClient({ region: "ap-northeast-2" });
 
 export async function connectDB() {
     try {
@@ -40,12 +35,13 @@ async function createTable(tableName: string) {
 }
 
 async function doesTableExist(tableName: string) {
-    const response = await dynamoDB.listTables().promise();
+    const command = new ListTablesCommand({});
+    const response = await client.send(command);
     return response.TableNames?.includes(tableName);
 }
 
 async function createTableIfNotExists(tableName: string) {
-    const params: AWS.DynamoDB.CreateTableInput = {
+    const params = {
         TableName: tableName,
         AttributeDefinitions: [
             {
@@ -82,6 +78,7 @@ async function createTableIfNotExists(tableName: string) {
             },
         ],
     };
-    await dynamoDB.createTable(params).promise();
+    const command = new CreateTableCommand(params);
+    const response = await client.send(command);
     console.log(`테이블 ${tableName}이 생성되었습니다.`);
 }

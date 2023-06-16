@@ -4,20 +4,17 @@ import { v4 as uuidv4 } from "uuid";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import AWS from "aws-sdk";
-// import { PutItemCommand, DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import "dotenv/config";
+import {
+    GetItemCommand,
+    PutItemCommand,
+    DynamoDBClient,
+} from "@aws-sdk/client-dynamodb";
 
-const aws_key = {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    region: process.env.AWS_REGION,
-};
+const tableName = process.env.DYNAMODB_TABLE_NAME;
+const client = new DynamoDBClient({ region: "ap-northeast-2" });
 
-AWS.config.update(aws_key);
-
-const tableName = "user";
-const dynamoDB = new AWS.DynamoDB.DocumentClient();
-
-// const put: AWS.DynamoDB.DocumentClient.PutItemInput = {
+// const put: PutItemInput = {
 //     TableName: tableName,
 //     Item: {
 //       userId: `${userId}`,
@@ -26,7 +23,7 @@ const dynamoDB = new AWS.DynamoDB.DocumentClient();
 //     },
 //   };
 
-// const get: AWS.DynamoDB.DocumentClient.PutItemInput = {
+// const get: AWS.DynamoDB.DocumentClient.GutItemInput = {
 //     TableName: tableName,
 //     Item: {
 //       userId: `${userId}`,
@@ -74,35 +71,38 @@ export const signup = async (req: Request, res: Response) => {
             const putParams = {
                 TableName: tableName,
                 Item: {
-                    userId: userId,
-                    userPw: hashedPw,
-                    userNickname: userNickname,
+                    userId: { S: userId },
+                    userPw: { S: hashedPw },
+                    userNickname: { S: userNickname },
                 },
             };
-            await dynamoDB.put(putParams, (error, data) => {
-                if (error) {
-                    console.log("DynamoDB put error:", error);
-                    return res.json({
-                        success: false,
-                        message: "Failed to create new user",
-                        status: 500, // DB 오류
-                    });
-                } else {
-                    console.log("Successfully create new user");
-                    return res.json({
-                        success: true,
-                        message: "Successfully created new user",
-                        status: 200, // 200: 성공
-                    });
-                }
-            });
+
+            const command = new PutItemCommand(putParams);
+            const data = await client.send(command);
+
+            if (data === undefined) {
+                console.log("DynamoDB put error");
+                return res.json({
+                    success: false,
+                    message: "Failed to create new user",
+                    status: 500, // DB 오류
+                });
+            } else {
+                console.log("Successfully create new user");
+                console.log("Signup data: ", data);
+                return res.json({
+                    success: true,
+                    message: "Successfully created new user",
+                    status: 200, // 200: 성공
+                });
+            }
         }
     } catch (err) {
         console.log(err);
     }
 };
 
-const jwtKey = process.env.DB_HOST;
+const jwtKey = process.env.JWT_SECRET_KEY;
 
 export const login = async (req: Request, res: Response) => {
     try {
@@ -111,61 +111,67 @@ export const login = async (req: Request, res: Response) => {
         const queryParams = {
             TableName: tableName,
             Key: {
-                userId: userId,
+                userId: { S: userId },
             },
         };
 
         if (!userId || !userPw) {
             return res.status(400).send("Invalid userId or usePw");
         } else {
-            await dynamoDB.get(queryParams, (error, data) => {
-                if (error) {
-                    console.log("DynamoDB get error:", error);
+            const command = new GetItemCommand(queryParams);
+            const foundUser = await client.send(command);
+
+            console.log("foundUser: ", foundUser);
+            if (!foundUser.Item) {
+                console.log("User not found");
+                return res.json({
+                    success: false,
+                    message: "User not found",
+                    status: 404, // DB 오류
+                });
+            } else {
+                // when found user
+                console.log("login data: ", foundUser.Item);
+                const userPwAttribute = foundUser.Item.userPw;
+                if (typeof userPwAttribute === "undefined") {
+                    console.log("User not found");
                     return res.json({
                         success: false,
-                        message: "Failed to get user",
-                        status: 500, // DB 오류
+                        message: "User not found",
+                        status: 404, // 404: Not Found
                     });
                 } else {
-                    // when found user
-                    if (data.Item === undefined) {
-                        console.log("User not found");
+                    const match = bcrypt.compareSync(
+                        userPw,
+                        userPwAttribute?.S || ""
+                    );
+                    console.log(`userPw : ${userPw}`);
+                    console.log(`userPwAttribute : ${userPwAttribute.S}`);
+                    if (typeof jwtKey === "string" && match) {
+                        const accessToken = jwt.sign(
+                            {
+                                userId: foundUser.Item.userId.S,
+                                userNickname: foundUser.Item.userNickname.S,
+                                uuid: uuidv4(),
+                            },
+                            jwtKey,
+                            {
+                                expiresIn: "1h",
+                            }
+                        );
+                        console.log("accessToken:", accessToken);
                         return res.json({
-                            success: false,
-                            message: "User not found",
-                            status: 404, // 404: Not Found
+                            status: 200,
+                            message: "Login success",
+                            data: accessToken,
+                            userId: foundUser.Item.userId.S,
+                            userNickname: foundUser.Item.userNickname.S,
                         });
                     } else {
-                        const match = bcrypt.compareSync(
-                            userPw,
-                            data.Item.userPw
-                        );
-                        if (typeof jwtKey === "string" && match) {
-                            const accessToken = jwt.sign(
-                                {
-                                    userId: data.Item.userId,
-                                    userNickname: data.Item.userNickname,
-                                    uuid: uuidv4(),
-                                },
-                                jwtKey,
-                                {
-                                    expiresIn: "1h",
-                                }
-                            );
-                            console.log("accessToken:", accessToken);
-                            return res.json({
-                                status: 200,
-                                message: "Login success",
-                                data: accessToken,
-                                userId: data.Item.userId,
-                                userNickname: data.Item.userNickname,
-                            });
-                        } else {
-                            console.log("Error : jwt is invalid!!");
-                        }
+                        console.log("Error : jwt is invalid!!");
                     }
                 }
-            });
+            }
         }
     } catch (err) {
         console.log(err);
