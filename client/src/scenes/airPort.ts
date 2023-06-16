@@ -1,7 +1,9 @@
 import Phaser from "phaser";
 import axios from "axios";
 import io, { Socket } from "socket.io-client";
+import store from '../stores/index';
 import { keyboard } from "@testing-library/user-event/dist/keyboard";
+import phaserGame from '../codeuk';
 import {
     Player,
     PlayerDictionary,
@@ -9,12 +11,7 @@ import {
     PlayerInfoDictionary,
 } from "../characters/Player";
 import { frameInfo } from "./common/anims";
-import { useRecoilValue } from "recoil";
-import {
-    playerIdState,
-    playerNicknameState,
-    playerTextureState,
-} from "../recoil/user/atoms";
+
 // import { playerNicknameState } from '../recoil/user/atoms';
 import { createCharacterAnims } from "../anims/CharacterAnims";
 

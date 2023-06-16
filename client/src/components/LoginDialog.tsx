@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios, { AxiosError } from "axios";
 import styled from "styled-components";
-
-import { useSetRecoilState, useRecoilState, useRecoilValue } from "recoil";
 import { Snackbar, SnackbarOrigin } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
@@ -15,13 +13,17 @@ import "swiper/css/navigation";
 // import loginFrame from '../assets/images/frame.png';
 import chars from "../assets/characters";
 import {
-    playerIdState,
-    playerTextureState,
-    playerNicknameState,
-} from "../recoil/user/atoms";
+    setPlayerId,
+    setPlayerTexture,
+    setUserLoginId,
+  } from '../stores/userSlice';
 import { gameSceneState } from "../recoil/game/atoms";
-
+import { useDispatch } from 'react-redux';
+import { useAppDispatch } from '../stores';
+import { openAirport } from "../stores/statusSlice";
 import SignUpDialog from "./SignUpDialog";
+import { handleScene } from '../service/PhaserLib';
+
 
 const DB_URL = "http://localhost:5000";
 
@@ -33,6 +35,10 @@ export interface State extends SnackbarOrigin {
     openLoginWarn: boolean;
 }
 
+const GAME_STATUS = { 
+    login: "login",
+    airport: "airport",
+};
 const characters = chars as Characters;
 
 // const avatars: { name: string; img: string }[] = Array.from(
@@ -66,17 +72,10 @@ function LoginDialog() {
     const [userPw, setUserPw] = useState<string>("");
     const [userPwFieldEmpty, setUserPwFieldEmpty] = useState<boolean>(false);
     const [avatarIndex, setAvatarIndex] = useState<number>(0);
-
-    // const [gameScene, setGameScene] = useRecoilState(gameSceneState);
-    const setGameScene = useSetRecoilState(gameSceneState);
-
-    const changeScene = (newScene: "login" | "airport") => {
-        setGameScene({ scene: newScene });
-    };
-
-    const setPlayerId = useSetRecoilState(playerIdState);
-    const setPlayerNickname = useSetRecoilState(playerNicknameState);
-    const setPlayerTexture = useSetRecoilState(playerTextureState);
+    const dispatch = useDispatch();
+    const appDispatch = useAppDispatch();
+   
+    
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         // console.log("handleSubmit");
@@ -105,11 +104,17 @@ function LoginDialog() {
                     console.log(`"userAvatar: , ${userAvatar}"`);
                     console.log(`"userID: , ${payload.userId}"`);
 
-                    setPlayerId(userId);
-                    setPlayerNickname(userNickname);
-                    setPlayerTexture(userAvatar);
-
-                    changeScene("airport");
+                    dispatch(openAirport())
+                    dispatch(setUserLoginId(userId));
+                    dispatch(setPlayerId(userNickname));
+                    dispatch(setPlayerTexture(userAvatar));
+                    handleScene(GAME_STATUS.airport,{
+                        playerId: payload.userNickname,
+                        playerTexture: avatars[avatarIndex].name,
+                    })
+                    console.log("handleScene");
+                    
+                    
 
                     // playerId: payload.userNickname,
                     // playerTexture: avatars[avatarIndex].name,
