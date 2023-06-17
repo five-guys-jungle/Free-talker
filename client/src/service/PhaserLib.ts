@@ -1,4 +1,3 @@
-// import phaserGame from '../codeuk';
 import store from '../stores';
 import { openAirport } from '../stores/statusSlice';
 

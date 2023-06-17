@@ -3,7 +3,7 @@ import axios from "axios";
 import io, { Socket } from "socket.io-client";
 import store from '../stores/index';
 import { keyboard } from "@testing-library/user-event/dist/keyboard";
-import phaserGame from '../codeuk';
+
 import {
     Player,
     PlayerDictionary,

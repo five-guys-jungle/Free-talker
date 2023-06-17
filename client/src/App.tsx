@@ -3,21 +3,28 @@ import logo from "./logo.svg";
 import "./App.css";
 import styled from "styled-components";
 import LoginDialog from "./components/LoginDialog";
+import NpcDialog from "./pages/NpcDialog";
+import TalkBox from "./components/npcdialog/TalkBox";
 import bgImage from "./assets/images/frame2.jpeg";
 import Game from "./components/Game";
+
 import type { RootState } from './stores';
 import { useSelector, useDispatch } from "react-redux"; // react-redux에서 useSelector를 불러옵니다.
+import { Dialog } from "@mui/material";
 // import { selectGameScene } from "./redux/gameSlice"; // Redux에서 gameScene 상태를 선택하는 selector를 불러옵니다.
-
+console.log("status11111111111111111111");
 function App() {
     const {  status} = useSelector((state: RootState) => {
         return { ...state.user, ...state.mode };
     });
+    console.log("status:", status);
     return (
         <div className="App">
             <StartDiv>
-                {status === "login" && <LoginDialog />}
-                {status === "airport" && <Game />}
+                {/* {status === "login" && <LoginDialog />}
+                {status === "airport" && <Game />} */}
+                {/* <NpcDialog /> */}
+                <NpcDialog />
             </StartDiv>
         </div>
     );

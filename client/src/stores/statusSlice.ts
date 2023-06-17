@@ -3,6 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 const GAME_STATUS = { 
     login: "login",
     airport: "airport",
+    dialog: "dialog",
 };
 
 export interface ModeState {
@@ -21,6 +22,11 @@ export const modeSlice = createSlice({
             state.status = GAME_STATUS.airport;
         }
         ,
+        openDialog: (state) => {
+            state.status = GAME_STATUS.dialog;
+            console.log("openDialog");
+        }
+        
     },
 });
 
