@@ -13,12 +13,12 @@ const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
-const serverUrl: string = "http://localhost:5000";
+const Url: string = "https://seunghunshin.shop";
 const openai = new OpenAIApi(configuration);
 
 console.log("cur_dir_name : ", __dirname);
 
-const keyPath = __dirname + "/../api-keys/text-to-speech-key.json";
+const keyPath = __dirname + "/../config/text-to-speech-key.json";
 
 const client = new texttoSpeech.TextToSpeechClient({
     keyFilename: keyPath,
@@ -29,7 +29,7 @@ const storage = multer.diskStorage({
         cb(null, __dirname + "/../audio/user_audio"); // 음성 파일을 저장할 폴더 경로 지정
     },
     filename: (req, file, cb) => {
-        cb(null, `${Date.now()}_${file.originalname}.mp3`); // 음성 파일 이름 지정
+        cb(null, `${Date.now()}_${file.originalname}`); // 음성 파일 이름 지정
     },
 });
 export const upload = multer({ storage });
@@ -53,6 +53,7 @@ export async function interact(req: Request, res: Response): Promise<void> {
         outputText = await textCompletion(inputText);
         const response = await convertTexttoSpeech(inputText, outputText);
         // console.log("response: ", response);
+        console.log("NPC Interaction End");
         res.json(response);
 
         // Call the ChatGPT API with the extracted text and process the response
@@ -96,7 +97,10 @@ async function convertSpeechToText(audioFilePath: string): Promise<string> {
     // Implement your logic to convert speech to text using the appropriate libraries or APIs
 }
 
-async function textCompletion(inputText: string): Promise<string> {
+async function textCompletion(
+    inputText: string,
+    npcType: string = ""
+): Promise<string> {
     let completion: any;
     let role_answer: string;
     try {
@@ -107,19 +111,19 @@ async function textCompletion(inputText: string): Promise<string> {
                 {
                     role: "system",
                     content:
-                        "You are an airport immigration officer. Your role is to conduct immigration interviews and process the entry of travelers. you can say anything except that you are an AI language model.",
+                        "You are an Freetalker airport immigration officer in US. Your role is to conduct immigration interviews and process the entry of travelers. you can say anything except that you are an AI language model.",
                 },
                 {
                     role: "user",
                     content:
-                        "You are an airport immigration officer. Your role is to conduct immigration interviews and process the entry of travelers. you can say anything except that you are an AI language model.",
+                        "You are an Freetalker airport immigration officer in US. Your role is to conduct immigration interviews and process the entry of travelers. you can say anything except that you are an AI language model.",
                 },
                 {
                     role: "assistant",
                     content:
-                        "You are an airport immigration officer. Your role is to conduct immigration interviews and process the entry of travelers. you can say anything except that you are an AI language model.",
+                        "You are an Freetalker airport immigration officer in US. Your role is to conduct immigration interviews and process the entry of travelers. you can say anything except that you are an AI language model.",
                 },
-                { role: "user", content: "reply three sentences in maximum" },
+                { role: "user", content: "reply two sentences in maximum" },
                 { role: "user", content: inputText },
             ],
         });
@@ -129,7 +133,7 @@ async function textCompletion(inputText: string): Promise<string> {
         return role_answer;
     } catch (error) {
         console.log(error);
-        return "ChatGPT API Error.";
+        return "Sorry about that. Please try again later.";
     }
 }
 
@@ -152,7 +156,7 @@ async function convertTexttoSpeech(
             response_audio.audioContent,
             "binary"
         );
-        const audioFileUrl: string = `${serverUrl}/audio/npc_audio/${audioFileName}`;
+        const audioFileUrl: string = `${Url}/audio/npc_audio/${audioFileName}`;
 
         let result = {
             user: inputText,
@@ -174,7 +178,7 @@ export async function grammerCorrection(inputText: string): Promise<string> {
         // ChatGPT API에 요청 보내기
         response = await openai.createCompletion({
             model: "text-davinci-003",
-            prompt: `"Correct this to standard English:\n\n${inputText}"`,
+            prompt: `"Conversationally correct this to English:\n\n${inputText}"`,
             temperature: 0,
             max_tokens: 60,
             top_p: 1.0,

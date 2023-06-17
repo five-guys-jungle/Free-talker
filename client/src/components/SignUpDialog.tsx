@@ -16,7 +16,9 @@ import MuiAlert, { AlertProps } from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
 // import MySnackbar from "./MySnackBar";
 
-const DB_URL = "http://localhost:5000";
+// const DB_URL = "https://seunghunshin.shop";
+import dovenv from "dotenv";
+let DB_URL: string = process.env.REACT_APP_SERVER_URL!;
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     "& .MuiDialogContent-root": {
@@ -98,25 +100,25 @@ export default function SignUpDialog() {
             userId: userId,
             userPw: password,
             userNickname: nickname,
-            };
-       
-            try {
-                const response = await axios.post(`${DB_URL}/auth/signup`, body);
-                console.log(response);
-                if (response.data.status === 200) {
-                    console.log("Success!!");
-                    handleClose();
-                    setSuccessSnackbarOpen(true);
-                }
-                
-            } catch (e) {
-                console.log(e);
-                if (e instanceof AxiosError && e.response?.status === 409) {
-                    setExistingId(true); // 이미 존재하는 아이디일 경우 상태 업데이트
-                    setExistingNick(true); // 이미 존재하는 닉네임일 경우 상태 업데이트
-                }
+        };
+        console.log("body : ", body);
+        try {
+            console.log("try sign up!");
+            const response = await axios.post(`${DB_URL}/auth/signup`, body);
+            console.log(response);
+            if (response.data.status === 200) {
+                console.log("Success!!");
+                handleClose();
+                setSuccessSnackbarOpen(true);
             }
-    }
+        } catch (e) {
+            console.log(e);
+            if (e instanceof AxiosError && e.response?.status === 409) {
+                setExistingId(true); // 이미 존재하는 아이디일 경우 상태 업데이트
+                setExistingNick(true); // 이미 존재하는 닉네임일 경우 상태 업데이트
+            }
+        }
+    };
 
     const handleSnackbarClose = (): void => {
         setSuccessSnackbarOpen(false);
@@ -154,12 +156,12 @@ export default function SignUpDialog() {
                         error={formErrors.userId || existingId}
                         helperText={
                             formErrors.userId
-                              ? "빈칸을 채워주세요"
-                              : existingId
-                              ? "이미 존재하는 아이디 입니다"
-                              : ""
-                          }
-                        />
+                                ? "빈칸을 채워주세요"
+                                : existingId
+                                ? "이미 존재하는 아이디 입니다"
+                                : ""
+                        }
+                    />
                     <TextField
                         label="비밀번호"
                         type="password"
@@ -182,12 +184,12 @@ export default function SignUpDialog() {
                         error={formErrors.nickname || existingNick}
                         helperText={
                             formErrors.nickname
-                              ? "빈칸을 채워주세요"
-                              : existingNick
-                              ? "이미 존재하는 닉네임 입니다"
-                              : ""
-                          }
-                        />
+                                ? "빈칸을 채워주세요"
+                                : existingNick
+                                ? "이미 존재하는 닉네임 입니다"
+                                : ""
+                        }
+                    />
                 </DialogContent>
                 <DialogActions>
                     <Button

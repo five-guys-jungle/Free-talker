@@ -132,3 +132,6 @@ dist
 # audioFiles
 server/audio/npc_audio/
 server/audio/user_audio/
+
+# google TTS API key
+server/config/text-to-speech-key.json
