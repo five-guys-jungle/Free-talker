@@ -10,9 +10,9 @@ export default class Background extends Phaser.Scene {
 
     preload() {
         console.log("preloading..............");
-        this.load.image("background", "assets/backgrounds/space.png");
+        this.load.image("background", "assets/backgrounds/cloud.jpg");
 
-        this.load.image("background", "assets/backgrounds/space.png");
+        // this.load.image("background", "assets/backgrounds/space.png");
         this.load.image("generic", "assets/tilesets/Generic.png");
         this.load.image("basement", "assets/tilesets/Basement.png");
         this.load.image("floor", "assets/tilesets/FloorAndGround.png");
