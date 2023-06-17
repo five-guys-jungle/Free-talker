@@ -1,27 +1,23 @@
 import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
-// import GameComponent from "./PhaserGame";
 import styled from "styled-components";
-// import SignUpDialog from "./components/SignUpDialog";
 import LoginDialog from "./components/LoginDialog";
 import bgImage from "./assets/images/frame2.jpeg";
-import Game from "./components/Game"; // Game 컴포넌트를 불러옵니다.
-
-import { useRecoilValue } from "recoil";
-import { gameSceneState } from "./recoil/game/atoms";
+import Game from "./components/Game";
+import type { RootState } from './stores';
+import { useSelector, useDispatch } from "react-redux"; // react-redux에서 useSelector를 불러옵니다.
+// import { selectGameScene } from "./redux/gameSlice"; // Redux에서 gameScene 상태를 선택하는 selector를 불러옵니다.
 
 function App() {
-    const gameScene = useRecoilValue(gameSceneState);
-
+    const {  status} = useSelector((state: RootState) => {
+        return { ...state.user, ...state.mode };
+    });
     return (
         <div className="App">
             <StartDiv>
-                {gameScene.scene === "login" && <LoginDialog />}
-                {gameScene.scene === "airport" && <Game />}
-                {/* <Game /> Game 컴포넌트를 렌더링합니다. */}
-                {/* <LoginDialog /> */}
-                {/* <GameComponent /> */}
+                {status === "login" && <LoginDialog />}
+                {status === "airport" && <Game />}
             </StartDiv>
         </div>
     );
@@ -37,7 +33,5 @@ const StartDiv = styled.div`
     justify-content: center;
     flex-direction: column;
     gap: 50px;
-    // background-image: url(${bgImage}); // 배경 이미지를 설정
-    // background-size: cover; // 이미지를 가능한 크게, 단 비율은 유지
-    // background-position: center; // 배경 이미지의 위치를 중앙으로 설정
 `;
+
