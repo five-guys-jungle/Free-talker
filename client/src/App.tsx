@@ -23,7 +23,6 @@ function App() {
             <StartDiv>
                 {/* {status === "login" && <LoginDialog />}
                 {status === "airport" && <Game />} */}
-                {/* <NpcDialog /> */}
                 <NpcDialog />
             </StartDiv>
         </div>

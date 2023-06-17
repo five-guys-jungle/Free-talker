@@ -3,43 +3,66 @@ import styled from "styled-components";
 import { TextField, Button } from "@mui/material";
 import Box from "@mui/material/Box";
 import TalkBox from "../components/npcdialog/TalkBox";
+import SentenceBox from "../components/npcdialog/SentenceBox";
+
 
 const TalkContainer = styled.div`
   display: flex;
   height: 100%;
 `;
 
-const MessageContainer = styled.div`
-  /* 메시지를 표시하는 컨테이너의 스타일을 지정합니다. */
+const LeftSection = styled.section`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 `;
 
-const InputContainer = styled.div`
-  /* 입력 필드와 전송 버튼을 포함하는 컨테이너의 스타일을 지정합니다. */
+const UpperSection = styled.div`
+  flex: 1;
+  background-color: #fff;
+  border-bottom: 1px solid #ddd;
 `;
 
-const TalkBoxContainer = styled.div`
+const LowerSection = styled.div`
+  flex: 1;
+  background-color: #f5f7fa;
+  border-top: 1px solid #ddd;
+`;
+
+const RightSection = styled.section`
   flex: 1;
 `;
 
 const NpcDialog: React.FC = () => {
+  
   const [messages, setMessages] = useState<string[]>([]);
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
 
   const handleSendMessage = () => {
-    if (inputValue !== '') {
+    if (inputValue !== "") {
       setMessages([...messages, inputValue]);
-      setInputValue('');
+      setInputValue("");
     }
   };
 
   return (
-
+    <TalkContainer>
+      <LeftSection>
+        <UpperSection>
+          <SentenceBox/>
+        </UpperSection>
+        <LowerSection>
+          
+        </LowerSection>
+      </LeftSection>
+      <RightSection>
         <TalkBox />
-
+      </RightSection>
+    </TalkContainer>
   );
 };
 

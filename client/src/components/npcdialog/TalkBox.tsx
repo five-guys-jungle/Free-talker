@@ -23,8 +23,8 @@ const TalkBox: React.FC = () => {
 
   const BOT_IMG = "https://image.flaticon.com/icons/svg/327/327779.svg";
   const PERSON_IMG = "https://image.flaticon.com/icons/svg/145/145867.svg";
-  const BOT_NAME = "BOT";
-  const PERSON_NAME = "Sajad";
+  const BOT_NAME = "Cafebot";
+  const PERSON_NAME = "User";
 
   useEffect(() => {
     if (msgerChatRef.current) {
@@ -208,7 +208,10 @@ const TalkDiv = styled.div`
     align-items: flex-end;
     margin-bottom: 10px;
   }
-
+  .msg-text {
+    font-size: 1em;
+    text-align : left; ;
+  }
   .msg:last-of-type {
     margin: 0;
   }
@@ -256,7 +259,7 @@ const TalkDiv = styled.div`
   }
 
   .right-msg .msg-bubble {
-    background: 579ffb;
+    background: #579ffb;
     color: #fff;
     border-bottom-right-radius: 0;
   }
