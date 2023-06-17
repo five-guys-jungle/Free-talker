@@ -16,7 +16,9 @@ import MuiAlert, { AlertProps } from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
 // import MySnackbar from "./MySnackBar";
 
-const DB_URL = "https://seunghunshin.shop";
+// const DB_URL = "https://seunghunshin.shop";
+import dovenv from "dotenv";
+let DB_URL: string = process.env.REACT_APP_SERVER_URL!;
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     "& .MuiDialogContent-root": {

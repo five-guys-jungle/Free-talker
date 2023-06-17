@@ -1,3 +1,9 @@
+import fs from "fs";
+import mongoose from "mongoose";
+import { User } from "../models/User";
+import { connect } from "http2";
+import "dotenv/config";
+
 import {
     DynamoDBClient,
     CreateTableCommand,

@@ -9,13 +9,27 @@ import { socketEventHandler } from "./controllers/gameSocket";
 import { Server as SocketIOServer, Socket } from "socket.io";
 
 import { connectDB } from "./database/db";
+import { connectDBLocal } from "./database/dbLocal";
 import authRouter from "./routes/authRouter";
 
 import { signup, login } from "./controllers/userController";
-
+import dotenv from "dotenv";
 // // import router from "./routes/basicRouter";
 // // import http from 'http'; // Load in http module
 
+// Production or Development server URl
+// 서버 시작시 npm run build 로 시작하면 
+// env.SERVER_URl = "https://seunghunshin.shop"
+// 서버 시작시 npm run build-dev 로 시작하면
+// env.SERVER_URl = "http://localhost:5000"
+dotenv.config();
+if (process.env.NODE_ENV === "production") {
+    dotenv.config({ path: ".env.production" })
+}
+else {
+    dotenv.config({ path: ".env.development" })
+}
+console.log("process.env.SERVER_URL: ", process.env.SERVER_URL);
 const port = 5000;
 const app = express();
 
@@ -53,12 +67,24 @@ app.use("/auth", authRouter);
 // app.post("/signup", signup);
 // app.post("/login", login);
 
-connectDB()
-    .then((db) => {
-        server.listen(port);
-        console.log(`gameServer is listening on port ${port}`);
-    })
-    .catch(console.error);
+if (process.env.NODE_ENV === "production") {
+    console.log("Production Mode");
+    connectDB()
+        .then((db) => {
+            server.listen(port);
+            console.log(`gameServer is listening on port ${port}`);
+        })
+        .catch(console.error);
+}
+else {
+    console.log("Development Mode");
+    connectDBLocal()
+        .then((db) => {
+            server.listen(port);
+            console.log(`gameServer is listening on port ${port}`);
+        })
+        .catch(console.error);
+}
 
 // export default router;
 

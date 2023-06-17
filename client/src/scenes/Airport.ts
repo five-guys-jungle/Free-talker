@@ -17,6 +17,10 @@ import { createCharacterAnims } from "../anims/CharacterAnims";
 import { openNPCDialog } from "../stores/gameSlice";
 import { handleScene } from "./common/handleScene";
 
+import dotenv from "dotenv";
+
+const serverUrl: string = process.env.REACT_APP_SERVER_URL!;
+
 let chunks: BlobPart[] = [];
 let audioContext = new window.AudioContext();
 
@@ -101,7 +105,7 @@ export default class AirportScene extends Phaser.Scene {
 
         createCharacterAnims(this.anims);
 
-        this.socket = io("https://seunghunshin.shop");
+        this.socket = io(serverUrl);
 
         this.socket.on("connect", () => {
             console.log("connect, socket.id: ", this.socket!.id);
@@ -121,7 +125,7 @@ export default class AirportScene extends Phaser.Scene {
                 y: this.initial_y,
                 scene: "AirportScene",
             });
-            this.player1.setCollideWorldBounds(true); // player가 월드 경계를 넘어가지 않게 설정
+            // this.player1.setCollideWorldBounds(true); // player가 월드 경계를 넘어가지 않게 설정
             this.cameras.main.startFollow(this.player1);
             this.cameras.main.zoom = 1.2;
 
@@ -146,7 +150,7 @@ export default class AirportScene extends Phaser.Scene {
                             ) {
                                 let playerSprite: Phaser.Physics.Arcade.Sprite =
                                     this.createPlayer(otherPlayers[key]);
-                                playerSprite.setCollideWorldBounds(true);
+                                // playerSprite.setCollideWorldBounds(true);
                                 playerSprite.anims.play(
                                     `${otherPlayers[key].playerTexture}_idle_down`,
                                     true
@@ -171,20 +175,20 @@ export default class AirportScene extends Phaser.Scene {
 
                                 this.allPlayers[key].sprite.setVelocity(
                                     Math.cos(angle) *
-                                        this.allPlayers[key].defaultVelocity,
+                                    this.allPlayers[key].defaultVelocity,
                                     Math.sin(angle) *
-                                        this.allPlayers[key].defaultVelocity
+                                    this.allPlayers[key].defaultVelocity
                                 );
 
                                 // 스프라이트 방향에 따라 애니메이션 재생
                                 if (
                                     Math.abs(
                                         otherPlayers[key].x -
-                                            this.allPlayers[key].sprite.x
+                                        this.allPlayers[key].sprite.x
                                     ) >
                                     Math.abs(
                                         otherPlayers[key].y -
-                                            this.allPlayers[key].sprite.y
+                                        this.allPlayers[key].sprite.y
                                     )
                                 ) {
                                     // left or right
@@ -248,24 +252,24 @@ export default class AirportScene extends Phaser.Scene {
 
                         this.allPlayers[playerInfo.socketId].sprite.setVelocity(
                             Math.cos(angle) *
-                                this.allPlayers[playerInfo.socketId]
-                                    .defaultVelocity,
+                            this.allPlayers[playerInfo.socketId]
+                                .defaultVelocity,
                             Math.sin(angle) *
-                                this.allPlayers[playerInfo.socketId]
-                                    .defaultVelocity
+                            this.allPlayers[playerInfo.socketId]
+                                .defaultVelocity
                         );
 
                         // 스프라이트 방향에 따라 애니메이션 재생
                         if (
                             Math.abs(
                                 playerInfo.x -
-                                    this.allPlayers[playerInfo.socketId].sprite
-                                        .x
+                                this.allPlayers[playerInfo.socketId].sprite
+                                    .x
                             ) >
                             Math.abs(
                                 playerInfo.y -
-                                    this.allPlayers[playerInfo.socketId].sprite
-                                        .y
+                                this.allPlayers[playerInfo.socketId].sprite
+                                    .y
                             )
                         ) {
                             // left or right
@@ -276,9 +280,8 @@ export default class AirportScene extends Phaser.Scene {
                                 this.allPlayers[
                                     playerInfo.socketId
                                 ].sprite.anims.play(
-                                    `${
-                                        this.allPlayers[playerInfo.socketId]
-                                            .playerTexture
+                                    `${this.allPlayers[playerInfo.socketId]
+                                        .playerTexture
                                     }_run_right`,
                                     true
                                 );
@@ -286,9 +289,8 @@ export default class AirportScene extends Phaser.Scene {
                                 this.allPlayers[
                                     playerInfo.socketId
                                 ].sprite.anims.play(
-                                    `${
-                                        this.allPlayers[playerInfo.socketId]
-                                            .playerTexture
+                                    `${this.allPlayers[playerInfo.socketId]
+                                        .playerTexture
                                     }_run_left`,
                                     true
                                 );
@@ -302,9 +304,8 @@ export default class AirportScene extends Phaser.Scene {
                                 this.allPlayers[
                                     playerInfo.socketId
                                 ].sprite.anims.play(
-                                    `${
-                                        this.allPlayers[playerInfo.socketId]
-                                            .playerTexture
+                                    `${this.allPlayers[playerInfo.socketId]
+                                        .playerTexture
                                     }_run_down`,
                                     true
                                 );
@@ -312,9 +313,8 @@ export default class AirportScene extends Phaser.Scene {
                                 this.allPlayers[
                                     playerInfo.socketId
                                 ].sprite.anims.play(
-                                    `${
-                                        this.allPlayers[playerInfo.socketId]
-                                            .playerTexture
+                                    `${this.allPlayers[playerInfo.socketId]
+                                        .playerTexture
                                     }_run_up`,
                                     true
                                 );
@@ -324,7 +324,7 @@ export default class AirportScene extends Phaser.Scene {
                         console.log("not exist, so create new one");
                         let playerSprite: Phaser.Physics.Arcade.Sprite =
                             this.createPlayer(playerInfo);
-                        playerSprite.setCollideWorldBounds(true); // player가 월드 경계를 넘어가지 않게 설정;
+                        // playerSprite.setCollideWorldBounds(true); // player가 월드 경계를 넘어가지 않게 설정;
                         playerSprite.anims.play(
                             `${playerInfo.playerTexture}_idle_down`,
                             true
@@ -352,24 +352,24 @@ export default class AirportScene extends Phaser.Scene {
 
                         this.allPlayers[playerInfo.socketId].sprite.setVelocity(
                             Math.cos(angle) *
-                                this.allPlayers[playerInfo.socketId]
-                                    .defaultVelocity,
+                            this.allPlayers[playerInfo.socketId]
+                                .defaultVelocity,
                             Math.sin(angle) *
-                                this.allPlayers[playerInfo.socketId]
-                                    .defaultVelocity
+                            this.allPlayers[playerInfo.socketId]
+                                .defaultVelocity
                         );
 
                         // 스프라이트 방향에 따라 애니메이션 재생
                         if (
                             Math.abs(
                                 playerInfo.x -
-                                    this.allPlayers[playerInfo.socketId].sprite
-                                        .x
+                                this.allPlayers[playerInfo.socketId].sprite
+                                    .x
                             ) >
                             Math.abs(
                                 playerInfo.y -
-                                    this.allPlayers[playerInfo.socketId].sprite
-                                        .y
+                                this.allPlayers[playerInfo.socketId].sprite
+                                    .y
                             )
                         ) {
                             // left or right
@@ -380,9 +380,8 @@ export default class AirportScene extends Phaser.Scene {
                                 this.allPlayers[
                                     playerInfo.socketId
                                 ].sprite.anims.play(
-                                    `${
-                                        this.allPlayers[playerInfo.socketId]
-                                            .playerTexture
+                                    `${this.allPlayers[playerInfo.socketId]
+                                        .playerTexture
                                     }_run_right`,
                                     true
                                 );
@@ -390,9 +389,8 @@ export default class AirportScene extends Phaser.Scene {
                                 this.allPlayers[
                                     playerInfo.socketId
                                 ].sprite.anims.play(
-                                    `${
-                                        this.allPlayers[playerInfo.socketId]
-                                            .playerTexture
+                                    `${this.allPlayers[playerInfo.socketId]
+                                        .playerTexture
                                     }_run_left`,
                                     true
                                 );
@@ -406,9 +404,8 @@ export default class AirportScene extends Phaser.Scene {
                                 this.allPlayers[
                                     playerInfo.socketId
                                 ].sprite.anims.play(
-                                    `${
-                                        this.allPlayers[playerInfo.socketId]
-                                            .playerTexture
+                                    `${this.allPlayers[playerInfo.socketId]
+                                        .playerTexture
                                     }_run_down`,
                                     true
                                 );
@@ -416,9 +413,8 @@ export default class AirportScene extends Phaser.Scene {
                                 this.allPlayers[
                                     playerInfo.socketId
                                 ].sprite.anims.play(
-                                    `${
-                                        this.allPlayers[playerInfo.socketId]
-                                            .playerTexture
+                                    `${this.allPlayers[playerInfo.socketId]
+                                        .playerTexture
                                     }_run_up`,
                                     true
                                 );
@@ -428,7 +424,7 @@ export default class AirportScene extends Phaser.Scene {
                         console.log("not exist, so create new one");
                         let playerSprite: Phaser.Physics.Arcade.Sprite =
                             this.createPlayer(playerInfo);
-                        playerSprite.setCollideWorldBounds(true); // player가 월드 경계를 넘어가지 않게 설정;
+                        // playerSprite.setCollideWorldBounds(true); // player가 월드 경계를 넘어가지 않게 설정;
                         playerSprite.anims.play(
                             `${playerInfo.playerTexture}_idle_down`,
                             true
@@ -522,7 +518,7 @@ export default class AirportScene extends Phaser.Scene {
 
                             axios
                                 .post(
-                                    "https://seunghunshin.shop/interact",
+                                    serverUrl + "/interact",
                                     formData,
                                     {
                                         headers: {
@@ -674,6 +670,7 @@ export default class AirportScene extends Phaser.Scene {
                     playerTexture: this.playerTexture,
                     x: this.player1!.x,
                     y: this.player1!.y,
+                    scene: "AirportScene",
                 });
             }
 
@@ -692,7 +689,7 @@ export default class AirportScene extends Phaser.Scene {
                             otherSprite.y,
                             targetPosition.x,
                             targetPosition.y
-                        ) <= 1.5
+                        ) <= 1.0
                     ) {
                         otherSprite.setVelocity(0, 0);
                         otherSprite.anims.play(

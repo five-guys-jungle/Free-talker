@@ -24,7 +24,9 @@ import SignUpDialog from "./SignUpDialog";
 import { GAME_STATUS } from "../stores/gameSlice";
 import { handleScene } from "../scenes/common/handleScene";
 
-const DB_URL = "https://seunghunshin.shop";
+// const DB_URL = "https://seunghunshin.shop";
+import dovenv from "dotenv";
+let DB_URL: string = process.env.REACT_APP_SERVER_URL!;
 
 interface Characters {
     [key: string]: string;

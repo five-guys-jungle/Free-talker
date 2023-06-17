@@ -19,6 +19,10 @@ import {
 import { createCharacterAnims } from "../anims/CharacterAnims";
 // import "./airPort"
 
+import dotenv from "dotenv";
+
+const serverUrl: string = process.env.REACT_APP_SERVER_URL!;
+
 let chunks: BlobPart[] = [];
 let audioContext = new window.AudioContext();
 
@@ -139,7 +143,7 @@ export default class USAScene extends Phaser.Scene {
 
         createCharacterAnims(this.anims);
 
-        this.socket = io("https://seunghunshin.shop");
+        this.socket = io(serverUrl);
 
         this.socket.on("connect", () => {
             console.log("connect, socket.id: ", this.socket!.id);
@@ -322,7 +326,7 @@ export default class USAScene extends Phaser.Scene {
 
                             axios
                                 .post(
-                                    "https://seunghunshin.shop/interact",
+                                    serverUrl + "/interact",
                                     formData,
                                     {
                                         headers: {
