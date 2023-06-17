@@ -102,7 +102,7 @@ export default function SignUpDialog() {
         console.log("body : ", body);
         try {
             console.log("try sign up!");
-            const response = await axios.post(`${DB_URL}/signup`, body);
+            const response = await axios.post(`${DB_URL}/auth/signup`, body);
             console.log(response);
             if (response.data.status === 200) {
                 console.log("Success!!");

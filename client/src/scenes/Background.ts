@@ -15,7 +15,7 @@ export default class Background extends Phaser.Scene {
     }
 
     create() {
-        this.add.image(700, 700, "background");
+        this.add.image(3840, 2880, "background");
         store.dispatch(openLogin());
     }
 

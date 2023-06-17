@@ -5,13 +5,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../stores";
 
 const GameContainer = () => {
-    const { START, AIRPORT, US, NPCDIALOG } = GAME_STATUS;
+    const { START, AIRPORT, USA, NPCDIALOG } = GAME_STATUS;
     const { mode } = useSelector((state: RootState) => {
         return { ...state.mode };
     });
     return (
         <>
-            {mode === AIRPORT || mode === US || mode === NPCDIALOG ? (
+            {mode === AIRPORT || mode === USA || mode === NPCDIALOG ? (
                 <>
                     <Game />
                 </>

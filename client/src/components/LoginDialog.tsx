@@ -87,7 +87,7 @@ function LoginDialog() {
 
             try {
                 console.log("try");
-                const response = await axios.post(`${DB_URL}/login`, body);
+                const response = await axios.post(`${DB_URL}/auth/login`, body);
                 console.log(response.data);
                 if (response.data.status === 200) {
                     const payload = response.data;

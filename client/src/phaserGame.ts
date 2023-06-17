@@ -1,6 +1,7 @@
 import AirportScene from "./scenes/Airport";
 // import USScene from "../scenes/US";
 import Background from "./scenes/Background";
+import USAScene from "./scenes/USA";
 import Phaser from "phaser";
 import { GameType } from "./types";
 
@@ -12,14 +13,14 @@ const config = {
     // backgroundColor: '#EEEEEE', //  scene이 그려지는 canvas의 backgroundColor 값
     type: Phaser.AUTO,
     parent: "freetalker",
-    scene: [Background, AirportScene],
+    scene: [Background, AirportScene, USAScene],
     scale: {
         // mode: Phaser.Scale.FIT,
-        mode: Phaser.Scale.ScaleModes.RESIZE,
-        // width: window.innerWidth,
-        // height: window.innerHeight,
-        width: "100wh",
-        height: "100vh",
+        // mode: Phaser.Scale.ScaleModes.RESIZE,
+        width: 3840,
+        height: 2880,
+        // width: "100wh",
+        // height: "100vh",
     },
     physics: {
         default: "arcade",

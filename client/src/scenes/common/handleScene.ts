@@ -4,7 +4,7 @@ import {
     openAirport,
     openNPCDialog,
     openStart,
-    openUS,
+    openUSA,
 } from "../../stores/gameSlice";
 import { GAME_STATUS } from "../../stores/gameSlice";
 
@@ -22,8 +22,14 @@ export const handleScene = async (statusTo: string, data: any = {}) => {
             break;
         case GAME_STATUS.AIRPORT:
             store.dispatch(openAirport());
-            console.log("open AirPort, data : ", data);
-            phaserGame.scene.sleep("background");
+            if (phaserGame.scene.isSleeping("Airport")) {
+                phaserGame.scene.wake("Airport");
+                break;
+            } else {
+                phaserGame.scene.sleep("background");
+                phaserGame.scene.start("AirportScene", data);
+            }
+
             phaserGame.scene.start("AirportScene", data);
 
             const activeSceneKeys = phaserGame.scene.getScenes();
@@ -39,8 +45,15 @@ export const handleScene = async (statusTo: string, data: any = {}) => {
             store.dispatch(openNPCDialog());
             break;
 
-        case GAME_STATUS.US:
-            store.dispatch(openUS());
+        case GAME_STATUS.USA:
+            store.dispatch(openUSA());
+            if (phaserGame.scene.isSleeping("USAScene")) {
+                phaserGame.scene.wake("USAScene");
+                break;
+            } else {
+                phaserGame.scene.sleep("AirportScene");
+                phaserGame.scene.start("USAScene", data);
+            }
     }
 };
 

@@ -12,7 +12,7 @@ import Start from "./components/StartPage";
 // import { selectGameScene } from "./redux/gameSlice"; // Redux에서 gameScene 상태를 선택하는 selector를 불러옵니다.
 
 function App() {
-    const { START, AIRPORT, US, NPCDIALOG, USERDIALOG, LOGIN } = GAME_STATUS;
+    const { START, AIRPORT, USA, NPCDIALOG, USERDIALOG, LOGIN } = GAME_STATUS;
     const { userLoginId, playerId, mode } = useSelector((state: RootState) => {
         return { ...state.user, ...state.mode };
     });
@@ -31,7 +31,7 @@ function App() {
             {mode === START || mode === LOGIN ? (
                 !logined && <Start />
             ) : mode === AIRPORT ||
-              mode === US ||
+              mode === USA ||
               mode === NPCDIALOG ||
               mode === USERDIALOG ? (
                 <Game />

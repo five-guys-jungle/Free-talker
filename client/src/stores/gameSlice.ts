@@ -4,7 +4,7 @@ export const GAME_STATUS = {
     START: "START",
     LOGIN: "LOGIN",
     AIRPORT: "AIRPORT",
-    US: "US",
+    USA: "USA",
     NPCDIALOG: "NPCDIALOG",
     USERDIALOG: "USERDIALOG",
 };
@@ -30,15 +30,15 @@ export const GameModeSlice = createSlice({
         openAirport: (state) => {
             state.mode = GAME_STATUS.AIRPORT;
         },
-        openUS: (state) => {
-            state.mode = GAME_STATUS.US;
+        openUSA: (state) => {
+            state.mode = GAME_STATUS.USA;
         },
         openNPCDialog: (state) => {
             state.mode = GAME_STATUS.NPCDIALOG;
         },
     },
 });
-export const { openAirport, openUS, openNPCDialog, openStart, openLogin } =
+export const { openAirport, openUSA, openNPCDialog, openStart, openLogin } =
     GameModeSlice.actions;
 
 export default GameModeSlice.reducer;

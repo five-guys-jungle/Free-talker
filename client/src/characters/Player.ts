@@ -4,6 +4,7 @@ export class Player {
     playerTexture!: string;
     x: number;
     y: number;
+    scene!: string;
     sprite: Phaser.Physics.Arcade.Sprite;
     textObj: Phaser.GameObjects.Text | null = null;
     defaultVelocity: number = 200;
@@ -14,7 +15,8 @@ export class Player {
         playerTexture: string,
         sprite: Phaser.Physics.Arcade.Sprite,
         x: number,
-        y: number
+        y: number,
+        scene: string
     ) {
         this.socketId = socketId;
         this.nickname = name;
@@ -25,20 +27,24 @@ export class Player {
         this.sprite.texture.key = playerTexture;
         this.sprite.x = this.x;
         this.sprite.y = this.y;
+        this.scene = scene;
     }
-    move() {
-    }
+    move() {}
     moveText(scene: Phaser.Scene) {
         if (this.textObj === null || this.textObj === undefined) {
-            this.textObj = scene.add.text(this.sprite.x, this.sprite.y - 45, this.nickname, {
-                color: "black",
-                fontSize: "16px",
-            });
+            this.textObj = scene.add.text(
+                this.sprite.x,
+                this.sprite.y - 45,
+                this.nickname,
+                {
+                    color: "black",
+                    fontSize: "16px",
+                }
+            );
             this.textObj.setOrigin(0.5, 0);
-        }
-        else {
+        } else {
             this.textObj!.setX(this.sprite.x);
-            this.textObj!.setY(this.sprite.y-50);
+            this.textObj!.setY(this.sprite.y - 50);
         }
     }
 }
@@ -52,6 +58,7 @@ export interface PlayerInfo {
     playerTexture: string;
     x: number;
     y: number;
+    scene: string;
 }
 export interface PlayerInfoDictionary {
     [key: string]: {
@@ -60,5 +67,6 @@ export interface PlayerInfoDictionary {
         playerTexture: string;
         x: number;
         y: number;
+        scene: string;
     };
 }

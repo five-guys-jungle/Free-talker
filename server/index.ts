@@ -3,13 +3,13 @@ import http from "http";
 import cors from "cors";
 import axios from "axios";
 import path from "path";
-// import { Router } from "express";
+import { Router } from "express";
 import { upload, interact, grammerCorrection } from "./controllers/interaction";
 import { socketEventHandler } from "./controllers/gameSocket";
 import { Server as SocketIOServer, Socket } from "socket.io";
 
 import { connectDB } from "./database/db";
-// import authRouter from "./routes/authRouter";
+import authRouter from "./routes/authRouter";
 
 import { signup, login } from "./controllers/userController";
 
@@ -47,11 +47,11 @@ app.get("/audio/npc_audio/*", function (req: Request, res: Response) {
 });
 
 app.post("/interact", upload.single("audio"), interact);
-app.post("/signup", signup);
+// app.use(Router);
+app.use("/auth", authRouter);
 
-app.post("/login", login);
-
-// app.use("/auth", authRouter);
+// app.post("/signup", signup);
+// app.post("/login", login);
 
 connectDB()
     .then((db) => {
