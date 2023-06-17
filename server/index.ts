@@ -6,6 +6,7 @@ import path from "path";
 import { Router } from "express";
 import { upload, interact, grammerCorrection } from "./controllers/interaction";
 import { socketEventHandler } from "./controllers/gameSocket";
+import { interactSocketEventHandler } from "./controllers/interactSocket";
 import { Server as SocketIOServer, Socket } from "socket.io";
 
 import { connectDB } from "./database/db";
@@ -37,6 +38,7 @@ const server = http.createServer(app);
 const io = new SocketIOServer(server);
 
 io.on("connection", socketEventHandler);
+const interactionSocket = io.of(`/interaction`);
 
 const allowedOrigins = [
     "http://127.0.0.1:3000",
@@ -60,7 +62,8 @@ app.get("/audio/npc_audio/*", function (req: Request, res: Response) {
     res.sendFile(path.join(__dirname, "audio/npc_audio", req.params[0]));
 });
 
-app.post("/interact", upload.single("audio"), interact);
+interactionSocket.on("connection", interactSocketEventHandler);
+// app.post("/interact", upload.single("audio"), interact);
 // app.use(Router);
 app.use("/auth", authRouter);
 
