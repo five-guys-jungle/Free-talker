@@ -45,6 +45,7 @@ export default class USAScene extends Phaser.Scene {
     }
 
     preload() {
+        this.load.tilemapTiledJSON("map1", "assets/maps/usa.json");
         // this.load.image("background", "assets/backgrounds/space.png");
         // this.load.image("generic", "assets/tilesets/Generic.png");
         // this.load.image("basement", "assets/tilesets/Basement.png");
@@ -59,7 +60,6 @@ export default class USAScene extends Phaser.Scene {
         //     "assets/tilesets/Classroom_and_library.png"
         // );
         // this.load.image('exterior','assets/tilesets/ModernExteriorsComplete.png');
-
         // this.load.spritesheet("npc", "assets/characters/npc.png", {
         //     frameWidth: 48,
         //     frameHeight: 72,
@@ -82,8 +82,6 @@ export default class USAScene extends Phaser.Scene {
         //     frameWidth: 32,
         //     frameHeight: 48,
         // });
-
-        this.load.tilemapTiledJSON("map1", "assets/maps/usa.json");
     }
 
     init(data: any) {
@@ -162,7 +160,7 @@ export default class USAScene extends Phaser.Scene {
                 scene: "USAScene",
             });
             this.player1.setCollideWorldBounds(true); // player가 월드 경계를 넘어가지 않게 설정
-            this.cameras.main.startFollow(this.player1);
+            // this.cameras.main.startFollow(this.player1);
 
             this.socket!.emit("connected", {
                 socketId: this.socket!.id,

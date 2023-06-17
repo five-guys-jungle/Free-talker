@@ -22,8 +22,8 @@ export const handleScene = async (statusTo: string, data: any = {}) => {
             break;
         case GAME_STATUS.AIRPORT:
             store.dispatch(openAirport());
-            if (phaserGame.scene.isSleeping("Airport")) {
-                phaserGame.scene.wake("Airport");
+            if (phaserGame.scene.isSleeping("AirportScene")) {
+                phaserGame.scene.wake("AirportScene");
                 break;
             } else {
                 phaserGame.scene.sleep("background");
