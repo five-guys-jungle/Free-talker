@@ -454,7 +454,7 @@ export default class AirportScene extends Phaser.Scene {
             this.physics.add.collider(this.player1, platform6);
             this.physics.add.collider(this.player1, platform7);
 
-            this.npc = this.physics.add.sprite(500, 300, "npc");
+            this.npc = this.physics.add.sprite(1700, 1100, "npc");
             this.portal = this.physics.add.sprite(1920, 1350, "npc");
         });
 
