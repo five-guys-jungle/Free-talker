@@ -43,7 +43,10 @@ export default class AirportScene extends Phaser.Scene {
         super("AirportScene");
     }
 
-    preload() {}
+    preload() {
+        this.load.tilemapTiledJSON("map", "assets/maps/airport.json");
+
+    }
 
     init(data: any) {
         this.playerId = data.playerId;

@@ -45,6 +45,7 @@ export default class USAScene extends Phaser.Scene {
     }
 
     preload() {
+        this.load.tilemapTiledJSON("map1", "assets/maps/usa.json");
         // this.load.image("background", "assets/backgrounds/space.png");
         // this.load.image("generic", "assets/tilesets/Generic.png");
         // this.load.image("basement", "assets/tilesets/Basement.png");

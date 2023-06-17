@@ -17,10 +17,10 @@ const config = {
     scale: {
         // mode: Phaser.Scale.FIT,
         // mode: Phaser.Scale.ScaleModes.RESIZE,
-        width: 3840,
-        height: 2880,
-        // width: "100wh",
-        // height: "100vh",
+        // width: ,
+        // height: 2880,
+        width: "100wh",
+        height: "100vh",
     },
     physics: {
         default: "arcade",

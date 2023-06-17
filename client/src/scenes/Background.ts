@@ -25,11 +25,6 @@ export default class Background extends Phaser.Scene {
             "classroom",
             "assets/tilesets/Classroom_and_library.png"
         );
-        this.load.image(
-            "exterior",
-            "assets/tilesets/ModernExteriorsComplete.png"
-        );
-        this.load.tilemapTiledJSON("map1", "assets/maps/usa.json");
         this.load.spritesheet("npc", "assets/characters/npc.png", {
             frameWidth: 48,
             frameHeight: 72,
@@ -52,14 +47,19 @@ export default class Background extends Phaser.Scene {
             frameWidth: 32,
             frameHeight: 48,
         });
-
-        this.load.tilemapTiledJSON("map", "assets/maps/airport.json");
-
+        this.load.image(
+            "exterior",
+            "assets/tilesets/ModernExteriorsComplete.png"
+        );
         console.log("Complete loading!!!!!!!!!!!!!!!");
     }
 
     create() {
-        this.add.image(0, 0, "background");
+        this.add
+            .image(0, 0, "background")
+            .setDisplaySize(this.game.scale.width, this.game.scale.height)
+            .setOrigin(0, 0);
+        // this.add.image(0, 0, "background").setOrigin(0, 0);
         store.dispatch(openLogin());
     }
 
