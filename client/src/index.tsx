@@ -4,14 +4,13 @@ import { Provider } from "react-redux"; // react-redux에서 Provider를 불러�
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import { store } from './stores';
+import { store } from "./stores";
 
 ReactDOM.render(
-    <React.StrictMode>
-        <Provider store={store}> {/* Redux의 store를 Provider에 전달합니다. */}
-            <App />
-        </Provider>
-    </React.StrictMode>,
+    <Provider store={store}>
+        {/* Redux의 store를 Provider에 전달합니다. */}
+        <App />
+    </Provider>,
     document.getElementById("root")
 );
 

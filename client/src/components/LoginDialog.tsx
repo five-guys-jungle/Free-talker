@@ -15,15 +15,14 @@ import chars from "../assets/characters";
 import {
     setPlayerId,
     setPlayerTexture,
-    setPlayerNickname
-  } from '../stores/userSlice';
-import { gameSceneState } from "../recoil/game/atoms";
-import { useDispatch } from 'react-redux';
-import { useAppDispatch } from '../stores';
-import { openAirport } from "../stores/statusSlice";
+    setPlayerNickname,
+} from "../stores/userSlice";
+import { useDispatch } from "react-redux";
+import { useAppDispatch } from "../stores";
+import { openAirport } from "../stores/gameSlice";
 import SignUpDialog from "./SignUpDialog";
-import { handleScene } from '../service/PhaserLib';
-
+import { GAME_STATUS } from "../stores/gameSlice";
+import { handleScene } from "../scenes/common/handleScene";
 
 const DB_URL = "https://seunghunshin.shop";
 
@@ -35,10 +34,6 @@ export interface State extends SnackbarOrigin {
     openLoginWarn: boolean;
 }
 
-const GAME_STATUS = { 
-    login: "login",
-    airport: "airport",
-};
 const characters = chars as Characters;
 
 // const avatars: { name: string; img: string }[] = Array.from(
@@ -74,8 +69,6 @@ function LoginDialog() {
     const [avatarIndex, setAvatarIndex] = useState<number>(0);
     const dispatch = useDispatch();
     const appDispatch = useAppDispatch();
-   
-    
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         // console.log("handleSubmit");
@@ -107,19 +100,16 @@ function LoginDialog() {
                     console.log(`"userAvatar: , ${userAvatar}"`);
                     // console.log(`"userID: , ${userId}"`);
 
-                    
+                    dispatch(openAirport());
                     dispatch(setPlayerId(userId));
                     dispatch(setPlayerNickname(userNickname));
                     dispatch(setPlayerTexture(userAvatar));
-                    handleScene(GAME_STATUS.airport,{
+                    handleScene(GAME_STATUS.AIRPORT, {
                         playerId: payload.userId,
                         plyerNickname: payload.userNickname,
-
                         playerTexture: avatars[avatarIndex].name,
-                    })
+                    });
                     console.log("handleScene");
-                    
-                    
 
                     // playerId: payload.userNickname,
                     // playerTexture: avatars[avatarIndex].name,

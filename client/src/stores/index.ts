@@ -1,14 +1,13 @@
-import { configureStore } from '@reduxjs/toolkit';
-import modeSlice from './statusSlice';
-import userSlice from './userSlice';
-import { useDispatch } from 'react-redux';
+import { configureStore } from "@reduxjs/toolkit";
+import GameModeSlice from "./gameSlice";
+import userSlice from "./userSlice";
+import { useDispatch } from "react-redux";
 
 export const store = configureStore({
-  reducer: {
-    mode: modeSlice,
-    user: userSlice,
-   
-  },
+    reducer: {
+        mode: GameModeSlice,
+        user: userSlice,
+    },
 });
 
 // store.dispatch(fetchMuteInfo());

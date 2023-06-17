@@ -1,50 +1,39 @@
 import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Phaser from "phaser";
-import AirPortScene from "../scenes/airPort";
+import AirPortScene from "../scenes/Airport";
+import styled from "styled-components";
 import {
-setPlayerId,
-setPlayerNickname,
-setPlayerTexture,
+    setPlayerId,
+    setPlayerNickname,
+    setPlayerTexture,
 } from "../stores/userSlice";
 import {
-selectPlayerId,
-selectPlayerNickname,
-selectPlayerTexture,
+    selectPlayerId,
+    selectPlayerNickname,
+    selectPlayerTexture,
 } from "../stores/userSlice";
 
-export default function Game() {
-const dispatch = useDispatch();
-const playerId = useSelector(selectPlayerId);
-const playerNickname = useSelector(selectPlayerNickname);
-const playerTexture = useSelector(selectPlayerTexture);
-console.log(`"playerId:"${playerId}, "playerNickname:" ${playerNickname}, "playerTexture":"${playerTexture}`);
-    useEffect(() => {
-        const config = {
-            type: Phaser.AUTO,
-            width: 1440,
-            height: 960,
-            parent: "phaser-game", // 게임을 렌더링할 DOM 요소를 지정합니다.
-            physics: {
-                default: "arcade",
-                arcade: {
-                    gravity: { y: 0 },
-                },
-            },
-            scene: [AirPortScene],
-        };
+import { GAME_STATUS } from "../stores/gameSlice";
+import { RootState } from "../stores";
+import NPCDialog from "./NPCDialog";
 
-        const game = new Phaser.Game(config);
-        game.scene.start("AirPortScene", {
-            playerId: playerId,
-            playerNickname: playerNickname,
-            playerTexture: playerTexture,
-        });
+const Game = () => {
+    // socket intialization, connection
 
-        return () => {
-            game.destroy(true);
-        };
-    }, []);
+    const { START, AIRPORT, US, NPCDIALOG } = GAME_STATUS;
+    const { mode } = useSelector((state: RootState) => {
+        return { ...state.mode };
+    });
 
-    return <div id="phaser-game" />;
-}
+    return <BackgroundDiv>{mode === NPCDIALOG && <NPCDialog />}</BackgroundDiv>;
+};
+
+export { Game };
+
+const BackgroundDiv = styled.div`
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+`;

@@ -1,9 +1,9 @@
 import Phaser from "phaser";
 import axios from "axios";
 import io, { Socket } from "socket.io-client";
-import store from '../stores/index';
+import store from "../stores/index";
 import { keyboard } from "@testing-library/user-event/dist/keyboard";
-import phaserGame from '../codeuk';
+import phaserGame from "../codeuk";
 import {
     Player,
     PlayerDictionary,
@@ -14,11 +14,12 @@ import { frameInfo } from "./common/anims";
 
 // import { playerNicknameState } from '../recoil/user/atoms';
 import { createCharacterAnims } from "../anims/CharacterAnims";
+import { openNPCDialog } from "../stores/gameSlice";
 
 let chunks: BlobPart[] = [];
 let audioContext = new window.AudioContext();
 
-export default class AirPortScene extends Phaser.Scene {
+export default class AirportScene extends Phaser.Scene {
     player1: Phaser.Physics.Arcade.Sprite | null = null;
     npc: Phaser.Physics.Arcade.Sprite | null = null;
     cursors: Phaser.Types.Input.Keyboard.CursorKeys | null = null;
@@ -37,7 +38,7 @@ export default class AirPortScene extends Phaser.Scene {
     playerTexture: string = "";
 
     constructor() {
-        super("AirPortScene");
+        super("AirportScene");
     }
 
     preload() {
@@ -487,6 +488,19 @@ export default class AirPortScene extends Phaser.Scene {
         this.userIdText = this.add.text(10, 10, "", {
             color: "black",
             fontSize: "16px",
+        });
+
+        this.input.keyboard!.on("keydown-D", async () => {
+            if (
+                Phaser.Math.Distance.Between(
+                    this.player1!.x,
+                    this.player1!.y,
+                    this.npc!.x,
+                    this.npc!.y
+                ) < 100
+            ) {
+                store.dispatch(openNPCDialog());
+            }
         });
 
         this.input.keyboard!.on("keydown-X", async () => {
