@@ -106,7 +106,7 @@ function LoginDialog() {
                     dispatch(setPlayerTexture(userAvatar));
                     handleScene(GAME_STATUS.AIRPORT, {
                         playerId: payload.userId,
-                        plyerNickname: payload.userNickname,
+                        playerNickname: payload.userNickname,
                         playerTexture: avatars[avatarIndex].name,
                     });
                     console.log("handleScene");

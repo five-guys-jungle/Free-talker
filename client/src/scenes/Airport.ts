@@ -43,46 +43,7 @@ export default class AirportScene extends Phaser.Scene {
         super("AirportScene");
     }
 
-    preload() {
-        this.load.image("background", "assets/backgrounds/space.png");
-        this.load.image("generic", "assets/tilesets/Generic.png");
-        this.load.image("basement", "assets/tilesets/Basement.png");
-        this.load.image("floor", "assets/tilesets/FloorAndGround.png");
-        this.load.image("interior", "assets/tilesets/Interiors.png");
-        this.load.image(
-            "pixel",
-            "assets/tilesets/pixel-cyberpunk-interior.png"
-        );
-        this.load.image(
-            "classroom",
-            "assets/tilesets/Classroom_and_library.png"
-        );
-
-        this.load.spritesheet("npc", "assets/characters/npc.png", {
-            frameWidth: 48,
-            frameHeight: 72,
-            startFrame: 0,
-            endFrame: 12,
-        });
-        this.load.spritesheet("adam", "assets/characters/adam.png", {
-            frameWidth: 32,
-            frameHeight: 48,
-        });
-        this.load.spritesheet("ash", "assets/characters/ash.png", {
-            frameWidth: 32,
-            frameHeight: 48,
-        });
-        this.load.spritesheet("lucy", "assets/characters/lucy.png", {
-            frameWidth: 32,
-            frameHeight: 48,
-        });
-        this.load.spritesheet("nancy", "assets/characters/nancy.png", {
-            frameWidth: 32,
-            frameHeight: 48,
-        });
-
-        this.load.tilemapTiledJSON("map", "assets/maps/airport.json");
-    }
+    preload() {}
 
     init(data: any) {
         this.playerId = data.playerId;
