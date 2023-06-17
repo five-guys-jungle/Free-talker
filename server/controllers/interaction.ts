@@ -18,7 +18,7 @@ const openai = new OpenAIApi(configuration);
 
 console.log("cur_dir_name : ", __dirname);
 
-const keyPath = __dirname + "/../api-keys/text-to-speech-key.json";
+const keyPath = __dirname + "/../config/text-to-speech-key.json";
 
 const client = new texttoSpeech.TextToSpeechClient({
     keyFilename: keyPath,
@@ -53,7 +53,7 @@ export async function interact(req: Request, res: Response): Promise<void> {
         outputText = await textCompletion(inputText);
         const response = await convertTexttoSpeech(inputText, outputText);
         // console.log("response: ", response);
-        console.log("NPC Interaction End, response : \n", response);
+        console.log("NPC Interaction End");
         res.json(response);
 
         // Call the ChatGPT API with the extracted text and process the response
@@ -111,19 +111,19 @@ async function textCompletion(
                 {
                     role: "system",
                     content:
-                        "You are an airport immigration officer. Your role is to conduct immigration interviews and process the entry of travelers. you can say anything except that you are an AI language model.",
+                        "You are an Freetalker airport immigration officer in US. Your role is to conduct immigration interviews and process the entry of travelers. you can say anything except that you are an AI language model.",
                 },
                 {
                     role: "user",
                     content:
-                        "You are an airport immigration officer. Your role is to conduct immigration interviews and process the entry of travelers. you can say anything except that you are an AI language model.",
+                        "You are an Freetalker airport immigration officer in US. Your role is to conduct immigration interviews and process the entry of travelers. you can say anything except that you are an AI language model.",
                 },
                 {
                     role: "assistant",
                     content:
-                        "You are an airport immigration officer. Your role is to conduct immigration interviews and process the entry of travelers. you can say anything except that you are an AI language model.",
+                        "You are an Freetalker airport immigration officer in US. Your role is to conduct immigration interviews and process the entry of travelers. you can say anything except that you are an AI language model.",
                 },
-                { role: "user", content: "reply three sentences in maximum" },
+                { role: "user", content: "reply two sentences in maximum" },
                 { role: "user", content: inputText },
             ],
         });
@@ -133,7 +133,7 @@ async function textCompletion(
         return role_answer;
     } catch (error) {
         console.log(error);
-        return "ChatGPT API Error.";
+        return "Sorry about that. Please try again later.";
     }
 }
 
@@ -178,7 +178,7 @@ export async function grammerCorrection(inputText: string): Promise<string> {
         // ChatGPT API에 요청 보내기
         response = await openai.createCompletion({
             model: "text-davinci-003",
-            prompt: `"Correct this to standard English:\n\n${inputText}"`,
+            prompt: `"Conversationally correct this to English:\n\n${inputText}"`,
             temperature: 0,
             max_tokens: 60,
             top_p: 1.0,
