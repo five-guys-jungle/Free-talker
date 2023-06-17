@@ -13,29 +13,6 @@ import {
 
 const tableName = process.env.DYNAMODB_TABLE_NAME;
 const client = new DynamoDBClient({ region: "ap-northeast-2" });
-
-// const put: PutItemInput = {
-//     TableName: tableName,
-//     Item: {
-//       userId: `${userId}`,
-//       userPw: `${userPw}`,
-//       userNickname: `${userNickname}`,
-//     },
-//   };
-
-// const get: AWS.DynamoDB.DocumentClient.GutItemInput = {
-//     TableName: tableName,
-//     Item: {
-//       userId: `${userId}`,
-//       userPw: `${userPw}`,
-//       userNickname: `${userNickname}`,
-//     },
-//   };
-
-// const foundUser: IUserInfo | null = await User.findOne({
-//     userId: userId,
-// })
-
 const userIdRegex = /^[a-zA-Z0-9]+$/; // Allows only letters and numbers
 const userNicknameRegex = /^[ㄱ-ㅎ|가-힣|a-z|A-Z|0-9|]+$/; //hanguel, number, alphbet,  not allows special char and white space
 
@@ -66,6 +43,38 @@ export const signup = async (req: Request, res: Response) => {
         ) {
             return res.status(400).send("Invalid userId or userNickname");
         } else {
+            const queryByUserId = {
+                TableName: tableName,
+                Key: {
+                    userId: { S: userId },
+                },
+            };
+            const getItemByUserId = new GetItemCommand(queryByUserId);
+            const foundUserById = await client.send(getItemByUserId);
+
+            if (!!foundUserById.Item) {
+                // if exists
+                return res
+                    .status(409)
+                    .json({ status: 409, message: "User already exists" });
+            }
+
+            const getItemByUserNickname = {
+                TableName: tableName,
+                Key: {
+                    userNickname: { S: userNickname },
+                },
+            };
+            const foundUserByNickname = await client.send(
+                new GetItemCommand(getItemByUserNickname)
+            );
+            if (!!foundUserByNickname) {
+                return res.status(409).json({
+                    status: 409,
+                    message: "User Nickname already exists",
+                });
+            }
+
             const hashedPw = await hashPw(userPw);
 
             const putParams = {
@@ -77,23 +86,23 @@ export const signup = async (req: Request, res: Response) => {
                 },
             };
 
-            const command = new PutItemCommand(putParams);
-            const data = await client.send(command);
+            const putItem = new PutItemCommand(putParams);
+            const data = await client.send(putItem);
 
-            if (data === undefined) {
-                console.log("DynamoDB put error");
-                return res.json({
-                    success: false,
-                    message: "Failed to create new user",
-                    status: 500, // DB 오류
-                });
-            } else {
+            if (data !== undefined) {
                 console.log("Successfully create new user");
                 console.log("Signup data: ", data);
                 return res.json({
                     success: true,
                     message: "Successfully created new user",
                     status: 200, // 200: 성공
+                });
+            } else {
+                console.log("DynamoDB put error");
+                return res.json({
+                    success: false,
+                    message: "Failed to create new user",
+                    status: 500, // DB 오류
                 });
             }
         }
@@ -108,18 +117,17 @@ export const login = async (req: Request, res: Response) => {
     try {
         const { userId, userPw } = req.body;
 
-        const queryParams = {
-            TableName: tableName,
-            Key: {
-                userId: { S: userId },
-            },
-        };
-
         if (!userId || !userPw) {
             return res.status(400).send("Invalid userId or usePw");
         } else {
-            const command = new GetItemCommand(queryParams);
-            const foundUser = await client.send(command);
+            const queryByUserId = {
+                TableName: tableName,
+                Key: {
+                    userId: { S: userId },
+                },
+            };
+            const getItemByUserId = new GetItemCommand(queryByUserId);
+            const foundUser = await client.send(getItemByUserId);
 
             console.log("foundUser: ", foundUser);
             if (!foundUser.Item) {
@@ -162,13 +170,18 @@ export const login = async (req: Request, res: Response) => {
                         console.log("accessToken:", accessToken);
                         return res.json({
                             status: 200,
+                            success: true,
                             message: "Login success",
                             data: accessToken,
                             userId: foundUser.Item.userId.S,
                             userNickname: foundUser.Item.userNickname.S,
                         });
                     } else {
-                        console.log("Error : jwt is invalid!!");
+                        return res.json({
+                            status: 400,
+                            message: "Password is not correct",
+                            success: false,
+                        });
                     }
                 }
             }
