@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
-import { appendMessage, TalkBoxState } from "../stores/talkBoxSlice";
+import { appendMessage, TalkBoxState } from "../../stores/talkBoxSlice";
 
 interface Message {
   name: string;
