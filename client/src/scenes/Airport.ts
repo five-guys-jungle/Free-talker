@@ -638,7 +638,7 @@ export default class AirportScene extends Phaser.Scene {
 
                         });
                         this.socket2!.on("totalResponse", (response: any) => {
-                            // console.log("totalResponse event response: ", response);
+                            console.log("totalResponse event response: ", response);
                             const audio = new Audio(response.audioUrl);
                             audio.play();
                         });

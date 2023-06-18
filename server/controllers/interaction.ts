@@ -7,14 +7,22 @@ import { v4 as uuidv4 } from "uuid";
 import texttoSpeech from "@google-cloud/text-to-speech";
 import FormData from "form-data";
 import axios from "axios";
-import "dotenv/config";
+import dotenv from "dotenv";
 import { preDefindPrompt } from "../models/Prompt";
+import { ConnectContactLens } from "aws-sdk";
 
+dotenv.config();
 const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
 });
-
-const serverUrl: string = "http://localhost:5000";
+dotenv.config();
+if (process.env.NODE_ENV === "production") {
+    dotenv.config({ path: ".env.production" })
+}
+else {
+    dotenv.config({ path: ".env.development" })
+}
+const serverUrl: string = process.env.SERVER_URL!;
 const openai = new OpenAIApi(configuration);
 
 console.log("cur_dir_name : ", __dirname);
