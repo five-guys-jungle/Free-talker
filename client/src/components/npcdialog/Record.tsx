@@ -1,93 +1,76 @@
-import React, { useEffect, useRef } from "react";
-import { gsap } from "gsap";
+import React, { useEffect, useRef } from 'react';
+import { gsap } from 'gsap';
 import styled from "styled-components";
+import { useDispatch, useSelector } from 'react-redux';
+import { setRecord } from '../../stores/recordSlice';
 
 const Record: React.FC = () => {
-    const mainSVGRef = useRef<SVGSVGElement>(null);
-    let state = true;
+  const mainSVGRef = useRef<SVGSVGElement>(null);
+  const dispatch = useDispatch();
+  const state = useSelector((state: { record: { record: boolean } }) => state.record.record);
+  const stateRef = useRef(state);
 
-    useEffect(() => {
-        const mainSVG = mainSVGRef.current;
-        if (!mainSVG) {
-            return;
-        }
+  const doClick = () => {
+    const state = stateRef.current;
+    const tl = gsap.timeline({
+      defaults: {
+        ease: 'elastic(0.2, 0.48)',
+        duration: 0.4
+      }
+    });
+    if (state) {
+      tl.to('line', {
+        scale: 1,
+        strokeWidth: 7,
+        y: -0
+      })
+        .to('#mic', {
+          scale: 1,
+          fill: '#44484D',
+        }, 0)
+        .to('#mic rect', {
+          fill: "#44484D",
+          attr: { filter: "" }
+        }, 0)
+    } else {
+      tl.to('line', {
+        strokeWidth: 0,
+        y: -0,
+      })
+        .to('#mic rect', {
+          fill: "#ed002d",
+          attr: { filter: "url(#glow2)" }
+        }, 0)
+        .to('#mic', {
+          scale: 1.3,
+          fill: '#555b60'
+        }, 0)
+    }
+  }
 
-        gsap.set("svg", {
-            visibility: "visible",
-        });
-        gsap.set("#mic", {
-            transformOrigin: "50% 100%",
-        });
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
 
-        const doClick = () => {
-            const tl = gsap.timeline({
-                defaults: {
-                    ease: "elastic(0.2, 0.48)",
-                    duration: 0.4,
-                },
-            });
-            if (state) {
-                tl.to("line", {
-                    scale: 1,
-                    strokeWidth: 7,
-                    y: -0,
-                })
-                    .to(
-                        "#mic",
-                        {
-                            scale: 1,
-                            fill: "#44484D",
-                        },
-                        0
-                    )
-                    .to(
-                        "#mic rect",
-                        {
-                            fill: "#44484D",
-                            attr: { filter: "" },
-                        },
-                        0
-                    );
-            } else {
-                tl.to("line", {
-                    strokeWidth: 0,
-                    y: -0,
-                })
-                    .to(
-                        "#mic rect",
-                        {
-                            fill: "#ed002d",
-                            attr: { filter: "url(#glow2)" },
-                        },
-                        0
-                    )
-                    .to(
-                        "#mic",
-                        {
-                            scale: 1.3,
-                            fill: "#555b60",
-                        },
-                        0
-                    );
-            }
-        };
+  useEffect(() => {
+    doClick();
+  }, [state]);
 
-        const clickHandler = () => {
-            gsap.killTweensOf(clickHandler);
-            state = !state;
-            doClick();
-        };
+  useEffect(() => {
+    const mainSVG = mainSVGRef.current;
+    if (!mainSVG) {
+      return;
+    }
 
-        mainSVG.addEventListener("click", clickHandler);
-        gsap.delayedCall(2, clickHandler);
+    gsap.set('svg', {
+      visibility: 'visible'
+    });
+    gsap.set('#mic', {
+      transformOrigin: '50% 100%'
+    });
+  }, [dispatch]);
 
-        // Clean up when component unmounts
-        return () => {
-            mainSVG.removeEventListener("click", clickHandler);
-        };
-    }, [state]);
-
-    return (
+  return (
         <RecDiv>
             <Container>
                 <svg
@@ -259,7 +242,7 @@ const Record: React.FC = () => {
                         </g>
                     </g>
                 </svg>
-                <Instructions>마이크를 눌러 녹음을 시작하세요</Instructions>
+                <Instructions>R 키를 눌러 녹음을 시작하세요</Instructions>
             </Container>
         </RecDiv>
     );

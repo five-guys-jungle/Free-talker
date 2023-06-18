@@ -14,8 +14,9 @@ import { frameInfo } from "./common/anims";
 
 // import { playerNicknameState } from '../recoil/user/atoms';
 import { createCharacterAnims } from "../anims/CharacterAnims";
-import { openNPCDialog } from "../stores/gameSlice";
-import {appendMessage} from "../stores/talkBoxSlice";
+import { openNPCDialog, openAirport } from "../stores/gameSlice";
+import {appendMessage, clearMessages} from "../stores/talkBoxSlice";
+import { setRecord } from "../stores/recordSlice";
 import { handleScene } from "./common/handleScene";
 
 import dotenv from "dotenv";
@@ -629,7 +630,8 @@ export default class AirportScene extends Phaser.Scene {
                     this.interacting = false;
                     this.socket2?.disconnect();
                     this.socket2 = null;
-                    // store.dispatch(openAirport());
+                    store.dispatch(clearMessages());
+                    store.dispatch(openAirport());
                 }
             }
         });
@@ -647,8 +649,10 @@ export default class AirportScene extends Phaser.Scene {
 
                 if (this.recorder2) {
                     if (this.recorder2.state === "recording") {
+                        store.dispatch(setRecord(true));
                         this.recorder2!.stop();
                     } else {
+                        store.dispatch(setRecord(false));
                         this.recorder2!.start();
                     }
                 }
