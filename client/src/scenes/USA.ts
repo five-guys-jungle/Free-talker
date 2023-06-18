@@ -163,7 +163,7 @@ export default class USAScene extends Phaser.Scene {
                 y: this.initial_y,
                 scene: "USAScene",
             });
-            this.player1.setCollideWorldBounds(true); // player가 월드 경계를 넘어가지 않게 설정
+            // this.player1.setCollideWorldBounds(true); // player가 월드 경계를 넘어가지 않게 설정
             // this.cameras.main.startFollow(this.player1);
 
             this.socket!.emit("connected", {
@@ -187,7 +187,7 @@ export default class USAScene extends Phaser.Scene {
                             ) {
                                 let playerSprite: Phaser.Physics.Arcade.Sprite =
                                     this.createPlayer(otherPlayers[key]);
-                                playerSprite.setCollideWorldBounds(true);
+                                // playerSprite.setCollideWorldBounds(true);
                                 playerSprite.anims.play(
                                     `${otherPlayers[key].playerTexture}_idle_down`,
                                     true
@@ -225,7 +225,7 @@ export default class USAScene extends Phaser.Scene {
                         console.log("not exist, so create new one");
                         let playerSprite: Phaser.Physics.Arcade.Sprite =
                             this.createPlayer(playerInfo);
-                        playerSprite.setCollideWorldBounds(true); // player가 월드 경계를 넘어가지 않게 설정;
+                        // playerSprite.setCollideWorldBounds(true); // player가 월드 경계를 넘어가지 않게 설정;
                         playerSprite.anims.play(
                             `${playerInfo.playerTexture}_idle_down`,
                             true
@@ -247,7 +247,7 @@ export default class USAScene extends Phaser.Scene {
                         console.log("not exist, so create new one");
                         let playerSprite: Phaser.Physics.Arcade.Sprite =
                             this.createPlayer(playerInfo);
-                        playerSprite.setCollideWorldBounds(true); // player가 월드 경계를 넘어가지 않게 설정;
+                        // playerSprite.setCollideWorldBounds(true); // player가 월드 경계를 넘어가지 않게 설정;
                         playerSprite.anims.play(
                             `${playerInfo.playerTexture}_idle_down`,
                             true

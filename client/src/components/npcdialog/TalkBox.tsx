@@ -24,9 +24,6 @@ const BOT_NAME = "BOT";
 const PERSON_NAME = "Sajad";
 
 const TalkBox: React.FC = () => {
-  // const [messages, setMessages] = useState<Message[]>([]);
-  // const msgerInputRef = useRef<HTMLInputElement>(null);
-  // const msgerChatRef = useRef<HTMLDivElement>(null);
   const messages = useSelector((state: { talkBox: TalkBoxState }) => state.talkBox.messages);
   const dispatch = useDispatch();
   const msgerInputRef = useRef<HTMLInputElement>(null);
@@ -38,17 +35,17 @@ const TalkBox: React.FC = () => {
     }
   }, [messages]);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  // const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  //   event.preventDefault();
 
-    const msgText = msgerInputRef.current?.value;
-    if (!msgText) return;
+  //   const msgText = msgerInputRef.current?.value;
+  //   if (!msgText) return;
 
-    appendMessageToState(PERSON_NAME, PERSON_IMG, "right", msgText);
-    msgerInputRef.current!.value = "";
+  //   appendMessageToState(PERSON_NAME, PERSON_IMG, "right", msgText);
+  //   msgerInputRef.current!.value = "";
 
-    botResponse();
-  };
+  //   botResponse();
+  // };
 
   const appendMessageToState = (
     name: string,
@@ -117,7 +114,7 @@ const TalkBox: React.FC = () => {
           ))}
         </main>
 
-        <form className="msger-inputarea" onSubmit={handleSubmit}>
+        {/* <form className="msger-inputarea" onSubmit={handleSubmit}>
           <input
             type="text"
             className="msger-input"
@@ -127,7 +124,7 @@ const TalkBox: React.FC = () => {
           <button type="submit" className="msger-send-btn">
             Send
           </button>
-        </form>
+        </form> */}
       </section>
     </TalkDiv>
   );

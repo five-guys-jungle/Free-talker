@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import GameModeSlice from "./gameSlice";
 import userSlice from "./userSlice";
 import talkBoxSlice from "./talkBoxSlice";
+import recordSlice from "./recordSlice";
 import { useDispatch } from "react-redux";
 
 export const store = configureStore({
@@ -9,6 +10,7 @@ export const store = configureStore({
         mode: GameModeSlice,
         user: userSlice,
         talkBox: talkBoxSlice,
+        record: recordSlice,
     },
 });
 
