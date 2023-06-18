@@ -15,6 +15,7 @@ import { frameInfo } from "./common/anims";
 // import { playerNicknameState } from '../recoil/user/atoms';
 import { createCharacterAnims } from "../anims/CharacterAnims";
 import { openNPCDialog } from "../stores/gameSlice";
+import {appendMessage} from "../stores/talkBoxSlice";
 import { handleScene } from "./common/handleScene";
 
 import dotenv from "dotenv";
@@ -42,6 +43,12 @@ export default class AirportScene extends Phaser.Scene {
     playerId: string = "";
     userNickname: string = "";
     playerTexture: string = "";
+
+    userText: Phaser.GameObjects.Text | null = null;
+    npcText: Phaser.GameObjects.Text | null = null;
+    socket2: Socket | null = null;
+    interacting: boolean = false;
+    recorder2: MediaRecorder | null = null;
 
     constructor() {
         super("AirportScene");
@@ -481,7 +488,26 @@ export default class AirportScene extends Phaser.Scene {
                 store.dispatch(openNPCDialog());
             }
         });
-
+        this.input.keyboard!.on("keydown-T", async () => {
+            if (
+                Phaser.Math.Distance.Between(
+                    this.player1!.x,
+                    this.player1!.y,
+                    this.npc!.x,
+                    this.npc!.y
+                ) < 100
+            ) {
+                store.dispatch(openNPCDialog());
+                store.dispatch(appendMessage({
+                    name: "Some Name",
+                    img: "https://example.com/image.png",
+                    side: "right",
+                    text: "Some Text"
+                  }));
+                  
+            }
+        });
+        /*
         this.input.keyboard!.on("keydown-X", async () => {
             if (
                 Phaser.Math.Distance.Between(
@@ -578,6 +604,75 @@ export default class AirportScene extends Phaser.Scene {
                 });
             }
         });
+        */
+
+        // npc 와의 대화를 위한 키 설정
+        this.input.keyboard!.on("keydown-E", async () => {
+            if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y,
+                this.npc!.x, this.npc!.y) < 100) {
+                console.log("E key pressed");
+                store.dispatch(openNPCDialog());
+                if (this.socket2 === null || this.socket2 === undefined) {
+                    this.socket2 = io(`${serverUrl}/interaction`);
+                    this.socket2.on("connect", () => {
+                        this.interacting = true;
+                        console.log("connect, interaction socket.id: ", this.socket2!.id);
+                        this.socket2!.on("textToSpeech", (response: string) => {
+                            console.log("USER: ", response);
+                            store.dispatch(appendMessage({
+                                name: this.userNickname,
+                                img: "",
+                                side: "right",
+                                text: response
+                              }));
+                            
+                        });
+                        this.socket2!.on("npcResponse", (response: string) => {
+                            console.log("NPC: ", response);
+                            store.dispatch(appendMessage({
+                                name: this.userNickname,
+                                img: "",
+                                side: "left",
+                                text: response
+                              }));
+
+                        });
+                        this.socket2!.on("totalResponse", (response: any) => {
+                            console.log("totalResponse event response: ", response);
+                            const audio = new Audio(response.audioUrl);
+                            audio.play();
+                        });
+                    });
+                }
+                else { // 이미 소켓이 연결되어 있는데 다시 한번 E키를 누른 경우
+                    this.interacting = false;
+                    this.socket2?.disconnect();
+                    this.socket2 = null;
+                    // store.dispatch(openAirport());
+                }
+            }
+        });
+        // 녹음 데이터를 보내고 응답을 받는 키 설정
+        this.input.keyboard!.on("keydown-R", async () => {
+            if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y,
+                this.npc!.x, this.npc!.y) < 100 && this.socket2?.connected) {
+                console.log("R key pressed");
+
+                if (this.recorder2 === null || this.recorder2 === undefined) {
+                    await this.recordEventHandler().then(() => {
+                        // console.log("recordEventHandler finished");
+                    });
+                }
+
+                if (this.recorder2) {
+                    if (this.recorder2.state === "recording") {
+                        this.recorder2!.stop();
+                    } else {
+                        this.recorder2!.start();
+                    }
+                }
+            }
+        });
     }
     update() {
         this.cursors = this.input.keyboard!.createCursorKeys();
@@ -647,11 +742,24 @@ export default class AirportScene extends Phaser.Scene {
                     this.npc!.y
                 ) < 100
             ) {
-                this.interactText!.setText("Press X to interact");
-                // interactText position
-                this.interactText!.setOrigin(0.5, 0);
-                this.interactText!.setX(this.player1!.x);
-                this.interactText!.setY(this.player1!.y - 70);
+                if (this.interacting === false) {
+                    this.interactText!.setText("Press E interact");
+                    // interactText position
+                    this.interactText!.setOrigin(0.5, 0);
+                    this.interactText!.setX(this.player1!.x);
+                    this.interactText!.setY(this.player1!.y - 70);
+                }
+                else {
+                    if (this.recorder2?.state === "recording") {
+                        this.interactText!.setText("Press R to stop recording");
+                    }
+                    else {
+                        this.interactText!.setText("Press R to record");
+                    }
+                    this.interactText!.setOrigin(0.5, 0);
+                    this.interactText!.setX(this.player1!.x);
+                    this.interactText!.setY(this.player1!.y - 70);
+                }
             } else {
                 this.interactText!.setText("");
             }
@@ -728,5 +836,40 @@ export default class AirportScene extends Phaser.Scene {
         this.allPlayers[playerInfo.socketId] = newPlayer;
         console.log("createPlayer, allPlayers: ", this.allPlayers);
         return playerSprite;
+    }
+    async recordEventHandler() {
+        console.log("recordEventHandler");
+
+        await navigator.mediaDevices
+            .getUserMedia({ audio: true })
+            .then((stream) => {
+                if (this.recorder2 === null || this.recorder2 === undefined) {
+                    console.log("recorder is null, so create new one");
+                    this.recorder2 = new MediaRecorder(stream);
+                }
+
+                this.recorder2.ondataavailable = (e) => {
+                    chunks.push(e.data);
+                };
+
+                this.recorder2.onstop = () => {
+                    const blob: Blob = new Blob(chunks, { type: "audio/wav", });
+                    chunks = [];
+                    console.log("record2 onstop event callback function");
+                    console.log("blob: ", blob);
+                    blob.arrayBuffer().then((buffer) => {
+                        console.log("buffer: ", buffer);
+                        this.socket2!.emit('audioSend',
+                            {
+                                userNickname: this.userNickname,
+                                npcName: "npc", // TODO: npc 이름 받아오기
+                                audioDataBuffer: buffer
+                            });
+                    });
+                };
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     }
 }

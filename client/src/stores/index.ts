@@ -1,12 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
 import GameModeSlice from "./gameSlice";
 import userSlice from "./userSlice";
+import talkBoxSlice from "./talkBoxSlice";
 import { useDispatch } from "react-redux";
 
 export const store = configureStore({
     reducer: {
         mode: GameModeSlice,
         user: userSlice,
+        talkBox: talkBoxSlice,
     },
 });
 

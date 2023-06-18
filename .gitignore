@@ -135,3 +135,4 @@ server/audio/user_audio/
 
 # google TTS API key
 server/config/text-to-speech-key.json
+server/api-keys/
