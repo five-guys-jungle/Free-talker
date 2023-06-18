@@ -15,6 +15,7 @@ import { frameInfo } from "./common/anims";
 // import { playerNicknameState } from '../recoil/user/atoms';
 import { createCharacterAnims } from "../anims/CharacterAnims";
 import { openNPCDialog } from "../stores/gameSlice";
+import {appendMessage} from "../stores/talkBoxSlice";
 import { handleScene } from "./common/handleScene";
 
 import dotenv from "dotenv";
@@ -487,7 +488,26 @@ export default class AirportScene extends Phaser.Scene {
                 store.dispatch(openNPCDialog());
             }
         });
-
+        this.input.keyboard!.on("keydown-T", async () => {
+            if (
+                Phaser.Math.Distance.Between(
+                    this.player1!.x,
+                    this.player1!.y,
+                    this.npc!.x,
+                    this.npc!.y
+                ) < 100
+            ) {
+                store.dispatch(openNPCDialog());
+                store.dispatch(appendMessage({
+                    name: "Some Name",
+                    img: "https://example.com/image.png",
+                    side: "right",
+                    text: "Some Text"
+                  }));
+                  
+            }
+        });
+        /*
         this.input.keyboard!.on("keydown-X", async () => {
             if (
                 Phaser.Math.Distance.Between(
@@ -584,12 +604,14 @@ export default class AirportScene extends Phaser.Scene {
                 });
             }
         });
+        */
 
         // npc 와의 대화를 위한 키 설정
         this.input.keyboard!.on("keydown-E", async () => {
             if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y,
                 this.npc!.x, this.npc!.y) < 100) {
                 console.log("E key pressed");
+                store.dispatch(openNPCDialog());
                 if (this.socket2 === null || this.socket2 === undefined) {
                     this.socket2 = io(`${serverUrl}/interaction`);
                     this.socket2.on("connect", () => {
@@ -597,17 +619,23 @@ export default class AirportScene extends Phaser.Scene {
                         console.log("connect, interaction socket.id: ", this.socket2!.id);
                         this.socket2!.on("textToSpeech", (response: string) => {
                             console.log("USER: ", response);
-                            this.userText!.setText(response);
-                            this.userText!.setOrigin(0, 0);
-                            this.userText!.setX(this.player1!.x + 50);
-                            this.userText!.setY(this.player1!.y);
+                            store.dispatch(appendMessage({
+                                name: this.userNickname,
+                                img: "",
+                                side: "right",
+                                text: response
+                              }));
+                            
                         });
                         this.socket2!.on("npcResponse", (response: string) => {
                             console.log("NPC: ", response);
-                            this.npcText!.setText(response);
-                            this.npcText!.setOrigin(0, 0);
-                            this.npcText!.setX(this.npc!.x + 50);
-                            this.npcText!.setY(this.npc!.y);
+                            store.dispatch(appendMessage({
+                                name: this.userNickname,
+                                img: "",
+                                side: "left",
+                                text: response
+                              }));
+
                         });
                         this.socket2!.on("totalResponse", (response: any) => {
                             // console.log("totalResponse event response: ", response);
@@ -620,6 +648,7 @@ export default class AirportScene extends Phaser.Scene {
                     this.interacting = false;
                     this.socket2?.disconnect();
                     this.socket2 = null;
+                    // store.dispatch(openAirport());
                 }
             }
         });
