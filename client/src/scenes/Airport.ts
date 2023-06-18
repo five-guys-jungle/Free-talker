@@ -488,98 +488,79 @@ export default class AirportScene extends Phaser.Scene {
                 store.dispatch(openNPCDialog());
             }
         });
-        this.input.keyboard!.on("keydown-T", async () => {
-            if (
-                Phaser.Math.Distance.Between(
-                    this.player1!.x,
-                    this.player1!.y,
-                    this.npc!.x,
-                    this.npc!.y
-                ) < 100
-            ) {
-                store.dispatch(openNPCDialog());
-                store.dispatch(appendMessage({
-                    name: "Some Name",
-                    img: "https://example.com/image.png",
-                    side: "right",
-                    text: "Some Text"
-                  }));
-                  
-            }
-        });
-        /*
+        
         this.input.keyboard!.on("keydown-X", async () => {
-            if (
-                Phaser.Math.Distance.Between(
-                    this.player1!.x,
-                    this.player1!.y,
-                    this.npc!.x,
-                    this.npc!.y
-                ) < 100
-            ) {
-                await navigator.mediaDevices
-                    .getUserMedia({ audio: true })
-                    .then((stream) => {
-                        if (
-                            this.recorder === null ||
-                            this.recorder === undefined
-                        ) {
-                            console.log("recorder is null, so create new one");
-                            this.recorder = new MediaRecorder(stream);
-                        }
-                        this.recorder.ondataavailable = (e) => {
-                            // console.log("ondataavailable_this: ", this);
-                            // console.log("ondataavailable_chunks: ", chunks);
-                            chunks.push(e.data);
-                        };
-                        this.recorder.onstop = () => {
-                            // console.log("onstop_chunks: ", chunks);
-                            const blob = new Blob(chunks, {
-                                type: "audio/wav",
-                            });
-                            // const file = new File([blob], "recording.ogg", { type: blob.type });
-                            const formData = new FormData();
-                            chunks = [];
-                            formData.append("audio", blob, "recording.wav");
+            // if (
+            //     Phaser.Math.Distance.Between(
+            //         this.player1!.x,
+            //         this.player1!.y,
+            //         this.npc!.x,
+            //         this.npc!.y
+            //     ) < 100
+            // ) {
+            //     await navigator.mediaDevices
+            //         .getUserMedia({ audio: true })
+            //         .then((stream) => {
+            //             if (
+            //                 this.recorder === null ||
+            //                 this.recorder === undefined
+            //             ) {
+            //                 console.log("recorder is null, so create new one");
+            //                 this.recorder = new MediaRecorder(stream);
+            //             }
+            //             this.recorder.ondataavailable = (e) => {
+            //                 // console.log("ondataavailable_this: ", this);
+            //                 // console.log("ondataavailable_chunks: ", chunks);
+            //                 chunks.push(e.data);
+            //             };
+            //             this.recorder.onstop = () => {
+            //                 // console.log("onstop_chunks: ", chunks);
+            //                 const blob = new Blob(chunks, {
+            //                     type: "audio/wav",
+            //                 });
+            //                 // const file = new File([blob], "recording.ogg", { type: blob.type });
+            //                 const formData = new FormData();
+            //                 chunks = [];
+            //                 formData.append("audio", blob, "recording.wav");
 
-                            axios
-                                .post(
-                                    serverUrl + "/interact",
-                                    formData,
-                                    {
-                                        headers: {
-                                            "Content-Type":
-                                                "multipart/form-data",
-                                        },
-                                    }
-                                )
-                                .then((response) => {
-                                    // console.log(response);
-                                    console.log(response.data);
-                                    if (response.data.audioUrl) {
-                                        // If the audio URL is provided
-                                        const audio = new Audio(
-                                            response.data.audioUrl
-                                        );
-                                        audio.play();
-                                    }
-                                })
-                                .catch((error) => {
-                                    console.log(error);
-                                });
-                        };
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                    });
-                if (this.recorder) {
-                    if (this.recorder.state === "recording") {
-                        this.recorder.stop();
-                    } else {
-                        this.recorder.start();
-                    }
-                }
-            }
+            //                 axios
+            //                     .post(
+            //                         serverUrl + "/interact",
+            //                         formData,
+            //                         {
+            //                             headers: {
+            //                                 "Content-Type":
+            //                                     "multipart/form-data",
+            //                             },
+            //                         }
+            //                     )
+            //                     .then((response) => {
+            //                         // console.log(response);
+            //                         console.log(response.data);
+            //                         if (response.data.audioUrl) {
+            //                             // If the audio URL is provided
+            //                             const audio = new Audio(
+            //                                 response.data.audioUrl
+            //                             );
+            //                             audio.play();
+            //                         }
+            //                     })
+            //                     .catch((error) => {
+            //                         console.log(error);
+            //                     });
+            //             };
+            //         })
+            //         .catch((error) => {
+            //             console.log(error);
+            //         });
+            //     if (this.recorder) {
+            //         if (this.recorder.state === "recording") {
+            //             this.recorder.stop();
+            //         } else {
+            //             this.recorder.start();
+            //         }
+            //     }
+            // }
             if (
                 Phaser.Math.Distance.Between(
                     this.player1!.x,
@@ -604,7 +585,7 @@ export default class AirportScene extends Phaser.Scene {
                 });
             }
         });
-        */
+        
 
         // npc 와의 대화를 위한 키 설정
         this.input.keyboard!.on("keydown-E", async () => {
