@@ -85,44 +85,44 @@ const TalkBox: React.FC = () => {
 
     return (
         <TalkDiv>
-            <section className="msger">
-                <header className="msger-header">
-                    <div className="msger-header-title">
-                        <i className="fas fa-comment-alt"></i> NPCDialog
-                    </div>
-                    <div className="msger-header-options">
-                        <span>
-                            <i className="fas fa-cog"></i>
-                        </span>
-                    </div>
-                </header>
+            {/* <section className="msger"> */}
+            {/* <header className="msger-header">
+                <div className="msger-header-title">
+                    <i className="fas fa-comment-alt"></i> NPCDialog
+                </div>
+                <div className="msger-header-options">
+                    <span>
+                        <i className="fas fa-cog"></i>
+                    </span>
+                </div>
+            </header> */}
 
-                <main className="msger-chat" ref={msgerChatRef}>
-                    {messages.map((message, index) => (
-                        <div className={`msg ${message.side}-msg`} key={index}>
-                            <div
-                                className="msg-img"
-                                style={{
-                                    backgroundImage: `url(${message.img})`,
-                                }}
-                            ></div>
+            <main className="msger-chat" ref={msgerChatRef}>
+                {messages.map((message, index) => (
+                    <div className={`msg ${message.side}-msg`} key={index}>
+                        <div
+                            className="msg-img"
+                            style={{
+                                backgroundImage: `url(${message.img})`,
+                            }}
+                        ></div>
 
-                            <div className="msg-bubble">
-                                <div className="msg-info">
-                                    <div className="msg-info-name">
-                                        {message.name}
-                                    </div>
-                                    {/* <div className="msg-info-time">
+                        <div className="msg-bubble">
+                            <div className="msg-info">
+                                <div className="msg-info-name">
+                                    {message.name}
+                                </div>
+                                {/* <div className="msg-info-time">
                                         {formatDate(new Date())}
                                     </div> */}
-                                </div>
-
-                                <div className="msg-text">{message.text}</div>
                             </div>
+
+                            <div className="msg-text">{message.text}</div>
                         </div>
-                    ))}
-                </main>
-                {/* <form className="msger-inputarea" onSubmit={handleSubmit}>
+                    </div>
+                ))}
+            </main>
+            {/* <form className="msger-inputarea" onSubmit={handleSubmit}>
           <input
             type="text"
             className="msger-input"
@@ -133,7 +133,7 @@ const TalkBox: React.FC = () => {
             Send
           </button>
         </form> */}
-            </section>
+            {/* </section> */}
         </TalkDiv>
     );
 };
@@ -141,11 +141,23 @@ export default TalkBox;
 
 const TalkDiv = styled.div`
     :root {
-        --body-bg: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-        --msger-bg: #fff;
+        --body-bg: rgba(
+            255,
+            255,
+            255,
+            0);
+        // --msger-bg: #fff;
         --border: 2px solid #ddd;
-        --left-msg-bg: #ececec;
-        --right-msg-bg: #579ffb;
+        --left-msg-bg: rgba(
+            255,
+            255,
+            255,
+            0.5)
+        --right-msg-bg: rgba(
+            255,
+            255,
+            255,
+            0.5);
     }
 
     html {
@@ -165,8 +177,14 @@ const TalkDiv = styled.div`
         justify-content: center;
         align-items: center;
         height: 100vh;
-        background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        // background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         font-family: Helvetica, sans-serif;
+        background-color: rgba(
+            255,
+            255,
+            255,
+            0
+        ); // Semi-transparent white background
     }
 
     .msger {
@@ -181,24 +199,34 @@ const TalkDiv = styled.div`
         height: 700px;
         border: 2px solid #ddd;
         border-radius: 5px;
-        background: #fff;
+        rgba(
+            255,
+            255,
+            255,
+            0.5);
         box-shadow: 0 15px 15px -5px rgba(0, 0, 0, 0.2);
     }
 
-    .msger-header {
-        display: flex;
-        justify-content: space-between;
-        padding: 10px;
-        border-bottom: 2px solid #ddd;
-        background: #eee;
-        color: #666;
-    }
+    // .msger-header {
+    //     display: flex;
+    //     justify-content: space-between;
+    //     padding: 10px;
+    //     border-bottom: 2px solid #ddd;
+    //     background: #eee;
+    //     color: #666;
+    // }
 
     .msger-chat {
         flex: 1;
         overflow-y: auto;
         padding: 10px;
         max-height: calc(100% - 150px); /* 채팅창 최대 높이 설정 */
+        background-color: rgba(
+            255,
+            255,
+            255,
+            0.5
+        ); // Semi-transparent white background
     }
 
     .msger-chat::-webkit-scrollbar {
@@ -217,6 +245,12 @@ const TalkDiv = styled.div`
         display: flex;
         align-items: flex-end;
         margin-bottom: 10px;
+        background-color: rgba(
+            255,
+            255,
+            255,
+            0.5
+        ); // Semi-transparent white background
     }
 
     .msg:last-of-type {
@@ -259,15 +293,26 @@ const TalkDiv = styled.div`
 
     .left-msg .msg-bubble {
         border-bottom-left-radius: 0;
+        // Semi-transparent white background
     }
 
     .right-msg {
         flex-direction: row-reverse;
+        background-color: rgba(
+            255,
+            255,
+            255,
+            0
+        ); // Semi-transparent white background
+    }
+
+    .left-msg {
+        background-color: rgba(255, 255, 255, 0);
     }
 
     .right-msg .msg-bubble {
         background: 579ffb;
-        color: #fff;
+        // color: #fff;
         border-bottom-right-radius: 0;
     }
 
@@ -275,43 +320,6 @@ const TalkDiv = styled.div`
         margin: 0 0 0 10px;
     }
 
-    .msger-inputarea {
-        display: flex;
-        padding: 10px;
-        border-top: 2px solid #ddd;
-        background: #eee;
-        position: sticky;
-        bottom: 0;
-    }
-
-    .msger-inputarea * {
-        padding: 10px;
-        border: none;
-        border-radius: 3px;
-        font-size: 1em;
-    }
-
-    .msger-input {
-        flex: 1;
-        background: #ddd;
-    }
-
-    .msger-send-btn {
-        margin-left: 10px;
-        background: rgb(0, 196, 65);
-        color: #fff;
-        font-weight: bold;
-        cursor: pointer;
-        transition: background 0.23s;
-    }
-
-    .msger-send-btn:hover {
-        background: rgb(0, 180, 50);
-    }
-
-    .msger-chat {
-        background-color: #fcfcfe;
-    }
 `;
 
 export { TalkDiv, TalkBox };
