@@ -24,7 +24,7 @@ const RecommendBox: React.FC = () => {
   return (
     
     <Box sx={{ width: 500, height: 300,  pb: 20 }}>
-      <Title>Free talker recommend the expression in Airport</Title>
+      <Title>Free talker recommend the expression in Cafe</Title>
       <Box sx={{ overflow: 'auto', height: '100%',backgroundColor: '#e3f2fd' }} ref={ref}>
         <List>
           {messages.map(({ primary, secondary }, index) => (
