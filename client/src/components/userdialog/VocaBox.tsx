@@ -22,7 +22,7 @@ const VocaBox: React.FC = () => {
   }, [value, setMessages]);
 
   return (
-    <Box sx={{ width: 500, height: 300, pb: 20 }}>
+    <Box sx={{ width: 450, height: 220, pb: 20 }}>
       <Title>Today’s voca and idium</Title>
       <Box sx={{ overflow: 'auto', height: '100%', backgroundColor: '#e3f2fd' }} ref={ref}>
         <List>
@@ -67,5 +67,5 @@ function refreshMessages(): RecommendedExample[] {
 
 const Title = styled.h2`
   text-align: center;
-  margin-top: 20px;
+  margin-top: 30px;
 `;

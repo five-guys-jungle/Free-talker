@@ -8,11 +8,14 @@ import UserBox from "./userdialog/UserBox";
 
 const Container = styled.div`
   display: flex;
-  height: 100%;
+  height: 100vh;
+  overflow: hidden;
 `;
 
 const LeftSection = styled.section`
   flex: 1;
+  height: 100%;
+  overflow: auto;
 `;
 
 const UpperSection = styled.div`
@@ -22,8 +25,9 @@ const UpperSection = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px; /* Added */
-  box-sizing: border-box; /* Added */
+  padding: 20px;
+  height: 50vh; // Set height to half of the Container height
+  box-sizing: border-box;
 `;
 
 const LowerSection = styled.div`
@@ -33,8 +37,9 @@ const LowerSection = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px; /* Added */
-  box-sizing: border-box; /* Added */
+  padding: 20px;
+  height: 50vh; // Set height to half of the Container height
+  box-sizing: border-box;
 `;
 
 const RightSection = styled.section`
@@ -42,24 +47,25 @@ const RightSection = styled.section`
   display: flex;
   flex-direction: column;
   background-color: rgba(255, 0, 255, 0.9);
+  height: 100%;
+  
 `;
 
-
-
 const UserDialog: React.FC = () => {
-  const [messages, setMessages] = useState<string[]>([]);
-  const [inputValue, setInputValue] = useState("");
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(event.target.value);
-  };
-
-  const handleSendMessage = () => {
-    if (inputValue !== "") {
-      setMessages([...messages, inputValue]);
-      setInputValue("");
-    }
-  };
+    const [messages, setMessages] = useState<string[]>([]);
+    const [inputValue, setInputValue] = useState("");
+  
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setInputValue(event.target.value);
+    };
+  
+    const handleSendMessage = () => {
+      if (inputValue !== "") {
+        setMessages([...messages, inputValue]);
+        setInputValue("");
+      }
+    };
+  
 
   return (
     <Container>
