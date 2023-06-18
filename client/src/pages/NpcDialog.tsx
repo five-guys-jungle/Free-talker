@@ -4,7 +4,7 @@ import { TextField, Button } from "@mui/material";
 import Box from "@mui/material/Box";
 import TalkBox from "../components/npcdialog/TalkBox";
 import SentenceBox from "../components/npcdialog/SentenceBox";
-
+import Record from "../components/npcdialog/Record";
 
 const TalkContainer = styled.div`
   display: flex;
@@ -25,7 +25,7 @@ const UpperSection = styled.div`
 
 const LowerSection = styled.div`
   flex: 1;
-  background-color: #f5f7fa;
+  background-color: #fff;
   border-top: 1px solid #ddd;
 `;
 
@@ -56,7 +56,7 @@ const NpcDialog: React.FC = () => {
           <SentenceBox/>
         </UpperSection>
         <LowerSection>
-          
+          <Record/>
         </LowerSection>
       </LeftSection>
       <RightSection>
