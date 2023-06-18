@@ -23,9 +23,12 @@ export const talkBoxSlice = createSlice({
         appendMessage: (state, action: PayloadAction<Message>) => {
             state.messages.push(action.payload);
         },
+        clearMessages: (state) => {
+            state.messages = [];
+        }
     },
 });
 
-export const { appendMessage } = talkBoxSlice.actions;
+export const { appendMessage, clearMessages } = talkBoxSlice.actions;
 
 export default talkBoxSlice.reducer;

@@ -10,19 +10,6 @@ interface Message {
   text: string;
 }
 
-const BOT_MSGS = [
-  "Hi, how are you?",
-  "Ohh... I can't understand what you're trying to say. Sorry!",
-  "I like to play games... But I don't know how to play!",
-  "Sorry if my answers are not relevant. :))",
-  "I feel sleepy! :(",
-];
-
-const BOT_IMG = "https://image.flaticon.com/icons/svg/327/327779.svg";
-const PERSON_IMG = "https://image.flaticon.com/icons/svg/145/145867.svg";
-const BOT_NAME = "BOT";
-const PERSON_NAME = "Sajad";
-
 const TalkBox: React.FC = () => {
   const messages = useSelector((state: { talkBox: TalkBoxState }) => state.talkBox.messages);
   const dispatch = useDispatch();
@@ -35,18 +22,6 @@ const TalkBox: React.FC = () => {
     }
   }, [messages]);
 
-  // const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-  //   event.preventDefault();
-
-  //   const msgText = msgerInputRef.current?.value;
-  //   if (!msgText) return;
-
-  //   appendMessageToState(PERSON_NAME, PERSON_IMG, "right", msgText);
-  //   msgerInputRef.current!.value = "";
-
-  //   botResponse();
-  // };
-
   const appendMessageToState = (
     name: string,
     img: string,
@@ -55,27 +30,6 @@ const TalkBox: React.FC = () => {
   ) => {
     const newMessage: Message = { name, img, side, text };
     dispatch(appendMessage(newMessage)); // Redux action
-  };
-
-  const botResponse = () => {
-    const r = random(0, BOT_MSGS.length - 1);
-    const msgText = BOT_MSGS[r];
-    const delay = msgText.split(" ").length * 100;
-
-    setTimeout(() => {
-      appendMessageToState(BOT_NAME, BOT_IMG, "left", msgText);
-    }, delay);
-  };
-
-  const formatDate = (date: Date) => {
-    const h = "0" + date.getHours();
-    const m = "0" + date.getMinutes();
-
-    return `${h.slice(-2)}:${m.slice(-2)}`;
-  };
-
-  const random = (min: number, max: number) => {
-    return Math.floor(Math.random() * (max - min) + min);
   };
 
   return (
@@ -103,9 +57,9 @@ const TalkBox: React.FC = () => {
               <div className="msg-bubble">
                 <div className="msg-info">
                   <div className="msg-info-name">{message.name}</div>
-                  <div className="msg-info-time">
+                  {/* <div className="msg-info-time">
                     {formatDate(new Date())}
-                  </div>
+                  </div> */}
                 </div>
 
                 <div className="msg-text">{message.text}</div>

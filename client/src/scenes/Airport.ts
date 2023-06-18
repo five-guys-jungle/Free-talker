@@ -15,7 +15,7 @@ import { frameInfo } from "./common/anims";
 // import { playerNicknameState } from '../recoil/user/atoms';
 import { createCharacterAnims } from "../anims/CharacterAnims";
 import { openNPCDialog, openAirport } from "../stores/gameSlice";
-import {appendMessage} from "../stores/talkBoxSlice";
+import {appendMessage, clearMessages} from "../stores/talkBoxSlice";
 import { setRecord } from "../stores/recordSlice";
 import { handleScene } from "./common/handleScene";
 
@@ -630,6 +630,7 @@ export default class AirportScene extends Phaser.Scene {
                     this.interacting = false;
                     this.socket2?.disconnect();
                     this.socket2 = null;
+                    store.dispatch(clearMessages());
                     store.dispatch(openAirport());
                 }
             }
