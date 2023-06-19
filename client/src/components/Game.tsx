@@ -17,16 +17,21 @@ import {
 import { GAME_STATUS } from "../stores/gameSlice";
 import { RootState } from "../stores";
 import NPCDialog from "./NPCDialog";
+import FreeDialog from "./FreeDialog";
+import Report from "./Report";  
 
 const Game = () => {
     // socket intialization, connection
 
-    const { START, AIRPORT, USA, NPCDIALOG } = GAME_STATUS;
+    const { START, AIRPORT, USA, NPCDIALOG, FREEDIALOG, REPORT } = GAME_STATUS;
     const { mode } = useSelector((state: RootState) => {
         return { ...state.mode };
     });
 
-    return <BackgroundDiv>{mode === NPCDIALOG && <NPCDialog />}</BackgroundDiv>;
+    return <BackgroundDiv>
+        {mode === NPCDIALOG && <NPCDialog />}
+        {mode === FREEDIALOG && <FreeDialog />}
+        </BackgroundDiv>;
 };
 
 export { Game };

@@ -14,7 +14,7 @@ import { frameInfo } from "./common/anims";
 
 // import { playerNicknameState } from '../recoil/user/atoms';
 import { createCharacterAnims } from "../anims/CharacterAnims";
-import { openNPCDialog } from "../stores/gameSlice";
+import { openNPCDialog, openFreedialog, openReport } from "../stores/gameSlice";
 import {appendMessage} from "../stores/talkBoxSlice";
 import { handleScene } from "./common/handleScene";
 
@@ -28,6 +28,7 @@ let audioContext = new window.AudioContext();
 export default class AirportScene extends Phaser.Scene {
     player1: Phaser.Physics.Arcade.Sprite | null = null;
     npc: Phaser.Physics.Arcade.Sprite | null = null;
+    npc2: Phaser.Physics.Arcade.Sprite | null = null;
     portal: Phaser.Physics.Arcade.Sprite | null = null;
     cursors: Phaser.Types.Input.Keyboard.CursorKeys | null = null;
     interactKey: Phaser.Input.Keyboard.Key | null = null;
@@ -49,6 +50,10 @@ export default class AirportScene extends Phaser.Scene {
     socket2: Socket | null = null;
     interacting: boolean = false;
     recorder2: MediaRecorder | null = null;
+    upKey: Phaser.Input.Keyboard.Key | null = null;
+    downKey: Phaser.Input.Keyboard.Key | null = null;
+    leftKey: Phaser.Input.Keyboard.Key | null = null;
+    rightKey: Phaser.Input.Keyboard.Key | null = null;
 
     constructor() {
         super("AirportScene");
@@ -463,6 +468,7 @@ export default class AirportScene extends Phaser.Scene {
 
             this.npc = this.physics.add.sprite(1700, 1100, "npc");
             this.portal = this.physics.add.sprite(1920, 1350, "npc");
+            this.npc2 = this.physics.add.sprite(2000, 1500, "npc");
         });
 
         this.cursors = this.input.keyboard!.createCursorKeys();
@@ -476,18 +482,18 @@ export default class AirportScene extends Phaser.Scene {
             fontSize: "16px",
         });
 
-        this.input.keyboard!.on("keydown-D", async () => {
-            if (
-                Phaser.Math.Distance.Between(
-                    this.player1!.x,
-                    this.player1!.y,
-                    this.npc!.x,
-                    this.npc!.y
-                ) < 100
-            ) {
-                store.dispatch(openNPCDialog());
-            }
-        });
+        // this.input.keyboard!.on("keydown-D", async () => {
+        //     if (
+        //         Phaser.Math.Distance.Between(
+        //             this.player1!.x,
+        //             this.player1!.y,
+        //             this.npc!.x,
+        //             this.npc!.y
+        //         ) < 100
+        //     ) {
+        //         store.dispatch(openNPCDialog());
+        //     }
+        // });
         
         this.input.keyboard!.on("keydown-X", async () => {
             // if (
@@ -654,6 +660,16 @@ export default class AirportScene extends Phaser.Scene {
                 }
             }
         });
+
+        this.input.keyboard!.on("keydown-F", async () => {
+            if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y,
+                this.npc2!.x, this.npc2!.y) < 100) {
+                console.log("F key pressed");
+                store.dispatch(openFreedialog());
+                }});
+
+
+        
     }
     update() {
         this.cursors = this.input.keyboard!.createCursorKeys();
