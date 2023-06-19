@@ -14,8 +14,9 @@ import { frameInfo } from "./common/anims";
 
 // import { playerNicknameState } from '../recoil/user/atoms';
 import { createCharacterAnims } from "../anims/CharacterAnims";
-import { openNPCDialog, openFreedialog, openReport } from "../stores/gameSlice";
-import {appendMessage} from "../stores/talkBoxSlice";
+import { openNPCDialog, openAirport, openFreedialog,openReport } from "../stores/gameSlice";
+import { appendMessage, clearMessages } from "../stores/talkBoxSlice";
+import { setRecord } from "../stores/recordSlice";
 import { handleScene } from "./common/handleScene";
 
 import dotenv from "dotenv";
@@ -30,6 +31,7 @@ export default class AirportScene extends Phaser.Scene {
     npc: Phaser.Physics.Arcade.Sprite | null = null;
     npc2: Phaser.Physics.Arcade.Sprite | null = null;
     portal: Phaser.Physics.Arcade.Sprite | null = null;
+    board: Phaser.Physics.Arcade.Sprite | null = null;
     cursors: Phaser.Types.Input.Keyboard.CursorKeys | null = null;
     interactKey: Phaser.Input.Keyboard.Key | null = null;
     interactText: Phaser.GameObjects.Text | null = null;
@@ -469,6 +471,7 @@ export default class AirportScene extends Phaser.Scene {
             this.npc = this.physics.add.sprite(1700, 1100, "npc");
             this.portal = this.physics.add.sprite(1920, 1350, "npc");
             this.npc2 = this.physics.add.sprite(2000, 1500, "npc");
+            this.board = this.physics.add.sprite(1920, 1600, "npc");
         });
 
         this.cursors = this.input.keyboard!.createCursorKeys();
@@ -482,91 +485,39 @@ export default class AirportScene extends Phaser.Scene {
             fontSize: "16px",
         });
 
-        // this.input.keyboard!.on("keydown-D", async () => {
-        //     if (
-        //         Phaser.Math.Distance.Between(
-        //             this.player1!.x,
-        //             this.player1!.y,
-        //             this.npc!.x,
-        //             this.npc!.y
-        //         ) < 100
-        //     ) {
-        //         store.dispatch(openNPCDialog());
-        //     }
-        // });
-        
-        this.input.keyboard!.on("keydown-X", async () => {
-            // if (
-            //     Phaser.Math.Distance.Between(
-            //         this.player1!.x,
-            //         this.player1!.y,
-            //         this.npc!.x,
-            //         this.npc!.y
-            //     ) < 100
-            // ) {
-            //     await navigator.mediaDevices
-            //         .getUserMedia({ audio: true })
-            //         .then((stream) => {
-            //             if (
-            //                 this.recorder === null ||
-            //                 this.recorder === undefined
-            //             ) {
-            //                 console.log("recorder is null, so create new one");
-            //                 this.recorder = new MediaRecorder(stream);
-            //             }
-            //             this.recorder.ondataavailable = (e) => {
-            //                 // console.log("ondataavailable_this: ", this);
-            //                 // console.log("ondataavailable_chunks: ", chunks);
-            //                 chunks.push(e.data);
-            //             };
-            //             this.recorder.onstop = () => {
-            //                 // console.log("onstop_chunks: ", chunks);
-            //                 const blob = new Blob(chunks, {
-            //                     type: "audio/wav",
-            //                 });
-            //                 // const file = new File([blob], "recording.ogg", { type: blob.type });
-            //                 const formData = new FormData();
-            //                 chunks = [];
-            //                 formData.append("audio", blob, "recording.wav");
+        let valve=false;
+        this.input.keyboard!.on("keydown-D", async () => {
+            if (
+                Phaser.Math.Distance.Between(
+                    this.player1!.x,
+                    this.player1!.y,
+                    this.npc!.x,
+                    this.npc!.y
+                ) < 100
+            ) {
+                store.dispatch(openNPCDialog());
+            }
+            if (
+                Phaser.Math.Distance.Between(
+                    this.player1!.x,
+                    this.player1!.y,
+                    this.board!.x,
+                    this.board!.y
+                ) < 100
+            ) {
+                if (valve==false){
+                    store.dispatch(openReport());
+                    valve=true;
+                }
+                else if(valve==true){
+                    store.dispatch(openAirport());
+                    valve=false;
+                }
+                
+            }
+        });
 
-            //                 axios
-            //                     .post(
-            //                         serverUrl + "/interact",
-            //                         formData,
-            //                         {
-            //                             headers: {
-            //                                 "Content-Type":
-            //                                     "multipart/form-data",
-            //                             },
-            //                         }
-            //                     )
-            //                     .then((response) => {
-            //                         // console.log(response);
-            //                         console.log(response.data);
-            //                         if (response.data.audioUrl) {
-            //                             // If the audio URL is provided
-            //                             const audio = new Audio(
-            //                                 response.data.audioUrl
-            //                             );
-            //                             audio.play();
-            //                         }
-            //                     })
-            //                     .catch((error) => {
-            //                         console.log(error);
-            //                     });
-            //             };
-            //         })
-            //         .catch((error) => {
-            //             console.log(error);
-            //         });
-            //     if (this.recorder) {
-            //         if (this.recorder.state === "recording") {
-            //             this.recorder.stop();
-            //         } else {
-            //             this.recorder.start();
-            //         }
-            //     }
-            // }
+        this.input.keyboard!.on("keydown-X", async () => {
             if (
                 Phaser.Math.Distance.Between(
                     this.player1!.x,
@@ -575,13 +526,6 @@ export default class AirportScene extends Phaser.Scene {
                     this.portal!.y
                 ) < 100
             ) {
-                // this.socket?.on("disconnent", (reason:string="scene-change")=>{
-                //     console.log("Client disconnected, id: ", this.socket!.id, ", reason: ", reason);
-                //     let playerDeleted: Player = this.allPlayers[this.socket!.id];
-                //     delete this.allPlayers[this.socket!.id];
-                //     this.socket!.emit("playerDeleted", playerDeleted);
-                // })
-
                 this.socket?.disconnect();
 
                 handleScene("USA", {
@@ -591,14 +535,22 @@ export default class AirportScene extends Phaser.Scene {
                 });
             }
         });
-        
+
+        this.upKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
+        this.downKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
+        this.leftKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
+        this.rightKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
 
         // npc 와의 대화를 위한 키 설정
         this.input.keyboard!.on("keydown-E", async () => {
             if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y,
                 this.npc!.x, this.npc!.y) < 100) {
-                console.log("E key pressed");
                 store.dispatch(openNPCDialog());
+                this.upKey!.enabled = false;
+                this.downKey!.enabled = false;
+                this.leftKey!.enabled = false;
+                
+                this.rightKey!.enabled = false;
                 if (this.socket2 === null || this.socket2 === undefined) {
                     this.socket2 = io(`${serverUrl}/interaction`);
                     this.socket2.on("connect", () => {
@@ -611,8 +563,8 @@ export default class AirportScene extends Phaser.Scene {
                                 img: "",
                                 side: "right",
                                 text: response
-                              }));
-                            
+                            }));
+
                         });
                         this.socket2!.on("npcResponse", (response: string) => {
                             console.log("NPC: ", response);
@@ -621,7 +573,7 @@ export default class AirportScene extends Phaser.Scene {
                                 img: "",
                                 side: "left",
                                 text: response
-                              }));
+                            }));
 
                         });
                         this.socket2!.on("totalResponse", (response: any) => {
@@ -632,10 +584,16 @@ export default class AirportScene extends Phaser.Scene {
                     });
                 }
                 else { // 이미 소켓이 연결되어 있는데 다시 한번 E키를 누른 경우
+                    this.upKey!.enabled = true;
+                    this.downKey!.enabled = true;
+                    this.leftKey!.enabled = true;
+                    this.rightKey!.enabled = true;
+
                     this.interacting = false;
                     this.socket2?.disconnect();
                     this.socket2 = null;
-                    // store.dispatch(openAirport());
+                    store.dispatch(clearMessages());
+                    store.dispatch(openAirport());
                 }
             }
         });
@@ -653,8 +611,10 @@ export default class AirportScene extends Phaser.Scene {
 
                 if (this.recorder2) {
                     if (this.recorder2.state === "recording") {
+                        store.dispatch(setRecord(true));
                         this.recorder2!.stop();
                     } else {
+                        store.dispatch(setRecord(false));
                         this.recorder2!.start();
                     }
                 }
@@ -677,7 +637,6 @@ export default class AirportScene extends Phaser.Scene {
         let velocityX = 0;
         let velocityY = 0;
 
-        // `${this.player1!.texture.key}_idle_left`
         if (this.player1 !== null && this.player1 !== undefined) {
             if (this.cursors!.left.isDown) {
                 velocityX = -speed;

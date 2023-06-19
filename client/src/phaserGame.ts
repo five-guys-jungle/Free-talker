@@ -16,7 +16,7 @@ const config = {
     scene: [Background, AirportScene, USAScene],
     scale: {
         // mode: Phaser.Scale.FIT,
-        // mode: Phaser.Scale.ScaleModes.RESIZE,
+        mode: Phaser.Scale.ScaleModes.RESIZE,
         // width: ,
         // height: 2880,
         width: "100wh",

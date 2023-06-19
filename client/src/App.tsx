@@ -36,7 +36,7 @@ function App() {
               mode === USA ||
               mode === NPCDIALOG ||
               mode === USERDIALOG ||
-              mode === REPORT ? 
+              mode === REPORT || 
               mode === FREEDIALOG ? (
                 <Game />
             ) : (
