@@ -48,8 +48,10 @@ const MessageList: React.FC = () => {
     return (
         <div className="container">
             <DialogTitle>You can say something like this</DialogTitle>
-            {messageViews}
-            {/* <div className="messageContainer">{messageViews}</div> */}
+            <div className="sentence-outerdiv">
+                {messageViews}
+                {/* <div className="messageContainer">{messageViews}</div> */}
+            </div>
         </div>
     );
 };
@@ -70,21 +72,21 @@ const DialogTitle = styled.h1`
 
 const SentenceDiv = styled.div`
     body {
-        // background-color: #edf2f7;
+        // padding: 0 10%;
         // color: #2d3748;
         // font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
         // Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
     }
 
-    // .container {
-    //     // display: flex; // Add this
-    //     // flex-direction: column; // Add this
-    //     // justify-content: center; // Add this
-    //     // align-items: center; // Add this
-    //     // width: 100% // Adjust this
-    //     // height: 150px;
-    //     margin: 0 auto;
-    // }
+    .container {
+        display: flex; // Add this
+        flex-direction: column; // Add this
+        justify-content: center; // Add this
+        align-items: center; // Add this
+        width: 100% // Adjust this
+        height: 50%;
+        margin: 0 auto;
+    }
 
     // .messageContainer {
     // display: flex; // Add this
@@ -99,8 +101,8 @@ const SentenceDiv = styled.div`
         background-color: #f7fafc;
         // width: fit-content; // Adjust this
 
-        width: 600px;
-        height: 60px;
+        // width: 600px;
+        height: 45px;
         margin: 20px auto;
         // margin: 0 auto; // Adjust this
         border-top: solid 2px #fff;
@@ -114,6 +116,14 @@ const SentenceDiv = styled.div`
         display: flex;
         justify-content: flex-start;
         margin-top: 4px;
+    }
+
+    .sentence-outerdiv {
+        display: flex; // Add this
+        background-color: #c1bdbd;
+        align-items: center; // Add this
+        flex-direction: column; // Add this
+        border-radius: 8px;
     }
 
     .label {
