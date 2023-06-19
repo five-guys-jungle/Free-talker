@@ -46,7 +46,6 @@ const RightSection = styled.section`
   flex: 1;
   display: flex;
   flex-direction: column;
-  background-color: rgba(255, 0, 255, 0.9);
   height: 100%;
   
 `;

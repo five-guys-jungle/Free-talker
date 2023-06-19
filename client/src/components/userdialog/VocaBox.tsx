@@ -61,5 +61,13 @@ function refreshMessages(): RecommendedExample[] {
 
 const Title = styled.h2`
   text-align: center;
-  margin-top: 10%;
+  margin-top: 5%;
+  font-size: 2rem; // 기본 글자 크기
+  @media (max-width: 768px) {
+    font-size: 1.5rem; // 창 너비가 768px 이하일 때 글자 크기 조정
+  }
+  @media (max-width: 480px) {
+    font-size: 1rem; // 창 너비가 480px 이하일 때 글자 크기 조정
+  }
 `;
+;
