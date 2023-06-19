@@ -222,12 +222,12 @@ const TalkDiv = styled.div`
         flex: 1;
         overflow-y: auto;
         padding: 10px;
-        max-height: calc(100% - 150px); /* 채팅창 최대 높이 설정 */
+        // max-height: calc(100% - 150px); /* 채팅창 최대 높이 설정 */
         background-color: rgba(
             255,
             255,
             255,
-            0.0
+            0.7
         ); // Semi-transparent white background
     }
 

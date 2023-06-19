@@ -80,6 +80,8 @@ const SentenceOuterDiv = styled.div`
     margin: 0 auto;
     flex-direction: column; // Add this
     padding: 0 10%; /* 화면 양쪽에 10% 공간을 추가 */
+    justify-content: center;
+    // align-items: center;
     // padding-bottom: 10%;
     // @media (min-width: 600px) {
     // padding: 0 10%; /* 화면 너비가 600px 이상일 때 양쪽에 10% 공간을 추가 */
@@ -88,7 +90,7 @@ const SentenceOuterDiv = styled.div`
     // @media (min-width: 1200px) {
     // padding: 0 15%; /* 화면 너비가 1200px 이상일 때 양쪽에 15% 공간을 추가 */
     // }
-    // opacity: 0.5;
+    opacity: 0.7;
     border-radius: 8px;
 `;
 
