@@ -1,76 +1,94 @@
-import React, { useEffect, useRef } from 'react';
-import { gsap } from 'gsap';
+import React, { useEffect, useRef } from "react";
+import { gsap } from "gsap";
 import styled from "styled-components";
-import { useDispatch, useSelector } from 'react-redux';
-import { setRecord } from '../../stores/recordSlice';
+import { useDispatch, useSelector } from "react-redux";
+import { setRecord } from "../../stores/recordSlice";
 
 const Record: React.FC = () => {
-  const mainSVGRef = useRef<SVGSVGElement>(null);
-  const dispatch = useDispatch();
-  const state = useSelector((state: { record: { record: boolean } }) => state.record.record);
-  const stateRef = useRef(state);
+    const mainSVGRef = useRef<SVGSVGElement>(null);
+    const dispatch = useDispatch();
+    const state = useSelector(
+        (state: { record: { record: boolean } }) => state.record.record
+    );
+    const stateRef = useRef(state);
 
-  const doClick = () => {
-    const state = stateRef.current;
-    const tl = gsap.timeline({
-      defaults: {
-        ease: 'elastic(0.2, 0.48)',
-        duration: 0.4
-      }
-    });
-    if (state) {
-      tl.to('line', {
-        scale: 1,
-        strokeWidth: 7,
-        y: -0
-      })
-        .to('#mic', {
-          scale: 1,
-          fill: '#44484D',
-        }, 0)
-        .to('#mic rect', {
-          fill: "#44484D",
-          attr: { filter: "" }
-        }, 0)
-    } else {
-      tl.to('line', {
-        strokeWidth: 0,
-        y: -0,
-      })
-        .to('#mic rect', {
-          fill: "#ed002d",
-          attr: { filter: "url(#glow2)" }
-        }, 0)
-        .to('#mic', {
-          scale: 1.3,
-          fill: '#555b60'
-        }, 0)
-    }
-  }
+    const doClick = () => {
+        const state = stateRef.current;
+        const tl = gsap.timeline({
+            defaults: {
+                ease: "elastic(0.2, 0.48)",
+                duration: 0.4,
+            },
+        });
+        if (state) {
+            tl.to("line", {
+                scale: 1,
+                strokeWidth: 7,
+                y: -0,
+            })
+                .to(
+                    "#mic",
+                    {
+                        scale: 1,
+                        fill: "#44484D",
+                    },
+                    0
+                )
+                .to(
+                    "#mic rect",
+                    {
+                        fill: "#44484D",
+                        attr: { filter: "" },
+                    },
+                    0
+                );
+        } else {
+            tl.to("line", {
+                strokeWidth: 0,
+                y: -0,
+            })
+                .to(
+                    "#mic rect",
+                    {
+                        fill: "#ed002d",
+                        attr: { filter: "url(#glow2)" },
+                    },
+                    0
+                )
+                .to(
+                    "#mic",
+                    {
+                        scale: 1.3,
+                        fill: "#555b60",
+                    },
+                    0
+                );
+        }
+    };
 
-  useEffect(() => {
-    stateRef.current = state;
-  }, [state]);
+    useEffect(() => {
+        stateRef.current = state;
+    }, [state]);
 
-  useEffect(() => {
-    doClick();
-  }, [state]);
+    useEffect(() => {
+        doClick();
+    }, [state]);
 
-  useEffect(() => {
-    const mainSVG = mainSVGRef.current;
-    if (!mainSVG) {
-      return;
-    }
+    useEffect(() => {
+        const mainSVG = mainSVGRef.current;
+        if (!mainSVG) {
+            return;
+        }
 
-    gsap.set('svg', {
-      visibility: 'visible'
-    });
-    gsap.set('#mic', {
-      transformOrigin: '50% 100%'
-    });
-  }, [dispatch]);
+        gsap.set("svg", {
+            visibility: "visible",
+        });
+        gsap.set("#mic", {
+            transformOrigin: "50% 100%",
+        });
+    }, [dispatch]);
 
-  return (
+    return (
         <RecDiv>
             <Container>
                 <svg
@@ -78,6 +96,7 @@ const Record: React.FC = () => {
                     id="mainSVG"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="200 150 400 220"
+                    preserveAspectRatio="xMidYMid meet"
                 >
                     <defs>
                         <filter
@@ -242,7 +261,7 @@ const Record: React.FC = () => {
                         </g>
                     </g>
                 </svg>
-                <Instructions>R 키를 눌러 녹음을 시작하세요</Instructions>
+                <Instructions>R키를 눌러 녹음을 시작하세요</Instructions>
             </Container>
         </RecDiv>
     );
@@ -253,7 +272,8 @@ export default Record;
 const RecDiv = styled.div`
     body {
         background-color: #111;
-        overflow: hidden;
+        width: 100%;
+        height: 100%;
         text-align: center;
         display: flex;
         align-items: center;
@@ -269,17 +289,24 @@ const RecDiv = styled.div`
     }
 
     svg {
-        width: 100%;
+        width: 70%;
         height: 100%;
-        visibility: hidden;
-        cursor: pointer;
+        // visibility: hidden;
+        object-fit: contain;
+        // cursor: pointer;
     }
 `;
 
 const Container = styled.div`
     display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+    height: 100%;
+    // overflow: hidden;
+    // display: flex;
     flex-direction: column; // Stacks items vertically
-    align-items: center; // Horizontally aligns items in the middle
+    // align-items: center; // Horizontally aligns items in the middle
     // gap: 20px; // Creates a gap between items
 `;
 

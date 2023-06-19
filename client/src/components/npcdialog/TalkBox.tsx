@@ -4,35 +4,86 @@ import { useSelector, useDispatch } from "react-redux";
 import { appendMessage, TalkBoxState } from "../../stores/talkBoxSlice";
 
 interface Message {
-  name: string;
-  img: string;
-  side: string;
-  text: string;
+    name: string;
+    img: string;
+    side: string;
+    text: string;
 }
 
+const BOT_MSGS = [
+    "Hi, how are you?",
+    "Ohh... I can't understand what you're trying to say. Sorry!",
+    "I like to play games... But I don't know how to play!",
+    "Sorry if my answers are not relevant. :))",
+    "I feel sleepy! :(",
+];
+
+const BOT_IMG = "https://image.flaticon.com/icons/svg/327/327779.svg";
+const PERSON_IMG = "https://image.flaticon.com/icons/svg/145/145867.svg";
+const BOT_NAME = "BOT";
+const PERSON_NAME = "Sajad";
+
 const TalkBox: React.FC = () => {
-  const messages = useSelector((state: { talkBox: TalkBoxState }) => state.talkBox.messages);
-  const dispatch = useDispatch();
-  const msgerInputRef = useRef<HTMLInputElement>(null);
-  const msgerChatRef = useRef<HTMLDivElement>(null);
+    // const [messages, setMessages] = useState<Message[]>([]);
+    // const msgerInputRef = useRef<HTMLInputElement>(null);
+    // const msgerChatRef = useRef<HTMLDivElement>(null);
+    const messages = useSelector(
+        (state: { talkBox: TalkBoxState }) => state.talkBox.messages
+    );
+    const dispatch = useDispatch();
+    const msgerInputRef = useRef<HTMLInputElement>(null);
+    const msgerChatRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (msgerChatRef.current) {
-      msgerChatRef.current.scrollTop = msgerChatRef.current.scrollHeight;
-    }
-  }, [messages]);
+    useEffect(() => {
+        if (msgerChatRef.current) {
+            msgerChatRef.current.scrollTop = msgerChatRef.current.scrollHeight;
+        }
+    }, [messages]);
 
-  const appendMessageToState = (
-    name: string,
-    img: string,
-    side: string,
-    text: string
-  ) => {
-    const newMessage: Message = { name, img, side, text };
-    dispatch(appendMessage(newMessage)); // Redux action
-  };
+    // const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    //   event.preventDefault();
 
-  return (
+    //   const msgText = msgerInputRef.current?.value;
+    //   if (!msgText) return;
+
+    //   appendMessageToState(PERSON_NAME, PERSON_IMG, "right", msgText);
+    //   msgerInputRef.current!.value = "";
+
+    //   botResponse();
+    // };
+
+    const appendMessageToState = (
+        name: string,
+        img: string,
+        side: string,
+        text: string
+    ) => {
+        const newMessage: Message = { name, img, side, text };
+        dispatch(appendMessage(newMessage)); // Redux action
+    };
+
+    // const botResponse = () => {
+    //   const r = random(0, BOT_MSGS.length - 1);
+    //   const msgText = BOT_MSGS[r];
+    //   const delay = msgText.split(" ").length * 100;
+
+    //   setTimeout(() => {
+    //     appendMessageToState(BOT_NAME, BOT_IMG, "left", msgText);
+    //   }, delay);
+    // };
+
+    const formatDate = (date: Date) => {
+        const h = "0" + date.getHours();
+        const m = "0" + date.getMinutes();
+
+        return `${h.slice(-2)}:${m.slice(-2)}`;
+    };
+
+    // const random = (min: number, max: number) => {
+    //   return Math.floor(Math.random() * (max - min) + min);
+    // };
+
+    return (
         <TalkDiv>
             {/* <section className="msger"> */}
             {/* <header className="msger-header">
@@ -101,12 +152,12 @@ const TalkDiv = styled.div`
             255,
             255,
             255,
-            0.5)
+            0)
         --right-msg-bg: rgba(
             255,
             255,
             255,
-            0.5);
+            0);
     }
 
     html {
@@ -152,8 +203,8 @@ const TalkDiv = styled.div`
             255,
             255,
             255,
-            0.5);
-        box-shadow: 0 15px 15px -5px rgba(0, 0, 0, 0.2);
+            0.0);
+        // box-shadow: 0 15px 15px -5px rgba(0, 0, 0, 0.2);
     }
 
     // .msger-header {
@@ -174,7 +225,7 @@ const TalkDiv = styled.div`
             255,
             255,
             255,
-            0.5
+            0.0
         ); // Semi-transparent white background
     }
 

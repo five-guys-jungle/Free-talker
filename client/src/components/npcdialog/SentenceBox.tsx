@@ -48,7 +48,8 @@ const MessageList: React.FC = () => {
     return (
         <div className="container">
             <DialogTitle>You can say something like this</DialogTitle>
-            <div className="messageContainer">{messageViews}</div>
+            {messageViews}
+            {/* <div className="messageContainer">{messageViews}</div> */}
         </div>
     );
 };
@@ -63,44 +64,44 @@ const DialogTitle = styled.h1`
     font-size: 3rem;
     text-align: center; // This will center the text
     color: #2d3748; // Adjust this as needed
-    padding: 10px; // Adjust this as needed
-    margin-bottom: 20px; // Adjust this as needed
+    padding: 0px auto; // Adjust this as needed
+    // margin-bottom: 20px; // Adjust this as needed
 `;
 
 const SentenceDiv = styled.div`
     body {
-        background-color: #edf2f7;
-        color: #2d3748;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-            Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+        // background-color: #edf2f7;
+        // color: #2d3748;
+        // font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        // Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
     }
 
-    .container {
-        display: flex; // Add this
-        flex-direction: column; // Add this
-        justify-content: center; // Add this
-        align-items: center; // Add this
-        width: 100% // Adjust this
-        height: 150px;
-        margin: 0 auto;
-    }
+    // .container {
+    //     // display: flex; // Add this
+    //     // flex-direction: column; // Add this
+    //     // justify-content: center; // Add this
+    //     // align-items: center; // Add this
+    //     // width: 100% // Adjust this
+    //     // height: 150px;
+    //     margin: 0 auto;
+    // }
 
-    .messageContainer {
-      display: flex;  // Add this
-      background-color: #837c7c
-      opacity: 0.5;
-      flex-direction: column;  // Add this
-      justify-content: center;  // Add this
-      align-items: center;  // Add this
-  }
+    // .messageContainer {
+    // display: flex; // Add this
+    // background-color: #837c7c
+    // opacity: 0.5;
+    // flex-direction: column; // Add this
+    // justify-content: center; // Add this
+    // align-items: center; // Add this
+    // }
 
     .message {
         background-color: #f7fafc;
         // width: fit-content; // Adjust this
 
         width: 600px;
-        height: 120px;
-        margin: 10px auto;
+        height: 60px;
+        margin: 20px auto;
         // margin: 0 auto; // Adjust this
         border-top: solid 2px #fff;
         border-radius: 8px;

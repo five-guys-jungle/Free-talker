@@ -8,14 +8,21 @@ import Record from "./npcdialog/Record";
 
 const TalkContainer = styled.div`
     display: flex;
+    // height: 100%;
+    position: absolute;
     height: 100%;
+    width: 100%; // added
 `;
 
 const LeftSection = styled.section`
-    flex: 1;
+    display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
+    height: 100%;
+    width: 50vw;
+    // flex: 1;
+    // flex-direction: column;
+    // // justify-content: space-between;
+    // // align-items: center;
     background-color: rgba(
         255,
         255,
@@ -26,15 +33,15 @@ const LeftSection = styled.section`
 
 const UpperSection = styled.div`
     flex: 1;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
+    // flex-direction: column;
+    // justify-content: space-between;
+    // align-items: center;
     rgba(
         255,
         255,
         255,
         0.5
-    border-bottom: 1px solid #ddd;
+    // border-bottom: 1px solid #ddd;
 `;
 
 const LowerSection = styled.div`
@@ -44,7 +51,7 @@ const LowerSection = styled.div`
         255,
         255,
         0.5
-    border-top: 1px solid #ddd;
+    // border-top: 1px solid #ddd;
 `;
 
 const RightSection = styled.section`
