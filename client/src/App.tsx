@@ -14,7 +14,7 @@ import NPCDialog from "./components/NPCDialog";
 import { Dialog } from "@mui/material";
 
 function App() {
-    const { START, AIRPORT, USA, NPCDIALOG, USERDIALOG, LOGIN ,REPORT} = GAME_STATUS;
+    const { START, AIRPORT, USA, NPCDIALOG, USERDIALOG, LOGIN, FREEDIALOG, REPORT } = GAME_STATUS;
     const { userLoginId, playerId, mode } = useSelector((state: RootState) => {
         return { ...state.user, ...state.mode };
     });
@@ -36,7 +36,8 @@ function App() {
               mode === USA ||
               mode === NPCDIALOG ||
               mode === USERDIALOG ||
-              mode === REPORT ? (
+              mode === REPORT || 
+              mode === FREEDIALOG ? (
                 <Game />
             ) : (
                 <></>
