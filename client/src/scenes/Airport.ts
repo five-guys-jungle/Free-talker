@@ -483,6 +483,7 @@ export default class AirportScene extends Phaser.Scene {
             fontSize: "16px",
         });
 
+        let valve=false;
         this.input.keyboard!.on("keydown-D", async () => {
             if (
                 Phaser.Math.Distance.Between(
@@ -494,8 +495,6 @@ export default class AirportScene extends Phaser.Scene {
             ) {
                 store.dispatch(openNPCDialog());
             }
-
-            let valve=false;
             if (
                 Phaser.Math.Distance.Between(
                     this.player1!.x,
@@ -506,11 +505,11 @@ export default class AirportScene extends Phaser.Scene {
             ) {
                 if (valve==false){
                     store.dispatch(openReport());
-                    valve=true
+                    valve=true;
                 }
-                else{
+                else if(valve==true){
                     store.dispatch(openAirport());
-                    valve=false
+                    valve=false;
                 }
                 
             }
