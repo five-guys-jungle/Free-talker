@@ -54,8 +54,8 @@ export const signup = async (req: Request, res: Response) => {
                 new GetItemCommand(queryByUserId)
             );
 
-            // console.log("foundUserById : ", foundUserById);
-            // console.log(!!foundUserById.Item);
+            console.log("foundUserById : ", foundUserById);
+            console.log(!!foundUserById.Item);
             if (!!foundUserById.Item) {
                 // if exists
                 return res
@@ -76,9 +76,12 @@ export const signup = async (req: Request, res: Response) => {
                 new QueryCommand(queryItemByUserNickname)
             );
             // console.log("foundUserByNickname : ", foundUserByNickname);
-            // console.log(!!foundUserByNickname.Items);
+            // console.log(foundUserByNickname.Items);
 
-            if (!!foundUserByNickname.Items) {
+            if (
+                foundUserByNickname.Items &&
+                foundUserByNickname.Items.length > 0
+            ) {
                 return res.status(409).json({
                     status: 409,
                     message: "User Nickname already exists",
@@ -139,7 +142,7 @@ export const login = async (req: Request, res: Response) => {
             const getItemByUserId = new GetItemCommand(queryByUserId);
             const foundUser = await client.send(getItemByUserId);
 
-            console.log("foundUser: ", foundUser);
+            // console.log("foundUser: ", foundUser);
             if (!foundUser.Item) {
                 console.log("User not found");
                 return res.json({
@@ -149,7 +152,7 @@ export const login = async (req: Request, res: Response) => {
                 });
             } else {
                 // when found user
-                console.log("login data: ", foundUser.Item);
+                // console.log("login data: ", foundUser.Item);
                 const userPwAttribute = foundUser.Item.userPw;
                 if (typeof userPwAttribute === "undefined") {
                     console.log("User not found");
@@ -163,8 +166,8 @@ export const login = async (req: Request, res: Response) => {
                         userPw,
                         userPwAttribute?.S || ""
                     );
-                    console.log(`userPw : ${userPw}`);
-                    console.log(`userPwAttribute : ${userPwAttribute.S}`);
+                    // console.log(`userPw : ${userPw}`);
+                    // console.log(`userPwAttribute : ${userPwAttribute.S}`);
                     if (typeof jwtKey === "string" && match) {
                         const accessToken = jwt.sign(
                             {

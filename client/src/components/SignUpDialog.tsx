@@ -131,7 +131,7 @@ export default function SignUpDialog() {
             <Button
                 variant="contained"
                 color="primary"
-                type="submit"
+                type="button"
                 size="large"
                 form="login"
                 onClick={handleClickOpen}
