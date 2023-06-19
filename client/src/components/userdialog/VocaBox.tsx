@@ -1,11 +1,5 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import CssBaseline from '@mui/material/CssBaseline';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
@@ -22,7 +16,7 @@ const VocaBox: React.FC = () => {
   }, [value, setMessages]);
 
   return (
-    <Box sx={{ width: 450, height: 220, pb: 20 }}>
+    <Box sx={{ width: '50%', height: '70%', pb: 20 }}>
       <Title>Today’s voca and idium</Title>
       <Box sx={{ overflow: 'auto', height: '100%', backgroundColor: '#e3f2fd' }} ref={ref}>
         <List>
@@ -67,5 +61,5 @@ function refreshMessages(): RecommendedExample[] {
 
 const Title = styled.h2`
   text-align: center;
-  margin-top: 30px;
+  margin-top: 10%;
 `;

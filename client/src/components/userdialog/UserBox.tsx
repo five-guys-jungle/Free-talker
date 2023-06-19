@@ -7,40 +7,56 @@ import Typography from '@mui/material/Typography';
 const avatarImage1 = './assets/낸시.png';
 const avatarImage2 = './assets/아담.png';
 
-const Image = styled('img')({
-  width: '200%',
-  height: 'auto',
-});
+const Image = styled('img')`
+  width: 150%;
+  height: auto;
+`;
+
+const UserBoxContainer = styled(Box)`
+  text-align: center;
+  margin-bottom: 20px;
+`;
+
+const AvatarContainer = styled(Box)`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 200px;
+  flex: 1;
+
+  &:last-child {
+    margin-right: 0;
+  }
+`;
+
+const UserBoxWrapper = styled(Box)`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  overflow: hidden;
+`;
 
 const UserBox: React.FC = () => {
   return (
-    <>
-      <Box
-        textAlign="center"
-        sx={{transform: 'translateY(100px)'}}
-      >
-        <Typography variant="h4">카페 직원과 손님이 되어서<div></div>대화를 시작해 보세요 </Typography>
-      </Box>
-      
-      <Box 
-        display="flex" 
-        gap={25} 
-        sx={{
-          transform: 'translate(0%,100%)',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <Box textAlign="center">
+    <UserBoxWrapper>
+      <UserBoxContainer>
+        <Typography variant="h4">카페 직원과 손님이 되어서</Typography>
+        <Typography variant="h4">대화를 시작해 보세요</Typography>
+      </UserBoxContainer>
+
+      <Box display="flex" flexDirection="row" >
+        <AvatarContainer>
           <Image src={avatarImage1} alt="User Avatar" />
-          <Typography variant="body1">User Name 1</Typography>
-        </Box>
-        <Box textAlign="center">
+          <Typography variant="body1" align="center">User Name 1</Typography>
+        </AvatarContainer>
+        <AvatarContainer>
           <Image src={avatarImage2} alt="User Avatar" />
-          <Typography variant="body1">User Name 2</Typography>
-        </Box>
+          <Typography variant="body1" align="center">User Name 2</Typography>
+        </AvatarContainer>
       </Box>
-    </>
+    </UserBoxWrapper>
   );
 };
 
