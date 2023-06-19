@@ -252,6 +252,7 @@ const Record: React.FC = () => {
 export default Record;
 
 const RecDiv = styled.div`
+    position: relative;
     body {
         background-color: #111;
         width: 100%;
@@ -292,10 +293,26 @@ const Container = styled.div`
     // gap: 20px; // Creates a gap between items
 `;
 
+// const Instructions = styled.div`
+//     font-family: Verdana;
+//     font-size: 1.2em;
+//     font-weight: bold;
+//     padding: 0px auto;
+//     text-align: center;
+// `;
+
 const Instructions = styled.div`
+    position: absolute; // 절대 위치 지정을 사용합니다.
+    top: 50%; // 상위 요소 대비 상단에서 50% 위치에 배치합니다.
+    left: 50%; // 상위 요소 대비 왼쪽에서 50% 위치에 배치합니다.
+    transform: translate(
+        10%,
+        -200%
+    ); // 좌표를 기준으로 상위 요소의 중앙에 위치하도록 합니다.
     font-family: Verdana;
-    font-size: 1.2em;
+    font-size: 1.2vw;
     font-weight: bold;
-    padding: 0px auto;
     text-align: center;
+    // color: white; // 배경이 어두운 경우 텍스트 색상을 하얗게 설정합니다.
+    z-index: 1; // z-index를 설정하여 다른 요소 위에 위치하도록 합니다.
 `;

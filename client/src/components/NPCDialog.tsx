@@ -20,6 +20,8 @@ const LeftSection = styled.section`
     height: 100%;
     // padding: 0 5%; /* 화면 양쪽에 5% 공간을 추가 */
     width: 50vw;
+    padding: 0;
+    margin: 0;
     // flex: 1;
     // flex-direction: column;
     // // justify-content: space-between;
@@ -33,7 +35,9 @@ const LeftSection = styled.section`
 `;
 
 const UpperSection = styled.div`
-    flex: 1;
+    flex: 7;
+    height:100%;
+    
     // padding: 0 5%; /* 화면 양쪽에 5% 공간을 추가 */
     // @media (min-width: 600px) {
     //     padding: 0 10%;  /* 화면 너비가 600px 이상일 때 양쪽에 10% 공간을 추가 */
@@ -42,7 +46,6 @@ const UpperSection = styled.div`
     // @media (min-width: 1200px) {
     //     padding: 0 15%;  /* 화면 너비가 1200px 이상일 때 양쪽에 15% 공간을 추가 */
     // }
-    // flex-direction: column;
     // justify-content: space-between;
     // align-items: center;
     rgba(
@@ -54,7 +57,8 @@ const UpperSection = styled.div`
 `;
 
 const LowerSection = styled.div`
-    flex: 1;
+    flex: 3;
+    
     rgba(
         255,
         255,
@@ -64,7 +68,13 @@ const LowerSection = styled.div`
 `;
 
 const RightSection = styled.section`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
     flex: 1;
+    height: 100%;
+    width: 50vw;
     background-color: rgba(
         255,
         255,

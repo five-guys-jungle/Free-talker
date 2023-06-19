@@ -192,11 +192,13 @@ const TalkDiv = styled.div`
         flex-flow: column wrap;
         // align-items: stretch;
         // justify-content: space-between;
-        width: 500px;
-        max-width: 500px;
-        max-width: 700px;
+        // width: 500px;
+        // max-width: 500px;
+        // max-width: 700px;
         margin: 25px 10px;
-        height: 700px;
+        width: 45vw;
+        height: 90vh;
+        // height: 700px;
         border: 2px solid #ddd;
         border-radius: 5px;
         rgba(
