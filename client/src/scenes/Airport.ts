@@ -14,7 +14,7 @@ import { frameInfo } from "./common/anims";
 
 // import { playerNicknameState } from '../recoil/user/atoms';
 import { createCharacterAnims } from "../anims/CharacterAnims";
-import { openNPCDialog, openAirport } from "../stores/gameSlice";
+import { openNPCDialog, openAirport, openReport } from "../stores/gameSlice";
 import { appendMessage, clearMessages } from "../stores/talkBoxSlice";
 import { setRecord } from "../stores/recordSlice";
 import { handleScene } from "./common/handleScene";
@@ -30,6 +30,7 @@ export default class AirportScene extends Phaser.Scene {
     player1: Phaser.Physics.Arcade.Sprite | null = null;
     npc: Phaser.Physics.Arcade.Sprite | null = null;
     portal: Phaser.Physics.Arcade.Sprite | null = null;
+    board: Phaser.Physics.Arcade.Sprite | null = null;
     cursors: Phaser.Types.Input.Keyboard.CursorKeys | null = null;
     interactKey: Phaser.Input.Keyboard.Key | null = null;
     interactText: Phaser.GameObjects.Text | null = null;
@@ -468,6 +469,7 @@ export default class AirportScene extends Phaser.Scene {
 
             this.npc = this.physics.add.sprite(1700, 1100, "npc");
             this.portal = this.physics.add.sprite(1920, 1350, "npc");
+            this.board = this.physics.add.sprite(1920, 1600, "npc");
         });
 
         this.cursors = this.input.keyboard!.createCursorKeys();
@@ -491,6 +493,26 @@ export default class AirportScene extends Phaser.Scene {
                 ) < 100
             ) {
                 store.dispatch(openNPCDialog());
+            }
+
+            let valve=false;
+            if (
+                Phaser.Math.Distance.Between(
+                    this.player1!.x,
+                    this.player1!.y,
+                    this.board!.x,
+                    this.board!.y
+                ) < 100
+            ) {
+                if (valve==false){
+                    store.dispatch(openReport());
+                    valve=true
+                }
+                else{
+                    store.dispatch(openAirport());
+                    valve=false
+                }
+                
             }
         });
 
