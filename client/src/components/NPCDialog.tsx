@@ -34,14 +34,14 @@ const LeftSection = styled.section`
 
 const UpperSection = styled.div`
     flex: 1;
-    padding: 0 5%; /* 화면 양쪽에 5% 공간을 추가 */
-    @media (min-width: 600px) {
-        padding: 0 10%;  /* 화면 너비가 600px 이상일 때 양쪽에 10% 공간을 추가 */
-    }
+    // padding: 0 5%; /* 화면 양쪽에 5% 공간을 추가 */
+    // @media (min-width: 600px) {
+    //     padding: 0 10%;  /* 화면 너비가 600px 이상일 때 양쪽에 10% 공간을 추가 */
+    // }
 
-    @media (min-width: 1200px) {
-        padding: 0 15%;  /* 화면 너비가 1200px 이상일 때 양쪽에 15% 공간을 추가 */
-    }
+    // @media (min-width: 1200px) {
+    //     padding: 0 15%;  /* 화면 너비가 1200px 이상일 때 양쪽에 15% 공간을 추가 */
+    // }
     // flex-direction: column;
     // justify-content: space-between;
     // align-items: center;

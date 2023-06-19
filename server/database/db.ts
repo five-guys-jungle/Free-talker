@@ -32,8 +32,11 @@ export async function connectDB() {
 async function createTable(tableName: string) {
     try {
         const tableExists = await doesTableExist(tableName);
+        console.log(`Table Exists: ${tableExists}`);
         if (!tableExists) {
             await createTableIfNotExists(tableName);
+        } else {
+            console.log(`${tableName} 테이블이 이미 존재합니다.`);
         }
     } catch (error) {
         console.error("테이블 생성에 실패했습니다:", error);
@@ -43,6 +46,7 @@ async function createTable(tableName: string) {
 async function doesTableExist(tableName: string) {
     const command = new ListTablesCommand({});
     const response = await client.send(command);
+    console.log("List Tables : ", response);
     return response.TableNames?.includes(tableName);
 }
 
@@ -52,6 +56,10 @@ async function createTableIfNotExists(tableName: string) {
         AttributeDefinitions: [
             {
                 AttributeName: "userId",
+                AttributeType: "S",
+            },
+            {
+                AttributeName: "userNickname",
                 AttributeType: "S",
             },
         ],

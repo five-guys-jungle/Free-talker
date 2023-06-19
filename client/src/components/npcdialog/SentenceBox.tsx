@@ -48,10 +48,10 @@ const MessageList: React.FC = () => {
     return (
         <div className="container">
             <DialogTitle>You can say something like this</DialogTitle>
-            <div className="sentence-outerdiv">
+            <SentenceOuterDiv>
                 {messageViews}
                 {/* <div className="messageContainer">{messageViews}</div> */}
-            </div>
+            </SentenceOuterDiv>
         </div>
     );
 };
@@ -63,11 +63,28 @@ const SentenceBox: React.FC = () => {
 export default SentenceBox;
 
 const DialogTitle = styled.h1`
-    font-size: 3rem;
+    font-size: 3vw;
     text-align: center; // This will center the text
     color: #2d3748; // Adjust this as needed
     padding: 0px auto; // Adjust this as needed
     // margin-bottom: 20px; // Adjust this as needed
+`;
+
+const SentenceOuterDiv = styled.div`
+    display: flex; // Add this
+    background-color: #c1bdbd;
+    // align-items: center; // Add this
+    flex-direction: column; // Add this
+    padding: 0 5%; /* 화면 양쪽에 5% 공간을 추가 */
+    @media (min-width: 600px) {
+        padding: 0 10%; /* 화면 너비가 600px 이상일 때 양쪽에 10% 공간을 추가 */
+    }
+
+    @media (min-width: 1200px) {
+        padding: 0 15%; /* 화면 너비가 1200px 이상일 때 양쪽에 15% 공간을 추가 */
+    }
+    opacity: 0.5;
+    border-radius: 8px;
 `;
 
 const SentenceDiv = styled.div`
@@ -84,7 +101,7 @@ const SentenceDiv = styled.div`
         justify-content: center; // Add this
         align-items: center; // Add this
         width: 100% // Adjust this
-        height: 50%;
+        // height: 50%;
         margin: 0 auto;
     }
 
@@ -118,13 +135,13 @@ const SentenceDiv = styled.div`
         margin-top: 4px;
     }
 
-    .sentence-outerdiv {
-        display: flex; // Add this
-        background-color: #c1bdbd;
-        align-items: center; // Add this
-        flex-direction: column; // Add this
-        border-radius: 8px;
-    }
+    // .sentence-outerdiv {
+    //     display: flex; // Add this
+    //     background-color: #c1bdbd;
+    //     align-items: center; // Add this
+    //     flex-direction: column; // Add this
+    //     border-radius: 8px;
+    // }
 
     .label {
         font-weight: bold;

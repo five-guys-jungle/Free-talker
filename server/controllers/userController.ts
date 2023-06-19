@@ -8,6 +8,7 @@ import "dotenv/config";
 import {
     GetItemCommand,
     PutItemCommand,
+    QueryCommand,
     DynamoDBClient,
 } from "@aws-sdk/client-dynamodb";
 
@@ -49,26 +50,35 @@ export const signup = async (req: Request, res: Response) => {
                     userId: { S: userId },
                 },
             };
-            const getItemByUserId = new GetItemCommand(queryByUserId);
-            const foundUserById = await client.send(getItemByUserId);
+            const foundUserById = await client.send(
+                new GetItemCommand(queryByUserId)
+            );
 
+            // console.log("foundUserById : ", foundUserById);
+            // console.log(!!foundUserById.Item);
             if (!!foundUserById.Item) {
                 // if exists
                 return res
                     .status(409)
-                    .json({ status: 409, message: "User already exists" });
+                    .json({ status: 409, message: "User ID already exists" });
             }
 
-            const getItemByUserNickname = {
+            const queryItemByUserNickname = {
                 TableName: tableName,
-                Key: {
-                    userNickname: { S: userNickname },
+                IndexName: "userNickname-index",
+                KeyConditionExpression: "userNickname = :userNickname",
+                ExpressionAttributeValues: {
+                    ":userNickname": { S: userNickname },
                 },
             };
+
             const foundUserByNickname = await client.send(
-                new GetItemCommand(getItemByUserNickname)
+                new QueryCommand(queryItemByUserNickname)
             );
-            if (!!foundUserByNickname) {
+            // console.log("foundUserByNickname : ", foundUserByNickname);
+            // console.log(!!foundUserByNickname.Items);
+
+            if (!!foundUserByNickname.Items) {
                 return res.status(409).json({
                     status: 409,
                     message: "User Nickname already exists",

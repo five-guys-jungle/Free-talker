@@ -85,8 +85,8 @@ const TalkBox: React.FC = () => {
 
     return (
         <TalkDiv>
-            {/* <section className="msger"> */}
-            {/* <header className="msger-header">
+            <section className="msger">
+                {/* <header className="msger-header">
                 <div className="msger-header-title">
                     <i className="fas fa-comment-alt"></i> NPCDialog
                 </div>
@@ -97,32 +97,32 @@ const TalkBox: React.FC = () => {
                 </div>
             </header> */}
 
-            <main className="msger-chat" ref={msgerChatRef}>
-                {messages.map((message, index) => (
-                    <div className={`msg ${message.side}-msg`} key={index}>
-                        <div
-                            className="msg-img"
-                            style={{
-                                backgroundImage: `url(${message.img})`,
-                            }}
-                        ></div>
+                <main className="msger-chat" ref={msgerChatRef}>
+                    {messages.map((message, index) => (
+                        <div className={`msg ${message.side}-msg`} key={index}>
+                            <div
+                                className="msg-img"
+                                style={{
+                                    backgroundImage: `url(${message.img})`,
+                                }}
+                            ></div>
 
-                        <div className="msg-bubble">
-                            <div className="msg-info">
-                                <div className="msg-info-name">
-                                    {message.name}
-                                </div>
-                                {/* <div className="msg-info-time">
+                            <div className="msg-bubble">
+                                <div className="msg-info">
+                                    <div className="msg-info-name">
+                                        {message.name}
+                                    </div>
+                                    {/* <div className="msg-info-time">
                                         {formatDate(new Date())}
                                     </div> */}
-                            </div>
+                                </div>
 
-                            <div className="msg-text">{message.text}</div>
+                                <div className="msg-text">{message.text}</div>
+                            </div>
                         </div>
-                    </div>
-                ))}
-            </main>
-            {/* <form className="msger-inputarea" onSubmit={handleSubmit}>
+                    ))}
+                </main>
+                {/* <form className="msger-inputarea" onSubmit={handleSubmit}>
           <input
             type="text"
             className="msger-input"
@@ -133,7 +133,7 @@ const TalkBox: React.FC = () => {
             Send
           </button>
         </form> */}
-            {/* </section> */}
+            </section>
         </TalkDiv>
     );
 };
@@ -145,7 +145,7 @@ const TalkDiv = styled.div`
             255,
             255,
             255,
-            0);
+            0.5);
         // --msger-bg: #fff;
         --border: 2px solid #ddd;
         --left-msg-bg: rgba(
@@ -203,7 +203,7 @@ const TalkDiv = styled.div`
             255,
             255,
             255,
-            0.0);
+            0.5);
         // box-shadow: 0 15px 15px -5px rgba(0, 0, 0, 0.2);
     }
 
