@@ -16,7 +16,7 @@ const BOT_MSGS = [
     "Ohh... I can't understand what you're trying to say. Sorry!",
     "I like to play games... But I don't know how to play!",
     "Sorry if my answers are not relevant. :))",
-    "I feel sleepy! :(",
+    "I feel sleepy! :("e,
 ];
 
 const BOT_IMG = "./assets/adam.png";

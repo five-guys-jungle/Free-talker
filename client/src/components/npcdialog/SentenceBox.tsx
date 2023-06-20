@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import { Sentence, SentenceBoxState } from "../../stores/sentenceBoxSlice";
@@ -30,6 +30,12 @@ const SentenceList: React.FC = () => {
             state.sentenceBox.sentences
     );
 
+    const [isOuterDivVisible, setIsOuterDivVisible] = useState(false);
+
+    const handleToggleOuterDiv = () => {
+        setIsOuterDivVisible((prev) => !prev);
+    };
+
     const sentenceViews = sentences.map((sentence) => (
         <SentenceView key={sentence._id} sentence={sentence} />
     ));
@@ -37,7 +43,12 @@ const SentenceList: React.FC = () => {
     return (
         <div className="container" style={{ height: "80%" }}>
             <DialogTitle>You can say something like this</DialogTitle>
-            <SentenceOuterDiv>{sentenceViews}</SentenceOuterDiv>
+            <Button onClick={handleToggleOuterDiv}>
+                {isOuterDivVisible ? "Close" : "Open"}
+            </Button>
+            {isOuterDivVisible && (
+                <SentenceOuterDiv>{sentenceViews}</SentenceOuterDiv>
+            )}
         </div>
     );
 };
@@ -55,6 +66,16 @@ const DialogTitle = styled.h1`
     color: #2d3748; // Adjust this as needed
     padding: -10px auto; // Adjust this as needed
     margin-bottom: 20px; // Adjust this as needed
+`;
+
+const Button = styled.button`
+    background-color: #3182ce;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    cursor: pointer;
 `;
 
 const SentenceOuterDiv = styled.div`
