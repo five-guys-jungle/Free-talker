@@ -17,6 +17,7 @@ import { frameInfo } from "./common/anims";
 import { createCharacterAnims } from "../anims/CharacterAnims";
 import { openNPCDialog, openAirport, openFreedialog, openReport } from "../stores/gameSlice";
 import { appendMessage, clearMessages } from "../stores/talkBoxSlice";
+import { appendSentence, clearSentences } from "../stores/sentenceBoxSlice";
 import { setRecord } from "../stores/recordSlice";
 import { handleScene } from "./common/handleScene";
 
@@ -59,7 +60,6 @@ export default class AirportScene extends Phaser.Scene {
 
     preload() {
         this.load.tilemapTiledJSON("map", "assets/maps/airport.json");
-
     }
 
     init(data: any) {
@@ -200,7 +200,6 @@ export default class AirportScene extends Phaser.Scene {
                         console.log("already exist, so just set position");
                         this.allPlayers[playerInfo.socketId].x = playerInfo.x;
                         this.allPlayers[playerInfo.socketId].y = playerInfo.y;
-
                     } else {
                         console.log("not exist, so create new one");
                         let playerSprite: Phaser.Physics.Arcade.Sprite =
@@ -436,7 +435,6 @@ export default class AirportScene extends Phaser.Scene {
                     otherPlayer.move(deltaInSecond);
                     this.allPlayers[key].moveText(this);
                 }
-
             }
         }
     }
@@ -483,18 +481,17 @@ export default class AirportScene extends Phaser.Scene {
                 };
 
                 this.recorder2.onstop = () => {
-                    const blob: Blob = new Blob(chunks, { type: "audio/wav", });
+                    const blob: Blob = new Blob(chunks, { type: "audio/wav" });
                     chunks = [];
                     console.log("record2 onstop event callback function");
                     console.log("blob: ", blob);
                     blob.arrayBuffer().then((buffer) => {
                         console.log("buffer: ", buffer);
-                        this.socket2!.emit('audioSend',
-                            {
-                                userNickname: this.userNickname,
-                                npcName: "npc", // TODO: npc 이름 받아오기
-                                audioDataBuffer: buffer
-                            });
+                        this.socket2!.emit("audioSend", {
+                            userNickname: this.userNickname,
+                            npcName: "ImmigrationOfficer", // TODO: npc 이름 받아오기
+                            audioDataBuffer: buffer,
+                        });
                     });
                 };
             })
