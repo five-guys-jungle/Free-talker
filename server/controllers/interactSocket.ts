@@ -49,7 +49,6 @@ export function interactSocketEventHandler(socket: Socket) {
                 socket.emit("npcResponse", res);
                 return res;
             });
-
             response = await convertTexttoSpeech(inputText, outputText).then(
                 (res) => {
                     socket.emit("totalResponse", res);
@@ -57,7 +56,7 @@ export function interactSocketEventHandler(socket: Socket) {
                 }
             );
 
-            await recommendNextResponses(inputText)
+            await recommendNextResponses(outputText)
                 .then((res) => {
                     socket.emit("recommendedResponses", res);
                     console.log("recommended Responses: ", res);
