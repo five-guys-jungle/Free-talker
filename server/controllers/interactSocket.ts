@@ -26,8 +26,6 @@ import {
 } from "./interaction";
 
 export function interactSocketEventHandler(socket: Socket) {
-    let conversation: string[] = [];
-    const MAX_CONVERSATION_LENGTH = 100;
     let chain: ConversationChain;
     let count = 0;
     console.log("Interaction socket connected, socketid: ", socket.id);
@@ -94,7 +92,6 @@ export function interactSocketEventHandler(socket: Socket) {
 
             inputText = await convertSpeechToText(filePath).then(
                 async (res) => {
-                    conversation.push(res);
 
                     // if (conversation.length > MAX_CONVERSATION_LENGTH) { // 대화 길어질 경우 가장 오래된 메시지 삭제
                     //     conversation.shift();
@@ -104,12 +101,16 @@ export function interactSocketEventHandler(socket: Socket) {
                     return res;
                 }
             );
-            console.log("User: ", inputText);
-
-            const fullConversation = conversation.join(" ");
-            console.log("Full conversation: ", fullConversation);
-
+            // console.log("User: ", inputText);
+            console.log("chain 호출 시작");
+            var startTime:any = new Date();
             const chainOutput = await chain.call({ input: inputText });
+            
+
+            var endTime:any = new Date();
+            var elapsedTime:any = endTime - startTime; // 밀리초 단위
+
+            console.log(`실행 시간: ${elapsedTime}ms`);
             outputText = chainOutput.response;
             socket.emit("npcResponse", outputText);
             // console.log("LangChain OutputText: ", outputText);
