@@ -560,7 +560,7 @@ export default class AirportScene extends Phaser.Scene {
                             console.log("USER: ", response);
                             store.dispatch(appendMessage({
                                 name: this.userNickname,
-                                img: "",
+                                img: this.playerTexture,
                                 side: "right",
                                 text: response
                             }));
@@ -570,7 +570,7 @@ export default class AirportScene extends Phaser.Scene {
                             console.log("NPC: ", response);
                             store.dispatch(appendMessage({
                                 name: this.userNickname,
-                                img: "",
+                                img: this.playerTexture,
                                 side: "left",
                                 text: response
                             }));

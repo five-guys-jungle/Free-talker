@@ -11,6 +11,7 @@ interface Message {
 }
 
 const BOT_MSGS = [
+    "Welcome to JUNGLE!",
     "Hi, how are you?",
     "Ohh... I can't understand what you're trying to say. Sorry!",
     "I like to play games... But I don't know how to play!",
@@ -18,8 +19,8 @@ const BOT_MSGS = [
     "I feel sleepy! :(",
 ];
 
-const BOT_IMG = "https://image.flaticon.com/icons/svg/327/327779.svg";
-const PERSON_IMG = "https://image.flaticon.com/icons/svg/145/145867.svg";
+const BOT_IMG = "./assets/adam.png";
+const PERSON_IMG = "./assets/nancy.png";
 const BOT_NAME = "BOT";
 const PERSON_NAME = "Sajad";
 
@@ -52,6 +53,29 @@ const TalkBox: React.FC = () => {
     //   botResponse();
     // };
 
+    useEffect(() => {
+        // Add initial message when component mounts
+        const initialMessage: Message = {
+          name: 'npc',
+          img: 'npc',
+          side: "left",
+          text: BOT_MSGS[0]
+        };
+        dispatch(appendMessage(initialMessage));
+      }, [dispatch]);
+
+      useEffect(() => {
+        // Add initial message when component mounts
+        const initialMessage: Message = {
+          name: 'user',
+          img: 'user',
+          side: "right",
+          text: BOT_MSGS[0]
+        };
+        dispatch(appendMessage(initialMessage));
+      }, [dispatch]);
+      
+      
     const appendMessageToState = (
         name: string,
         img: string,
@@ -97,31 +121,30 @@ const TalkBox: React.FC = () => {
                 </div>
             </header> */}
 
-                <main className="msger-chat" ref={msgerChatRef}>
-                    {messages.map((message, index) => (
-                        <div className={`msg ${message.side}-msg`} key={index}>
-                            <div
-                                className="msg-img"
-                                style={{
-                                    backgroundImage: `url(${message.img})`,
-                                }}
-                            ></div>
+            <main className="msger-chat" ref={msgerChatRef}>
+            {messages.map((message, index) => (
+                <div className={`msg ${message.side}-msg`} key={index}>
+                <div
+                    className="msg-img"
+                    style={{
+                    backgroundImage: `url(${message.side === "left" ? BOT_IMG : `./assets/${message.img}.png`})`,
+                    }}
+                ></div>
 
-                            <div className="msg-bubble">
-                                <div className="msg-info">
-                                    <div className="msg-info-name">
-                                        {message.name}
-                                    </div>
-                                    {/* <div className="msg-info-time">
-                                        {formatDate(new Date())}
-                                    </div> */}
-                                </div>
+                <div className="msg-bubble">
+                    <div className="msg-info">
+                    <div className={`msg-info-name ${message.side === "left" ? "bot-name" : ""}`}>
+                        {message.side === "left" ? BOT_NAME : message.name}
+                    </div>
+                    {/* <div className="msg-info-time">{formatDate(new Date())}</div> */}
+                    </div>
 
-                                <div className="msg-text">{message.text}</div>
-                            </div>
-                        </div>
-                    ))}
-                </main>
+                    <div className="msg-text">{message.text}</div>
+                </div>
+                </div>
+            ))}
+            </main>
+
                 {/* <form className="msger-inputarea" onSubmit={handleSubmit}>
           <input
             type="text"
