@@ -338,6 +338,7 @@ export default class AirportScene extends Phaser.Scene {
                     this.socket2 = io(`${serverUrl}/interaction`);
                     this.socket2.on("connect", () => {
                         this.interacting = true;
+                        store.dispatch(clearSentences());
                         console.log(
                             "connect, interaction socket.id: ",
                             this.socket2!.id
@@ -402,6 +403,7 @@ export default class AirportScene extends Phaser.Scene {
                     this.interacting = false;
                     this.socket2?.disconnect();
                     this.socket2 = null;
+                    store.dispatch(clearSentences());
                     store.dispatch(clearMessages());
                     store.dispatch(openAirport());
                 }
@@ -687,7 +689,7 @@ export default class AirportScene extends Phaser.Scene {
                         console.log("buffer: ", buffer);
                         this.socket2!.emit("audioSend", {
                             userNickname: this.userNickname,
-                            npcName: "npc", // TODO: npc 이름 받아오기
+                            npcName: "ImmigrationOfficer", // TODO: npc 이름 받아오기
                             audioDataBuffer: buffer,
                         });
                     });
