@@ -20,6 +20,7 @@ import {
     openFreedialog,
     openReport,
 } from "../stores/gameSlice";
+import { npcInfo } from "../characters/Npc";
 import { appendMessage, clearMessages } from "../stores/talkBoxSlice";
 import { appendSentence, clearSentences } from "../stores/sentenceBoxSlice";
 import { setRecord } from "../stores/recordSlice";
@@ -34,10 +35,6 @@ let audioContext = new window.AudioContext();
 
 export default class AirportScene extends Phaser.Scene {
     player1: Phaser.Physics.Arcade.Sprite | null = null;
-    npc: Phaser.Physics.Arcade.Sprite | null = null;
-    npc2: Phaser.Physics.Arcade.Sprite | null = null;
-    portal: Phaser.Physics.Arcade.Sprite | null = null;
-    board: Phaser.Physics.Arcade.Sprite | null = null;
     cursors: Phaser.Types.Input.Keyboard.CursorKeys | null = null;
     interactKey: Phaser.Input.Keyboard.Key | null = null;
     interactText: Phaser.GameObjects.Text | null = null;
@@ -58,10 +55,9 @@ export default class AirportScene extends Phaser.Scene {
     socket2: Socket | null = null;
     interacting: boolean = false;
     recorder2: MediaRecorder | null = null;
-    upKey: Phaser.Input.Keyboard.Key | null = null;
-    downKey: Phaser.Input.Keyboard.Key | null = null;
-    leftKey: Phaser.Input.Keyboard.Key | null = null;
-    rightKey: Phaser.Input.Keyboard.Key | null = null;
+
+    isAudioPlaying: boolean = false;
+    npcList: npcInfo[] = [];
 
     constructor() {
         super("AirportScene");
@@ -81,6 +77,7 @@ export default class AirportScene extends Phaser.Scene {
     create() {
         // this.add.image(400, 300, "background");
         // 배경 설정
+        this.cursors = this.input.keyboard!.createCursorKeys();
         const map = this.make.tilemap({ key: "map" });
         const tileset_generic = map.addTilesetImage("Generic", "generic")!;
         const tileset_basement = map.addTilesetImage("Basement", "basement")!;
@@ -241,10 +238,7 @@ export default class AirportScene extends Phaser.Scene {
             this.physics.add.collider(this.player1, platform6);
             this.physics.add.collider(this.player1, platform7);
 
-            this.npc = this.physics.add.sprite(1700, 1100, "npc");
-            this.portal = this.physics.add.sprite(1920, 1350, "npc");
-            this.npc2 = this.physics.add.sprite(2000, 1500, "npc");
-            this.board = this.physics.add.sprite(1920, 1600, "npc");
+            this.createAirportNpc();
         });
 
         this.cursors = this.input.keyboard!.createCursorKeys();
@@ -257,210 +251,156 @@ export default class AirportScene extends Phaser.Scene {
             color: "black",
             fontSize: "16px",
         });
-        let valve = false;
-        this.input.keyboard!.on("keydown-D", async () => {
-            if (
-                Phaser.Math.Distance.Between(
-                    this.player1!.x,
-                    this.player1!.y,
-                    this.npc!.x,
-                    this.npc!.y
-                ) < 100
-            ) {
-                store.dispatch(openNPCDialog());
-            }
-            if (
-                Phaser.Math.Distance.Between(
-                    this.player1!.x,
-                    this.player1!.y,
-                    this.board!.x,
-                    this.board!.y
-                ) < 100
-            ) {
-                if (valve == false) {
-                    store.dispatch(openReport());
-                    valve = true;
-                } else if (valve == true) {
-                    store.dispatch(openAirport());
-                    valve = false;
-                }
-            }
-        });
-        this.input.keyboard!.on("keydown-X", async () => {
-            if (
-                Phaser.Math.Distance.Between(
-                    this.player1!.x,
-                    this.player1!.y,
-                    this.portal!.x,
-                    this.portal!.y
-                ) < 100
-            ) {
-                this.socket?.disconnect();
-
-                handleScene("USA", {
-                    playerId: this.playerId,
-                    playerNickname: this.userNickname,
-                    playerTexture: this.playerTexture,
-                });
-            }
-        });
-
-        this.upKey = this.input.keyboard!.addKey(
-            Phaser.Input.Keyboard.KeyCodes.UP
-        );
-        this.downKey = this.input.keyboard!.addKey(
-            Phaser.Input.Keyboard.KeyCodes.DOWN
-        );
-        this.leftKey = this.input.keyboard!.addKey(
-            Phaser.Input.Keyboard.KeyCodes.LEFT
-        );
-        this.rightKey = this.input.keyboard!.addKey(
-            Phaser.Input.Keyboard.KeyCodes.RIGHT
-        );
 
         // npc 와의 대화를 위한 키 설정
         this.input.keyboard!.on("keydown-E", async () => {
-            if (
-                Phaser.Math.Distance.Between(
-                    this.player1!.x,
-                    this.player1!.y,
-                    this.npc!.x,
-                    this.npc!.y
-                ) < 100
-            ) {
-                store.dispatch(openNPCDialog());
-                this.upKey!.enabled = false;
-                this.downKey!.enabled = false;
-                this.leftKey!.enabled = false;
+            if (this.isAudioPlaying) {
+                return;
+            }
+            for (let npcInfo of this.npcList) {
+                if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y, npcInfo.x, npcInfo.y) < 100) {
 
-                this.rightKey!.enabled = false;
-                if (this.socket2 === null || this.socket2 === undefined) {
-                    this.socket2 = io(`${serverUrl}/interaction`);
-                    this.socket2.on("connect", () => {
-                        this.interacting = true;
-                        store.dispatch(clearSentences());
-                        console.log(
-                            "connect, interaction socket.id: ",
-                            this.socket2!.id
-                        );
-                        this.socket2!.on("speechToText", (response: string) => {
-                            console.log("USER: ", response);
-                            store.dispatch(
-                                appendMessage({
+                    this.player1!.setVelocity(0, 0);
+                    this.player1!.anims.play(`${this.player1!.texture.key}_idle_down`, true);
+                    store.dispatch(openNPCDialog());
+
+                    this.cursors!.left.enabled = false;
+                    this.cursors!.right.enabled = false;
+                    this.cursors!.up.enabled = false;
+                    this.cursors!.down.enabled = false;
+
+                    if (this.socket2 === null || this.socket2 === undefined) {
+                        this.socket2 = io(`${serverUrl}/interaction`);
+                        this.socket2.on("connect", () => {
+                            this.interacting = true;
+                            console.log("connect, interaction socket.id: ", this.socket2!.id);
+                            this.socket2!.on("speechToText", (response: string) => {
+                                console.log("USER: ", response);
+                                store.dispatch(appendMessage({
                                     name: this.userNickname,
+                                    // img: this.playerTexture,
                                     img: "",
                                     side: "right",
-                                    text: response,
-                                })
-                            );
-                        });
-                        this.socket2!.on("npcResponse", (response: string) => {
-                            console.log("NPC: ", response);
-                            store.dispatch(
-                                appendMessage({
+                                    text: response
+                                }));
+
+                            });
+                            this.socket2!.on("npcResponse", (response: string) => {
+                                console.log("NPC: ", response);
+                                store.dispatch(appendMessage({
                                     name: this.userNickname,
+                                    // img: npcInfo.texture,
                                     img: "",
                                     side: "left",
-                                    text: response,
-                                })
-                            );
-                        });
-                        this.socket2!.on("totalResponse", (response: any) => {
-                            console.log(
-                                "totalResponse event response: ",
-                                response
-                            );
-                            const audio = new Audio(response.audioUrl);
-                            audio.play();
-                        });
-                        this.socket2!.on(
-                            "recommendedResponses",
-                            (responses: string[]) => {
-                                console.log(
-                                    "Recommended Responses: ",
-                                    responses
-                                );
-                                // TODO : Store에 SentenceBox 상태정의하고 dispatch
-                                store.dispatch(clearSentences());
-                                responses.forEach((response, index) => {
-                                    store.dispatch(
-                                        appendSentence({
-                                            _id: index.toString(),
-                                            sentence: response,
-                                        })
-                                    );
-                                });
-                            }
-                        );
-                    });
-                } else {
-                    // 이미 소켓이 연결되어 있는데 다시 한번 E키를 누른 경우
-                    this.upKey!.enabled = true;
-                    this.downKey!.enabled = true;
-                    this.leftKey!.enabled = true;
-                    this.rightKey!.enabled = true;
+                                    text: response
+                                }));
 
-                    this.interacting = false;
-                    this.socket2?.disconnect();
-                    this.socket2 = null;
-                    store.dispatch(clearSentences());
-                    store.dispatch(clearMessages());
-                    store.dispatch(openAirport());
+                            });
+                            this.socket2!.on("totalResponse", (response: any) => {
+                                console.log("totalResponse event response: ", response);
+                                // this.isAudioPlaying = true;
+                                const audio = new Audio(response.audioUrl);
+                                audio.onended = () => {
+                                    console.log("audio.onended");
+                                    this.isAudioPlaying = false;
+                                };
+                                audio.play();
+                            });
+                            this.socket2!.on(
+                                "recommendedResponses",
+                                (responses: string[]) => {
+                                    console.log(
+                                        "Recommended Responses: ",
+                                        responses
+                                    );
+                                    // TODO : Store에 SentenceBox 상태정의하고 dispatch
+                                    store.dispatch(clearSentences());
+                                    responses.forEach((response, index) => {
+                                        store.dispatch(
+                                            appendSentence({
+                                                _id: index.toString(),
+                                                sentence: response,
+                                            })
+                                        );
+                                    });
+                                }
+                            );
+                        });
+                    }
+                    else { // 이미 소켓이 연결되어 있는데 다시 한번 E키를 누른 경우
+                        this.player1!.setVelocity(0, 0);
+                        this.player1!.setPosition(this.player1!.x, this.player1!.y);
+
+                        this.cursors!.left.isDown = false;
+                        this.cursors!.right.isDown = false;
+                        this.cursors!.up.isDown = false;
+                        this.cursors!.down.isDown = false;
+
+                        this.cursors!.left.enabled = true;
+                        this.cursors!.right.enabled = true;
+                        this.cursors!.up.enabled = true;
+                        this.cursors!.down.enabled = true;
+
+                        this.interacting = false;
+                        this.socket2?.disconnect();
+                        this.socket2 = null;
+                        store.dispatch(clearMessages());
+                        store.dispatch(openAirport());
+                    }
+                    break;
                 }
             }
         });
         // 녹음 데이터를 보내고 응답을 받는 키 설정
         this.input.keyboard!.on("keydown-R", async () => {
-            if (
-                Phaser.Math.Distance.Between(
-                    this.player1!.x,
-                    this.player1!.y,
-                    this.npc!.x,
-                    this.npc!.y
-                ) < 100 &&
-                this.socket2?.connected
-            ) {
-                console.log("R key pressed");
-
-                if (this.recorder2 === null || this.recorder2 === undefined) {
-                    await this.recordEventHandler().then(() => {
-                        // console.log("recordEventHandler finished");
-                    });
-                }
-
-                if (this.recorder2) {
-                    if (this.recorder2.state === "recording") {
-                        store.dispatch(setRecord(true));
-                        this.recorder2!.stop();
-                    } else {
-                        store.dispatch(setRecord(false));
-                        this.recorder2!.start();
-                    }
-                }
+            if (this.isAudioPlaying) {
+                return;
             }
-        });
+            for (let npcInfo of this.npcList) {
+                if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y, npcInfo.x, npcInfo.y) < 100 && this.socket2?.connected) {
 
-        this.input.keyboard!.on("keydown-F", async () => {
-            if (
-                Phaser.Math.Distance.Between(
-                    this.player1!.x,
-                    this.player1!.y,
-                    this.npc2!.x,
-                    this.npc2!.y
-                ) < 100
-            ) {
-                console.log("F key pressed");
-                store.dispatch(openFreedialog());
+                    console.log("R key pressed");
+
+
+                    if (this.recorder2 === null || this.recorder2 === undefined) {
+                        await this.recordEventHandler().then(() => {
+                            // console.log("recordEventHandler finished");
+                        });
+                    }
+
+                    if (this.recorder2) {
+                        if (this.recorder2.state === "recording") {
+                            store.dispatch(setRecord(true));
+                            this.isAudioPlaying = true;
+                            this.recorder2!.stop();
+                        } else {
+                            store.dispatch(setRecord(false));
+                            this.recorder2!.start();
+                        }
+                    }
+
+                    break;
+                }
+
             }
         });
     }
     update(time: number, delta: number) {
-        this.cursors = this.input.keyboard!.createCursorKeys();
         const speed = 200;
         let velocityX = 0;
         let velocityY = 0;
 
         if (this.player1 !== null && this.player1 !== undefined) {
+            console.log("userNickname : ", this.userNickname);
+            this.userIdText!.setText(this.userNickname);
+            this.userIdText!.setOrigin(0.5, 0);
+            this.userIdText!.setX(this.player1!.x);
+            this.userIdText!.setY(this.player1!.y - 50);
+        }
+
+        if (this.player1 !== null && this.player1 !== undefined &&
+            this.cursors!.left.enabled && this.cursors!.right.enabled &&
+            this.cursors!.up.enabled && this.cursors!.down.enabled) {
             if (this.cursors!.left.isDown) {
                 velocityX = -speed;
                 this.player1!.anims.play(
@@ -494,7 +434,6 @@ export default class AirportScene extends Phaser.Scene {
                 velocityX /= Math.SQRT2;
                 velocityY /= Math.SQRT2;
             }
-
             this.player1!.setVelocityX(velocityX);
             this.player1!.setVelocityY(velocityY);
 
@@ -502,43 +441,6 @@ export default class AirportScene extends Phaser.Scene {
                 this.player1!.anims.play(
                     `${this.player1!.texture.key}_idle_down`
                 );
-            }
-        }
-
-        if (this.player1 !== null && this.player1 !== undefined) {
-            console.log("userNickname : ", this.userNickname);
-            this.userIdText!.setText(this.userNickname);
-            this.userIdText!.setOrigin(0.5, 0);
-            this.userIdText!.setX(this.player1!.x);
-            this.userIdText!.setY(this.player1!.y - 50);
-
-            // Check distance between players
-            if (
-                Phaser.Math.Distance.Between(
-                    this.player1!.x,
-                    this.player1!.y,
-                    this.npc!.x,
-                    this.npc!.y
-                ) < 100
-            ) {
-                if (this.interacting === false) {
-                    this.interactText!.setText("Press E interact");
-                    // interactText position
-                    this.interactText!.setOrigin(0.5, 0);
-                    this.interactText!.setX(this.player1!.x);
-                    this.interactText!.setY(this.player1!.y - 70);
-                } else {
-                    if (this.recorder2?.state === "recording") {
-                        this.interactText!.setText("Press R to stop recording");
-                    } else {
-                        this.interactText!.setText("Press R to record");
-                    }
-                    this.interactText!.setOrigin(0.5, 0);
-                    this.interactText!.setX(this.player1!.x);
-                    this.interactText!.setY(this.player1!.y - 70);
-                }
-            } else {
-                this.interactText!.setText("");
             }
         }
 
@@ -562,77 +464,7 @@ export default class AirportScene extends Phaser.Scene {
                 if (key !== this.socket.id) {
                     let deltaInSecond: number = delta / 1000;
                     let otherPlayer: Player = this.allPlayers[key];
-                    let destination: { x: number; y: number } = {
-                        x: otherPlayer.x,
-                        y: otherPlayer.y,
-                    };
-                    let otherPlayerSprite: Phaser.Physics.Arcade.Sprite =
-                        otherPlayer.sprite;
-                    if (
-                        destination.x !== otherPlayerSprite.x ||
-                        destination.y !== otherPlayerSprite.y
-                    ) {
-                        // let distanceX: number = Math.abs(destination.x - otherPlayerSprite.x);
-                        // let distanceY: number = Math.abs(destination.y - otherPlayerSprite.y);
-
-                        if (destination.x < otherPlayerSprite.x) {
-                            otherPlayerSprite.anims.play(
-                                `${otherPlayer.playerTexture}_run_left`,
-                                true
-                            );
-                            otherPlayerSprite.x -=
-                                otherPlayer.defaultVelocity * deltaInSecond;
-                        } else if (destination.x > otherPlayerSprite.x) {
-                            otherPlayerSprite.anims.play(
-                                `${otherPlayer.playerTexture}_run_right`,
-                                true
-                            );
-                            otherPlayerSprite.x +=
-                                otherPlayer.defaultVelocity * deltaInSecond;
-                        }
-
-                        if (destination.y < otherPlayerSprite.y) {
-                            otherPlayerSprite.anims.play(
-                                `${otherPlayer.playerTexture}_run_up`,
-                                true
-                            );
-                            otherPlayerSprite.y -=
-                                otherPlayer.defaultVelocity * deltaInSecond;
-                        } else if (destination.y > otherPlayerSprite.y) {
-                            otherPlayerSprite.anims.play(
-                                `${otherPlayer.playerTexture}_run_down`,
-                                true
-                            );
-                            otherPlayerSprite.y +=
-                                otherPlayer.defaultVelocity * deltaInSecond;
-                        }
-
-                        let distanceX: number = Math.abs(
-                            destination.x - otherPlayerSprite.x
-                        );
-                        let distanceY: number = Math.abs(
-                            destination.y - otherPlayerSprite.y
-                        );
-
-                        if (distanceX < 2) {
-                            otherPlayerSprite.x = destination.x;
-                            console.log(
-                                "Other player is alomost close to destination X"
-                            );
-                        }
-                        if (distanceY < 2) {
-                            otherPlayerSprite.y = destination.y;
-                            console.log(
-                                "Other player is alomost close to destination Y"
-                            );
-                        }
-                    } else {
-                        otherPlayerSprite.anims.play(
-                            `${otherPlayer.playerTexture}_idle_down`,
-                            true
-                        );
-                        console.log("Other player is not moving");
-                    }
+                    otherPlayer.move(deltaInSecond);
                     this.allPlayers[key].moveText(this);
                 }
             }
@@ -698,5 +530,16 @@ export default class AirportScene extends Phaser.Scene {
             .catch((error) => {
                 console.log(error);
             });
+    }
+    createAirportNpc() {
+        let npc1: npcInfo = {
+            name: "immigrationOfficer",
+            x: 1700,
+            y: 1100,
+            texture: "npc",
+            sprite: null,
+        };
+        npc1.sprite = this.physics.add.sprite(npc1.x, npc1.y, npc1.texture);
+        this.npcList.push(npc1);
     }
 }
