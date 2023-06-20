@@ -11,6 +11,7 @@ import { GAME_STATUS } from "./stores/gameSlice";
 import Start from "./components/StartPage";
 // import { selectGameScene } from "./redux/gameSlice"; // Redux에서 gameScene 상태를 선택하는 selector를 불러옵니다.
 import NPCDialog from "./components/NPCDialog";
+import UserDialog from "./components/UserDialog";
 import { Dialog } from "@mui/material";
 import TalkBox from "./components/npcdialog/TalkBox";
 
