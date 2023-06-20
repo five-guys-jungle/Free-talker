@@ -17,10 +17,9 @@ const configuration = new Configuration({
 });
 dotenv.config();
 if (process.env.NODE_ENV === "production") {
-    dotenv.config({ path: ".env.production" })
-}
-else {
-    dotenv.config({ path: ".env.development" })
+    dotenv.config({ path: ".env.production" });
+} else {
+    dotenv.config({ path: ".env.development" });
 }
 const serverUrl: string = process.env.SERVER_URL!;
 const openai = new OpenAIApi(configuration);
@@ -76,7 +75,9 @@ export async function interact(req: Request, res: Response): Promise<void> {
 }
 
 // Function to convert speech to text
-export async function convertSpeechToText(audioFilePath: string): Promise<string> {
+export async function convertSpeechToText(
+    audioFilePath: string
+): Promise<string> {
     try {
         const data: FormData = new FormData();
         let response_STT: any;
@@ -105,19 +106,23 @@ export async function convertSpeechToText(audioFilePath: string): Promise<string
     // Implement your logic to convert speech to text using the appropriate libraries or APIs
 }
 // TODO: 인자로 NPC 이름을 받아서 preDefindPrompt에서 해당 NPC의 prompt를 가져오도록 수정 필요
-export async function textCompletion(inputText: string, npcName:string="ImmigrationOfficer"): Promise<string> {
+export async function textCompletion(
+    inputText: string,
+    npcName: string = "ImmigrationOfficer"
+): Promise<string> {
     let completion: any;
     let role_answer: string;
     try {
         // ChatGPT API에 요청 보내기
-        // console.log("preDefindPrompt: ", 
+        // console.log("preDefindPrompt: ",
         // preDefindPrompt['Immigration Officer'].messages.
         // concat([{ role: "user", content: inputText }]));
 
         completion = await openai.createChatCompletion({
             model: "gpt-3.5-turbo",
-            messages: preDefindPrompt[npcName].messages.
-            concat([{ role: "user", content: inputText }]),
+            messages: preDefindPrompt[npcName].messages.concat([
+                { role: "user", content: inputText },
+            ]),
         });
         // ChatGPT API의 결과 받기
         role_answer = completion.data.choices[0].message["content"];
@@ -202,6 +207,31 @@ export async function recommendExpressions(place: string) {
             presence_penalty: 0.0,
         });
         recommendations = response.data.choices[0].text.trimStart();
+        return recommendations;
+    } catch (error) {
+        console.log(error);
+        return "ChatGPT API Error.";
+    }
+}
+
+export async function recommendNextResponses(previous: string) {
+    let response: any;
+    let recommendations: string;
+
+    try {
+        response = await openai.createCompletion({
+            model: "text-davinci-003",
+            prompt: `Recommend me three expressions I can reply to the ${previous} without any explanations`,
+            temperature: 0,
+            max_tokens: 60,
+            top_p: 1.0,
+            frequency_penalty: 0.0,
+            presence_penalty: 0.0,
+        });
+        recommendations = response.data.choices[0].text
+            .trim()
+            .split("\n")
+            .map((sentence: string) => sentence.trim());
         return recommendations;
     } catch (error) {
         console.log(error);
