@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import { Sentence, SentenceBoxState } from "../../stores/sentenceBoxSlice";
+import { setRecord } from "../../stores/recordSlice";
+import { RecordState } from "../../stores/recordSlice";
 
 interface SentenceViewProps {
     sentence: Sentence;
@@ -29,12 +31,33 @@ const SentenceList: React.FC = () => {
         (state: { sentenceBox: SentenceBoxState }) =>
             state.sentenceBox.sentences
     );
-
+    const record = useSelector((state: { record: RecordState }) => state.record.record);
+    
+    const [isLongPress, setIsLongPress] = useState(false);
     const [isOuterDivVisible, setIsOuterDivVisible] = useState(false);
 
     const handleToggleOuterDiv = () => {
         setIsOuterDivVisible((prev) => !prev);
     };
+
+    const handleClick = () => {
+        handleToggleOuterDiv();
+        if (!isOuterDivVisible && !record) {
+            dispatch(setRecord(true));
+        }
+    };
+
+    useEffect(() => {
+        if (record) {
+            const timer = setTimeout(() => {
+                setIsLongPress(true);
+            }, 5000);
+            return () => clearTimeout(timer);
+        } else {
+            setIsLongPress(false);
+        }
+    }, [record]);
+
 
     const sentenceViews = sentences.map((sentence) => (
         <SentenceView key={sentence._id} sentence={sentence} />
@@ -43,7 +66,7 @@ const SentenceList: React.FC = () => {
     return (
         <div className="container" style={{ height: "80%" }}>
             <DialogTitle>You can say something like this</DialogTitle>
-            <Button onClick={handleToggleOuterDiv}>
+            <Button onClick={handleClick} isOpen={isOuterDivVisible} longPress={isLongPress}>
                 {isOuterDivVisible ? "Close" : "Open"}
             </Button>
             {isOuterDivVisible && (
@@ -68,8 +91,9 @@ const DialogTitle = styled.h1`
     margin-bottom: 20px; // Adjust this as needed
 `;
 
-const Button = styled.button`
-    background-color: #3182ce;
+const Button = styled.button<{ isOpen: boolean; longPress: boolean }>`
+    background-color: ${({ isOpen, longPress }) =>
+        isOpen ? '#3182ce' : longPress ? '#ff0000' : '#3182ce'};
     color: #fff;
     border: none;
     padding: 10px 20px;
