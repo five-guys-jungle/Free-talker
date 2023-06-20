@@ -43,21 +43,47 @@ interface RecommendedExample {
   secondary: string;
 }
 
+// const messageExamples: RecommendedExample[] = [
+//   {
+//     primary: 'Voca',
+//     secondary: 'chronic: 만성적인\npersistent: 지속적인\naccumulate: 축적하다'
+//   },
+//   {
+//     primary: 'Idium',
+//     secondary: 'come about : 발생하다\nqualify for : ~의 자격을 얻다'
+//   }
+  
+// ];
 const messageExamples: RecommendedExample[] = [
   {
-    primary: 'Voca',
-    secondary: 'chronic: 만성적인\npersistent: 지속적인\naccumulate: 축적하다'
+    primary: 'chronic',
+    secondary: '만성적인'
   },
   {
-    primary: 'Idium',
-    secondary: 'come about : 발생하다\nqualify for : ~의 자격을 얻다'
+    primary: 'persistent',
+    secondary: '지속적인'
+  },
+  {
+    primary: 'accumulate',
+    secondary: '축적하다'
+  },
+  {
+    primary: 'come about',
+    secondary: '발생하다'
+  },
+  {
+    primary: 'qualify for',
+    secondary: '~의 자격을 얻다'
   }
   
 ];
 
+// 랜덤으로 스크립트 추천
 function refreshMessages(): RecommendedExample[] {
-  return messageExamples;
+  const shuffledExamples = [...messageExamples].sort(() => 0.5 - Math.random());
+  return shuffledExamples.slice(0, 3);
 }
+
 
 const Title = styled.h2`
   text-align: center;

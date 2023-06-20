@@ -49,34 +49,33 @@ const messageExamples: RecommendedExample[] = [
     secondary: '[음료나 식품] 주문해도 될까요?',
   },
   {
-    primary: 'What do you recommend from the menu?',
-    secondary: '어떤 메뉴를 추천해주시겠어요?',
+    primary: '111111111111111111111111',
+    secondary: '11111111111111111111111111111111',
   },
   {
-    primary: 'May I order a [beverage or food item], please?',
-    secondary: '[음료나 식품] 주문해도 될까요?',
+    primary: '222222222222222222222222222',
+    secondary: '22222222222222222222222',
   },
   {
-    primary: 'What do you recommend from the menu?',
-    secondary: '어떤 메뉴를 추천해주시겠어요?',
+    primary: '333333333333333333333333333',
+    secondary: '333333333333333333',
   },
   {
-    primary: 'May I order a [beverage or food item], please?',
-    secondary: '[음료나 식품] 주문해도 될까요?',
+    primary: '444444444444444444444444444444444444444',
+    secondary: '4444444444444444444444444444444444',
   },
   {
-    primary: 'What do you recommend from the menu?',
-    secondary: '어떤 메뉴를 추천해주시겠어요?',
-  },
-  {
-    primary: 'May I order a [beverage or food item], please?',
-    secondary: '[음료나 식품] 주문해도 될까요?',
+    primary: '55555555555555555555555555555555',
+    secondary: '5555555555555555555555555555555',
   },
 ];
 
+// 랜덤으로 스크립트 추천
 function refreshMessages(): RecommendedExample[] {
-  return messageExamples;
+  const shuffledExamples = [...messageExamples].sort(() => 0.5 - Math.random());
+  return shuffledExamples.slice(0, 3);
 }
+
 
 const Title = styled.h2`
   text-align: center;
