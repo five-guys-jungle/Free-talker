@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Sentence, SentenceBoxState } from "../../stores/sentenceBoxSlice";
 import { setRecord } from "../../stores/recordSlice";
 import { RecordState } from "../../stores/recordSlice";
-
+import { css, keyframes } from 'styled-components';
 interface SentenceViewProps {
     sentence: Sentence;
 }
@@ -91,6 +91,12 @@ const DialogTitle = styled.h1`
     margin-bottom: 20px; // Adjust this as needed
 `;
 
+const blinking = keyframes`
+    0% { opacity: 1; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+`;
+
 const Button = styled.button<{ isOpen: boolean; longPress: boolean }>`
     background-color: ${({ isOpen, longPress }) =>
         isOpen ? '#3182ce' : longPress ? '#ff0000' : '#3182ce'};
@@ -100,6 +106,12 @@ const Button = styled.button<{ isOpen: boolean; longPress: boolean }>`
     border-radius: 4px;
     margin-bottom: 10px;
     cursor: pointer;
+
+    ${({ longPress, isOpen }) =>
+        longPress && !isOpen &&
+        css`
+            animation: ${blinking} 1s infinite;
+        `}
 `;
 
 const SentenceOuterDiv = styled.div`
@@ -188,6 +200,7 @@ const SentenceDiv = styled.div`
         font-style: italic;
     }
 `;
+
 
 // .sentence {
 //     background-color: #f7fafc;
