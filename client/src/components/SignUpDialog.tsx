@@ -114,8 +114,10 @@ export default function SignUpDialog() {
         } catch (e) {
             console.log(e);
             if (e instanceof AxiosError && e.response?.status === 409) {
-                setExistingId(true); // 이미 존재하는 아이디일 경우 상태 업데이트
-                setExistingNick(true); // 이미 존재하는 닉네임일 경우 상태 업데이트
+                if (e.response?.data.message === "User ID already exists")
+                    setExistingId(true); // 이미 존재하는 아이디일 경우 상태 업데이트
+                if (e.response?.data.message === "User Nickname already exists")
+                    setExistingNick(true); // 이미 존재하는 닉네임일 경우 상태 업데이트
             }
         }
     };
@@ -129,7 +131,7 @@ export default function SignUpDialog() {
             <Button
                 variant="contained"
                 color="primary"
-                type="submit"
+                type="button"
                 size="large"
                 form="login"
                 onClick={handleClickOpen}

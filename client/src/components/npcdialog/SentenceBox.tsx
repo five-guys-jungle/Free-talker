@@ -46,10 +46,12 @@ const MessageList: React.FC = () => {
     ));
 
     return (
-        <div className="container">
+        <div className="container" style={{ height: "80%" }}>
             <DialogTitle>You can say something like this</DialogTitle>
-            {messageViews}
-            {/* <div className="messageContainer">{messageViews}</div> */}
+            <SentenceOuterDiv>
+                {messageViews}
+                {/* <div className="messageContainer">{messageViews}</div> */}
+            </SentenceOuterDiv>
         </div>
     );
 };
@@ -61,30 +63,54 @@ const SentenceBox: React.FC = () => {
 export default SentenceBox;
 
 const DialogTitle = styled.h1`
-    font-size: 3rem;
+    font-size: 3vw;
+    flex: none;
     text-align: center; // This will center the text
     color: #2d3748; // Adjust this as needed
-    padding: 0px auto; // Adjust this as needed
-    // margin-bottom: 20px; // Adjust this as needed
+    padding: -10px auto; // Adjust this as needed
+    margin-bottom: 20px; // Adjust this as needed
+`;
+
+const SentenceOuterDiv = styled.div`
+    display: flex; // Add this
+    background-color: #c1bdbd;
+    flex: 1;
+    width: 30vw;
+    height: 100%;
+    margin: 0 auto;
+    flex-direction: column; // Add this
+    padding: 0 10%; /* 화면 양쪽에 10% 공간을 추가 */
+    justify-content: center;
+    // align-items: center;
+    // padding-bottom: 10%;
+    // @media (min-width: 600px) {
+    // padding: 0 10%; /* 화면 너비가 600px 이상일 때 양쪽에 10% 공간을 추가 */
+    // }
+
+    // @media (min-width: 1200px) {
+    // padding: 0 15%; /* 화면 너비가 1200px 이상일 때 양쪽에 15% 공간을 추가 */
+    // }
+    opacity: 0.7;
+    border-radius: 8px;
 `;
 
 const SentenceDiv = styled.div`
     body {
-        // background-color: #edf2f7;
+        // padding: 0 10%;
         // color: #2d3748;
         // font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
         // Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
     }
 
-    // .container {
-    //     // display: flex; // Add this
-    //     // flex-direction: column; // Add this
-    //     // justify-content: center; // Add this
-    //     // align-items: center; // Add this
-    //     // width: 100% // Adjust this
-    //     // height: 150px;
-    //     margin: 0 auto;
-    // }
+    .container {
+        display: flex; // Add this
+        flex-direction: column; // Add this
+        justify-content: center; // Add this
+        align-items: center; // Add this
+        width: 100% // Adjust this
+        height: 100%;
+        margin: 0 auto;
+    }
 
     // .messageContainer {
     // display: flex; // Add this
@@ -99,8 +125,8 @@ const SentenceDiv = styled.div`
         background-color: #f7fafc;
         // width: fit-content; // Adjust this
 
-        width: 600px;
-        height: 60px;
+        // width: 600px;
+        height: 45px;
         margin: 20px auto;
         // margin: 0 auto; // Adjust this
         border-top: solid 2px #fff;
@@ -115,6 +141,14 @@ const SentenceDiv = styled.div`
         justify-content: flex-start;
         margin-top: 4px;
     }
+
+    // .sentence-outerdiv {
+    //     display: flex; // Add this
+    //     background-color: #c1bdbd;
+    //     align-items: center; // Add this
+    //     flex-direction: column; // Add this
+    //     border-radius: 8px;
+    // }
 
     .label {
         font-weight: bold;

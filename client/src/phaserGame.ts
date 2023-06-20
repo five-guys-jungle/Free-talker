@@ -12,7 +12,7 @@ const config = {
     // height: "100%", //  scene이 그려지는 canvas의 height 값
     // backgroundColor: '#EEEEEE', //  scene이 그려지는 canvas의 backgroundColor 값
     type: Phaser.AUTO,
-    parent: "freetalker",
+    parent: "phaser-container",
     scene: [Background, AirportScene, USAScene],
     scale: {
         // mode: Phaser.Scale.FIT,
