@@ -67,7 +67,7 @@ const SentenceList: React.FC = () => {
         <div className="container" style={{ height: "80%" }}>
             <DialogTitle>You can say something like this</DialogTitle>
             <Button onClick={handleClick} isOpen={isOuterDivVisible} longPress={isLongPress}>
-                {isOuterDivVisible ? "Close" : "Open"}
+                {isOuterDivVisible ? "Close" : "추천 문장 보기"}
             </Button>
             {isOuterDivVisible && (
                 <SentenceOuterDiv>{sentenceViews}</SentenceOuterDiv>
@@ -93,24 +93,25 @@ const DialogTitle = styled.h1`
 
 const blinking = keyframes`
     0% { opacity: 1; }
-    50% { opacity: 0; }
+    50% { opacity: 0.5; }
     100% { opacity: 1; }
 `;
 
 const Button = styled.button<{ isOpen: boolean; longPress: boolean }>`
     background-color: ${({ isOpen, longPress }) =>
-        isOpen ? '#3182ce' : longPress ? '#ff0000' : '#3182ce'};
+        isOpen ? '#3182ce' : longPress ? '#ee3823' : '#3182ce'};
     color: #fff;
     border: none;
     padding: 10px 20px;
     border-radius: 4px;
     margin-bottom: 10px;
+    margin-left: 30px;
     cursor: pointer;
 
     ${({ longPress, isOpen }) =>
         longPress && !isOpen &&
         css`
-            animation: ${blinking} 1s infinite;
+            animation: ${blinking} 1.5s infinite;
         `}
 `;
 
@@ -153,6 +154,7 @@ const SentenceDiv = styled.div`
         width: 100% // Adjust this
         height: 100%;
         margin: 0 auto;
+        overflow: auto;
     }
 
 
