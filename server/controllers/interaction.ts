@@ -8,8 +8,17 @@ import texttoSpeech from "@google-cloud/text-to-speech";
 import FormData from "form-data";
 import axios from "axios";
 import dotenv from "dotenv";
-import { preDefindPrompt } from "../models/Prompt";
-import { ConnectContactLens } from "aws-sdk";
+import { preDefinedPrompt } from "../models/Prompt";
+import { ConversationChain } from "langchain/chains";
+import { ChatOpenAI } from "langchain/chat_models/openai";
+import {
+    ChatPromptTemplate,
+    HumanMessagePromptTemplate,
+    SystemMessagePromptTemplate,
+    MessagesPlaceholder,
+} from "langchain/prompts";
+import { BufferMemory } from "langchain/memory";
+import { RedisChatMessageHistory } from "langchain/stores/message/redis";
 
 dotenv.config();
 const configuration = new Configuration({
@@ -17,10 +26,9 @@ const configuration = new Configuration({
 });
 dotenv.config();
 if (process.env.NODE_ENV === "production") {
-    dotenv.config({ path: ".env.production" })
-}
-else {
-    dotenv.config({ path: ".env.development" })
+    dotenv.config({ path: ".env.production" });
+} else {
+    dotenv.config({ path: ".env.development" });
 }
 const serverUrl: string = process.env.SERVER_URL!;
 const openai = new OpenAIApi(configuration);
@@ -47,6 +55,7 @@ export const upload = multer({ storage });
 export async function interact(req: Request, res: Response): Promise<void> {
     console.log("NPC Interaction Start.");
     const voiceFile = req.file;
+    const chain = await createChain("ImmigrationOfficer");
     if (voiceFile && voiceFile.size > 0) {
         // Convert speech to text
         const audioFilePath = voiceFile.path;
@@ -59,7 +68,7 @@ export async function interact(req: Request, res: Response): Promise<void> {
 
         console.log(`correctedText: ${correctedText}, inputText: ${inputText}`);
 
-        outputText = await textCompletion(inputText);
+        outputText = await textCompletion(inputText, chain);
         const response = await convertTexttoSpeech(inputText, outputText);
         // console.log("response: ", response);
         res.json(response);
@@ -76,7 +85,9 @@ export async function interact(req: Request, res: Response): Promise<void> {
 }
 
 // Function to convert speech to text
-export async function convertSpeechToText(audioFilePath: string): Promise<string> {
+export async function convertSpeechToText(
+    audioFilePath: string
+): Promise<string> {
     try {
         const data: FormData = new FormData();
         let response_STT: any;
@@ -104,25 +115,86 @@ export async function convertSpeechToText(audioFilePath: string): Promise<string
     }
     // Implement your logic to convert speech to text using the appropriate libraries or APIs
 }
+
+export async function createChain(npcName: string): Promise<ConversationChain> {
+    const chat = new ChatOpenAI({ modelName: "gpt-3.5-turbo", temperature: 0 });
+
+    try {
+        if (!preDefinedPrompt[npcName]) {
+            throw new Error(`Invalid npcName: ${npcName}`);
+        }
+        const chatPrompt = ChatPromptTemplate.fromPromptMessages([
+            SystemMessagePromptTemplate.fromTemplate(
+                preDefinedPrompt[npcName].message
+            ),
+            new MessagesPlaceholder("history"),
+            HumanMessagePromptTemplate.fromTemplate("{input}"),
+        ]);
+
+        const memory = new BufferMemory({
+            returnMessages: true,
+            memoryKey: "history",
+            chatHistory: new RedisChatMessageHistory({
+                sessionId: new Date().toISOString(),
+                sessionTTL: 300,
+                config: {
+                    url: "redis://localhost:6379",
+                },
+            }),
+        });
+        // const chain: ConversationChain = new ConversationChain({
+        //     memory: new BufferMemory({
+        //         returnMessages: true,
+        //         memoryKey: "history",
+        //     }),
+        //     prompt: chatPrompt,
+        //     llm: chat,
+        // });
+        return new ConversationChain({
+            memory: memory,
+            prompt: chatPrompt,
+            llm: chat,
+        });
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
 // TODO: 인자로 NPC 이름을 받아서 preDefindPrompt에서 해당 NPC의 prompt를 가져오도록 수정 필요
-export async function textCompletion(inputText: string, npcName:string="ImmigrationOfficer"): Promise<string> {
+export async function textCompletion(
+    inputText: string,
+    // npcName: string = "ImmigrationOfficer",
+    chain: ConversationChain
+): Promise<string> {
     let completion: any;
     let role_answer: string;
+
     try {
+        // const chain: ConversationChain = await createChain(
+        //     preDefinedPrompt[npcName].message
+        // );
+
+        const response = await chain.call({
+            input: inputText,
+        });
+
+        console.log(`LLM response : ${response.response}`);
         // ChatGPT API에 요청 보내기
-        // console.log("preDefindPrompt: ", 
+        // console.log("preDefindPrompt: ",
         // preDefindPrompt['Immigration Officer'].messages.
         // concat([{ role: "user", content: inputText }]));
 
-        completion = await openai.createChatCompletion({
-            model: "gpt-3.5-turbo",
-            messages: preDefindPrompt[npcName].messages.
-            concat([{ role: "user", content: inputText }]),
-        });
+        // completion = await openai.createChatCompletion({
+        //     model: "gpt-3.5-turbo",
+        //     messages: preDefinedPrompt[npcName].messages.concat([
+        //         { role: "user", content: inputText },
+        //     ]),
+        // });
         // ChatGPT API의 결과 받기
-        role_answer = completion.data.choices[0].message["content"];
-        console.log("NPC: ", role_answer);
-        return role_answer;
+        // role_answer = completion.data.choices[0].message["content"];
+        // console.log("NPC: ", role_answer);
+        return response.response;
     } catch (error) {
         console.log(error);
         return "ChatGPT API Error.";
@@ -171,7 +243,7 @@ export async function grammerCorrection(inputText: string): Promise<string> {
         response = await openai.createCompletion({
             model: "text-davinci-003",
             prompt: `"Correct this to standard English:\n\n${inputText}"`,
-            temperature: 0,
+            temperature: 0.5,
             max_tokens: 60,
             top_p: 1.0,
             frequency_penalty: 0.0,
@@ -195,13 +267,51 @@ export async function recommendExpressions(place: string) {
         response = await openai.createCompletion({
             model: "text-davinci-003",
             prompt: `Recommend me three expressions I can use in a ${place}."`,
-            temperature: 0,
+            temperature: 0.5,
             max_tokens: 60,
             top_p: 1.0,
             frequency_penalty: 0.0,
             presence_penalty: 0.0,
         });
         recommendations = response.data.choices[0].text.trimStart();
+        return recommendations;
+    } catch (error) {
+        console.log(error);
+        return "ChatGPT API Error.";
+    }
+}
+
+export async function recommendNextResponses(
+    previous: string,
+    place: string = "airport immigration office"
+) {
+    let response: any;
+    let recommendations: string;
+
+    try {
+        response = await openai.createChatCompletion({
+            model: "gpt-3.5-turbo",
+            messages: [
+                {
+                    role: "system",
+                    content: `I'm currently in immigration at the ${place}, Recommend me three expressions I can reply to the ${previous} without any explanations`,
+                },
+                {
+                    role: "user",
+                    content: `I'm currently in immigration at the ${place}, Recommend me three expressions I can reply to the ${previous} without any explanations`,
+                },
+            ],
+            // messages: {`I'm currently at the ${place}, Recommend me three expressions I can reply to the ${previous} without any explanations`,}
+            temperature: 0.2,
+            max_tokens: 60,
+            top_p: 1.0,
+            frequency_penalty: 0.0,
+            presence_penalty: 0.0,
+        });
+        recommendations = response.data.choices[0].message["content"]
+            .trim()
+            .split("\n")
+            .map((sentence: string) => sentence.trim());
         return recommendations;
     } catch (error) {
         console.log(error);

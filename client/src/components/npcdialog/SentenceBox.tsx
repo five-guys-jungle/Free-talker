@@ -1,63 +1,49 @@
 import React from "react";
 import styled from "styled-components";
+import { useSelector, useDispatch } from "react-redux";
+import { Sentence, SentenceBoxState } from "../../stores/sentenceBoxSlice";
 
-interface Message {
-    _id: string;
-    sentence: string;
+interface SentenceViewProps {
+    sentence: Sentence;
 }
 
-interface MessageViewProps {
-    message: Message;
-}
-
-const MessageView: React.FC<MessageViewProps> = ({ message }) => {
-    const { sentence } = message;
+const SentenceView: React.FC<SentenceViewProps> = ({ sentence }) => {
+    const { sentence: sentenceText } = sentence;
 
     return (
         <SentenceDiv>
-            <div className="message">
+            <div className="sentence">
                 <div className="field">
-                    <span className="label">추천문장: </span>
-                    <span className="value">{sentence}</span>
+                    {/* <span className="label">추천문장: </span> */}
+                    <span className="value">{sentenceText}</span>
                 </div>
             </div>
         </SentenceDiv>
     );
 };
 
-const MessageList: React.FC = () => {
-    const initialValues: Message[] = [
-        {
-            _id: "d2504a54",
-            sentence: "The event will start next week",
-        },
-        {
-            _id: "fc7cad74",
-            sentence: "I will be traveling soon",
-        },
-        {
-            _id: "876ae642",
-            sentence: "Talk later. Have a great day!",
-        },
-    ];
+const SentenceList: React.FC = () => {
+    const initialValues: Sentence[] = [];
+    const dispatch = useDispatch();
+    const sentences = useSelector(
+        (state: { sentenceBox: SentenceBoxState }) =>
+            state.sentenceBox.sentences
+    );
 
-    const messageViews = initialValues.map((message) => (
-        <MessageView key={message._id} message={message} />
+    const sentenceViews = sentences.map((sentence) => (
+        <SentenceView key={sentence._id} sentence={sentence} />
     ));
 
     return (
         <div className="container" style={{ height: "80%" }}>
             <DialogTitle>You can say something like this</DialogTitle>
-            <SentenceOuterDiv>
-                {messageViews}
-                {/* <div className="messageContainer">{messageViews}</div> */}
-            </SentenceOuterDiv>
+            <SentenceOuterDiv>{sentenceViews}</SentenceOuterDiv>
         </div>
     );
 };
 
 const SentenceBox: React.FC = () => {
-    return <MessageList />;
+    return <SentenceList />;
 };
 
 export default SentenceBox;
@@ -112,16 +98,8 @@ const SentenceDiv = styled.div`
         margin: 0 auto;
     }
 
-    // .messageContainer {
-    // display: flex; // Add this
-    // background-color: #837c7c
-    // opacity: 0.5;
-    // flex-direction: column; // Add this
-    // justify-content: center; // Add this
-    // align-items: center; // Add this
-    // }
 
-    .message {
+    .sentence {
         background-color: #f7fafc;
         // width: fit-content; // Adjust this
 
@@ -166,7 +144,7 @@ const SentenceDiv = styled.div`
     }
 `;
 
-// .message {
+// .sentence {
 //     background-color: #f7fafc;
 //     width: 600px;
 //     height: 150px;
