@@ -14,12 +14,14 @@ import { frameInfo } from "./common/anims";
 
 // import { playerNicknameState } from '../recoil/user/atoms';
 import { createCharacterAnims } from "../anims/CharacterAnims";
-import { openNPCDialog, openAirport, openFreedialog,openReport } from "../stores/gameSlice";
+import { openNPCDialog, openAirport, openFreedialog,openReport, GAME_STATUS } from "../stores/gameSlice";
 import { appendMessage, clearMessages } from "../stores/talkBoxSlice";
 import { setRecord } from "../stores/recordSlice";
 import { handleScene } from "./common/handleScene";
+import { RootState } from "../stores/index";
 
 import dotenv from "dotenv";
+import Report from "../components/Report";
 
 const serverUrl: string = process.env.REACT_APP_SERVER_URL!;
 
@@ -57,6 +59,7 @@ export default class AirportScene extends Phaser.Scene {
     leftKey: Phaser.Input.Keyboard.Key | null = null;
     rightKey: Phaser.Input.Keyboard.Key | null = null;
 
+    
     constructor() {
         super("AirportScene");
     }
@@ -541,61 +544,73 @@ export default class AirportScene extends Phaser.Scene {
         this.leftKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
         this.rightKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
 
+        let valve_E=true;
         // npc 와의 대화를 위한 키 설정
         this.input.keyboard!.on("keydown-E", async () => {
-            if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y,
-                this.npc!.x, this.npc!.y) < 100) {
-                store.dispatch(openNPCDialog());
-                this.upKey!.enabled = false;
-                this.downKey!.enabled = false;
-                this.leftKey!.enabled = false;
-                
-                this.rightKey!.enabled = false;
-                if (this.socket2 === null || this.socket2 === undefined) {
-                    this.socket2 = io(`${serverUrl}/interaction`);
-                    this.socket2.on("connect", () => {
-                        this.interacting = true;
-                        console.log("connect, interaction socket.id: ", this.socket2!.id);
-                        this.socket2!.on("textToSpeech", (response: string) => {
-                            console.log("USER: ", response);
-                            store.dispatch(appendMessage({
-                                name: this.userNickname,
-                                img: "",
-                                side: "right",
-                                text: response
-                            }));
-
+            if(valve_E===true){
+                if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y,
+                    this.npc!.x, this.npc!.y) < 100) {
+                    store.dispatch(openNPCDialog());
+                    this.upKey!.enabled = false;
+                    this.downKey!.enabled = false;
+                    this.leftKey!.enabled = false;
+                    
+                    this.rightKey!.enabled = false;
+                    if (this.socket2 === null || this.socket2 === undefined) {
+                        this.socket2 = io(`${serverUrl}/interaction`);
+                        this.socket2.on("connect", () => {
+                            this.interacting = true;
+                            console.log("connect, interaction socket.id: ", this.socket2!.id);
+                            this.socket2!.on("textToSpeech", (response: string) => {
+                                console.log("USER: ", response);
+                                store.dispatch(appendMessage({
+                                    name: this.userNickname,
+                                    img: "",
+                                    side: "right",
+                                    text: response
+                                }));
+    
+                            });
+                            this.socket2!.on("npcResponse", (response: string) => {
+                                console.log("NPC: ", response);
+                                store.dispatch(appendMessage({
+                                    name: this.userNickname,
+                                    img: "",
+                                    side: "left",
+                                    text: response
+                                }));
+    
+                            });
+                            this.socket2!.on("totalResponse", (response: any) => {
+                                console.log("totalResponse event response: ", response);
+                                const audio = new Audio(response.audioUrl);
+                                audio.play();
+                            });
                         });
-                        this.socket2!.on("npcResponse", (response: string) => {
-                            console.log("NPC: ", response);
-                            store.dispatch(appendMessage({
-                                name: this.userNickname,
-                                img: "",
-                                side: "left",
-                                text: response
-                            }));
-
-                        });
-                        this.socket2!.on("totalResponse", (response: any) => {
-                            console.log("totalResponse event response: ", response);
-                            const audio = new Audio(response.audioUrl);
-                            audio.play();
-                        });
-                    });
-                }
-                else { // 이미 소켓이 연결되어 있는데 다시 한번 E키를 누른 경우
-                    this.upKey!.enabled = true;
-                    this.downKey!.enabled = true;
-                    this.leftKey!.enabled = true;
-                    this.rightKey!.enabled = true;
-
-                    this.interacting = false;
-                    this.socket2?.disconnect();
-                    this.socket2 = null;
-                    store.dispatch(clearMessages());
-                    store.dispatch(openAirport());
+                    }
+                    else { // 이미 소켓이 연결되어 있는데 다시 한번 E키를 누른 경우
+                        this.upKey!.enabled = true;
+                        this.downKey!.enabled = true;
+                        this.leftKey!.enabled = true;
+                        this.rightKey!.enabled = true;
+    
+                        this.interacting = false;
+                        this.socket2?.disconnect();
+                        this.socket2 = null;
+                        // store.dispatch(clearMessages());
+                        // store.dispatch(openAirport());
+                        store.dispatch(openReport());
+                        valve_E=false
+                    }
                 }
             }
+            else{
+                store.dispatch(clearMessages());
+                store.dispatch(openAirport());
+                valve_E=true
+            }
+            
+            
         });
         // 녹음 데이터를 보내고 응답을 받는 키 설정
         this.input.keyboard!.on("keydown-R", async () => {
