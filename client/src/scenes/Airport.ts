@@ -122,13 +122,13 @@ export default class AirportScene extends Phaser.Scene {
         this.socket.on("connect", () => {
             console.log("connect, socket.id: ", this.socket!.id);
             // create user
-            console.log("playerInfo : ", {
-                socketId: this.socket!.id,
-                nickname: this.userNickname,
-                playerTexture: this.playerTexture,
-                x: this.initial_x,
-                y: this.initial_y,
-            });
+            // console.log("playerInfo : ", {
+            //     socketId: this.socket!.id,
+            //     nickname: this.userNickname,
+            //     playerTexture: this.playerTexture,
+            //     x: this.initial_x,
+            //     y: this.initial_y,
+            // });
             this.player1 = this.createPlayer({
                 socketId: this.socket!.id,
                 nickname: this.userNickname,
@@ -137,7 +137,7 @@ export default class AirportScene extends Phaser.Scene {
                 y: this.initial_y,
                 scene: "AirportScene",
             });
-            // this.player1.setCollideWorldBounds(true); // player가 월드 경계를 넘어가지 않게 설정
+
             this.cameras.main.startFollow(this.player1);
             this.cameras.main.zoom = 1.2;
 
@@ -177,7 +177,7 @@ export default class AirportScene extends Phaser.Scene {
                                     otherPlayers[key].x;
                                 this.allPlayers[otherPlayers[key].socketId].y =
                                     otherPlayers[key].y;
-
+                                /*
                                 let angle = Phaser.Math.Angle.Between(
                                     this.allPlayers[key].sprite.x,
                                     this.allPlayers[key].sprite.y,
@@ -235,6 +235,7 @@ export default class AirportScene extends Phaser.Scene {
                                         );
                                     }
                                 }
+                                */
                             }
                         }
                     }
@@ -250,11 +251,12 @@ export default class AirportScene extends Phaser.Scene {
                         // this.allPlayers[playerInfo.socketId].sprite.y = playerInfo.y;
                         this.allPlayers[playerInfo.socketId].x = playerInfo.x;
                         this.allPlayers[playerInfo.socketId].y = playerInfo.y;
-                        console.log(
-                            "newPlayerConnected, playerSprite: ",
-                            this.allPlayers[playerInfo.socketId].sprite
-                        );
+                        // console.log(
+                        //     "newPlayerConnected, playerSprite: ",
+                        //     this.allPlayers[playerInfo.socketId].sprite
+                        // );
 
+                        /*
                         let angle = Phaser.Math.Angle.Between(
                             this.allPlayers[playerInfo.socketId].sprite.x,
                             this.allPlayers[playerInfo.socketId].sprite.y,
@@ -332,6 +334,7 @@ export default class AirportScene extends Phaser.Scene {
                                 );
                             }
                         }
+                        */
                     } else {
                         console.log("not exist, so create new one");
                         let playerSprite: Phaser.Physics.Arcade.Sprite =
@@ -355,6 +358,7 @@ export default class AirportScene extends Phaser.Scene {
                         this.allPlayers[playerInfo.socketId].x = playerInfo.x;
                         this.allPlayers[playerInfo.socketId].y = playerInfo.y;
 
+                        /*
                         let angle = Phaser.Math.Angle.Between(
                             this.allPlayers[playerInfo.socketId].sprite.x,
                             this.allPlayers[playerInfo.socketId].sprite.y,
@@ -432,6 +436,7 @@ export default class AirportScene extends Phaser.Scene {
                                 );
                             }
                         }
+                        */
                     } else {
                         console.log("not exist, so create new one");
                         let playerSprite: Phaser.Physics.Arcade.Sprite =
@@ -481,19 +486,6 @@ export default class AirportScene extends Phaser.Scene {
             fontSize: "16px",
         });
 
-        this.input.keyboard!.on("keydown-D", async () => {
-            if (
-                Phaser.Math.Distance.Between(
-                    this.player1!.x,
-                    this.player1!.y,
-                    this.npc!.x,
-                    this.npc!.y
-                ) < 100
-            ) {
-                store.dispatch(openNPCDialog());
-            }
-        });
-
         this.input.keyboard!.on("keydown-X", async () => {
             if (
                 Phaser.Math.Distance.Between(
@@ -526,7 +518,7 @@ export default class AirportScene extends Phaser.Scene {
                 this.upKey!.enabled = false;
                 this.downKey!.enabled = false;
                 this.leftKey!.enabled = false;
-                
+
                 this.rightKey!.enabled = false;
                 if (this.socket2 === null || this.socket2 === undefined) {
                     this.socket2 = io(`${serverUrl}/interaction`);
@@ -598,7 +590,7 @@ export default class AirportScene extends Phaser.Scene {
             }
         });
     }
-    update() {
+    update(time: number, delta: number) {
         this.cursors = this.input.keyboard!.createCursorKeys();
         const speed = 200;
         let velocityX = 0;
@@ -704,7 +696,56 @@ export default class AirportScene extends Phaser.Scene {
                     scene: "AirportScene",
                 });
             }
+            for (let key in this.allPlayers) {
+                if (key !== this.socket.id) {
+                    let deltaInSecond: number = delta / 1000;
+                    let otherPlayer: Player = this.allPlayers[key];
+                    let destination: { x: number; y: number } = { x: otherPlayer.x, y: otherPlayer.y };
+                    let otherPlayerSprite: Phaser.Physics.Arcade.Sprite = otherPlayer.sprite;
+                    if (destination.x !== otherPlayerSprite.x || destination.y !== otherPlayerSprite.y) {
+                        // let distanceX: number = Math.abs(destination.x - otherPlayerSprite.x);
+                        // let distanceY: number = Math.abs(destination.y - otherPlayerSprite.y);
 
+                        if (destination.x < otherPlayerSprite.x) {
+                            otherPlayerSprite.anims.play(`${otherPlayer.playerTexture}_run_left`, true);
+                            otherPlayerSprite.x -= (otherPlayer.defaultVelocity * deltaInSecond);
+                        }
+                        else if (destination.x > otherPlayerSprite.x) {
+                            otherPlayerSprite.anims.play(`${otherPlayer.playerTexture}_run_right`, true);
+                            otherPlayerSprite.x += (otherPlayer.defaultVelocity * deltaInSecond);
+                        }
+
+
+                        if (destination.y < otherPlayerSprite.y) {
+                            otherPlayerSprite.anims.play(`${otherPlayer.playerTexture}_run_up`, true);
+                            otherPlayerSprite.y -= (otherPlayer.defaultVelocity * deltaInSecond);
+                        }
+                        else if (destination.y > otherPlayerSprite.y) {
+                            otherPlayerSprite.anims.play(`${otherPlayer.playerTexture}_run_down`, true);
+                            otherPlayerSprite.y += (otherPlayer.defaultVelocity * deltaInSecond);
+                        }
+
+                        let distanceX: number = Math.abs(destination.x - otherPlayerSprite.x);
+                        let distanceY: number = Math.abs(destination.y - otherPlayerSprite.y);
+
+                        if (distanceX < 2) {
+                            otherPlayerSprite.x = destination.x;
+                            console.log('Other player is alomost close to destination X');
+                        }
+                        if (distanceY < 2) {
+                            otherPlayerSprite.y = destination.y;
+                            console.log('Other player is alomost close to destination Y');
+                        }
+                    }
+                    else {
+                        otherPlayerSprite.anims.play(`${otherPlayer.playerTexture}_idle_down`, true);
+                        console.log('Other player is not moving');
+                    }
+                    this.allPlayers[key].moveText(this);
+                }
+
+            }
+            /*
             for (let key in this.allPlayers) {
                 if (key !== this.socket.id) {
                     let otherSprite: Phaser.Physics.Arcade.Sprite =
@@ -730,7 +771,7 @@ export default class AirportScene extends Phaser.Scene {
                     }
                     this.allPlayers[key].moveText(this);
                 }
-            }
+            } */
         }
     }
     createPlayer(playerInfo: PlayerInfo): Phaser.Physics.Arcade.Sprite {

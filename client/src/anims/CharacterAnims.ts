@@ -294,6 +294,24 @@ export const createCharacterAnims = (
         repeat: -1,
         frameRate: animsFrameRate,
     });
+    anims.create({
+        key: "adam_run_right_up",
+        frames: anims.generateFrameNumbers("adam", {
+            start: 24,
+            end: 29,
+        }),
+        repeat: -1,
+        frameRate: animsFrameRate,
+    });
+    anims.create({
+        key: "adam_run_right_down",
+        frames: anims.generateFrameNumbers("adam", {
+            start: 24,
+            end: 29,
+        }),
+        repeat: -1,
+        frameRate: animsFrameRate,
+    });
 
     anims.create({
         key: "adam_run_up",
@@ -307,6 +325,24 @@ export const createCharacterAnims = (
 
     anims.create({
         key: "adam_run_left",
+        frames: anims.generateFrameNumbers("adam", {
+            start: 36,
+            end: 41,
+        }),
+        repeat: -1,
+        frameRate: animsFrameRate,
+    });
+    anims.create({
+        key: "adam_run_left_down",
+        frames: anims.generateFrameNumbers("adam", {
+            start: 36,
+            end: 41,
+        }),
+        repeat: -1,
+        frameRate: animsFrameRate,
+    });
+    anims.create({
+        key: "adam_run_left_up",
         frames: anims.generateFrameNumbers("adam", {
             start: 36,
             end: 41,
