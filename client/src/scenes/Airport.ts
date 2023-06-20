@@ -14,7 +14,7 @@ import { frameInfo } from "./common/anims";
 
 // import { playerNicknameState } from '../recoil/user/atoms';
 import { createCharacterAnims } from "../anims/CharacterAnims";
-import { openNPCDialog, openAirport, openFreedialog,openReport } from "../stores/gameSlice";
+import { openNPCDialog, openAirport, openFreedialog, openReport } from "../stores/gameSlice";
 import { appendMessage, clearMessages } from "../stores/talkBoxSlice";
 import { setRecord } from "../stores/recordSlice";
 import { handleScene } from "./common/handleScene";
@@ -52,10 +52,12 @@ export default class AirportScene extends Phaser.Scene {
     socket2: Socket | null = null;
     interacting: boolean = false;
     recorder2: MediaRecorder | null = null;
-    upKey: Phaser.Input.Keyboard.Key | null = null;
-    downKey: Phaser.Input.Keyboard.Key | null = null;
-    leftKey: Phaser.Input.Keyboard.Key | null = null;
-    rightKey: Phaser.Input.Keyboard.Key | null = null;
+    // upKey: Phaser.Input.Keyboard.Key | null = null;
+    // downKey: Phaser.Input.Keyboard.Key | null = null;
+    // leftKey: Phaser.Input.Keyboard.Key | null = null;
+    // rightKey: Phaser.Input.Keyboard.Key | null = null;
+
+    isAudioPlaying: boolean = false;
 
     constructor() {
         super("AirportScene");
@@ -76,6 +78,7 @@ export default class AirportScene extends Phaser.Scene {
     create() {
         // this.add.image(400, 300, "background");
         // 배경 설정
+        this.cursors = this.input.keyboard!.createCursorKeys();
         const map = this.make.tilemap({ key: "map" });
         const tileset_generic = map.addTilesetImage("Generic", "generic")!;
         const tileset_basement = map.addTilesetImage("Basement", "basement")!;
@@ -165,7 +168,7 @@ export default class AirportScene extends Phaser.Scene {
                                 console.log(
                                     "updateAlluser, already exist, so just set position"
                                 );
-                                
+
                                 this.allPlayers[otherPlayers[key].socketId].x =
                                     otherPlayers[key].x;
                                 this.allPlayers[otherPlayers[key].socketId].y =
@@ -181,7 +184,7 @@ export default class AirportScene extends Phaser.Scene {
                     console.log("newPlayerConnected, playerInfo: ", playerInfo);
                     if (playerInfo.socketId in this.allPlayers) {
                         console.log("already exist, so just set position");
-                       
+
                         this.allPlayers[playerInfo.socketId].x = playerInfo.x;
                         this.allPlayers[playerInfo.socketId].y = playerInfo.y;
                     } else {
@@ -253,7 +256,7 @@ export default class AirportScene extends Phaser.Scene {
             color: "black",
             fontSize: "16px",
         });
-        let valve=false;
+        let valve = false;
         this.input.keyboard!.on("keydown-D", async () => {
             if (
                 Phaser.Math.Distance.Between(
@@ -273,15 +276,15 @@ export default class AirportScene extends Phaser.Scene {
                     this.board!.y
                 ) < 100
             ) {
-                if (valve==false){
+                if (valve == false) {
                     store.dispatch(openReport());
-                    valve=true;
+                    valve = true;
                 }
-                else if(valve==true){
+                else if (valve == true) {
                     store.dispatch(openAirport());
-                    valve=false;
+                    valve = false;
                 }
-                
+
             }
         });
         this.input.keyboard!.on("keydown-X", async () => {
@@ -303,27 +306,34 @@ export default class AirportScene extends Phaser.Scene {
             }
         });
 
-        this.upKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
-        this.downKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
-        this.leftKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
-        this.rightKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
+        // this.upKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
+        // this.downKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
+        // this.leftKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
+        // this.rightKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
 
         // npc 와의 대화를 위한 키 설정
         this.input.keyboard!.on("keydown-E", async () => {
+            if (this.isAudioPlaying) {
+                return;
+            }
+
             if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y,
                 this.npc!.x, this.npc!.y) < 100) {
+                this.player1!.setVelocity(0, 0);
+                this.player1!.anims.play(`${this.player1!.texture.key}_idle_down`, true);
                 store.dispatch(openNPCDialog());
-                this.upKey!.enabled = false;
-                this.downKey!.enabled = false;
-                this.leftKey!.enabled = false;
 
-                this.rightKey!.enabled = false;
+                this.cursors!.left.enabled = false;
+                this.cursors!.right.enabled = false;
+                this.cursors!.up.enabled = false;
+                this.cursors!.down.enabled = false;
+
                 if (this.socket2 === null || this.socket2 === undefined) {
                     this.socket2 = io(`${serverUrl}/interaction`);
                     this.socket2.on("connect", () => {
                         this.interacting = true;
                         console.log("connect, interaction socket.id: ", this.socket2!.id);
-                        this.socket2!.on("textToSpeech", (response: string) => {
+                        this.socket2!.on("speechToText", (response: string) => {
                             console.log("USER: ", response);
                             store.dispatch(appendMessage({
                                 name: this.userNickname,
@@ -345,16 +355,30 @@ export default class AirportScene extends Phaser.Scene {
                         });
                         this.socket2!.on("totalResponse", (response: any) => {
                             console.log("totalResponse event response: ", response);
+                            // this.isAudioPlaying = true;
                             const audio = new Audio(response.audioUrl);
+                            audio.onended = () => {
+                                console.log("audio.onended");
+                                this.isAudioPlaying = false;
+                            };
                             audio.play();
                         });
                     });
                 }
                 else { // 이미 소켓이 연결되어 있는데 다시 한번 E키를 누른 경우
-                    this.upKey!.enabled = true;
-                    this.downKey!.enabled = true;
-                    this.leftKey!.enabled = true;
-                    this.rightKey!.enabled = true;
+                    // this.cursors!.resetKeys();
+                    this.player1!.setVelocity(0, 0);
+                    this.player1!.setPosition(this.player1!.x, this.player1!.y);
+
+                    this.cursors!.left.isDown = false;
+                    this.cursors!.right.isDown = false;
+                    this.cursors!.up.isDown = false;
+                    this.cursors!.down.isDown = false;
+
+                    this.cursors!.left.enabled = true;
+                    this.cursors!.right.enabled = true;
+                    this.cursors!.up.enabled = true;
+                    this.cursors!.down.enabled = true;
 
                     this.interacting = false;
                     this.socket2?.disconnect();
@@ -366,9 +390,14 @@ export default class AirportScene extends Phaser.Scene {
         });
         // 녹음 데이터를 보내고 응답을 받는 키 설정
         this.input.keyboard!.on("keydown-R", async () => {
+            if (this.isAudioPlaying) {
+                return;
+            }
+
             if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y,
                 this.npc!.x, this.npc!.y) < 100 && this.socket2?.connected) {
                 console.log("R key pressed");
+
 
                 if (this.recorder2 === null || this.recorder2 === undefined) {
                     await this.recordEventHandler().then(() => {
@@ -379,6 +408,7 @@ export default class AirportScene extends Phaser.Scene {
                 if (this.recorder2) {
                     if (this.recorder2.state === "recording") {
                         store.dispatch(setRecord(true));
+                        this.isAudioPlaying = true;
                         this.recorder2!.stop();
                     } else {
                         store.dispatch(setRecord(false));
@@ -393,18 +423,21 @@ export default class AirportScene extends Phaser.Scene {
                 this.npc2!.x, this.npc2!.y) < 100) {
                 console.log("F key pressed");
                 store.dispatch(openFreedialog());
-                }});
+            }
+        });
 
 
-        
+
     }
     update(time: number, delta: number) {
-        this.cursors = this.input.keyboard!.createCursorKeys();
+        // this.cursors = this.input.keyboard!.createCursorKeys();
         const speed = 200;
         let velocityX = 0;
         let velocityY = 0;
 
-        if (this.player1 !== null && this.player1 !== undefined) {
+        if (this.player1 !== null && this.player1 !== undefined &&
+            this.cursors!.left.enabled && this.cursors!.right.enabled &&
+            this.cursors!.up.enabled && this.cursors!.down.enabled) {
             if (this.cursors!.left.isDown) {
                 velocityX = -speed;
                 this.player1!.anims.play(
@@ -438,7 +471,6 @@ export default class AirportScene extends Phaser.Scene {
                 velocityX /= Math.SQRT2;
                 velocityY /= Math.SQRT2;
             }
-
             this.player1!.setVelocityX(velocityX);
             this.player1!.setVelocityY(velocityY);
 
@@ -457,31 +489,14 @@ export default class AirportScene extends Phaser.Scene {
             this.userIdText!.setY(this.player1!.y - 50);
 
             // Check distance between players
-            if (
-                Phaser.Math.Distance.Between(
-                    this.player1!.x,
-                    this.player1!.y,
-                    this.npc!.x,
-                    this.npc!.y
-                ) < 100
-            ) {
+            if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y,
+                this.npc!.x, this.npc!.y) < 100) {
                 if (this.interacting === false) {
                     this.interactText!.setText("Press E interact");
                     // interactText position
                     this.interactText!.setOrigin(0.5, 0);
-                    this.interactText!.setX(this.player1!.x);
-                    this.interactText!.setY(this.player1!.y - 70);
-                }
-                else {
-                    if (this.recorder2?.state === "recording") {
-                        this.interactText!.setText("Press R to stop recording");
-                    }
-                    else {
-                        this.interactText!.setText("Press R to record");
-                    }
-                    this.interactText!.setOrigin(0.5, 0);
-                    this.interactText!.setX(this.player1!.x);
-                    this.interactText!.setY(this.player1!.y - 70);
+                    this.interactText!.setX(this.npc!.x);
+                    this.interactText!.setY(this.npc!.y - 70);
                 }
             } else {
                 this.interactText!.setText("");
@@ -508,47 +523,7 @@ export default class AirportScene extends Phaser.Scene {
                 if (key !== this.socket.id) {
                     let deltaInSecond: number = delta / 1000;
                     let otherPlayer: Player = this.allPlayers[key];
-                    let destination: { x: number; y: number } = { x: otherPlayer.x, y: otherPlayer.y };
-                    let otherPlayerSprite: Phaser.Physics.Arcade.Sprite = otherPlayer.sprite;
-                    if (destination.x !== otherPlayerSprite.x || destination.y !== otherPlayerSprite.y) {
-                        // let distanceX: number = Math.abs(destination.x - otherPlayerSprite.x);
-                        // let distanceY: number = Math.abs(destination.y - otherPlayerSprite.y);
-
-                        if (destination.x < otherPlayerSprite.x) {
-                            otherPlayerSprite.anims.play(`${otherPlayer.playerTexture}_run_left`, true);
-                            otherPlayerSprite.x -= (otherPlayer.defaultVelocity * deltaInSecond);
-                        }
-                        else if (destination.x > otherPlayerSprite.x) {
-                            otherPlayerSprite.anims.play(`${otherPlayer.playerTexture}_run_right`, true);
-                            otherPlayerSprite.x += (otherPlayer.defaultVelocity * deltaInSecond);
-                        }
-
-
-                        if (destination.y < otherPlayerSprite.y) {
-                            otherPlayerSprite.anims.play(`${otherPlayer.playerTexture}_run_up`, true);
-                            otherPlayerSprite.y -= (otherPlayer.defaultVelocity * deltaInSecond);
-                        }
-                        else if (destination.y > otherPlayerSprite.y) {
-                            otherPlayerSprite.anims.play(`${otherPlayer.playerTexture}_run_down`, true);
-                            otherPlayerSprite.y += (otherPlayer.defaultVelocity * deltaInSecond);
-                        }
-
-                        let distanceX: number = Math.abs(destination.x - otherPlayerSprite.x);
-                        let distanceY: number = Math.abs(destination.y - otherPlayerSprite.y);
-
-                        if (distanceX < 2) {
-                            otherPlayerSprite.x = destination.x;
-                            console.log('Other player is alomost close to destination X');
-                        }
-                        if (distanceY < 2) {
-                            otherPlayerSprite.y = destination.y;
-                            console.log('Other player is alomost close to destination Y');
-                        }
-                    }
-                    else {
-                        otherPlayerSprite.anims.play(`${otherPlayer.playerTexture}_idle_down`, true);
-                        console.log('Other player is not moving');
-                    }
+                    otherPlayer.move(deltaInSecond);
                     this.allPlayers[key].moveText(this);
                 }
 

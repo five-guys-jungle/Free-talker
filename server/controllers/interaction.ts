@@ -26,8 +26,8 @@ const serverUrl: string = process.env.SERVER_URL!;
 const openai = new OpenAIApi(configuration);
 
 console.log("cur_dir_name : ", __dirname);
-const keyPath = __dirname + "/../config/text-to-speech-key.json";
-// const keyPath = __dirname + "/../api-keys/project-test-388706-ac6d82af0f41.json";
+// const keyPath = __dirname + "/../config/text-to-speech-key.json";
+const keyPath = __dirname + "/../api-keys/project-test-388706-ac6d82af0f41.json";
 
 const client = new texttoSpeech.TextToSpeechClient({
     keyFilename: keyPath,

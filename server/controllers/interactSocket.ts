@@ -27,7 +27,7 @@ export function interactSocketEventHandler(socket: Socket) {
 
         inputText = await convertSpeechToText(filePath).
             then(async (res) => {
-                socket.emit("textToSpeech", res);
+                socket.emit("speechToText", res);
                 return res
             });
         console.log("User: ", inputText);
