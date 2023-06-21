@@ -23,7 +23,7 @@ import {
 import { npcInfo } from "../characters/Npc";
 import { appendMessage, clearMessages } from "../stores/talkBoxSlice";
 import { appendSentence, clearSentences } from "../stores/sentenceBoxSlice";
-import { setRecord } from "../stores/recordSlice";
+import { setRecord, setMessage } from "../stores/recordSlice";
 import { handleScene } from "./common/handleScene";
 import { RootState } from "../stores/index";
 
@@ -264,76 +264,77 @@ export default class AirportScene extends Phaser.Scene {
                 for (let npcInfo of this.npcList) {
                     if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y, npcInfo.x, npcInfo.y) < 100) {
 
-                            this.player1!.setVelocity(0, 0);
-                        this.player1!.anims.play(`${this.player1!.texture.key}_idle_down`, true);
-                            store.dispatch(openNPCDialog());
-        
-                        this.cursors!.left.enabled = false;
-                            this.cursors!.right.enabled = false;
-                            this.cursors!.up.enabled = false;
-                        this.cursors!.down.enabled = false;
-        
-                                if (this.socket2 === null || this.socket2 === undefined) {
-                                this.socket2 = io(`${serverUrl}/interaction`);
-                                this.socket2.on("connect", () => {
-                                    this.interacting = true;
-                                    console.log("connect, interaction socket.id: ", this.socket2!.id);
-                                    this.socket2!.on("speechToText", (response: string) => {
-                                        console.log("USER: ", response);
-                                        store.dispatch(appendMessage({
-                                            name: this.userNickname,
-                                            img: this.playerTexture,
-                                        // img: "",
-                                            side: "right",
-                                            text: response
-                                        }));
-        
-                                    });
-                                    this.socket2!.on("npcResponse", (response: string) => {
-                                        console.log("NPC: ", response);
-                                        store.dispatch(appendMessage({
-                                            name: npcInfo.name,
-                                            img: npcInfo.texture,
-                                        // img: "",
-                                            side: "left",
-                                            text: response
-                                        }));
-        
-                                    });
-                                    this.socket2!.on("totalResponse", (response: any) => {
-                                        console.log("totalResponse event response: ", response);
-                                        // this.isAudioPlaying = true;
-                                    const audio = new Audio(response.audioUrl);
-                                        audio.onended = () => {
-                                        console.log("audio.onended");
-                                        this.isAudioPlaying = false;
-                                    };
-                                    audio.play();
-                                    });
-                                    this.socket2!.on(
-                                    "recommendedResponses",
-                                    (responses: string[]) => {
-                                        console.log(
-                                            "Recommended Responses: ",
-                                            responses
-                                        );
-                                        // TODO : Store에 SentenceBox 상태정의하고 dispatch
-                                        store.dispatch(clearSentences());
-                                        responses.forEach((response, index) => {
-                                            store.dispatch(
-                                                appendSentence({
-                                                    _id: index.toString(),
-                                                    sentence: response,
-                                                })
-                                            );
-                                        });
-                                    }
-                                );
+                    this.player1!.setVelocity(0, 0);
+                    this.player1!.anims.play(`${this.player1!.texture.key}_idle_down`, true);
+                    store.dispatch(openNPCDialog());
+
+                    this.cursors!.left.enabled = false;
+                    this.cursors!.right.enabled = false;
+                    this.cursors!.up.enabled = false;
+                    this.cursors!.down.enabled = false;
+
+                    if (this.socket2 === null || this.socket2 === undefined) {
+                        this.socket2 = io(`${serverUrl}/interaction`);
+                        this.socket2.on("connect", () => {
+                            this.interacting = true;
+                            console.log("connect, interaction socket.id: ", this.socket2!.id);
+                            this.socket2!.on("speechToText", (response: string) => {
+                                console.log("USER: ", response);
+                                store.dispatch(appendMessage({
+                                    name: this.userNickname,
+                                    img: this.playerTexture,
+                                    // img: "",
+                                    side: "right",
+                                    text: response
+                                }));
+
                             });
-                            }
-                            else { // 이미 소켓이 연결되어 있는데 다시 한번 E키를 누른 경우
-                                this.player1!.setVelocity(0, 0);
-                            this.player1!.setPosition(this.player1!.x, this.player1!.y);
+                            this.socket2!.on("npcResponse", (response: string) => {
+                                console.log("NPC: ", response);
+                                store.dispatch(appendMessage({
+                                    name: npcInfo.name,
+                                    img: npcInfo.texture,
+                                    // img: "",
+                                    side: "left",
+                                    text: response
+                                }));
+
+                            });
+                            this.socket2!.on("totalResponse", (response: any) => {
+                                console.log("totalResponse event response: ", response);
+                                // this.isAudioPlaying = true;
+                                const audio = new Audio(response.audioUrl);
+                                audio.onended = () => {
+                                    console.log("audio.onended");
+                                    this.isAudioPlaying = false;
+                                    store.dispatch(setMessage("R키를 눌러 녹음을 시작하세요"));
+                                };
+                                audio.play();
+                            });
+                            this.socket2!.on(
+                                "recommendedResponses",
+                                (responses: string[]) => {
+                                    console.log(
+                                        "Recommended Responses: ",
+                                        responses
+                                    );
+                                    // TODO : Store에 SentenceBox 상태정의하고 dispatch
+                                    store.dispatch(clearSentences());
+                                    responses.forEach((response, index) => {
+                                        store.dispatch(
+                                            appendSentence({
+                                                _id: index.toString(),
+                                                sentence: response,
+                                            })
+                                        );
+                                    });
+                                }
+                            );
+                        });
+                    }
+                    else { // 이미 소켓이 연결되어 있는데 다시 한번 E키를 누른 경우
+                        this.player1!.setVelocity(0, 0);
+                        this.player1!.setPosition(this.player1!.x, this.player1!.y);
 
                             this.cursors!.left.isDown = false;
                             this.cursors!.right.isDown = false;
@@ -389,10 +390,12 @@ export default class AirportScene extends Phaser.Scene {
                     if (this.recorder2) {
                         if (this.recorder2.state === "recording") {
                             store.dispatch(setRecord(true));
+                            store.dispatch(setMessage("R키를 눌러 녹음을 시작하세요"));
                             this.isAudioPlaying = true;
                             this.recorder2!.stop();
                         } else {
                             store.dispatch(setRecord(false));
+                            store.dispatch(setMessage("녹음 중입니다. R키를 눌러 녹음을 종료하세요"));
                             this.recorder2!.start();
                         }
                     }
@@ -537,6 +540,7 @@ export default class AirportScene extends Phaser.Scene {
                     console.log("blob: ", blob);
                     blob.arrayBuffer().then((buffer) => {
                         console.log("buffer: ", buffer);
+                        store.dispatch(setMessage("응답 중입니다. 잠시만 기다려주세요"));
                         this.socket2!.emit("audioSend", {
                             userNickname: this.userNickname,
                             npcName: "ImmigrationOfficer", // TODO: npc 이름 받아오기

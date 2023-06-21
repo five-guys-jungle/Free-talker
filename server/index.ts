@@ -38,12 +38,9 @@ const app = express();
 const server = http.createServer(app);
 const io = new SocketIOServer(server);
 
-// export const IO = require("socket.io")(server)
-
 io.on("connection", socketEventHandler);
 
 const interactionSocket = io.of(`/interaction`);
-
 const freedialogSocket = io.of(`/freedialog`);
 
 // const allowedOrigins = [
