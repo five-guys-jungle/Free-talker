@@ -92,11 +92,7 @@ export function interactSocketEventHandler(socket: Socket) {
 
             inputText = await convertSpeechToText(filePath).then(
                 async (res) => {
-
-                    // if (conversation.length > MAX_CONVERSATION_LENGTH) { // 대화 길어질 경우 가장 오래된 메시지 삭제
-                    //     conversation.shift();
-                    // }
-
+                    
                     socket.emit("speechToText", res);
                     return res;
                 }
@@ -113,6 +109,7 @@ export function interactSocketEventHandler(socket: Socket) {
             console.log(`실행 시간: ${elapsedTime}ms`);
             outputText = chainOutput.response;
             socket.emit("npcResponse", outputText);
+            
             // console.log("LangChain OutputText: ", outputText);
             // outputText = await textCompletion(inputText, chain).then(
             //     async (res) => {
@@ -120,6 +117,7 @@ export function interactSocketEventHandler(socket: Socket) {
             //         return res;
             //     }
             // );
+
             response = await convertTexttoSpeech(inputText, outputText).then(
                 (res) => {
                     socket.emit("totalResponse", res);
