@@ -19,7 +19,8 @@ import {
     convertSpeechToText,
     textCompletion,
     convertTexttoSpeech,
-    grammerCorrection,
+    grammarCorrection,
+    checkIfSoundsGood,
     recommendNextResponses,
     recommendExpressions,
     createChain,
@@ -38,7 +39,7 @@ export function interactSocketEventHandler(socket: Socket) {
             audioDataBuffer: ArrayBuffer;
         }) => {
             /* ---------------------------------------------------------------------------------------  */
-
+            // 소켓이 연결되고 처음으로 유저가 오디오를 입력하면, 유저와 NPC 간의 Conversation Chain을 생성한다.
             if (count++ == 0) {
                 const chat = new ChatOpenAI({
                     modelName: "gpt-3.5-turbo",
@@ -73,6 +74,7 @@ export function interactSocketEventHandler(socket: Socket) {
             /* ---------------------------------------------------------------------------------------  */
             // const chain: ConversationChain = await createChain(data.npcName);
             // console.log("audioSend, data: ", data);
+
             const buffer = Buffer.from(data.audioDataBuffer);
             const filePath = path.join(
                 __dirname,
@@ -81,22 +83,20 @@ export function interactSocketEventHandler(socket: Socket) {
                 }_${uuidv4()}.wav`
             );
             fs.writeFileSync(filePath, buffer); // 동기적으로 실행
-            // console.log("User audio file saved at: ", filePath);
 
             let inputText: string;
             let outputText: string;
-            // let chainOutput: Promise<ChainValues>;
             let correctedText: string;
             let recommendedText: string;
             let response: any;
 
             inputText = await convertSpeechToText(filePath).then(
                 async (res) => {
-                    
                     socket.emit("speechToText", res);
                     return res;
                 }
             );
+            
             // console.log("User: ", inputText);
             console.log("chain 호출 시작");
             var startTime:any = new Date();
@@ -110,13 +110,7 @@ export function interactSocketEventHandler(socket: Socket) {
             outputText = chainOutput.response;
             socket.emit("npcResponse", outputText);
             
-            // console.log("LangChain OutputText: ", outputText);
-            // outputText = await textCompletion(inputText, chain).then(
-            //     async (res) => {
-            //         socket.emit("npcResponse", res);
-            //         return res;
-            //     }
-            // );
+            // ---------------------------------------------------------
 
             response = await convertTexttoSpeech(inputText, outputText).then(
                 (res) => {
@@ -135,6 +129,21 @@ export function interactSocketEventHandler(socket: Socket) {
                     console.log("Recommend Responses Error: ", err);
                     recommendedText = "";
                 });
+
+            
+            // TODO : res 받아서, correct -> 안보냄, incorrect -> 비율 계산해서, 틀렸으면 
+            grammarCorrection(inputText).then(
+                    async (res) => {
+                        if (!checkIfSoundsGood(res)){
+                            socket.emit("grammarCorrection", {
+                                userText: inputText,
+                                correctedText: res,
+                            });
+                            console.log("socket emitted grammarCorrection.");
+                            return res;
+                        }
+                    }
+                )
         }
     );
 

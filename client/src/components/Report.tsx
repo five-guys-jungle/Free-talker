@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux"; // react-redux에서 useSelector를 불러옵니다.
 import TalkBox from "./npcdialog/TalkBox";
 import { TalkBoxState } from "../stores/talkBoxSlice";
+import { correctionState } from "../stores/reportSlice";
 
 // interface NPCDialogProps {
 //     initialDialog?: string;
@@ -23,6 +24,11 @@ const Report = (data:any) => {
 
     }, [playerId, playerNickname, playerTexture]);
 
+    const corrections = useSelector(
+      (state: { correction: correctionState }) => state.correction.corrections
+    );
+
+    
     const messages = useSelector(
         (state: { talkBox: TalkBoxState }) => state.talkBox.messages
     );
@@ -70,21 +76,21 @@ const Report = (data:any) => {
                             <div className="results__item">
                                 <div className="results__name">✔︎ 내 대화는?</div>
                                 <div className="results__list">
-                                    { score==100 && (<>
+                                    { score===100 && (<>
                                       <p>원어민 수준이에요!</p>
                                         <p>영어로 대화가 자연스러워요!</p>
                                         <div className="highlighted">
                                         <div className="text"> <span>Perfect!</span></div>
                                         </div></>)
                                     }
-                                    { score==80 && (<>
+                                    { score===80 && (<>
                                       <p>대화에 무리 없는 수준이에요!</p>
                                         <p>상황에 따라 알맞은 대화를 할 수 있어요!</p>
                                         <div className="highlighted">
                                         <div className="text"> <span>Good!</span></div>
                                         </div></>)
                                     }
-                                    { score==60 && (<>
+                                    { score===60 && (<>
                                       <p>생존영어 가능!</p>
                                         <p>말 못해 죽진 않을 거 같아요!</p>
                                         <div className="highlighted">
@@ -94,7 +100,7 @@ const Report = (data:any) => {
                                 </div>
                             </div>
                         </div>
-                        {messages.length!=0 &&
+                        {messages.length!==0 &&
                             (<>
                             <div className="wrapChracterL">
                                 <div className="Character">
@@ -116,7 +122,7 @@ const Report = (data:any) => {
                             </div>
                             </>)
                         }
-                        {messages.length==0 &&
+                        {messages.length===0 &&
                             (<>
                             <div className="Character" style={{gridColumn:'1/span 2', width:'50%', margin:'20px auto'}}>
                                     <h4>My Character</h4>
@@ -127,14 +133,20 @@ const Report = (data:any) => {
                                 </div>
                             </>)
                         }
-                        <div className="notes"><span>Notes</span>
-                            <div className="notes__list">
-                                - Believe in yourself.
-                                - Follow your heart.
+                        <div className="corrections"><span>Corrections</span>
+                            <div className="corrections-list">
+                                {corrections.length!==0 && 
+                                corrections.map((correction, index) => (
+                                  <div className="correction-div" key={index}>
+                                    <p>User Sentence : {correction.original}</p>
+                                    <p>Corrected Sentence: {correction.correction}</p>
+                                  </div>
+                                ))
+                                }
                             </div>
                         </div>
                         <div className="talks">
-                            {messages.length!=0 &&
+                            {messages.length!==0 &&
                                 messages.map((message, index) => (
                                     <div className={`msg ${message.side}-msg`} key={index}>
                                         <div
@@ -149,9 +161,6 @@ const Report = (data:any) => {
                                                 <div className="msg-info-name">
                                                     {message.name}
                                                 </div>
-                                                {/* <div className="msg-info-time">
-                                                    {formatDate(new Date())}
-                                                </div> */}
                                             </div>
 
                                             <div className="msg-text">{message.text}</div>
@@ -159,7 +168,7 @@ const Report = (data:any) => {
                                     </div>
                                 ))
                             }
-                            {messages.length==0 &&
+                            {messages.length===0 &&
                                 <center>
                                     <p style={{textAlign:'center', marginTop:'50%', fontSize:'20px'}}>Try talk!</p>
                                 </center>
@@ -336,30 +345,30 @@ const ReportDiv = styled.div`
     transform: rotate(-3deg);
   }
   
-  .notes {
+  .corrections {
     grid-area: notes;
     // border: 2px solid #111;
     border-width: 0 2px 2px;
     margin: 35px 20px 0 0;
     position: relative;
   }
-  .notes span {
+  .corrections span {
     display: block;
     margin: -25px 22px;
     font: 32px "Lexend Peta", cursive;
     // text-shadow: 2px 1px 0 #fbfae8, 5px 4px 0 coral;
   }
-  .notes span:before {
-    content: "";
-    position: absolute;
-    width: 100%;
-    height: 2px;
-    top: 0;
-    left: 0;
-    background: #111;
-    background: linear-gradient(to right, #111 15px, transparent 15px, transparent 160px, #111 95px);
-  }
-  .notes__list {
+  // .corrections span:before {
+  //   content: "";
+  //   position: absolute;
+  //   width: 100%;
+  //   height: 2px;
+  //   top: 0;
+  //   left: 0;
+  //   background: #111;
+  //   background: linear-gradient(to right, #111 15px, transparent 15px, transparent 160px, #111 95px);
+  // }
+  .corrections-list {
     margin-top: 24px;
     padding: 10px;
     line-height: 2;

@@ -23,6 +23,7 @@ import {
 import { npcInfo } from "../characters/Npc";
 import { appendMessage, clearMessages } from "../stores/talkBoxSlice";
 import { appendSentence, clearSentences } from "../stores/sentenceBoxSlice";
+import { appendCorrection, clearCorrections } from "../stores/reportSlice";
 import { setRecord, setMessage } from "../stores/recordSlice";
 import { handleScene } from "./common/handleScene";
 import { RootState } from "../stores/index";
@@ -60,7 +61,7 @@ export default class AirportScene extends Phaser.Scene {
 
     isAudioPlaying: boolean = false;
     npcList: npcInfo[] = [];
-
+    
     constructor() {
         super("AirportScene");
     }
@@ -256,26 +257,35 @@ export default class AirportScene extends Phaser.Scene {
 
         let valve_E=true;
         // npc 와의 대화를 위한 키 설정
+        let grammarCorrections: { userText: string; correctedText: string; }[] = [];
         this.input.keyboard!.on("keydown-E", async () => {
+            
             if(valve_E===true){
                 if (this.isAudioPlaying) {
                 return;
                 }
+                const processGrammarCorrection = (data: { userText: string; correctedText: string; }) => {
+                    console.log("grammarCorrection event data: ", data);
+                    grammarCorrections.push(data);
+                  };
+
                 for (let npcInfo of this.npcList) {
                     if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y, npcInfo.x, npcInfo.y) < 100) {
-
+                    
                     this.player1!.setVelocity(0, 0);
                     this.player1!.anims.play(`${this.player1!.texture.key}_idle_down`, true);
                     store.dispatch(openNPCDialog());
-
+                    
                     this.cursors!.left.enabled = false;
                     this.cursors!.right.enabled = false;
                     this.cursors!.up.enabled = false;
                     this.cursors!.down.enabled = false;
-
+                    
                     if (this.socket2 === null || this.socket2 === undefined) {
+                        
                         this.socket2 = io(`${serverUrl}/interaction`);
                         this.socket2.on("connect", () => {
+                            
                             this.interacting = true;
                             console.log("connect, interaction socket.id: ", this.socket2!.id);
                             this.socket2!.on("speechToText", (response: string) => {
@@ -283,12 +293,14 @@ export default class AirportScene extends Phaser.Scene {
                                 store.dispatch(appendMessage({
                                     name: this.userNickname,
                                     img: this.playerTexture,
-                                    // img: "",
                                     side: "right",
                                     text: response
                                 }));
-
                             });
+
+                            
+                            this.socket2!.on("grammarCorrection", processGrammarCorrection);
+
                             this.socket2!.on("npcResponse", (response: string) => {
                                 console.log("NPC: ", response);
                                 store.dispatch(appendMessage({
@@ -300,6 +312,7 @@ export default class AirportScene extends Phaser.Scene {
                                 }));
 
                             });
+                            
                             this.socket2!.on("totalResponse", (response: any) => {
                                 console.log("totalResponse event response: ", response);
                                 // this.isAudioPlaying = true;
@@ -351,7 +364,19 @@ export default class AirportScene extends Phaser.Scene {
                                 this.socket2 = null;
                             // store.dispatch(clearMessages());
                             // store.dispatch(openAirport());
+                            
+                            grammarCorrections.forEach((data, index) => {
+                                console.log("grammarCorrection data: ", data);
+                                store.dispatch(
+                                    appendCorrection({
+                                        original: data.userText,
+                                        correction: data.correctedText,
+                                    })
+                                );
+                            });
+                        
                             store.dispatch(openReport());
+                            grammarCorrections = [];
                             valve_E=false
                         }
 
