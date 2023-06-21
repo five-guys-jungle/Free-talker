@@ -74,6 +74,7 @@ export default function SignUpDialog() {
     const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false);
     const [existingId, setExistingId] = useState(false);
     const [existingNick, setExistingNick] = useState(false);
+    const [wrongId, setWrongId] = useState(false);
 
     const handleClickOpen = (): void => {
         setOpen(true);
@@ -119,6 +120,10 @@ export default function SignUpDialog() {
                 if (e.response?.data.message === "User Nickname already exists")
                     setExistingNick(true); // 이미 존재하는 닉네임일 경우 상태 업데이트
             }
+            else if (e instanceof AxiosError && e.response?.status === 400) {
+                setWrongId(true);
+                console.log("ID must be english and number.");
+            }
         }
     };
 
@@ -155,12 +160,14 @@ export default function SignUpDialog() {
                         margin="normal"
                         value={userId}
                         onChange={(e) => setUserId(e.target.value)}
-                        error={formErrors.userId || existingId}
+                        error={formErrors.userId || existingId || wrongId}
                         helperText={
                             formErrors.userId
                                 ? "빈칸을 채워주세요"
                                 : existingId
                                 ? "이미 존재하는 아이디 입니다"
+                                : wrongId
+                                ? "아이디는 영어와 숫자만 가능합니다"
                                 : ""
                         }
                     />
