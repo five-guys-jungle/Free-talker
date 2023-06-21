@@ -48,27 +48,27 @@ const TalkBox: React.FC = () => {
     //   botResponse();
     // };
 
-    useEffect(() => {
-        // Add initial message when component mounts
-        const initialMessage: Message = {
-          name: 'npc',
-          img: 'npc',
-          side: "left",
-          text: BOT_MSGS[0]
-        };
-        dispatch(appendMessage(initialMessage));
-      }, [dispatch]);
+    // useEffect(() => {
+    //     // Add initial message when component mounts
+    //     const initialMessage: Message = {
+    //       name: 'npc',
+    //       img: 'npc',
+    //       side: "left",
+    //       text: BOT_MSGS[0]
+    //     };
+    //     dispatch(appendMessage(initialMessage));
+    //   }, [dispatch]);
 
-      useEffect(() => {
-        // Add initial message when component mounts
-        const initialMessage: Message = {
-          name: 'user',
-          img: 'user',
-          side: "right",
-          text: BOT_MSGS[0]
-        };
-        dispatch(appendMessage(initialMessage));
-      }, [dispatch]);
+    //   useEffect(() => {
+    //     // Add initial message when component mounts
+    //     const initialMessage: Message = {
+    //       name: 'user',
+    //       img: 'user',
+    //       side: "right",
+    //       text: BOT_MSGS[0]
+    //     };
+    //     dispatch(appendMessage(initialMessage));
+    //   }, [dispatch]);
       
       
     const appendMessageToState = (
@@ -122,14 +122,14 @@ const TalkBox: React.FC = () => {
                 <div
                     className="msg-img"
                     style={{
-                    backgroundImage: `url(${message.side === "left" ? BOT_IMG : `./assets/${message.img}.png`})`,
+                    backgroundImage: `url(${message.side === "left" ? `./assets/${message.img}.png` : `./assets/${message.img}.png`})`,
                     }}
                 ></div>
 
                 <div className="msg-bubble">
                     <div className="msg-info">
                     <div className={`msg-info-name ${message.side === "left" ? "bot-name" : ""}`}>
-                        {message.side === "left" ? BOT_NAME : message.name}
+                        {message.side === "left" ? message.name : message.name}
                     </div>
                     {/* <div className="msg-info-time">{formatDate(new Date())}</div> */}
                     </div>
