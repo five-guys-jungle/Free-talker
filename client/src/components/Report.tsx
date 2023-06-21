@@ -94,24 +94,39 @@ const Report = (data:any) => {
                                 </div>
                             </div>
                         </div>
-                        <div className="wrapChracterL">
-                            <div className="Character">
-                                <h4>My Character</h4>
-                                <center>
-                                <ScaleImg className="Character__box" src={imgUrl} alt={fix_playerTexture} ></ScaleImg>
-                                </center>
-                                <div className="Nickname"><span className="Character__title">Nickname: {playerNickname}</span></div>
+                        {messages.length!=0 &&
+                            (<>
+                            <div className="wrapChracterL">
+                                <div className="Character">
+                                    <h4>My Character</h4>
+                                    <center>
+                                    <ScaleImg className="Character__box" src={imgUrl} alt={fix_playerTexture} ></ScaleImg>
+                                    </center>
+                                    <div className="Nickname"><span className="Character__title">Nickname: {playerNickname}</span></div>
+                                </div>
                             </div>
-                        </div>
-                        <div className="wrapChracterR">
-                            <div className="Character">
-                                <h4>NPC</h4>
-                                <center>
-                                <ScaleImg className="Character__box" src={"./assets/characters/single/Nancy_idle_anim_24.png"} alt={"Nancy"} ></ScaleImg>
-                                </center>
-                                <div className="Nickname"><span className="Character__title">NPCname: {"Nancy"}</span></div>
+                            <div className="wrapChracterR">
+                                <div className="Character">
+                                    <h4>NPC</h4>
+                                    <center>
+                                    <ScaleImg className="Character__box" src={`./assets/${messages[1].img}.png`} alt={"Nancy"} ></ScaleImg>
+                                    </center>
+                                    <div className="Nickname"><span className="Character__title">NPCname: {messages[1].name}</span></div>
+                                </div>
                             </div>
-                        </div>
+                            </>)
+                        }
+                        {messages.length==0 &&
+                            (<>
+                            <div className="Character" style={{gridColumn:'1/span 2', width:'50%', margin:'20px auto'}}>
+                                    <h4>My Character</h4>
+                                    <center>
+                                    <ScaleImg className="Character__box" src={imgUrl} alt={fix_playerTexture} ></ScaleImg>
+                                    </center>
+                                    <div className="Nickname"><span className="Character__title">Nickname: {playerNickname}</span></div>
+                                </div>
+                            </>)
+                        }
                         <div className="notes"><span>Notes</span>
                             <div className="notes__list">
                                 - Believe in yourself.
@@ -119,29 +134,36 @@ const Report = (data:any) => {
                             </div>
                         </div>
                         <div className="talks">
-                            {messages.map((message, index) => (
-                                <div className={`msg ${message.side}-msg`} key={index}>
-                                    <div
-                                        className="msg-img"
-                                        style={{
-                                            backgroundImage: `url(${message.img})`,
-                                        }}
-                                    ></div>
+                            {messages.length!=0 &&
+                                messages.map((message, index) => (
+                                    <div className={`msg ${message.side}-msg`} key={index}>
+                                        <div
+                                            className="msg-img"
+                                            style={{
+                                                backgroundImage: `url(${`./assets/${message.img}.png`})`,
+                                            }}
+                                        ></div>
 
-                                    <div className="msg-bubble">
-                                        <div className="msg-info">
-                                            <div className="msg-info-name">
-                                                {message.name}
+                                        <div className="msg-bubble">
+                                            <div className="msg-info">
+                                                <div className="msg-info-name">
+                                                    {message.name}
+                                                </div>
+                                                {/* <div className="msg-info-time">
+                                                    {formatDate(new Date())}
+                                                </div> */}
                                             </div>
-                                            {/* <div className="msg-info-time">
-                                                {formatDate(new Date())}
-                                            </div> */}
-                                        </div>
 
-                                        <div className="msg-text">{message.text}</div>
+                                            <div className="msg-text">{message.text}</div>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                ))
+                            }
+                            {messages.length==0 &&
+                                <center>
+                                    <p style={{textAlign:'center', marginTop:'50%', fontSize:'20px'}}>Try talk!</p>
+                                </center>
+                            }
                         </div>
                     </div>
                 </div>
