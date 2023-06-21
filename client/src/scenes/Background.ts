@@ -3,6 +3,9 @@ import { openLogin } from "../stores/gameSlice";
 import store from "../stores";
 
 export default class Background extends Phaser.Scene {
+
+    background!:Phaser.GameObjects.Image
+
     constructor() {
         super("background");
         // this.clouds = [];
@@ -55,7 +58,8 @@ export default class Background extends Phaser.Scene {
     }
 
     create() {
-        this.add
+        
+        this.background = this.add
             .image(0, 0, "background")
             .setDisplaySize(this.game.scale.width, this.game.scale.height)
             .setOrigin(0, 0);
@@ -65,5 +69,8 @@ export default class Background extends Phaser.Scene {
 
     update() {
         console.log("update!!!!!!!!!");
+        this.background
+            .setDisplaySize(this.game.scale.width, this.game.scale.height)
+            .setOrigin(0, 0);
     }
 }
