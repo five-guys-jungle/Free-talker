@@ -25,8 +25,10 @@ import { appendMessage, clearMessages } from "../stores/talkBoxSlice";
 import { appendSentence, clearSentences } from "../stores/sentenceBoxSlice";
 import { setRecord, setMessage } from "../stores/recordSlice";
 import { handleScene } from "./common/handleScene";
+import { RootState } from "../stores/index";
 
 import dotenv from "dotenv";
+import Report from "../components/Report";
 
 const serverUrl: string = process.env.REACT_APP_SERVER_URL!;
 
@@ -252,13 +254,15 @@ export default class AirportScene extends Phaser.Scene {
             fontSize: "16px",
         });
 
+        let valve_E=true;
         // npc 와의 대화를 위한 키 설정
         this.input.keyboard!.on("keydown-E", async () => {
-            if (this.isAudioPlaying) {
+            if(valve_E===true){
+                if (this.isAudioPlaying) {
                 return;
-            }
-            for (let npcInfo of this.npcList) {
-                if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y, npcInfo.x, npcInfo.y) < 100) {
+                }
+                for (let npcInfo of this.npcList) {
+                    if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y, npcInfo.x, npcInfo.y) < 100) {
 
                     this.player1!.setVelocity(0, 0);
                     this.player1!.anims.play(`${this.player1!.texture.key}_idle_down`, true);
@@ -332,27 +336,40 @@ export default class AirportScene extends Phaser.Scene {
                         this.player1!.setVelocity(0, 0);
                         this.player1!.setPosition(this.player1!.x, this.player1!.y);
 
-                        this.cursors!.left.isDown = false;
-                        this.cursors!.right.isDown = false;
-                        this.cursors!.up.isDown = false;
-                        this.cursors!.down.isDown = false;
+                            this.cursors!.left.isDown = false;
+                            this.cursors!.right.isDown = false;
+                            this.cursors!.up.isDown = false;
+                                this.cursors!.down.isDown = false;
 
-                        this.cursors!.left.enabled = true;
-                        this.cursors!.right.enabled = true;
-                        this.cursors!.up.enabled = true;
-                        this.cursors!.down.enabled = true;
+                            this.cursors!.left.enabled = true;
+                                this.cursors!.right.enabled = true;
+                            this.cursors!.up.enabled = true;
+                                this.cursors!.down.enabled = true;
+        
+                                this.interacting = false;
+                                this.socket2?.disconnect();
+                                this.socket2 = null;
+                            // store.dispatch(clearMessages());
+                            // store.dispatch(openAirport());
+                            store.dispatch(openReport());
+                            valve_E=false
+                        }
 
-                        this.interacting = false;
-                        this.socket2?.disconnect();
-                        this.socket2 = null;
-                        store.dispatch(clearMessages());
-                        store.dispatch(clearSentences());
-                        store.dispatch(openAirport());
+                        break;
                     }
-                    break;
                 }
             }
-        });
+            else{
+                    store.dispatch(clearMessages());
+                    store.dispatch(clearSentences());
+                    store.dispatch(openAirport());
+                valve_E=true
+            }
+                    
+            }
+                        
+
+        );
         // 녹음 데이터를 보내고 응답을 받는 키 설정
         this.input.keyboard!.on("keydown-R", async () => {
             if (this.isAudioPlaying) {
