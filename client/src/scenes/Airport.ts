@@ -23,7 +23,7 @@ import {
 import { npcInfo } from "../characters/Npc";
 import { appendMessage, clearMessages } from "../stores/talkBoxSlice";
 import { appendSentence, clearSentences } from "../stores/sentenceBoxSlice";
-import { setRecord } from "../stores/recordSlice";
+import { setRecord, setMessage } from "../stores/recordSlice";
 import { handleScene } from "./common/handleScene";
 
 import dotenv from "dotenv";
@@ -303,6 +303,7 @@ export default class AirportScene extends Phaser.Scene {
                                 audio.onended = () => {
                                     console.log("audio.onended");
                                     this.isAudioPlaying = false;
+                                    store.dispatch(setMessage("R키를 눌러 녹음을 시작하세요"));
                                 };
                                 audio.play();
                             });
@@ -372,10 +373,12 @@ export default class AirportScene extends Phaser.Scene {
                     if (this.recorder2) {
                         if (this.recorder2.state === "recording") {
                             store.dispatch(setRecord(true));
+                            store.dispatch(setMessage("R키를 눌러 녹음을 시작하세요"));
                             this.isAudioPlaying = true;
                             this.recorder2!.stop();
                         } else {
                             store.dispatch(setRecord(false));
+                            store.dispatch(setMessage("녹음 중입니다. R키를 눌러 녹음을 종료하세요"));
                             this.recorder2!.start();
                         }
                     }
@@ -520,6 +523,7 @@ export default class AirportScene extends Phaser.Scene {
                     console.log("blob: ", blob);
                     blob.arrayBuffer().then((buffer) => {
                         console.log("buffer: ", buffer);
+                        store.dispatch(setMessage("응답 중입니다. 잠시만 기다려주세요"));
                         this.socket2!.emit("audioSend", {
                             userNickname: this.userNickname,
                             npcName: "ImmigrationOfficer", // TODO: npc 이름 받아오기
