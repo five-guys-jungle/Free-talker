@@ -278,8 +278,8 @@ export default class AirportScene extends Phaser.Scene {
                                 console.log("USER: ", response);
                                 store.dispatch(appendMessage({
                                     name: this.userNickname,
-                                    // img: this.playerTexture,
-                                    img: "",
+                                    img: this.playerTexture,
+                                    // img: "",
                                     side: "right",
                                     text: response
                                 }));
@@ -288,9 +288,9 @@ export default class AirportScene extends Phaser.Scene {
                             this.socket2!.on("npcResponse", (response: string) => {
                                 console.log("NPC: ", response);
                                 store.dispatch(appendMessage({
-                                    name: this.userNickname,
-                                    // img: npcInfo.texture,
-                                    img: "",
+                                    name: npcInfo.name,
+                                    img: npcInfo.texture,
+                                    // img: "",
                                     side: "left",
                                     text: response
                                 }));

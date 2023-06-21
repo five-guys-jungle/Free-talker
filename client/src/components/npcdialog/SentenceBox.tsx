@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import { Sentence, SentenceBoxState } from "../../stores/sentenceBoxSlice";
-
+import { setRecord } from "../../stores/recordSlice";
+import { RecordState } from "../../stores/recordSlice";
+import { css, keyframes } from 'styled-components';
 interface SentenceViewProps {
     sentence: Sentence;
 }
@@ -29,6 +31,33 @@ const SentenceList: React.FC = () => {
         (state: { sentenceBox: SentenceBoxState }) =>
             state.sentenceBox.sentences
     );
+    const record = useSelector((state: { record: RecordState }) => state.record.record);
+    
+    const [isLongPress, setIsLongPress] = useState(false);
+    const [isOuterDivVisible, setIsOuterDivVisible] = useState(false);
+
+    const handleToggleOuterDiv = () => {
+        setIsOuterDivVisible((prev) => !prev);
+    };
+
+    const handleClick = () => {
+        handleToggleOuterDiv();
+        if (!isOuterDivVisible && !record) {
+            dispatch(setRecord(true));
+        }
+    };
+
+    useEffect(() => {
+        if (record) {
+            const timer = setTimeout(() => {
+                setIsLongPress(true);
+            }, 5000);
+            return () => clearTimeout(timer);
+        } else {
+            setIsLongPress(false);
+        }
+    }, [record]);
+
 
     const sentenceViews = sentences.map((sentence) => (
         <SentenceView key={sentence._id} sentence={sentence} />
@@ -37,7 +66,12 @@ const SentenceList: React.FC = () => {
     return (
         <div className="container" style={{ height: "80%" }}>
             <DialogTitle>You can say something like this</DialogTitle>
-            <SentenceOuterDiv>{sentenceViews}</SentenceOuterDiv>
+            <Button onClick={handleClick} isOpen={isOuterDivVisible} longPress={isLongPress}>
+                {isOuterDivVisible ? "Close" : "추천 문장 보기"}
+            </Button>
+            {isOuterDivVisible && (
+                <SentenceOuterDiv>{sentenceViews}</SentenceOuterDiv>
+            )}
         </div>
     );
 };
@@ -55,6 +89,30 @@ const DialogTitle = styled.h1`
     color: #2d3748; // Adjust this as needed
     padding: -10px auto; // Adjust this as needed
     margin-bottom: 20px; // Adjust this as needed
+`;
+
+const blinking = keyframes`
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+`;
+
+const Button = styled.button<{ isOpen: boolean; longPress: boolean }>`
+    background-color: ${({ isOpen, longPress }) =>
+        isOpen ? '#3182ce' : longPress ? '#ee3823' : '#3182ce'};
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    margin-left: 30px;
+    cursor: pointer;
+
+    ${({ longPress, isOpen }) =>
+        longPress && !isOpen &&
+        css`
+            animation: ${blinking} 1.5s infinite;
+        `}
 `;
 
 const SentenceOuterDiv = styled.div`
@@ -96,6 +154,7 @@ const SentenceDiv = styled.div`
         width: 100% // Adjust this
         height: 100%;
         margin: 0 auto;
+        overflow: auto;
     }
 
 
@@ -143,6 +202,7 @@ const SentenceDiv = styled.div`
         font-style: italic;
     }
 `;
+
 
 // .sentence {
 //     background-color: #f7fafc;
