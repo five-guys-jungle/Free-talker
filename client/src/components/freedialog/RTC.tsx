@@ -112,18 +112,60 @@ const FreeDialog = () => {
 
 		return (
 			<>
-				<h1 style={{ position: "fixed", top: 0, textAlign: "center", color: 'black', width: "100%", zIndex: 1 }}>Enjoy video chat freely </h1>
-				<div className="container" style={{ backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), url("/assets/logo/logo2.png")`, backgroundRepeat: "no-repeat",  backgroundSize: "cover", backgroundPosition: "center",   display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100vh", paddingTop: "50px" }}> 
-					<div className="video-container" style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center", width: "100%" }}>
-						<div className="video">
-							{stream && <video playsInline muted ref={myVideo} autoPlay style={{ width: "50%", marginRight: "0%" }} />}
+				<div style={{ 
+					display: 'flex', 
+					justifyContent: 'center', 
+					alignItems: 'center', 
+				}}>
+					<h1>Enjoy video chat freely </h1>
+				</div>
+				<div className="container" style={{ 
+					backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), url("/assets/logo/logo2.png")`, 
+					backgroundRepeat: "no-repeat",  
+					backgroundSize: "cover", 
+					backgroundPosition: "center",   
+					display: "flex", 
+					flexDirection: "column", 
+					alignItems: "center", 
+					justifyContent: "center", 
+	
+					paddingTop: "50px" 
+				}}> 					
+				<div className="video-container" style={{ 
+					display: "flex", 
+					flexDirection: "column", 
+					alignItems: "center", 
+					justifyContent: "center", 
+					width: "100%",
+
+				}}>
+						<div className="video" style={{ 
+							display: "flex", 
+							justifyContent: "center", 
+							alignItems: "center",
+							width: "100%",
+							height: "100%",
+						}}>
+							{stream && <video playsInline muted ref={myVideo} autoPlay style={{ width: "50%", marginBottom: "5%", margin: "auto"}} />}
 						</div>
-						<div className="video">
+						<div className="video" style={{ 
+							display: "flex", 
+							justifyContent: "center", 
+							alignItems: "center",
+							width: "100%",
+							height: "100%",
+						}}>
 							{callAccepted && !callEnded ?
-								<video playsInline ref={userVideo} autoPlay style={{ width: "50%", marginLeft: "0%" }} /> :
-								(stream && <video playsInline muted ref={myVideo} autoPlay style={{ width: "50%", marginLeft: "0%" }} />)
+								<video playsInline ref={userVideo} autoPlay style={{ width: "50%", marginTop: "5%", margin: "auto" }} /> :
+								(stream && <video playsInline muted ref={myVideo} autoPlay style={{ width: "50%", marginTop: "2%", margin: "auto" }} />)
 							}
 						</div>
+						{/* <div className="video">
+							{callAccepted && !callEnded ?
+								<video playsInline ref={userVideo} autoPlay style={{ width: "50%", marginLeft: "0%" }} /> :
+								null}
+						</div> */}
+
 
 					</div>
 		
@@ -151,6 +193,7 @@ const FreeDialog = () => {
 				</div>
 			</>
 		)
+		
 
 				  }
 export default FreeDialog;

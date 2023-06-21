@@ -48,6 +48,7 @@ function App() {
             {/* <NPCDialog/> */}
             {/* <UserDialog /> */}
             <FreeDialog />
+            {/* <RTC /> */}
         </HoverDiv>
     );
 }
