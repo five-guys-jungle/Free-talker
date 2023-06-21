@@ -50,7 +50,7 @@ const RightSection = styled.section`
   
 `;
 
-const UserDialog: React.FC = () => {
+const FreeDialog: React.FC = () => {
     const [messages, setMessages] = useState<string[]>([]);
     const [inputValue, setInputValue] = useState("");
   
@@ -72,10 +72,10 @@ const UserDialog: React.FC = () => {
         <UserBox />
       </LeftSection>
       <RightSection>
-        <RTC />
+	  	<RTC/>
       </RightSection>
     </Container>
   );
 };
 
-export default UserDialog;
+export default FreeDialog;
