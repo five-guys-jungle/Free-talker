@@ -37,23 +37,21 @@ const app = express();
 
 const server = http.createServer(app);
 const io = new SocketIOServer(server);
-// export const IO = require("socket.io")(server, {
-// 	cors: {
-// 		origin: "http://localhost:3000",
-// 		methods: [ "GET", "POST" ]
-// 	}
-// })
+
+// export const IO = require("socket.io")(server)
 
 io.on("connection", socketEventHandler);
+
 const interactionSocket = io.of(`/interaction`);
+
 const freedialogSocket = io.of(`/freedialog`);
 
-const allowedOrigins = [
-    "http://127.0.0.1:3000",
-    "http://127.0.0.1:5000",
-    "http://localhost:3000",
-    "http://localhost:5000",
-];
+// const allowedOrigins = [
+//     "http://127.0.0.1:3000",
+//     "http://127.0.0.1:5000",
+//     "http://localhost:3000",
+//     "http://localhost:5000",
+// ];
 
 app.use(cors());
 app.use(express.json());

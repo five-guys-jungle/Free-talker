@@ -1,63 +1,83 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-
-interface Message {
-    _id: string;
-    sentence: string;
+import { useSelector, useDispatch } from "react-redux";
+import { Sentence, SentenceBoxState } from "../../stores/sentenceBoxSlice";
+import { setRecord } from "../../stores/recordSlice";
+import { RecordState } from "../../stores/recordSlice";
+import { css, keyframes } from 'styled-components';
+interface SentenceViewProps {
+    sentence: Sentence;
 }
 
-interface MessageViewProps {
-    message: Message;
-}
-
-const MessageView: React.FC<MessageViewProps> = ({ message }) => {
-    const { sentence } = message;
+const SentenceView: React.FC<SentenceViewProps> = ({ sentence }) => {
+    const { sentence: sentenceText } = sentence;
 
     return (
         <SentenceDiv>
-            <div className="message">
+            <div className="sentence">
                 <div className="field">
-                    <span className="label">추천문장: </span>
-                    <span className="value">{sentence}</span>
+                    {/* <span className="label">추천문장: </span> */}
+                    <span className="value">{sentenceText}</span>
                 </div>
             </div>
         </SentenceDiv>
     );
 };
 
-const MessageList: React.FC = () => {
-    const initialValues: Message[] = [
-        {
-            _id: "d2504a54",
-            sentence: "The event will start next week",
-        },
-        {
-            _id: "fc7cad74",
-            sentence: "I will be traveling soon",
-        },
-        {
-            _id: "876ae642",
-            sentence: "Talk later. Have a great day!",
-        },
-    ];
+const SentenceList: React.FC = () => {
+    const initialValues: Sentence[] = [];
+    const dispatch = useDispatch();
+    const sentences = useSelector(
+        (state: { sentenceBox: SentenceBoxState }) =>
+            state.sentenceBox.sentences
+    );
+    const record = useSelector((state: { record: RecordState }) => state.record.record);
+    
+    const [isLongPress, setIsLongPress] = useState(false);
+    const [isOuterDivVisible, setIsOuterDivVisible] = useState(false);
 
-    const messageViews = initialValues.map((message) => (
-        <MessageView key={message._id} message={message} />
+    const handleToggleOuterDiv = () => {
+        setIsOuterDivVisible((prev) => !prev);
+    };
+
+    const handleClick = () => {
+        handleToggleOuterDiv();
+        if (!isOuterDivVisible && !record) {
+            dispatch(setRecord(true));
+        }
+    };
+
+    useEffect(() => {
+        if (record) {
+            const timer = setTimeout(() => {
+                setIsLongPress(true);
+            }, 5000);
+            return () => clearTimeout(timer);
+        } else {
+            setIsLongPress(false);
+        }
+    }, [record]);
+
+
+    const sentenceViews = sentences.map((sentence) => (
+        <SentenceView key={sentence._id} sentence={sentence} />
     ));
 
     return (
         <div className="container" style={{ height: "80%" }}>
             <DialogTitle>You can say something like this</DialogTitle>
-            <SentenceOuterDiv>
-                {messageViews}
-                {/* <div className="messageContainer">{messageViews}</div> */}
-            </SentenceOuterDiv>
+            <Button onClick={handleClick} isOpen={isOuterDivVisible} longPress={isLongPress}>
+                {isOuterDivVisible ? "Close" : "추천 문장 보기"}
+            </Button>
+            {isOuterDivVisible && (
+                <SentenceOuterDiv>{sentenceViews}</SentenceOuterDiv>
+            )}
         </div>
     );
 };
 
 const SentenceBox: React.FC = () => {
-    return <MessageList />;
+    return <SentenceList />;
 };
 
 export default SentenceBox;
@@ -69,6 +89,30 @@ const DialogTitle = styled.h1`
     color: #2d3748; // Adjust this as needed
     padding: -10px auto; // Adjust this as needed
     margin-bottom: 20px; // Adjust this as needed
+`;
+
+const blinking = keyframes`
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+`;
+
+const Button = styled.button<{ isOpen: boolean; longPress: boolean }>`
+    background-color: ${({ isOpen, longPress }) =>
+        isOpen ? '#3182ce' : longPress ? '#ee3823' : '#3182ce'};
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    margin-left: 30px;
+    cursor: pointer;
+
+    ${({ longPress, isOpen }) =>
+        longPress && !isOpen &&
+        css`
+            animation: ${blinking} 1.5s infinite;
+        `}
 `;
 
 const SentenceOuterDiv = styled.div`
@@ -110,18 +154,11 @@ const SentenceDiv = styled.div`
         width: 100% // Adjust this
         height: 100%;
         margin: 0 auto;
+        overflow: auto;
     }
 
-    // .messageContainer {
-    // display: flex; // Add this
-    // background-color: #837c7c
-    // opacity: 0.5;
-    // flex-direction: column; // Add this
-    // justify-content: center; // Add this
-    // align-items: center; // Add this
-    // }
 
-    .message {
+    .sentence {
         background-color: #f7fafc;
         // width: fit-content; // Adjust this
 
@@ -166,7 +203,8 @@ const SentenceDiv = styled.div`
     }
 `;
 
-// .message {
+
+// .sentence {
 //     background-color: #f7fafc;
 //     width: 600px;
 //     height: 150px;

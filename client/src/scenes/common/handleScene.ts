@@ -2,6 +2,7 @@ import phaserGame from "../../phaserGame";
 import store from "../../stores";
 import {
     openAirport,
+    openFreedialog,
     openNPCDialog,
     openStart,
     openUSA,
@@ -45,6 +46,9 @@ export const handleScene = async (statusTo: string, data: any = {}) => {
             store.dispatch(openNPCDialog());
             break;
 
+        case GAME_STATUS.FREEDIALOG:
+            store.dispatch(openFreedialog());
+            break;
         case GAME_STATUS.USA:
             store.dispatch(openUSA());
             if (phaserGame.scene.isSleeping("USAScene")) {

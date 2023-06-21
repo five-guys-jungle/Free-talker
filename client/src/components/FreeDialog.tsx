@@ -53,7 +53,7 @@ const FreeDialog = () => {
 		});
 	}, []);
 
-	console.log("sssssssssssssss")
+
        
 
     const callUser = (id: string) => {
@@ -110,67 +110,89 @@ const FreeDialog = () => {
           }
         };
 
-	return (
-		<>
-			<h1 style={{ textAlign: "center", color: '#fff' }}>Zoomish</h1>
-		<div className="container">
-			<div className="video-container">
-				<div className="video">
-					{stream &&  <video playsInline muted ref={myVideo} autoPlay style={{ width: "300px" }} />}
-				</div>
-				<div className="video">
-					{callAccepted && !callEnded ?
-					<video playsInline ref={userVideo} autoPlay style={{ width: "300px"}} />:
-					null}
-				</div>
-			</div>
-			<div className="myId">
-				<TextField
-					id="filled-basic"
-					label="Name"
-					variant="filled"
-					value={name}
-					onChange={(e: any) => setName(e.target.value)}
-					style={{ marginBottom: "20px" }}
-				/>
-				<CopyToClipboard text={me}>
-    <Button variant="contained" color="primary" startIcon={<AssignmentIcon fontSize="large" />} style={{ marginBottom: "2rem" }}>
-        Copy ID
-    </Button>
-</CopyToClipboard>
+		// return (
+		// 	<>
+		// 	  <div className="container" style={{ backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url("/assets/logo/logo2.png")`, backgroundRepeat: "no-repeat",  backgroundSize: "cover", backgroundPosition: "center",   display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100vh" }}> 
+		// 	  <h1 style={{ textAlign: "center", color: 'black', marginBottom: "200px" }}>User Freetalk</h1>
+			  
+		// 		<div className="video-container" style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center", width: "100%" }}>
+		// 		  <div className="video">
+		// 			{stream && <video playsInline muted ref={myVideo} autoPlay style={{ width: "45%"}} />}
+		// 		  </div>
+		// 		  <div className="video">
+		// 			{callAccepted && !callEnded ?
+		// 			  <video playsInline ref={userVideo} autoPlay style={{ width: "45%", marginLeft: "55%" }} /> :
+		// 			  null}
+		// 		  </div>
+		// 		</div>
 
-				<TextField
-					id="filled-basic"
-					label="ID to call"
-					variant="filled"
-					value={idToCall}
-					onChange={(e: any) => setIdToCall(e.target.value)}
-				/>
-				<div className="call-button">
-					{callAccepted && !callEnded ? (
-						<Button variant="contained" color="secondary" onClick={leaveCall}>
-							End Call
-						</Button>
-					) : (
-						<IconButton color="primary" aria-label="call" onClick={() => callUser(idToCall)}>
-							<PhoneIcon fontSize="large" />
-						</IconButton>
-					)}
-					{idToCall}
-				</div>
-			</div>
-			<div>
-				{receivingCall && !callAccepted ? (
-						<div className="caller">
-						<h1 >{name} is calling...</h1>
-						<Button variant="contained" color="primary" onClick={answerCall}>
-							Answer
-						</Button>
+		// 		{receivingCall && !callAccepted ? ( //전화를 받았을 때
+		// 		  <div className="caller">
+		// 			<h1 >{name} is calling...</h1>
+		// 			<Button variant="contained" color="primary" onClick={answerCall}>
+		// 			  Answer
+		// 			</Button>
+		// 		  </div>
+		// 		) : null}
+
+		// 		<div className="call-button" style={{ marginTop: "2rem" }}>
+		// 		  {callAccepted && !callEnded ? (
+		// 			<Button variant="contained" color="secondary" onClick={leaveCall}>
+		// 			  End Call
+		// 			</Button>
+		// 		  ) : (
+		// 			<IconButton color="primary" aria-label="call" onClick={() => callUser(idToCall)}>
+		// 			  <PhoneIcon fontSize="large" />
+		// 			</IconButton>
+		// 		  )}
+		// 		  {idToCall}
+		// 		</div>
+		// 	  </div>
+		// 	</>
+		//   )
+
+		return (
+			<>
+				<h1 style={{ position: "fixed", top: 0, textAlign: "center", color: 'black', width: "100%", zIndex: 1 }}>Enjoy video chat freely </h1>
+				<div className="container" style={{ backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), url("/assets/logo/logo2.png")`, backgroundRepeat: "no-repeat",  backgroundSize: "cover", backgroundPosition: "center",   display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100vh", paddingTop: "50px" }}> 
+					<div className="video-container" style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center", width: "100%" }}>
+						<div className="video">
+							{stream && <video playsInline muted ref={myVideo} autoPlay style={{ width: "100%", marginRight: "0%" }} />}
+						</div>
+						<div className="video">
+							{callAccepted && !callEnded ?
+								<video playsInline ref={userVideo} autoPlay style={{ width: "100%", marginLeft: "0%" }} /> :
+								null}
+						</div>
 					</div>
-				) : null}
-			</div>
-		</div>
-		</>
-	)
-}
+		
+					{receivingCall && !callAccepted ? ( 
+						<div className="caller">
+							<h1 >{name} is calling...</h1>
+							<Button variant="contained" color="primary" onClick={answerCall}>
+								Answer
+							</Button>
+						</div>
+					) : null}
+		
+					<div className="call-button" style={{ position: 'fixed', bottom: '50px',left:0, right: 0 , textAlign: 'center' }}>
+						{callAccepted && !callEnded ? (
+							<Button variant="contained" color="secondary" onClick={leaveCall} style={{ margin: 'auto' ,width: '200px', height: '100px', fontSize: '20px'}}>
+								End Call
+							</Button>
+						) : (
+							<IconButton color="primary" aria-label="call" onClick={() => callUser(idToCall)}>
+								<PhoneIcon fontSize="large" />
+							</IconButton>
+						)}
+						{idToCall}
+					</div>
+				</div>
+			</>
+		)
+		
+
+	
+		
+				  }
 export default FreeDialog;
