@@ -14,8 +14,15 @@ import { frameInfo } from "./common/anims";
 
 // import { playerNicknameState } from '../recoil/user/atoms';
 import { createCharacterAnims } from "../anims/CharacterAnims";
-import { openNPCDialog, openAirport, openFreedialog,openReport, GAME_STATUS } from "../stores/gameSlice";
+import {
+    openNPCDialog,
+    openAirport,
+    openFreedialog,
+    openReport,
+} from "../stores/gameSlice";
+import { npcInfo } from "../characters/Npc";
 import { appendMessage, clearMessages } from "../stores/talkBoxSlice";
+import { appendSentence, clearSentences } from "../stores/sentenceBoxSlice";
 import { setRecord } from "../stores/recordSlice";
 import { handleScene } from "./common/handleScene";
 import { RootState } from "../stores/index";
@@ -30,10 +37,6 @@ let audioContext = new window.AudioContext();
 
 export default class AirportScene extends Phaser.Scene {
     player1: Phaser.Physics.Arcade.Sprite | null = null;
-    npc: Phaser.Physics.Arcade.Sprite | null = null;
-    npc2: Phaser.Physics.Arcade.Sprite | null = null;
-    portal: Phaser.Physics.Arcade.Sprite | null = null;
-    board: Phaser.Physics.Arcade.Sprite | null = null;
     cursors: Phaser.Types.Input.Keyboard.CursorKeys | null = null;
     interactKey: Phaser.Input.Keyboard.Key | null = null;
     interactText: Phaser.GameObjects.Text | null = null;
@@ -54,19 +57,16 @@ export default class AirportScene extends Phaser.Scene {
     socket2: Socket | null = null;
     interacting: boolean = false;
     recorder2: MediaRecorder | null = null;
-    upKey: Phaser.Input.Keyboard.Key | null = null;
-    downKey: Phaser.Input.Keyboard.Key | null = null;
-    leftKey: Phaser.Input.Keyboard.Key | null = null;
-    rightKey: Phaser.Input.Keyboard.Key | null = null;
 
-    
+    isAudioPlaying: boolean = false;
+    npcList: npcInfo[] = [];
+
     constructor() {
         super("AirportScene");
     }
 
     preload() {
         this.load.tilemapTiledJSON("map", "assets/maps/airport.json");
-
     }
 
     init(data: any) {
@@ -79,6 +79,7 @@ export default class AirportScene extends Phaser.Scene {
     create() {
         // this.add.image(400, 300, "background");
         // 배경 설정
+        this.cursors = this.input.keyboard!.createCursorKeys();
         const map = this.make.tilemap({ key: "map" });
         const tileset_generic = map.addTilesetImage("Generic", "generic")!;
         const tileset_basement = map.addTilesetImage("Basement", "basement")!;
@@ -126,14 +127,6 @@ export default class AirportScene extends Phaser.Scene {
 
         this.socket.on("connect", () => {
             console.log("connect, socket.id: ", this.socket!.id);
-            // create user
-            console.log("playerInfo : ", {
-                socketId: this.socket!.id,
-                nickname: this.userNickname,
-                playerTexture: this.playerTexture,
-                x: this.initial_x,
-                y: this.initial_y,
-            });
             this.player1 = this.createPlayer({
                 socketId: this.socket!.id,
                 nickname: this.userNickname,
@@ -142,7 +135,7 @@ export default class AirportScene extends Phaser.Scene {
                 y: this.initial_y,
                 scene: "AirportScene",
             });
-            // this.player1.setCollideWorldBounds(true); // player가 월드 경계를 넘어가지 않게 설정
+
             this.cameras.main.startFollow(this.player1);
             this.cameras.main.zoom = 1.2;
 
@@ -176,70 +169,11 @@ export default class AirportScene extends Phaser.Scene {
                                 console.log(
                                     "updateAlluser, already exist, so just set position"
                                 );
-                                // this.allPlayers[otherPlayers[key].socketId].sprite.x = otherPlayers[key].x;
-                                // this.allPlayers[otherPlayers[key].socketId].sprite.y = otherPlayers[key].y;
+
                                 this.allPlayers[otherPlayers[key].socketId].x =
                                     otherPlayers[key].x;
                                 this.allPlayers[otherPlayers[key].socketId].y =
                                     otherPlayers[key].y;
-
-                                let angle = Phaser.Math.Angle.Between(
-                                    this.allPlayers[key].sprite.x,
-                                    this.allPlayers[key].sprite.y,
-                                    otherPlayers[key].x,
-                                    otherPlayers[key].y
-                                );
-
-                                this.allPlayers[key].sprite.setVelocity(
-                                    Math.cos(angle) *
-                                    this.allPlayers[key].defaultVelocity,
-                                    Math.sin(angle) *
-                                    this.allPlayers[key].defaultVelocity
-                                );
-
-                                // 스프라이트 방향에 따라 애니메이션 재생
-                                if (
-                                    Math.abs(
-                                        otherPlayers[key].x -
-                                        this.allPlayers[key].sprite.x
-                                    ) >
-                                    Math.abs(
-                                        otherPlayers[key].y -
-                                        this.allPlayers[key].sprite.y
-                                    )
-                                ) {
-                                    // left or right
-                                    if (
-                                        otherPlayers[key].x >
-                                        this.allPlayers[key].sprite.x
-                                    ) {
-                                        this.allPlayers[key].sprite.anims.play(
-                                            `${this.allPlayers[key].playerTexture}_run_right`,
-                                            true
-                                        );
-                                    } else {
-                                        this.allPlayers[key].sprite.anims.play(
-                                            `${this.allPlayers[key].playerTexture}_run_left`,
-                                            true
-                                        );
-                                    }
-                                } else {
-                                    // up or down
-                                    if (
-                                        otherPlayers[key].y >
-                                        this.allPlayers[key].sprite.y
-                                    ) {
-                                        this.allPlayers[key].sprite.anims.play(
-                                            `${this.allPlayers[key].playerTexture}_run_down`,
-                                            true
-                                        );
-                                    } else {
-                                        this.allPlayers[key].sprite.anims.play(
-                                            `${this.allPlayers[key].playerTexture}_run_up`,
-                                            true
-                                        );
-                                    }
-                                }
                             }
                         }
                     }
@@ -251,97 +185,13 @@ export default class AirportScene extends Phaser.Scene {
                     console.log("newPlayerConnected, playerInfo: ", playerInfo);
                     if (playerInfo.socketId in this.allPlayers) {
                         console.log("already exist, so just set position");
-                        // this.allPlayers[playerInfo.socketId].sprite.x = playerInfo.x;
-                        // this.allPlayers[playerInfo.socketId].sprite.y = playerInfo.y;
+
                         this.allPlayers[playerInfo.socketId].x = playerInfo.x;
                         this.allPlayers[playerInfo.socketId].y = playerInfo.y;
-                        console.log(
-                            "newPlayerConnected, playerSprite: ",
-                            this.allPlayers[playerInfo.socketId].sprite
-                        );
-
-                        let angle = Phaser.Math.Angle.Between(
-                            this.allPlayers[playerInfo.socketId].sprite.x,
-                            this.allPlayers[playerInfo.socketId].sprite.y,
-                            playerInfo.x,
-                            playerInfo.y
-                        );
-
-                        this.allPlayers[playerInfo.socketId].sprite.setVelocity(
-                            Math.cos(angle) *
-                            this.allPlayers[playerInfo.socketId]
-                                .defaultVelocity,
-                            Math.sin(angle) *
-                            this.allPlayers[playerInfo.socketId]
-                                .defaultVelocity
-                        );
-
-                        // 스프라이트 방향에 따라 애니메이션 재생
-                        if (
-                            Math.abs(
-                                playerInfo.x -
-                                this.allPlayers[playerInfo.socketId].sprite
-                                    .x
-                            ) >
-                            Math.abs(
-                                playerInfo.y -
-                                this.allPlayers[playerInfo.socketId].sprite
-                                    .y
-                            )
-                        ) {
-                            // left or right
-                            if (
-                                playerInfo.x >
-                                this.allPlayers[playerInfo.socketId].sprite.x
-                            ) {
-                                this.allPlayers[
-                                    playerInfo.socketId
-                                ].sprite.anims.play(
-                                    `${this.allPlayers[playerInfo.socketId]
-                                        .playerTexture
-                                    }_run_right`,
-                                    true
-                                );
-                            } else {
-                                this.allPlayers[
-                                    playerInfo.socketId
-                                ].sprite.anims.play(
-                                    `${this.allPlayers[playerInfo.socketId]
-                                        .playerTexture
-                                    }_run_left`,
-                                    true
-                                );
-                            }
-                        } else {
-                            // up or down
-                            if (
-                                playerInfo.y >
-                                this.allPlayers[playerInfo.socketId].sprite.y
-                            ) {
-                                this.allPlayers[
-                                    playerInfo.socketId
-                                ].sprite.anims.play(
-                                    `${this.allPlayers[playerInfo.socketId]
-                                        .playerTexture
-                                    }_run_down`,
-                                    true
-                                );
-                            } else {
-                                this.allPlayers[
-                                    playerInfo.socketId
-                                ].sprite.anims.play(
-                                    `${this.allPlayers[playerInfo.socketId]
-                                        .playerTexture
-                                    }_run_up`,
-                                    true
-                                );
-                            }
-                        }
                     } else {
                         console.log("not exist, so create new one");
                         let playerSprite: Phaser.Physics.Arcade.Sprite =
                             this.createPlayer(playerInfo);
-                        // playerSprite.setCollideWorldBounds(true); // player가 월드 경계를 넘어가지 않게 설정;
                         playerSprite.anims.play(
                             `${playerInfo.playerTexture}_idle_down`,
                             true
@@ -355,93 +205,12 @@ export default class AirportScene extends Phaser.Scene {
                     console.log("playerMoved, playerInfo: ", playerInfo);
                     if (playerInfo.socketId in this.allPlayers) {
                         console.log("already exist, so just set position");
-                        // this.allPlayers[playerInfo.socketId].sprite.x = playerInfo.x;
-                        // this.allPlayers[playerInfo.socketId].sprite.y = playerInfo.y;
                         this.allPlayers[playerInfo.socketId].x = playerInfo.x;
                         this.allPlayers[playerInfo.socketId].y = playerInfo.y;
-
-                        let angle = Phaser.Math.Angle.Between(
-                            this.allPlayers[playerInfo.socketId].sprite.x,
-                            this.allPlayers[playerInfo.socketId].sprite.y,
-                            playerInfo.x,
-                            playerInfo.y
-                        );
-
-                        this.allPlayers[playerInfo.socketId].sprite.setVelocity(
-                            Math.cos(angle) *
-                            this.allPlayers[playerInfo.socketId]
-                                .defaultVelocity,
-                            Math.sin(angle) *
-                            this.allPlayers[playerInfo.socketId]
-                                .defaultVelocity
-                        );
-
-                        // 스프라이트 방향에 따라 애니메이션 재생
-                        if (
-                            Math.abs(
-                                playerInfo.x -
-                                this.allPlayers[playerInfo.socketId].sprite
-                                    .x
-                            ) >
-                            Math.abs(
-                                playerInfo.y -
-                                this.allPlayers[playerInfo.socketId].sprite
-                                    .y
-                            )
-                        ) {
-                            // left or right
-                            if (
-                                playerInfo.x >
-                                this.allPlayers[playerInfo.socketId].sprite.x
-                            ) {
-                                this.allPlayers[
-                                    playerInfo.socketId
-                                ].sprite.anims.play(
-                                    `${this.allPlayers[playerInfo.socketId]
-                                        .playerTexture
-                                    }_run_right`,
-                                    true
-                                );
-                            } else {
-                                this.allPlayers[
-                                    playerInfo.socketId
-                                ].sprite.anims.play(
-                                    `${this.allPlayers[playerInfo.socketId]
-                                        .playerTexture
-                                    }_run_left`,
-                                    true
-                                );
-                            }
-                        } else {
-                            // up or down
-                            if (
-                                playerInfo.y >
-                                this.allPlayers[playerInfo.socketId].sprite.y
-                            ) {
-                                this.allPlayers[
-                                    playerInfo.socketId
-                                ].sprite.anims.play(
-                                    `${this.allPlayers[playerInfo.socketId]
-                                        .playerTexture
-                                    }_run_down`,
-                                    true
-                                );
-                            } else {
-                                this.allPlayers[
-                                    playerInfo.socketId
-                                ].sprite.anims.play(
-                                    `${this.allPlayers[playerInfo.socketId]
-                                        .playerTexture
-                                    }_run_up`,
-                                    true
-                                );
-                            }
-                        }
                     } else {
                         console.log("not exist, so create new one");
                         let playerSprite: Phaser.Physics.Arcade.Sprite =
                             this.createPlayer(playerInfo);
-                        // playerSprite.setCollideWorldBounds(true); // player가 월드 경계를 넘어가지 않게 설정;
                         playerSprite.anims.play(
                             `${playerInfo.playerTexture}_idle_down`,
                             true
@@ -471,10 +240,7 @@ export default class AirportScene extends Phaser.Scene {
             this.physics.add.collider(this.player1, platform6);
             this.physics.add.collider(this.player1, platform7);
 
-            this.npc = this.physics.add.sprite(1700, 1100, "npc");
-            this.portal = this.physics.add.sprite(1920, 1350, "npc");
-            this.npc2 = this.physics.add.sprite(2000, 1500, "npc");
-            this.board = this.physics.add.sprite(1920, 1600, "npc");
+            this.createAirportNpc();
         });
 
         this.cursors = this.input.keyboard!.createCursorKeys();
@@ -488,115 +254,100 @@ export default class AirportScene extends Phaser.Scene {
             fontSize: "16px",
         });
 
-        let valve=false;
-        this.input.keyboard!.on("keydown-D", async () => {
-            if (
-                Phaser.Math.Distance.Between(
-                    this.player1!.x,
-                    this.player1!.y,
-                    this.npc!.x,
-                    this.npc!.y
-                ) < 100
-            ) {
-                store.dispatch(openNPCDialog());
-            }
-            if (
-                Phaser.Math.Distance.Between(
-                    this.player1!.x,
-                    this.player1!.y,
-                    this.board!.x,
-                    this.board!.y
-                ) < 100
-            ) {
-                if (valve==false){
-                    store.dispatch(openReport());
-                    valve=true;
-                }
-                else if(valve==true){
-                    store.dispatch(openAirport());
-                    valve=false;
-                }
-                
-            }
-        });
-
-        this.input.keyboard!.on("keydown-X", async () => {
-            if (
-                Phaser.Math.Distance.Between(
-                    this.player1!.x,
-                    this.player1!.y,
-                    this.portal!.x,
-                    this.portal!.y
-                ) < 100
-            ) {
-                this.socket?.disconnect();
-
-                handleScene("USA", {
-                    playerId: this.playerId,
-                    playerNickname: this.userNickname,
-                    playerTexture: this.playerTexture,
-                });
-            }
-        });
-
-        this.upKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
-        this.downKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
-        this.leftKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
-        this.rightKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
-
         let valve_E=true;
         // npc 와의 대화를 위한 키 설정
         this.input.keyboard!.on("keydown-E", async () => {
             if(valve_E===true){
-                if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y,
-                    this.npc!.x, this.npc!.y) < 100) {
-                    store.dispatch(openNPCDialog());
-                    this.upKey!.enabled = false;
-                    this.downKey!.enabled = false;
-                    this.leftKey!.enabled = false;
-                    
-                    this.rightKey!.enabled = false;
-                    if (this.socket2 === null || this.socket2 === undefined) {
-                        this.socket2 = io(`${serverUrl}/interaction`);
-                        this.socket2.on("connect", () => {
-                            this.interacting = true;
-                            console.log("connect, interaction socket.id: ", this.socket2!.id);
-                            this.socket2!.on("textToSpeech", (response: string) => {
-                                console.log("USER: ", response);
-                                store.dispatch(appendMessage({
-                                    name: this.userNickname,
-                                    img: "",
-                                    side: "right",
-                                    text: response
-                                }));
+                if (this.isAudioPlaying) {
+                return;
+            }
+            for (let npcInfo of this.npcList) {
+                if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y, npcInfo.x, npcInfo.y) < 100) {
+
+                        this.player1!.setVelocity(0, 0);
+                    this.player1!.anims.play(`${this.player1!.texture.key}_idle_down`, true);
+                        store.dispatch(openNPCDialog());
     
-                            });
-                            this.socket2!.on("npcResponse", (response: string) => {
-                                console.log("NPC: ", response);
-                                store.dispatch(appendMessage({
-                                    name: this.userNickname,
-                                    img: "",
-                                    side: "left",
-                                    text: response
-                                }));
+                    this.cursors!.left.enabled = false;
+                        this.cursors!.right.enabled = false;
+                        this.cursors!.up.enabled = false;
+                    this.cursors!.down.enabled = false;
     
-                            });
-                            this.socket2!.on("totalResponse", (response: any) => {
-                                console.log("totalResponse event response: ", response);
+                            if (this.socket2 === null || this.socket2 === undefined) {
+                            this.socket2 = io(`${serverUrl}/interaction`);
+                            this.socket2.on("connect", () => {
+                                this.interacting = true;
+                                console.log("connect, interaction socket.id: ", this.socket2!.id);
+                                this.socket2!.on("speechToText", (response: string) => {
+                                    console.log("USER: ", response);
+                                    store.dispatch(appendMessage({
+                                        name: this.userNickname,
+                                        img: this.playerTexture,
+                                    // img: "",
+                                        side: "right",
+                                        text: response
+                                    }));
+    
+                                });
+                                this.socket2!.on("npcResponse", (response: string) => {
+                                    console.log("NPC: ", response);
+                                    store.dispatch(appendMessage({
+                                        name: npcInfo.name,
+                                        img: npcInfo.texture,
+                                    // img: "",
+                                        side: "left",
+                                        text: response
+                                    }));
+    
+                                });
+                                this.socket2!.on("totalResponse", (response: any) => {
+                                    console.log("totalResponse event response: ", response);
+                                    // this.isAudioPlaying = true;
                                 const audio = new Audio(response.audioUrl);
+                                    audio.onended = () => {
+                                    console.log("audio.onended");
+                                    this.isAudioPlaying = false;
+                                };
                                 audio.play();
-                            });
+                                });
+                                this.socket2!.on(
+                                "recommendedResponses",
+                                (responses: string[]) => {
+                                    console.log(
+                                        "Recommended Responses: ",
+                                        responses
+                                    );
+                                    // TODO : Store에 SentenceBox 상태정의하고 dispatch
+                                    store.dispatch(clearSentences());
+                                    responses.forEach((response, index) => {
+                                        store.dispatch(
+                                            appendSentence({
+                                                _id: index.toString(),
+                                                sentence: response,
+                                            })
+                                        );
+                                    });
+                                }
+                            );
                         });
-                    }
-                    else { // 이미 소켓이 연결되어 있는데 다시 한번 E키를 누른 경우
-                        this.upKey!.enabled = true;
-                        this.downKey!.enabled = true;
-                        this.leftKey!.enabled = true;
-                        this.rightKey!.enabled = true;
+                        }
+                        else { // 이미 소켓이 연결되어 있는데 다시 한번 E키를 누른 경우
+                            this.player1!.setVelocity(0, 0);
+                        this.player1!.setPosition(this.player1!.x, this.player1!.y);
+
+                        this.cursors!.left.isDown = false;
+                        this.cursors!.right.isDown = false;
+                        this.cursors!.up.isDown = false;
+                            this.cursors!.down.isDown = false;
+
+                        this.cursors!.left.enabled = true;
+                            this.cursors!.right.enabled = true;
+                        this.cursors!.up.enabled = true;
+                            this.cursors!.down.enabled = true;
     
-                        this.interacting = false;
-                        this.socket2?.disconnect();
-                        this.socket2 = null;
+                            this.interacting = false;
+                            this.socket2?.disconnect();
+                            this.socket2 = null;
                         // store.dispatch(clearMessages());
                         // store.dispatch(openAirport());
                         store.dispatch(openReport());
@@ -605,54 +356,66 @@ export default class AirportScene extends Phaser.Scene {
                 }
             }
             else{
-                store.dispatch(clearMessages());
-                store.dispatch(openAirport());
+                    store.dispatch(clearMessages());
+                        store.dispatch(clearSentences());
+                    store.dispatch(openAirport());
                 valve_E=true
-            }
-            
-            
+                }
+                    break;
+                }
+                        
+
         });
         // 녹음 데이터를 보내고 응답을 받는 키 설정
         this.input.keyboard!.on("keydown-R", async () => {
-            if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y,
-                this.npc!.x, this.npc!.y) < 100 && this.socket2?.connected) {
-                console.log("R key pressed");
+            if (this.isAudioPlaying) {
+                return;
+            }
+            for (let npcInfo of this.npcList) {
+                if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y, npcInfo.x, npcInfo.y) < 100 && this.socket2?.connected) {
 
-                if (this.recorder2 === null || this.recorder2 === undefined) {
-                    await this.recordEventHandler().then(() => {
-                        // console.log("recordEventHandler finished");
-                    });
-                }
+                    console.log("R key pressed");
 
-                if (this.recorder2) {
-                    if (this.recorder2.state === "recording") {
-                        store.dispatch(setRecord(true));
-                        this.recorder2!.stop();
-                    } else {
-                        store.dispatch(setRecord(false));
-                        this.recorder2!.start();
+
+                    if (this.recorder2 === null || this.recorder2 === undefined) {
+                        await this.recordEventHandler().then(() => {
+                            // console.log("recordEventHandler finished");
+                        });
                     }
+
+                    if (this.recorder2) {
+                        if (this.recorder2.state === "recording") {
+                            store.dispatch(setRecord(true));
+                            this.isAudioPlaying = true;
+                            this.recorder2!.stop();
+                        } else {
+                            store.dispatch(setRecord(false));
+                            this.recorder2!.start();
+                        }
+                    }
+
+                    break;
                 }
+
             }
         });
-
-        this.input.keyboard!.on("keydown-F", async () => {
-            if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y,
-                this.npc2!.x, this.npc2!.y) < 100) {
-                console.log("F key pressed");
-                store.dispatch(openFreedialog());
-                }});
-
-
-        
     }
-    update() {
-        this.cursors = this.input.keyboard!.createCursorKeys();
+    update(time: number, delta: number) {
         const speed = 200;
         let velocityX = 0;
         let velocityY = 0;
 
         if (this.player1 !== null && this.player1 !== undefined) {
+            console.log("userNickname : ", this.userNickname);
+            this.userIdText!.setText(this.userNickname);
+            this.userIdText!.setOrigin(0.5, 0);
+            this.userIdText!.setX(this.player1!.x);
+            this.userIdText!.setY(this.player1!.y - 50);
+        }
+
+        if (this.player1 !== null && this.player1 !== undefined &&
+            this.cursors!.left.enabled && this.cursors!.right.enabled &&
+            this.cursors!.up.enabled && this.cursors!.down.enabled) {
             if (this.cursors!.left.isDown) {
                 velocityX = -speed;
                 this.player1!.anims.play(
@@ -686,7 +449,6 @@ export default class AirportScene extends Phaser.Scene {
                 velocityX /= Math.SQRT2;
                 velocityY /= Math.SQRT2;
             }
-
             this.player1!.setVelocityX(velocityX);
             this.player1!.setVelocityY(velocityY);
 
@@ -694,45 +456,6 @@ export default class AirportScene extends Phaser.Scene {
                 this.player1!.anims.play(
                     `${this.player1!.texture.key}_idle_down`
                 );
-            }
-        }
-
-        if (this.player1 !== null && this.player1 !== undefined) {
-            console.log("userNickname : ", this.userNickname);
-            this.userIdText!.setText(this.userNickname);
-            this.userIdText!.setOrigin(0.5, 0);
-            this.userIdText!.setX(this.player1!.x);
-            this.userIdText!.setY(this.player1!.y - 50);
-
-            // Check distance between players
-            if (
-                Phaser.Math.Distance.Between(
-                    this.player1!.x,
-                    this.player1!.y,
-                    this.npc!.x,
-                    this.npc!.y
-                ) < 100
-            ) {
-                if (this.interacting === false) {
-                    this.interactText!.setText("Press E interact");
-                    // interactText position
-                    this.interactText!.setOrigin(0.5, 0);
-                    this.interactText!.setX(this.player1!.x);
-                    this.interactText!.setY(this.player1!.y - 70);
-                }
-                else {
-                    if (this.recorder2?.state === "recording") {
-                        this.interactText!.setText("Press R to stop recording");
-                    }
-                    else {
-                        this.interactText!.setText("Press R to record");
-                    }
-                    this.interactText!.setOrigin(0.5, 0);
-                    this.interactText!.setX(this.player1!.x);
-                    this.interactText!.setY(this.player1!.y - 70);
-                }
-            } else {
-                this.interactText!.setText("");
             }
         }
 
@@ -752,30 +475,11 @@ export default class AirportScene extends Phaser.Scene {
                     scene: "AirportScene",
                 });
             }
-
             for (let key in this.allPlayers) {
                 if (key !== this.socket.id) {
-                    let otherSprite: Phaser.Physics.Arcade.Sprite =
-                        this.allPlayers[key].sprite;
-                    let targetPosition: { x: number; y: number } = {
-                        x: this.allPlayers[key].x,
-                        y: this.allPlayers[key].y,
-                    };
-                    if (
-                        targetPosition &&
-                        Phaser.Math.Distance.Between(
-                            otherSprite.x,
-                            otherSprite.y,
-                            targetPosition.x,
-                            targetPosition.y
-                        ) <= 1.0
-                    ) {
-                        otherSprite.setVelocity(0, 0);
-                        otherSprite.anims.play(
-                            `${this.allPlayers[key].playerTexture}_idle_down`,
-                            true
-                        );
-                    }
+                    let deltaInSecond: number = delta / 1000;
+                    let otherPlayer: Player = this.allPlayers[key];
+                    otherPlayer.move(deltaInSecond);
                     this.allPlayers[key].moveText(this);
                 }
             }
@@ -824,23 +528,33 @@ export default class AirportScene extends Phaser.Scene {
                 };
 
                 this.recorder2.onstop = () => {
-                    const blob: Blob = new Blob(chunks, { type: "audio/wav", });
+                    const blob: Blob = new Blob(chunks, { type: "audio/wav" });
                     chunks = [];
                     console.log("record2 onstop event callback function");
                     console.log("blob: ", blob);
                     blob.arrayBuffer().then((buffer) => {
                         console.log("buffer: ", buffer);
-                        this.socket2!.emit('audioSend',
-                            {
-                                userNickname: this.userNickname,
-                                npcName: "npc", // TODO: npc 이름 받아오기
-                                audioDataBuffer: buffer
-                            });
+                        this.socket2!.emit("audioSend", {
+                            userNickname: this.userNickname,
+                            npcName: "ImmigrationOfficer", // TODO: npc 이름 받아오기
+                            audioDataBuffer: buffer,
+                        });
                     });
                 };
             })
             .catch((error) => {
                 console.log(error);
             });
+    }
+    createAirportNpc() {
+        let npc1: npcInfo = {
+            name: "immigrationOfficer",
+            x: 1700,
+            y: 1100,
+            texture: "npc",
+            sprite: null,
+        };
+        npc1.sprite = this.physics.add.sprite(npc1.x, npc1.y, npc1.texture);
+        this.npcList.push(npc1);
     }
 }

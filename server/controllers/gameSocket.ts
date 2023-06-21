@@ -5,20 +5,12 @@ import { Player, PlayerDictionary } from "../models/Player";
 let players_airport: PlayerDictionary = {};
 let players_usa: PlayerDictionary = {};
 export function socketEventHandler(socket: Socket) {
-    // console.log("All players: ", players);
-    // console.log("New client connected, socketid: ", socket.id);
+    console.log("Client connected, id: ", socket.id);
     socket.on("connected", (data: Player) => {
         if (data.scene === "AirportScene") {
             data.socketId = socket.id;
             players_airport[socket.id] = data;
 
-            // console.log("connected, socketid: ", socket.id);
-            // console.log("connected, data: ", data);
-
-            // if (players !== undefined && players !== null) {
-            //     console.log("All players, connected, updateAlluser: ", players);
-            //     socket.emit("updateAlluser", players);
-            // }
             socket.emit("updateAlluser", players_airport);
             socket.broadcast.emit(
                 "newPlayerConnected",
@@ -33,16 +25,13 @@ export function socketEventHandler(socket: Socket) {
     });
     socket.on("playerMovement", (data: Player) => {
         if (data.scene === "AirportScene") {
-            // console.log("playerMovement, socketid: ", socket.id);
             console.log("playerMovement, data: ", data);
             data.socketId = socket.id;
             players_airport[socket.id] = data;
-            // console.log("All players, playerMovement: ", players);
             socket.broadcast.emit("playerMoved", players_airport[socket.id]);
         } else if (data.scene === "USAScene") {
             data.socketId = socket.id;
             players_usa[socket.id] = data;
-            // console.log("All players, playerMovement: ", players);
             socket.broadcast.emit("playerMoved", players_usa[socket.id]);
         }
     });
@@ -55,7 +44,7 @@ export function socketEventHandler(socket: Socket) {
     });
 
     socket.on("disconnect", (reason: string) => {
-        // console.log("Client disconnected, id: ", socket.id, ", reason: ", reason);
+        console.log("Client disconnected, id: ", socket.id, ", reason: ", reason);
         if (players_airport[socket.id] != null) {
             let playerDeleted: Player = players_airport[socket.id];
             delete players_airport[socket.id];

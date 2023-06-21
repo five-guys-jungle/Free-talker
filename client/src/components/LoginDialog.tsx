@@ -138,6 +138,7 @@ function LoginDialog() {
             style={{
                 position: "absolute",
                 backgroundImage: `url(${Frame})`,
+                backgroundColor: "rgba(255, 255, 255, 0.5)",
                 backgroundSize: "100% 100%",
             }}
         >
