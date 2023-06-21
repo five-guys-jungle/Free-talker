@@ -294,11 +294,11 @@ export async function recommendNextResponses(
             messages: [
                 {
                     role: "system",
-                    content: `I'm currently in immigration at the ${place}, Recommend me three expressions I can reply to the ${previous} without any explanations`,
+                    content: `I'm currently in immigration at the ${place}, Recommend me three expressions I can reply to the sentence that ${previous} without any explanations`,
                 },
                 {
                     role: "user",
-                    content: `I'm currently in immigration at the ${place}, Recommend me three expressions I can reply to the ${previous} without any explanations`,
+                    content: `I'm currently in immigration at the ${place}, Recommend me three expressions I can reply to the sentence that ${previous} without any explanations`,
                 },
             ],
             // messages: {`I'm currently at the ${place}, Recommend me three expressions I can reply to the ${previous} without any explanations`,}

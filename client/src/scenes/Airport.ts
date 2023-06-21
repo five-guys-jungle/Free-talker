@@ -345,6 +345,7 @@ export default class AirportScene extends Phaser.Scene {
                         this.socket2?.disconnect();
                         this.socket2 = null;
                         store.dispatch(clearMessages());
+                        store.dispatch(clearSentences());
                         store.dispatch(openAirport());
                     }
                     break;
