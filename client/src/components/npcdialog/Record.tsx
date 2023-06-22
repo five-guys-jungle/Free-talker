@@ -10,6 +10,9 @@ const Record: React.FC = () => {
     const state = useSelector(
         (state: { record: { record: boolean } }) => state.record.record
     );
+    const message = useSelector(
+        (state: { record: { message: string } }) => state.record.message
+    );
     const stateRef = useRef(state);
 
     const doClick = () => {
@@ -261,7 +264,7 @@ const Record: React.FC = () => {
                         </g>
                     </g>
                 </svg>
-                <Instructions>R키를 눌러 녹음을 시작하세요</Instructions>
+                <Instructions>{message}</Instructions>
             </Container>
         </RecDiv>
     );

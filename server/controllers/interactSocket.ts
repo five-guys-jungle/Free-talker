@@ -76,8 +76,7 @@ export function interactSocketEventHandler(socket: Socket) {
             const buffer = Buffer.from(data.audioDataBuffer);
             const filePath = path.join(
                 __dirname,
-                `../audio/user_audio/${data.userNickname}_${
-                    data.npcName
+                `../audio/user_audio/${data.userNickname}_${data.npcName
                 }_${uuidv4()}.wav`
             );
             fs.writeFileSync(filePath, buffer); // 동기적으로 실행
@@ -92,24 +91,24 @@ export function interactSocketEventHandler(socket: Socket) {
 
             inputText = await convertSpeechToText(filePath).then(
                 async (res) => {
-                    
+
                     socket.emit("speechToText", res);
                     return res;
                 }
             );
             // console.log("User: ", inputText);
             console.log("chain 호출 시작");
-            var startTime:any = new Date();
+            var startTime: any = new Date();
             const chainOutput = await chain.call({ input: inputText });
-            
 
-            var endTime:any = new Date();
-            var elapsedTime:any = endTime - startTime; // 밀리초 단위
+
+            var endTime: any = new Date();
+            var elapsedTime: any = endTime - startTime; // 밀리초 단위
 
             console.log(`실행 시간: ${elapsedTime}ms`);
             outputText = chainOutput.response;
             socket.emit("npcResponse", outputText);
-            
+
             // console.log("LangChain OutputText: ", outputText);
             // outputText = await textCompletion(inputText, chain).then(
             //     async (res) => {
@@ -125,18 +124,42 @@ export function interactSocketEventHandler(socket: Socket) {
                 }
             );
 
+            // socket.on("getRecommendedResponses", async (alreadyRecommended) => {
+            //     if (!alreadyRecommended) {
+            //         await recommendNextResponses(outputText, "airport")
+            //             .then((res) => {
+            //                 socket.emit("recommendedResponses", res);
+            //                 console.log("recommended Responses: ", res);
+            //                 return res;
+            //             })
+            //             .catch((err) => {
+            //                 console.log("Recommend Responses Error: ", err);
+            //                 recommendedText = "";
+            //             });
+            //     }
+            // });
+        }
+    );
+    socket.on("getRecommendedResponses", async (alreadyRecommended: boolean, outputText: string) => {
+        if (!alreadyRecommended) {
+            console.log("getRecommendedResponses start");
             await recommendNextResponses(outputText, "airport")
                 .then((res) => {
-                    socket.emit("recommendedResponses", res);
+                    if (res === "ChatGPT API Error.") {
+                        socket.emit("recommendedResponses", [outputText]);
+                    }
+                    else {
+                        socket.emit("recommendedResponses", res);
+                    }
                     console.log("recommended Responses: ", res);
                     return res;
                 })
                 .catch((err) => {
                     console.log("Recommend Responses Error: ", err);
-                    recommendedText = "";
+                    // recommendedText = "";
                 });
         }
-    );
+    });
 
     socket.on("disconnect", (reason: string) => {
         console.log(
