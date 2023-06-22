@@ -4,6 +4,7 @@ export interface Player {
     playerTexture: string;
     x: number;
     y: number;
+    scene: string;
 }
 
 export interface PlayerDictionary {

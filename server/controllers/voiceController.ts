@@ -1,0 +1,25 @@
+const express = require("express")
+const http = require("http")
+const app = express()
+const server = http.createServer(app)
+import {  Socket } from "socket.io"	
+
+
+export function freedialogsocketEventHandler(socket: Socket) {
+	console.log(socket.id, "connection---------------------------------")	
+    socket.emit("me", socket.id)
+
+	socket.on("disconnect", () => {
+		socket.broadcast.emit("callEnded")
+	})
+
+	socket.on("callUser", (data: { userToCall: any; signalData: any; from: any; name: any }) => {
+		console.log("callUser: 서버에서 데이터를 받았음")
+		socket.broadcast.emit("callUser", { signal: data.signalData, from: data.from, name: data.name })
+	})
+
+	socket.on("answerCall", (data: { to: any; signal: any }) => {
+		console.log("answerCall: ", data)	
+		socket.broadcast.emit("callAccepted", data.signal)
+	})
+}

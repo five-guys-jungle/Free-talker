@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios, { AxiosError } from "axios";
 import styled from "styled-components";
-
-import { useSetRecoilState, useRecoilState, useRecoilValue } from "recoil";
 import { Snackbar, SnackbarOrigin } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
@@ -15,15 +13,20 @@ import "swiper/css/navigation";
 // import loginFrame from '../assets/images/frame.png';
 import chars from "../assets/characters";
 import {
-    playerIdState,
-    playerTextureState,
-    playerNicknameState,
-} from "../recoil/user/atoms";
-import { gameSceneState } from "../recoil/game/atoms";
-
+    setPlayerId,
+    setPlayerTexture,
+    setPlayerNickname,
+} from "../stores/userSlice";
+import { useDispatch } from "react-redux";
+import { useAppDispatch } from "../stores";
+import { openAirport } from "../stores/gameSlice";
 import SignUpDialog from "./SignUpDialog";
+import { GAME_STATUS } from "../stores/gameSlice";
+import { handleScene } from "../scenes/common/handleScene";
 
-const DB_URL = "http://localhost:5000";
+// const DB_URL = "https://seunghunshin.shop";
+import dovenv from "dotenv";
+let DB_URL: string = process.env.REACT_APP_SERVER_URL!;
 
 interface Characters {
     [key: string]: string;
@@ -66,19 +69,12 @@ function LoginDialog() {
     const [userPw, setUserPw] = useState<string>("");
     const [userPwFieldEmpty, setUserPwFieldEmpty] = useState<boolean>(false);
     const [avatarIndex, setAvatarIndex] = useState<number>(0);
+    const dispatch = useDispatch();
+    const appDispatch = useAppDispatch();
 
-    // const [gameScene, setGameScene] = useRecoilState(gameSceneState);
-    const setGameScene = useSetRecoilState(gameSceneState);
-
-    const changeScene = (newScene: "login" | "airport") => {
-        setGameScene({ scene: newScene });
-    };
-
-    const setPlayerId = useSetRecoilState(playerIdState);
-    const setPlayerNickname = useSetRecoilState(playerNicknameState);
-    const setPlayerTexture = useSetRecoilState(playerTextureState);
-
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (
+        e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    ) => {
         // console.log("handleSubmit");
         e.preventDefault();
         if (userId === "") {
@@ -95,21 +91,29 @@ function LoginDialog() {
 
             try {
                 console.log("try");
-                const response = await axios.post(`${DB_URL}/user/login`, body);
+                const response = await axios.post(`${DB_URL}/auth/login`, body);
                 console.log(response.data);
                 if (response.data.status === 200) {
                     const payload = response.data;
+                    // console.log(`response: ${response}`);
+                    console.log(`payload : ${payload}`);
+
                     const userId = payload.userId;
                     const userNickname = payload.userNickname;
                     const userAvatar = avatars[avatarIndex].name;
                     console.log(`"userAvatar: , ${userAvatar}"`);
-                    console.log(`"userID: , ${payload.userId}"`);
+                    // console.log(`"userID: , ${userId}"`);
 
-                    setPlayerId(userId);
-                    setPlayerNickname(userNickname);
-                    setPlayerTexture(userAvatar);
-
-                    changeScene("airport");
+                    dispatch(openAirport());
+                    dispatch(setPlayerId(userId));
+                    dispatch(setPlayerNickname(userNickname));
+                    dispatch(setPlayerTexture(userAvatar));
+                    handleScene(GAME_STATUS.AIRPORT, {
+                        playerId: payload.userId,
+                        playerNickname: payload.userNickname,
+                        playerTexture: avatars[avatarIndex].name,
+                    });
+                    console.log("handleScene");
 
                     // playerId: payload.userNickname,
                     // playerTexture: avatars[avatarIndex].name,
@@ -134,6 +138,7 @@ function LoginDialog() {
             style={{
                 position: "absolute",
                 backgroundImage: `url(${Frame})`,
+                backgroundColor: "rgba(255, 255, 255, 0.5)",
                 backgroundSize: "100% 100%",
             }}
         >
@@ -148,7 +153,7 @@ function LoginDialog() {
                 alt="Free Talker"
                 style={{ maxWidth: "350px", height: "auto" }}
             />
-            <Content onSubmit={handleSubmit} id="login">
+            <Content id="login">
                 {/* <ServiceTitle>Free Talker</ServiceTitle> */}
                 <Left>
                     <Swiper
@@ -205,8 +210,9 @@ function LoginDialog() {
                         <Button
                             variant="contained"
                             color="primary"
-                            type="submit"
+                            // type="submit"
                             size="large"
+                            onClick={handleSubmit}
                             form="login"
                             sx={{ marginBottom: "10px" }}
                         >

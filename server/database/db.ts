@@ -4,31 +4,95 @@ import { User } from "../models/User";
 import { connect } from "http2";
 import "dotenv/config";
 
-const dbHost = process.env.DB_HOST;
+import {
+    DynamoDBClient,
+    CreateTableCommand,
+    ListTablesCommand,
+} from "@aws-sdk/client-dynamodb";
+
+// import { User } from "../models/User";
+import "dotenv/config";
+
+const tableName = process.env.DYNAMODB_TABLE_NAME;
+const client = new DynamoDBClient({ region: "ap-northeast-2" });
 
 export async function connectDB() {
-    mongoose.set("strictQuery", false);
     try {
-        if (typeof dbHost === "string") {
-            await mongoose.connect(dbHost);
-            console.log("MongoDB에 연결되었습니다.");
-            await createCollection("user"); // 컬렉션 생성 함수 호출
+        if (typeof tableName === "string") {
+            await createTable(tableName); // 테이블 생성 함수 호출
+            console.log("DynamoDB에 연결되었습니다.");
         } else {
-            throw new Error("DB_HOST is not defined");
+            throw new Error("DYNAMODB_TABLE_NAME is not defined");
         }
     } catch (error) {
-        console.error("MongoDB 연결에 실패했습니다:", error);
+        console.error("DynamoDB 연결에 실패했습니다:", error);
     }
 }
 
-async function createCollection(modelName: string) {
-    if (mongoose.modelNames().includes(modelName)) {
-        return mongoose.model(modelName);
+async function createTable(tableName: string) {
+    try {
+        const tableExists = await doesTableExist(tableName);
+        console.log(`Table Exists: ${tableExists}`);
+        if (!tableExists) {
+            await createTableIfNotExists(tableName);
+        } else {
+            console.log(`${tableName} 테이블이 이미 존재합니다.`);
+        }
+    } catch (error) {
+        console.error("테이블 생성에 실패했습니다:", error);
     }
+}
 
-    switch (modelName) {
-        case "user":
-            new User();
-            break;
-    }
+async function doesTableExist(tableName: string) {
+    const command = new ListTablesCommand({});
+    const response = await client.send(command);
+    console.log("List Tables : ", response);
+    return response.TableNames?.includes(tableName);
+}
+
+async function createTableIfNotExists(tableName: string) {
+    const params = {
+        TableName: tableName,
+        AttributeDefinitions: [
+            {
+                AttributeName: "userId",
+                AttributeType: "S",
+            },
+            {
+                AttributeName: "userNickname",
+                AttributeType: "S",
+            },
+        ],
+        KeySchema: [
+            {
+                AttributeName: "userId",
+                KeyType: "HASH",
+            },
+        ],
+        ProvisionedThroughput: {
+            ReadCapacityUnits: 1,
+            WriteCapacityUnits: 1,
+        },
+        GlobalSecondaryIndexes: [
+            {
+                IndexName: "userNickname-index",
+                KeySchema: [
+                    {
+                        AttributeName: "userNickname",
+                        KeyType: "HASH",
+                    },
+                ],
+                Projection: {
+                    ProjectionType: "ALL",
+                },
+                ProvisionedThroughput: {
+                    ReadCapacityUnits: 1,
+                    WriteCapacityUnits: 1,
+                },
+            },
+        ],
+    };
+    const command = new CreateTableCommand(params);
+    const response = await client.send(command);
+    console.log(`테이블 ${tableName}이 생성되었습니다.`);
 }
