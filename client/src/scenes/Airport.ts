@@ -403,7 +403,7 @@ export default class AirportScene extends Phaser.Scene {
                 }
             }
         }
-    );
+        );
         // 녹음 데이터를 보내고 응답을 받는 키 설정
         this.input.keyboard!.on("keydown-R", async () => {
             if (this.isAudioPlaying) {
@@ -457,39 +457,41 @@ export default class AirportScene extends Phaser.Scene {
         if (this.player1 !== null && this.player1 !== undefined &&
             this.cursors!.left.enabled && this.cursors!.right.enabled &&
             this.cursors!.up.enabled && this.cursors!.down.enabled) {
-            if (this.cursors!.left.isDown) {
-                velocityX = -speed;
-                this.player1!.anims.play(
-                    `${this.player1!.texture.key}_run_left`,
-                    true
-                );
-            } else if (this.cursors!.right.isDown) {
-                velocityX = speed;
-                this.player1!.anims.play(
-                    `${this.player1!.texture.key}_run_right`,
-                    true
-                );
+            // First check diagonal movement
+            if (this.cursors!.left.isDown && this.cursors!.up.isDown) {
+                velocityX = -speed / Math.SQRT2;
+                velocityY = -speed / Math.SQRT2;
+                this.player1!.anims.play(`${this.player1!.texture.key}_run_left`, true);
+            } else if (this.cursors!.left.isDown && this.cursors!.down.isDown) {
+                velocityX = -speed / Math.SQRT2;
+                velocityY = speed / Math.SQRT2;
+                this.player1!.anims.play(`${this.player1!.texture.key}_run_down`, true);
+            } else if (this.cursors!.right.isDown && this.cursors!.up.isDown) {
+                velocityX = speed / Math.SQRT2;
+                velocityY = -speed / Math.SQRT2;
+                this.player1!.anims.play(`${this.player1!.texture.key}_run_right`, true);
+            } else if (this.cursors!.right.isDown && this.cursors!.down.isDown) {
+                velocityX = speed / Math.SQRT2;
+                velocityY = speed / Math.SQRT2;
+                this.player1!.anims.play(`${this.player1!.texture.key}_run_down`, true);
+            } else { // If not moving diagonally, then check horizontal and vertical movement
+                if (this.cursors!.left.isDown) {
+                    velocityX = -speed;
+                    this.player1!.anims.play(`${this.player1!.texture.key}_run_left`, true);
+                } else if (this.cursors!.right.isDown) {
+                    velocityX = speed;
+                    this.player1!.anims.play(`${this.player1!.texture.key}_run_right`, true);
+                }
+
+                if (this.cursors!.up.isDown) {
+                    velocityY = -speed;
+                    this.player1!.anims.play(`${this.player1!.texture.key}_run_up`, true);
+                } else if (this.cursors!.down.isDown) {
+                    velocityY = speed;
+                    this.player1!.anims.play(`${this.player1!.texture.key}_run_down`, true);
+                }
             }
 
-            if (this.cursors!.up.isDown) {
-                velocityY = -speed;
-                this.player1!.anims.play(
-                    `${this.player1!.texture.key}_run_up`,
-                    true
-                );
-            } else if (this.cursors!.down.isDown) {
-                velocityY = speed;
-                this.player1!.anims.play(
-                    `${this.player1!.texture.key}_run_down`,
-                    true
-                );
-            }
-
-            // If moving diagonally, adjust speed
-            if (velocityX !== 0 && velocityY !== 0) {
-                velocityX /= Math.SQRT2;
-                velocityY /= Math.SQRT2;
-            }
             this.player1!.setVelocityX(velocityX);
             this.player1!.setVelocityY(velocityY);
 
