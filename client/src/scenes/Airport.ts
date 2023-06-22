@@ -642,16 +642,5 @@ export default class AirportScene extends Phaser.Scene {
         npc2.sprite = this.physics.add.sprite(npc2.x, npc2.y, npc2.texture);
         npc2.sprite.setScale(0.35);
         // this.npcList.push(npc2);
-
-        let npc3: npcInfo = {
-            name: "statueOfLiberty",
-            x: 2030,
-            y: 1430,
-            texture: "statueOfLiberty2",
-            sprite: null,
-        };
-        npc3.sprite = this.physics.add.sprite(npc3.x, npc3.y, npc3.texture);
-        npc3.sprite.setScale(0.35);
-        // this.npcList.push(npc3);
     }
 }

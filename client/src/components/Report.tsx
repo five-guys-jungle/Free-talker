@@ -106,7 +106,7 @@ const Report = (data:any) => {
                                 <div className="Character">
                                     <h4>My Character</h4>
                                     <center>
-                                    <ScaleImg className="Character__box" src={`./assets/characters//fiveguys/${playerTexture}.png`} alt={fix_playerTexture} ></ScaleImg>
+                                    <ScaleImg className="Character__box" src={`./assets/characters/single/${playerTexture}.png`} alt={fix_playerTexture} ></ScaleImg>
                                     </center>
                                     <div className="Nickname"><span className="Character__title">Nickname: {playerNickname}</span></div>
                                 </div>
