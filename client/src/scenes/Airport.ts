@@ -123,7 +123,9 @@ export default class AirportScene extends Phaser.Scene {
         platform7.setCollisionByProperty({ collides: true });
 
         createCharacterAnims(this.anims);
-
+        if (this.socket) {
+            this.socket.disconnect();
+        }
         this.socket = io(serverUrl);
 
         this.socket.on("connect", () => {
@@ -233,6 +235,10 @@ export default class AirportScene extends Phaser.Scene {
                     }
                 }
             });
+            this.socket!.on("disconnect", (reason: string) => {
+                console.log("client side disconnect, reason: ", reason);
+                window.location.reload();
+            });
 
             this.physics.add.collider(this.player1, platform2);
             this.physics.add.collider(this.player1, platform3);
@@ -261,7 +267,7 @@ export default class AirportScene extends Phaser.Scene {
         const processGrammarCorrection = (data: { userText: string; correctedText: string; }) => {
             console.log("grammarCorrection event data: ", data);
             grammarCorrections.push(data);
-          };
+        };
         this.input.keyboard!.on("keydown-E", async () => {
 
             for (let npcInfo of this.npcList) {
@@ -395,20 +401,20 @@ export default class AirportScene extends Phaser.Scene {
                                 this.socket2 = null;
                                 // store.dispatch(clearMessages());
                                 // store.dispatch(openAirport());
-                            
-                            grammarCorrections.forEach((data, index) => {
-                                console.log("grammarCorrection data: ", data);
-                                store.dispatch(
-                                    appendCorrection({
-                                        original: data.userText,
-                                        correction: data.correctedText,
-                                    })
-                                );
-                            });
-                        
+
+                                grammarCorrections.forEach((data, index) => {
+                                    console.log("grammarCorrection data: ", data);
+                                    store.dispatch(
+                                        appendCorrection({
+                                            original: data.userText,
+                                            correction: data.correctedText,
+                                        })
+                                    );
+                                });
+
                                 store.dispatch(openReport());
-                            grammarCorrections = [];
-                            valve_E=false
+                                grammarCorrections = [];
+                                valve_E = false
                             }
 
                         }
@@ -468,7 +474,7 @@ export default class AirportScene extends Phaser.Scene {
         let velocityY = 0;
 
         if (this.player1 !== null && this.player1 !== undefined) {
-            console.log("userNickname : ", this.userNickname);
+            // console.log("userNickname : ", this.userNickname);
             this.userIdText!.setText(this.userNickname);
             this.userIdText!.setOrigin(0.5, 0);
             this.userIdText!.setX(this.player1!.x);
