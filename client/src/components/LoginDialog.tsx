@@ -72,9 +72,7 @@ function LoginDialog() {
     const dispatch = useDispatch();
     const appDispatch = useAppDispatch();
 
-    const handleSubmit = async (
-        e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-    ) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         // console.log("handleSubmit");
         e.preventDefault();
         if (userId === "") {
@@ -138,7 +136,6 @@ function LoginDialog() {
             style={{
                 position: "absolute",
                 backgroundImage: `url(${Frame})`,
-                backgroundColor: "rgba(255, 255, 255, 0.5)",
                 backgroundSize: "100% 100%",
             }}
         >
@@ -153,7 +150,7 @@ function LoginDialog() {
                 alt="Free Talker"
                 style={{ maxWidth: "350px", height: "auto" }}
             />
-            <Content id="login">
+            <Content onSubmit={handleSubmit} id="login">
                 {/* <ServiceTitle>Free Talker</ServiceTitle> */}
                 <Left>
                     <Swiper
@@ -210,9 +207,8 @@ function LoginDialog() {
                         <Button
                             variant="contained"
                             color="primary"
-                            // type="submit"
+                            type="submit"
                             size="large"
-                            onClick={handleSubmit}
                             form="login"
                             sx={{ marginBottom: "10px" }}
                         >
