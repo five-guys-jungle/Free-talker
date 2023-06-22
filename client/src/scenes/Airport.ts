@@ -258,143 +258,150 @@ export default class AirportScene extends Phaser.Scene {
         let valve_E = true;
         // npc 와의 대화를 위한 키 설정
         this.input.keyboard!.on("keydown-E", async () => {
-            if (valve_E === true) {
-                if (this.isAudioPlaying) {
-                    return;
-                }
-                for (let npcInfo of this.npcList) {
-                    if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y, npcInfo.x, npcInfo.y) < 100) {
 
-                        this.player1!.setVelocity(0, 0);
-                        this.player1!.anims.play(`${this.player1!.texture.key}_idle_down`, true);
-                        store.dispatch(openNPCDialog());
+            for (let npcInfo of this.npcList) {
+                if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y, npcInfo.x, npcInfo.y) < 100) {
+                    console.log("npcInfo: ", npcInfo)
+                    if (npcInfo.name.includes('chair')) {
+                        console.log("chair")
+                        store.dispatch(openFreedialog());
+                    }
+                    else {
+                        if (valve_E === true) {
+                            if (this.isAudioPlaying) {
+                                return;
+                            }
+                            this.player1!.setVelocity(0, 0);
+                            this.player1!.anims.play(`${this.player1!.texture.key}_idle_down`, true);
+                            store.dispatch(openNPCDialog());
 
-                        this.cursors!.left.enabled = false;
-                        this.cursors!.right.enabled = false;
-                        this.cursors!.up.enabled = false;
-                        this.cursors!.down.enabled = false;
+                            this.cursors!.left.enabled = false;
+                            this.cursors!.right.enabled = false;
+                            this.cursors!.up.enabled = false;
+                            this.cursors!.down.enabled = false;
 
-                        if (this.socket2 === null || this.socket2 === undefined) {
-                            this.socket2 = io(`${serverUrl}/interaction`);
-                            this.socket2.on("connect", () => {
+                            if (this.socket2 === null || this.socket2 === undefined) {
+                                this.socket2 = io(`${serverUrl}/interaction`);
+                                this.socket2.on("connect", () => {
 
-                                window.addEventListener('recomButtonClicked', (e: Event) => {
-                                    const customEvent = e as CustomEvent;
-                                    if (customEvent.detail.message === 0) {
-                                        store.dispatch(
-                                            appendSentence({
-                                                _id: "1",
-                                                sentence: "추천 문장을 준비 중입니다. 잠시만 기다려 주세요.",
-                                            }));
-                                    }
-                                    console.log("lastMessage in SectanceBox: ", customEvent.detail.lastMessage);
-                                    this.socket2!.emit("getRecommendedResponses", this.alreadyRecommended, customEvent.detail.lastMessage);
-                                    store.dispatch(setCanRequestRecommend(false));
-                                });
-
-                                this.interacting = true;
-                                console.log("connect, interaction socket.id: ", this.socket2!.id);
-                                this.socket2!.on("speechToText", (response: string) => {
-                                    console.log("USER: ", response);
-                                    store.dispatch(appendMessage({
-                                        name: this.userNickname,
-                                        img: this.playerTexture,
-                                        // img: "",
-                                        side: "right",
-                                        text: response
-                                    }));
-                                });
-                                this.socket2!.on("npcResponse", (response: string) => {
-                                    console.log("NPC: ", response);
-                                    store.dispatch(appendMessage({
-                                        name: npcInfo.name,
-                                        img: npcInfo.texture,
-                                        // img: "",
-                                        side: "left",
-                                        text: response
-                                    }));
-                                    store.dispatch(clearSentences());
-                                    this.alreadyRecommended = false;
-                                });
-                                this.socket2!.on("totalResponse", (response: any) => {
-                                    console.log("totalResponse event response: ", response);
-                                    // this.isAudioPlaying = true;
-                                    const audio = new Audio(response.audioUrl);
-                                    audio.onended = () => {
-                                        console.log("audio.onended");
-                                        this.isAudioPlaying = false;
-                                        store.dispatch(setMessage("R키를 눌러 녹음을 시작하세요"));
-                                        store.dispatch(setCanRequestRecommend(true));
-                                    };
-                                    audio.play();
-                                });
-                                this.socket2!.on(
-                                    "recommendedResponses",
-                                    (responses: string[]) => {
-                                        console.log(
-                                            "Recommended Responses: ",
-                                            responses
-                                        );
-                                        // 요청 실패, 재요청
-                                        if (responses.length === 1) {
-                                            console.log("요청 실패, 재요청");
-                                            this.alreadyRecommended = false;
-                                            this.socket2!.emit("getRecommendedResponses", this.alreadyRecommended, responses[0]);
-                                            store.dispatch(setCanRequestRecommend(false));
-                                            return;
-                                        }
-                                        // TODO : Store에 SentenceBox 상태정의하고 dispatch
+                                    window.addEventListener('recomButtonClicked', (e: Event) => {
+                                        const customEvent = e as CustomEvent;
                                         store.dispatch(clearSentences());
-                                        responses.forEach((response, index) => {
+                                        if (customEvent.detail.message === 0) {
                                             store.dispatch(
                                                 appendSentence({
-                                                    _id: index.toString(),
-                                                    sentence: response,
-                                                })
+                                                    _id: "1",
+                                                    sentence: "추천 문장을 준비 중입니다. 잠시만 기다려 주세요.",
+                                                }));
+                                        }
+                                        console.log("lastMessage in SectanceBox: ", customEvent.detail.lastMessage);
+                                        this.socket2!.emit("getRecommendedResponses", this.alreadyRecommended, customEvent.detail.lastMessage);
+                                        store.dispatch(setCanRequestRecommend(false));
+                                    });
+
+                                    this.interacting = true;
+                                    console.log("connect, interaction socket.id: ", this.socket2!.id);
+                                    this.socket2!.on("speechToText", (response: string) => {
+                                        console.log("USER: ", response);
+                                        store.dispatch(appendMessage({
+                                            name: this.userNickname,
+                                            img: this.playerTexture,
+                                            // img: "",
+                                            side: "right",
+                                            text: response
+                                        }));
+                                    });
+                                    this.socket2!.on("npcResponse", (response: string) => {
+                                        console.log("NPC: ", response);
+                                        store.dispatch(appendMessage({
+                                            name: npcInfo.name,
+                                            img: npcInfo.texture,
+                                            // img: "",
+                                            side: "left",
+                                            text: response
+                                        }));
+                                        store.dispatch(clearSentences());
+                                        this.alreadyRecommended = false;
+                                    });
+                                    this.socket2!.on("totalResponse", (response: any) => {
+                                        console.log("totalResponse event response: ", response);
+                                        // this.isAudioPlaying = true;
+                                        const audio = new Audio(response.audioUrl);
+                                        audio.onended = () => {
+                                            console.log("audio.onended");
+                                            this.isAudioPlaying = false;
+                                            store.dispatch(setMessage("R키를 눌러 녹음을 시작하세요"));
+                                            store.dispatch(setCanRequestRecommend(true));
+                                        };
+                                        audio.play();
+                                    });
+                                    this.socket2!.on(
+                                        "recommendedResponses",
+                                        (responses: string[]) => {
+                                            console.log(
+                                                "Recommended Responses: ",
+                                                responses
                                             );
-                                        });
-                                        this.alreadyRecommended = true;
-                                    }
-                                );
-                            });
+                                            // 요청 실패, 재요청
+                                            if (responses.length === 1) {
+                                                console.log("요청 실패, 재요청");
+                                                this.alreadyRecommended = false;
+                                                this.socket2!.emit("getRecommendedResponses", this.alreadyRecommended, responses[0]);
+                                                store.dispatch(setCanRequestRecommend(false));
+                                                return;
+                                            }
+                                            // TODO : Store에 SentenceBox 상태정의하고 dispatch
+                                            store.dispatch(clearSentences());
+                                            responses.forEach((response, index) => {
+                                                store.dispatch(
+                                                    appendSentence({
+                                                        _id: index.toString(),
+                                                        sentence: response,
+                                                    })
+                                                );
+                                            });
+                                            this.alreadyRecommended = true;
+                                        }
+                                    );
+                                });
+                            }
+                            else { // 이미 소켓이 연결되어 있는데 다시 한번 E키를 누른 경우
+                                this.player1!.setVelocity(0, 0);
+                                this.player1!.setPosition(this.player1!.x, this.player1!.y);
+
+                                this.cursors!.left.isDown = false;
+                                this.cursors!.right.isDown = false;
+                                this.cursors!.up.isDown = false;
+                                this.cursors!.down.isDown = false;
+
+                                this.cursors!.left.enabled = true;
+                                this.cursors!.right.enabled = true;
+                                this.cursors!.up.enabled = true;
+                                this.cursors!.down.enabled = true;
+
+                                this.interacting = false;
+                                this.alreadyRecommended = false;
+                                store.dispatch(setCanRequestRecommend(false));
+
+                                this.socket2?.disconnect();
+                                this.socket2 = null;
+                                // store.dispatch(clearMessages());
+                                // store.dispatch(openAirport());
+                                store.dispatch(openReport());
+                                valve_E = false
+                            }
+
                         }
-                        else { // 이미 소켓이 연결되어 있는데 다시 한번 E키를 누른 경우
-                            this.player1!.setVelocity(0, 0);
-                            this.player1!.setPosition(this.player1!.x, this.player1!.y);
-
-                            this.cursors!.left.isDown = false;
-                            this.cursors!.right.isDown = false;
-                            this.cursors!.up.isDown = false;
-                            this.cursors!.down.isDown = false;
-
-                            this.cursors!.left.enabled = true;
-                            this.cursors!.right.enabled = true;
-                            this.cursors!.up.enabled = true;
-                            this.cursors!.down.enabled = true;
-
-                            this.interacting = false;
-                            this.alreadyRecommended = false;
-                            store.dispatch(setCanRequestRecommend(false));
-                            
-                            this.socket2?.disconnect();
-                            this.socket2 = null;
-                            // store.dispatch(clearMessages());
-                            // store.dispatch(openAirport());
-                            store.dispatch(openReport());
-                            valve_E = false
+                        else {
+                            store.dispatch(clearMessages());
+                            store.dispatch(clearSentences());
+                            store.dispatch(openAirport());
+                            valve_E = true
                         }
-
-                        break;
                     }
+                    break;
                 }
             }
-            else {
-                store.dispatch(clearMessages());
-                store.dispatch(clearSentences());
-                store.dispatch(openAirport());
-                valve_E = true
-            }
-
         }
 
 
