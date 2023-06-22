@@ -123,7 +123,7 @@ export default class AirportScene extends Phaser.Scene {
         platform7.setCollisionByProperty({ collides: true });
 
         createCharacterAnims(this.anims);
-        if(this.socket){
+        if (this.socket) {
             this.socket.disconnect();
         }
         this.socket = io(serverUrl);
@@ -267,7 +267,7 @@ export default class AirportScene extends Phaser.Scene {
         const processGrammarCorrection = (data: { userText: string; correctedText: string; }) => {
             console.log("grammarCorrection event data: ", data);
             grammarCorrections.push(data);
-          };
+        };
         this.input.keyboard!.on("keydown-E", async () => {
 
             for (let npcInfo of this.npcList) {
@@ -401,20 +401,20 @@ export default class AirportScene extends Phaser.Scene {
                                 this.socket2 = null;
                                 // store.dispatch(clearMessages());
                                 // store.dispatch(openAirport());
-                            
-                            grammarCorrections.forEach((data, index) => {
-                                console.log("grammarCorrection data: ", data);
-                                store.dispatch(
-                                    appendCorrection({
-                                        original: data.userText,
-                                        correction: data.correctedText,
-                                    })
-                                );
-                            });
-                        
+
+                                grammarCorrections.forEach((data, index) => {
+                                    console.log("grammarCorrection data: ", data);
+                                    store.dispatch(
+                                        appendCorrection({
+                                            original: data.userText,
+                                            correction: data.correctedText,
+                                        })
+                                    );
+                                });
+
                                 store.dispatch(openReport());
-                            grammarCorrections = [];
-                            valve_E=false
+                                grammarCorrections = [];
+                                valve_E = false
                             }
 
                         }
