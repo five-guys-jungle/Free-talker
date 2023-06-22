@@ -41,7 +41,7 @@ const Report = (data:any) => {
     fix_playerTexture=temp_str.join("");
     console.log(fix_playerTexture)
     
-    let imgUrl= "./assets/characters/single/"+fix_playerTexture+"_idle_anim_24.png"
+    let imgUrl= "./assets/characters/fiveguys/"+fix_playerTexture+".png"
     console.log(imgUrl)
     const handleClose = () => {
         store.dispatch(openAirport());

@@ -14,6 +14,8 @@ export default class Background extends Phaser.Scene {
     preload() {
         console.log("preloading..............");
         this.load.image("background", "assets/backgrounds/sky.jpg");
+        this.load.image("statueOfLiberty", "assets/characters/statue-of-liberty.png");
+        this.load.image("statueOfLiberty2", "assets/characters/statue-of-liberty2.png");
 
         // this.load.image("background", "assets/backgrounds/space.png");
         this.load.image("generic", "assets/tilesets/Generic.png");
@@ -34,19 +36,23 @@ export default class Background extends Phaser.Scene {
             startFrame: 0,
             endFrame: 12,
         });
-        this.load.spritesheet("adam", "assets/characters/adam.png", {
+        this.load.spritesheet("jinhoman", "assets/characters/jinhoman.png", {
             frameWidth: 32,
             frameHeight: 48,
         });
-        this.load.spritesheet("ash", "assets/characters/ash.png", {
+        this.load.spritesheet("jinhogirl", "assets/characters/jinhogirl.png", {
             frameWidth: 32,
             frameHeight: 48,
         });
-        this.load.spritesheet("lucy", "assets/characters/lucy.png", {
+        this.load.spritesheet("seunghun", "assets/characters/seunghun.png", {
             frameWidth: 32,
             frameHeight: 48,
         });
-        this.load.spritesheet("nancy", "assets/characters/nancy.png", {
+        this.load.spritesheet("doyoungboy", "assets/characters/doyoungboy.png", {
+            frameWidth: 32,
+            frameHeight: 48,
+        });
+        this.load.spritesheet("minsook", "assets/characters/minsook.png", {
             frameWidth: 32,
             frameHeight: 48,
         });
@@ -68,7 +74,7 @@ export default class Background extends Phaser.Scene {
     }
 
     update() {
-        console.log("update!!!!!!!!!");
+        // console.log("update!!!!!!!!!");
         this.background
             .setDisplaySize(this.game.scale.width, this.game.scale.height)
             .setOrigin(0, 0);

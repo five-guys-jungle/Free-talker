@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
-import { Sentence, SentenceBoxState } from "../../stores/sentenceBoxSlice";
+import { Sentence, SentenceBoxState, setCanRequestRecommend } from "../../stores/sentenceBoxSlice";
 import { setRecord } from "../../stores/recordSlice";
 import { RecordState } from "../../stores/recordSlice";
+import { TalkBoxState } from "../../stores/talkBoxSlice";
 import { css, keyframes } from 'styled-components';
 interface SentenceViewProps {
     sentence: Sentence;
@@ -31,20 +32,39 @@ const SentenceList: React.FC = () => {
         (state: { sentenceBox: SentenceBoxState }) =>
             state.sentenceBox.sentences
     );
+    const canRequestRecommend = useSelector(
+        (state: { sentenceBox: SentenceBoxState }) =>
+            state.sentenceBox.canRequestRecommend
+    );
+    const talkBoxMessages = useSelector(
+        (state: { talkBox: TalkBoxState }) => state.talkBox.messages
+    );
     const record = useSelector((state: { record: RecordState }) => state.record.record);
-    
+
     const [isLongPress, setIsLongPress] = useState(false);
-    const [isOuterDivVisible, setIsOuterDivVisible] = useState(false);
+    const [isOuterDivVisible, setIsOuterDivVisible] = useState(true);
 
     const handleToggleOuterDiv = () => {
         setIsOuterDivVisible((prev) => !prev);
     };
 
     const handleClick = () => {
-        handleToggleOuterDiv();
+        console.log("handleClick");
+        // handleToggleOuterDiv();
+        if (canRequestRecommend) {
+            const lastMessage = talkBoxMessages[talkBoxMessages.length - 1].text;
+            const clickEvent = new CustomEvent('recomButtonClicked', {
+                detail: { message: sentences.length , lastMessage: lastMessage}
+            });
+            window.dispatchEvent(clickEvent);
+        }
         if (!isOuterDivVisible && !record) {
+<<<<<<< HEAD
             dispatch(setRecord(true));
             
+=======
+            // dispatch(setRecord(true));            
+>>>>>>> a42802d1000aab73189ef59f51dcf5ea738ff1b0
         }
         
     };
@@ -68,9 +88,10 @@ const SentenceList: React.FC = () => {
     return (
         <div className="container" style={{ height: "80%" }}>
             <DialogTitle>You can say something like this</DialogTitle>
-            <Button onClick={handleClick} isOpen={isOuterDivVisible} longPress={isLongPress}>
-                {isOuterDivVisible ? "Close" : "추천 문장 보기"}
-            </Button>
+            {canRequestRecommend && (
+                <Button onClick={handleClick} isOpen={isOuterDivVisible} longPress={isLongPress}>
+                    추천 문장 보기
+                </Button>)}
             {isOuterDivVisible && (
                 <SentenceOuterDiv>{sentenceViews}</SentenceOuterDiv>
             )}

@@ -8,7 +8,6 @@ import {
     PlayerInfo,
     PlayerInfoDictionary,
 } from "../characters/Player";
-import { frameInfo } from "./common/anims";
 import { useRecoilValue } from "recoil";
 import {
     playerIdState,

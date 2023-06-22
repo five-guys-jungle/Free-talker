@@ -32,36 +32,63 @@ export class Player {
     move(deltaInSecond: number) {
         let destination: { x: number; y: number } = { x: this.x, y: this.y };
         let thisSprite: Phaser.Physics.Arcade.Sprite = this.sprite;
+        const dialgonalVelocity: number = this.defaultVelocity / Math.SQRT2;
         if (destination.x !== thisSprite.x || destination.y !== thisSprite.y) {
-            if (destination.x < thisSprite.x) {
+
+            let distanceX: number = destination.x - thisSprite.x;
+            let distanceY: number = destination.y - thisSprite.y;
+            // left-up
+            if (distanceX < 0 && distanceY < 0) {
                 thisSprite.anims.play(`${this.playerTexture}_run_left`, true);
-                thisSprite.x -= (this.defaultVelocity * deltaInSecond);
+                thisSprite.x -= (dialgonalVelocity * deltaInSecond);
+                thisSprite.y -= (dialgonalVelocity * deltaInSecond);
             }
-            else if (destination.x > thisSprite.x) {
-                thisSprite.anims.play(`${this.playerTexture}_run_right`, true);
-                thisSprite.x += (this.defaultVelocity * deltaInSecond);
-            }
-
-
-            if (destination.y < thisSprite.y) {
-                thisSprite.anims.play(`${this.playerTexture}_run_up`, true);
-                thisSprite.y -= (this.defaultVelocity * deltaInSecond);
-            }
-            else if (destination.y > thisSprite.y) {
+            // left-down
+            else if (distanceX < 0 && distanceY > 0) {
                 thisSprite.anims.play(`${this.playerTexture}_run_down`, true);
-                thisSprite.y += (this.defaultVelocity * deltaInSecond);
+                thisSprite.x -= (dialgonalVelocity * deltaInSecond);
+                thisSprite.y += (dialgonalVelocity * deltaInSecond);
             }
+            // right-up
+            else if (distanceX > 0 && distanceY < 0) {
+                thisSprite.anims.play(`${this.playerTexture}_run_right`, true);
+                thisSprite.x += (dialgonalVelocity * deltaInSecond);
+                thisSprite.y -= (dialgonalVelocity * deltaInSecond);
+            }
+            // right-down
+            else if (distanceX > 0 && distanceY > 0) {
+                thisSprite.anims.play(`${this.playerTexture}_run_down`, true);
+                thisSprite.x += (dialgonalVelocity * deltaInSecond);
+                thisSprite.y += (dialgonalVelocity * deltaInSecond);
+            }
+            else {
+                if (destination.x < thisSprite.x) {
+                    thisSprite.anims.play(`${this.playerTexture}_run_left`, true);
+                    thisSprite.x -= (this.defaultVelocity * deltaInSecond);
+                }
+                else if (destination.x > thisSprite.x) {
+                    thisSprite.anims.play(`${this.playerTexture}_run_right`, true);
+                    thisSprite.x += (this.defaultVelocity * deltaInSecond);
+                }
 
-            let distanceX: number = Math.abs(destination.x - thisSprite.x);
-            let distanceY: number = Math.abs(destination.y - thisSprite.y);
+
+                if (destination.y < thisSprite.y) {
+                    thisSprite.anims.play(`${this.playerTexture}_run_up`, true);
+                    thisSprite.y -= (this.defaultVelocity * deltaInSecond);
+                }
+                else if (destination.y > thisSprite.y) {
+                    thisSprite.anims.play(`${this.playerTexture}_run_down`, true);
+                    thisSprite.y += (this.defaultVelocity * deltaInSecond);
+                }
+            }
 
             if (distanceX < 2) {
                 thisSprite.x = destination.x;
-                console.log('Other player is alomost close to destination X');
+                // console.log('Other player is alomost close to destination X');
             }
             if (distanceY < 2) {
                 thisSprite.y = destination.y;
-                console.log('Other player is alomost close to destination Y');
+                // console.log('Other player is alomost close to destination Y');
             }
         }
         else {

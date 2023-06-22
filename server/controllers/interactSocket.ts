@@ -78,8 +78,7 @@ export function interactSocketEventHandler(socket: Socket) {
             const buffer = Buffer.from(data.audioDataBuffer);
             const filePath = path.join(
                 __dirname,
-                `../audio/user_audio/${data.userNickname}_${
-                    data.npcName
+                `../audio/user_audio/${data.userNickname}_${data.npcName
                 }_${uuidv4()}.wav`
             );
             fs.writeFileSync(filePath, buffer); // 동기적으로 실행
@@ -99,18 +98,24 @@ export function interactSocketEventHandler(socket: Socket) {
             
             // console.log("User: ", inputText);
             console.log("chain 호출 시작");
-            var startTime:any = new Date();
+            var startTime: any = new Date();
             const chainOutput = await chain.call({ input: inputText });
-            
 
-            var endTime:any = new Date();
-            var elapsedTime:any = endTime - startTime; // 밀리초 단위
+
+            var endTime: any = new Date();
+            var elapsedTime: any = endTime - startTime; // 밀리초 단위
 
             console.log(`실행 시간: ${elapsedTime}ms`);
             outputText = chainOutput.response;
             socket.emit("npcResponse", outputText);
-            
-            // ---------------------------------------------------------
+
+            // console.log("LangChain OutputText: ", outputText);
+            // outputText = await textCompletion(inputText, chain).then(
+            //     async (res) => {
+            //         socket.emit("npcResponse", res);
+            //         return res;
+            //     }
+            // );
 
             response = await convertTexttoSpeech(inputText, outputText).then(
                 (res) => {
@@ -119,33 +124,58 @@ export function interactSocketEventHandler(socket: Socket) {
                 }
             );
 
+            grammarCorrection(inputText).then(
+                async (res) => {
+                    if (!checkIfSoundsGood(res)){
+                        socket.emit("grammarCorrection", {
+                            userText: inputText,
+                            correctedText: res,
+                        });
+                        console.log("socket emitted grammarCorrection.");
+                        return res;
+                    }
+                }
+            )
+
+            // socket.on("getRecommendedResponses", async (alreadyRecommended) => {
+            //     if (!alreadyRecommended) {
+            //         await recommendNextResponses(outputText, "airport")
+            //             .then((res) => {
+            //                 socket.emit("recommendedResponses", res);
+            //                 console.log("recommended Responses: ", res);
+            //                 return res;
+            //             })
+            //             .catch((err) => {
+            //                 console.log("Recommend Responses Error: ", err);
+            //                 recommendedText = "";
+            //             });
+            //     }
+            // });
+        }
+    );
+    socket.on("getRecommendedResponses", async (alreadyRecommended: boolean, outputText: string) => {
+        if (!alreadyRecommended) {
+            console.log("getRecommendedResponses start");
             await recommendNextResponses(outputText, "airport")
                 .then((res) => {
-                    socket.emit("recommendedResponses", res);
+                    if (res === "ChatGPT API Error.") {
+                        socket.emit("recommendedResponses", [outputText]);
+                    }
+                    else {
+                        socket.emit("recommendedResponses", res);
+                    }
                     console.log("recommended Responses: ", res);
                     return res;
                 })
                 .catch((err) => {
                     console.log("Recommend Responses Error: ", err);
-                    recommendedText = "";
+                    // recommendedText = "";
                 });
 
             
             // TODO : res 받아서, correct -> 안보냄, incorrect -> 비율 계산해서, 틀렸으면 
-            grammarCorrection(inputText).then(
-                    async (res) => {
-                        if (!checkIfSoundsGood(res)){
-                            socket.emit("grammarCorrection", {
-                                userText: inputText,
-                                correctedText: res,
-                            });
-                            console.log("socket emitted grammarCorrection.");
-                            return res;
-                        }
-                    }
-                )
         }
-    );
+    });
 
     socket.on("disconnect", (reason: string) => {
         console.log(

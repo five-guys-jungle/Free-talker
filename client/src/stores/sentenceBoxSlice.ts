@@ -8,12 +8,13 @@ export interface Sentence {
 
 export interface SentenceBoxState {
     sentences: Sentence[];
+    canRequestRecommend: boolean;
 }
 
 export const initialState: SentenceBoxState = {
     sentences: [],
+    canRequestRecommend: false,
 };
-
 export const sentenceBoxSlice = createSlice({
     name: "sentenceBox",
     initialState,
@@ -27,9 +28,12 @@ export const sentenceBoxSlice = createSlice({
         clearSentences: (state) => {
             state.sentences = [];
         },
+        setCanRequestRecommend: (state, action: PayloadAction<boolean>) => {
+            state.canRequestRecommend = action.payload;
+        }
     },
 });
 
-export const { appendSentence, clearSentences } = sentenceBoxSlice.actions;
+export const { appendSentence, clearSentences, setCanRequestRecommend } = sentenceBoxSlice.actions;
 
 export default sentenceBoxSlice.reducer;
