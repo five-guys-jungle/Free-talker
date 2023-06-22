@@ -373,6 +373,9 @@ export default class AirportScene extends Phaser.Scene {
                             this.cursors!.down.enabled = true;
 
                             this.interacting = false;
+                            this.alreadyRecommended = false;
+                            store.dispatch(setCanRequestRecommend(false));
+                            
                             this.socket2?.disconnect();
                             this.socket2 = null;
                             // store.dispatch(clearMessages());
