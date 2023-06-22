@@ -10,7 +10,6 @@ import {
     PlayerInfo,
     PlayerInfoDictionary,
 } from "../characters/Player";
-import { frameInfo } from "./common/anims";
 
 // import { playerNicknameState } from '../recoil/user/atoms';
 import { createCharacterAnims } from "../anims/CharacterAnims";

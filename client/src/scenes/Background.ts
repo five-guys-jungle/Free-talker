@@ -36,20 +36,15 @@ export default class Background extends Phaser.Scene {
             startFrame: 0,
             endFrame: 12,
         });
-        this.load.image('airport_chair', 'assets/characters/airport_chair.png');
-        this.load.spritesheet("adam", "assets/characters/adam.png", {
+        this.load.spritesheet("jinhogirl", "assets/characters/jinhogirl.png", {
             frameWidth: 32,
             frameHeight: 48,
         });
-        this.load.spritesheet("ash", "assets/characters/ash.png", {
+        this.load.spritesheet("seunghun", "assets/characters/seunghun.png", {
             frameWidth: 32,
             frameHeight: 48,
         });
-        this.load.spritesheet("lucy", "assets/characters/lucy.png", {
-            frameWidth: 32,
-            frameHeight: 48,
-        });
-        this.load.spritesheet("nancy", "assets/characters/nancy.png", {
+        this.load.spritesheet("doyoungboy", "assets/characters/doyoungboy.png", {
             frameWidth: 32,
             frameHeight: 48,
         });
@@ -71,7 +66,7 @@ export default class Background extends Phaser.Scene {
     }
 
     update() {
-        console.log("update!!!!!!!!!");
+        // console.log("update!!!!!!!!!");
         this.background
             .setDisplaySize(this.game.scale.width, this.game.scale.height)
             .setOrigin(0, 0);
