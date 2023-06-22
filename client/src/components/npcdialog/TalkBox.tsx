@@ -107,7 +107,6 @@ const TalkBox: React.FC = () => {
                     </span>
                 </div>
             </header> */}
-"./assets/characters/single/"+fix_playerTexture+".png";
             <main className="msger-chat" ref={msgerChatRef}>
             {messages.map((message, index) => (
                 <div className={`msg ${message.side}-msg`} key={index}>
