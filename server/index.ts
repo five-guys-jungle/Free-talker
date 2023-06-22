@@ -4,7 +4,6 @@ import cors from "cors";
 import axios from "axios";
 import path from "path";
 import { Router } from "express";
-import { upload, interact, grammerCorrection } from "./controllers/interaction";
 import { socketEventHandler } from "./controllers/gameSocket";
 import { interactSocketEventHandler } from "./controllers/interactSocket";
 import { freedialogsocketEventHandler } from "./controllers/voiceController";   
