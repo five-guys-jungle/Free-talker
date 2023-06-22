@@ -51,6 +51,13 @@ const FreeDialog = () => {
 			setCallerSignal(data.signal);
 			console.log("callUser2222222222")
 		});
+		// useEffect에 callEnded 이벤트 핸들러 추가
+		socket.current!.on("callEnded", () => {
+			setCallEnded(true);
+			if (connectionRef.current) {
+				connectionRef.current.destroy();
+			}
+		});
 	}, []);
 
 
@@ -104,11 +111,13 @@ const FreeDialog = () => {
 	}
 
 	const leaveCall = () => {
-		setCallEnded(true)
+		setCallEnded(true);
 		if (connectionRef.current) {
-            connectionRef.current.destroy();
-          }
-        };
+		  connectionRef.current.destroy();
+		  socket.current!.emit("callEnded"); // 서버로 callEnded 이벤트 전송
+		  socket.current!.disconnect();
+		}
+	  };
 
 		return (
 			<>
@@ -121,7 +130,7 @@ const FreeDialog = () => {
 						
 						{callAccepted && !callEnded ? (
 							<IconButton color="secondary" aria-label="endcall" onClick={leaveCall}>
-							<PhoneIcon fontSize="large" />
+								<PhoneIcon fontSize="large" />
 							</IconButton>
 						) : (
 							<IconButton color="primary" aria-label="call" onClick={() => callUser(idToCall)}>
