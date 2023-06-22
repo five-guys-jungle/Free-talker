@@ -21,7 +21,8 @@ import {
 } from "../stores/gameSlice";
 import { npcInfo } from "../characters/Npc";
 import { appendMessage, clearMessages } from "../stores/talkBoxSlice";
-import { appendCorrection, clearCorrections, setScore } from "../stores/reportSlice";
+import { appendCorrection, clearCorrections } from "../stores/reportSlice";
+import { setScore } from "../stores/scoreSlice";
 import { appendSentence, clearSentences, setCanRequestRecommend } from "../stores/sentenceBoxSlice";
 import { setRecord, setMessage } from "../stores/recordSlice";
 import { handleScene } from "./common/handleScene";
@@ -318,6 +319,7 @@ export default class AirportScene extends Phaser.Scene {
                                     this.interacting = true;
                                     console.log("connect, interaction socket.id: ", this.socket2!.id);
                                     this.socket2!.on("speechToText", (response: string) => {
+                                        addCountUserSpeech();
                                         console.log("USER: ", response);
                                         console.log("playerTexture", this.playerTexture);
                                         store.dispatch(appendMessage({
@@ -425,6 +427,7 @@ export default class AirportScene extends Phaser.Scene {
 
                         }
                         else {
+                            store.dispatch(setScore({score: 0}));
                             store.dispatch(clearCorrections());
                             store.dispatch(clearMessages());
                             store.dispatch(clearSentences());

@@ -5,6 +5,7 @@ import talkBoxSlice from "./talkBoxSlice";
 import recordSlice from "./recordSlice";
 import sentenceBoxSlice from "./sentenceBoxSlice";
 import correctionSlice from "./reportSlice";
+import scoreSlice  from "./scoreSlice";
 import { useDispatch } from "react-redux";
 
 export const store = configureStore({
@@ -15,6 +16,7 @@ export const store = configureStore({
         record: recordSlice,
         sentenceBox: sentenceBoxSlice,
         correction: correctionSlice,
+        score: scoreSlice,
     },
 });
 
