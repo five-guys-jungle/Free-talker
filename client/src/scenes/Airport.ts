@@ -122,7 +122,9 @@ export default class AirportScene extends Phaser.Scene {
         platform7.setCollisionByProperty({ collides: true });
 
         createCharacterAnims(this.anims);
-
+        if(this.socket){
+            this.socket.disconnect();
+        }
         this.socket = io(serverUrl);
 
         this.socket.on("connect", () => {
@@ -231,6 +233,10 @@ export default class AirportScene extends Phaser.Scene {
                         console.log("not exist, so do nothing");
                     }
                 }
+            });
+            this.socket!.on("disconnect", (reason: string) => {
+                console.log("client side disconnect, reason: ", reason);
+                window.location.reload();
             });
 
             this.physics.add.collider(this.player1, platform2);
@@ -446,7 +452,7 @@ export default class AirportScene extends Phaser.Scene {
         let velocityY = 0;
 
         if (this.player1 !== null && this.player1 !== undefined) {
-            console.log("userNickname : ", this.userNickname);
+            // console.log("userNickname : ", this.userNickname);
             this.userIdText!.setText(this.userNickname);
             this.userIdText!.setOrigin(0.5, 0);
             this.userIdText!.setX(this.player1!.x);
