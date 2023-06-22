@@ -21,12 +21,8 @@ import {
 } from "../stores/gameSlice";
 import { npcInfo } from "../characters/Npc";
 import { appendMessage, clearMessages } from "../stores/talkBoxSlice";
-<<<<<<< HEAD
-import { appendSentence, clearSentences } from "../stores/sentenceBoxSlice";
 import { appendCorrection, clearCorrections } from "../stores/reportSlice";
-=======
 import { appendSentence, clearSentences, setCanRequestRecommend } from "../stores/sentenceBoxSlice";
->>>>>>> a42802d1000aab73189ef59f51dcf5ea738ff1b0
 import { setRecord, setMessage } from "../stores/recordSlice";
 import { handleScene } from "./common/handleScene";
 import { RootState } from "../stores/index";
@@ -64,12 +60,8 @@ export default class AirportScene extends Phaser.Scene {
 
     isAudioPlaying: boolean = false;
     npcList: npcInfo[] = [];
-<<<<<<< HEAD
-    
-=======
     alreadyRecommended: boolean = false;
 
->>>>>>> a42802d1000aab73189ef59f51dcf5ea738ff1b0
     constructor() {
         super("AirportScene");
     }
@@ -266,94 +258,11 @@ export default class AirportScene extends Phaser.Scene {
         let valve_E = true;
         // npc 와의 대화를 위한 키 설정
         let grammarCorrections: { userText: string; correctedText: string; }[] = [];
+        const processGrammarCorrection = (data: { userText: string; correctedText: string; }) => {
+            console.log("grammarCorrection event data: ", data);
+            grammarCorrections.push(data);
+          };
         this.input.keyboard!.on("keydown-E", async () => {
-<<<<<<< HEAD
-            
-            if(valve_E===true){
-                if (this.isAudioPlaying) {
-                return;
-                }
-                const processGrammarCorrection = (data: { userText: string; correctedText: string; }) => {
-                    console.log("grammarCorrection event data: ", data);
-                    grammarCorrections.push(data);
-                  };
-
-                for (let npcInfo of this.npcList) {
-                    if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y, npcInfo.x, npcInfo.y) < 100) {
-                    
-                    this.player1!.setVelocity(0, 0);
-                    this.player1!.anims.play(`${this.player1!.texture.key}_idle_down`, true);
-                    store.dispatch(openNPCDialog());
-                    
-                    this.cursors!.left.enabled = false;
-                    this.cursors!.right.enabled = false;
-                    this.cursors!.up.enabled = false;
-                    this.cursors!.down.enabled = false;
-                    
-                    if (this.socket2 === null || this.socket2 === undefined) {
-                        
-                        this.socket2 = io(`${serverUrl}/interaction`);
-                        this.socket2.on("connect", () => {
-                            
-                            this.interacting = true;
-                            console.log("connect, interaction socket.id: ", this.socket2!.id);
-                            this.socket2!.on("speechToText", (response: string) => {
-                                console.log("USER: ", response);
-                                store.dispatch(appendMessage({
-                                    name: this.userNickname,
-                                    img: this.playerTexture,
-                                    side: "right",
-                                    text: response
-                                }));
-                            });
-
-                            
-                            this.socket2!.on("grammarCorrection", processGrammarCorrection);
-
-                            this.socket2!.on("npcResponse", (response: string) => {
-                                console.log("NPC: ", response);
-                                store.dispatch(appendMessage({
-                                    name: npcInfo.name,
-                                    img: npcInfo.texture,
-                                    // img: "",
-                                    side: "left",
-                                    text: response
-                                }));
-
-                            });
-                            
-                            this.socket2!.on("totalResponse", (response: any) => {
-                                console.log("totalResponse event response: ", response);
-                                // this.isAudioPlaying = true;
-                                const audio = new Audio(response.audioUrl);
-                                audio.onended = () => {
-                                    console.log("audio.onended");
-                                    this.isAudioPlaying = false;
-                                    store.dispatch(setMessage("R키를 눌러 녹음을 시작하세요"));
-                                };
-                                audio.play();
-                            });
-                            this.socket2!.on(
-                                "recommendedResponses",
-                                (responses: string[]) => {
-                                    console.log(
-                                        "Recommended Responses: ",
-                                        responses
-                                    );
-                                    // TODO : Store에 SentenceBox 상태정의하고 dispatch
-                                    store.dispatch(clearSentences());
-                                    responses.forEach((response, index) => {
-                                        store.dispatch(
-                                            appendSentence({
-                                                _id: index.toString(),
-                                                sentence: response,
-                                            })
-                                        );
-                                    });
-                                }
-                            );
-                        });
-=======
 
             for (let npcInfo of this.npcList) {
                 if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y, npcInfo.x, npcInfo.y) < 100) {
@@ -361,7 +270,6 @@ export default class AirportScene extends Phaser.Scene {
                     if (npcInfo.name.includes('chair')) {
                         console.log("chair")
                         store.dispatch(openFreedialog());
->>>>>>> a42802d1000aab73189ef59f51dcf5ea738ff1b0
                     }
                     else {
                         if (valve_E === true) {
@@ -400,6 +308,7 @@ export default class AirportScene extends Phaser.Scene {
                                     console.log("connect, interaction socket.id: ", this.socket2!.id);
                                     this.socket2!.on("speechToText", (response: string) => {
                                         console.log("USER: ", response);
+                                        console.log("playerTexture", this.playerTexture);
                                         store.dispatch(appendMessage({
                                             name: this.userNickname,
                                             img: this.playerTexture,
@@ -432,6 +341,8 @@ export default class AirportScene extends Phaser.Scene {
                                         };
                                         audio.play();
                                     });
+
+                                    this.socket2!.on("grammarCorrection", processGrammarCorrection);
                                     this.socket2!.on(
                                         "recommendedResponses",
                                         (responses: string[]) => {
@@ -482,9 +393,8 @@ export default class AirportScene extends Phaser.Scene {
 
                                 this.socket2?.disconnect();
                                 this.socket2 = null;
-<<<<<<< HEAD
-                            // store.dispatch(clearMessages());
-                            // store.dispatch(openAirport());
+                                // store.dispatch(clearMessages());
+                                // store.dispatch(openAirport());
                             
                             grammarCorrections.forEach((data, index) => {
                                 console.log("grammarCorrection data: ", data);
@@ -496,20 +406,14 @@ export default class AirportScene extends Phaser.Scene {
                                 );
                             });
                         
-                            store.dispatch(openReport());
+                                store.dispatch(openReport());
                             grammarCorrections = [];
                             valve_E=false
-                        }
-=======
-                                // store.dispatch(clearMessages());
-                                // store.dispatch(openAirport());
-                                store.dispatch(openReport());
-                                valve_E = false
                             }
->>>>>>> a42802d1000aab73189ef59f51dcf5ea738ff1b0
 
                         }
                         else {
+                            store.dispatch(clearCorrections());
                             store.dispatch(clearMessages());
                             store.dispatch(clearSentences());
                             store.dispatch(openAirport());

@@ -58,14 +58,9 @@ const SentenceList: React.FC = () => {
             });
             window.dispatchEvent(clickEvent);
         }
-        if (!isOuterDivVisible && !record) {
-<<<<<<< HEAD
-            dispatch(setRecord(true));
-            
-=======
-            // dispatch(setRecord(true));            
->>>>>>> a42802d1000aab73189ef59f51dcf5ea738ff1b0
-        }
+        // if (!isOuterDivVisible && !record) {
+        //     // dispatch(setRecord(true));            
+        // }
         
     };
 

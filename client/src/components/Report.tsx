@@ -41,7 +41,7 @@ const Report = (data:any) => {
     // fix_playerTexture=temp_str.join("");
     // console.log(fix_playerTexture)
     
-    let imgUrl= "./assets/characters/fiveguys/"+fix_playerTexture+".png"
+    const imgUrl= "./assets/characters/single/"+fix_playerTexture+".png";
     console.log(imgUrl)
     const handleClose = () => {
         store.dispatch(openAirport());
@@ -115,7 +115,7 @@ const Report = (data:any) => {
                                 <div className="Character">
                                     <h4>NPC</h4>
                                     <center>
-                                    <ScaleImg className="Character__box" src={`./assets/characters//fiveguys/${messages[1].img}.png`} alt={messages[1].name} ></ScaleImg>
+                                    <ScaleImg className="Character__box" src={`./assets/characters/single/${messages[1].img}.png`} alt={"Nancy"} ></ScaleImg>
                                     </center>
                                     <div className="Nickname"><span className="Character__title">NPCname: {messages[1].name}</span></div>
                                 </div>
@@ -152,7 +152,7 @@ const Report = (data:any) => {
                                         <div
                                             className="msg-img"
                                             style={{
-                                                backgroundImage: `url(${`./assets/characters/fiveguys/${message.img}.png`})`,
+                                                backgroundImage: `url(${`./assets/characters/single/${message.img}.png`})`,
                                             }}
                                         ></div>
 

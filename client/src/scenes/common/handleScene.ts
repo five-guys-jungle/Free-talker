@@ -31,8 +31,6 @@ export const handleScene = async (statusTo: string, data: any = {}) => {
                 phaserGame.scene.start("AirportScene", data);
             }
 
-            phaserGame.scene.start("AirportScene", data);
-
             const activeSceneKeys = phaserGame.scene.getScenes();
             for (let scene of activeSceneKeys) {
                 const sceneKey = scene.scene.key;
