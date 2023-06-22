@@ -36,6 +36,7 @@ export default class Background extends Phaser.Scene {
             startFrame: 0,
             endFrame: 12,
         });
+        this.load.image('airport_chair', 'assets/characters/airport_chair.png');
         this.load.spritesheet("adam", "assets/characters/adam.png", {
             frameWidth: 32,
             frameHeight: 48,
