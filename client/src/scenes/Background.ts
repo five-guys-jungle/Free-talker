@@ -60,6 +60,10 @@ export default class Background extends Phaser.Scene {
             frameWidth: 32,
             frameHeight: 48,
         });
+        this.load.spritesheet("seunghun", "assets/characters/seunghun.png", {
+            frameWidth: 32,
+            frameHeight: 48,
+        });
         this.load.image(
             "exterior",
             "assets/tilesets/ModernExteriorsComplete.png"

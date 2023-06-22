@@ -600,4 +600,106 @@ export const createCharacterAnims = (
         repeat: 0,
         frameRate: animsFrameRate,
     });
+
+    anims.create({
+        key: "seunghun_idle_right",
+        frames: anims.generateFrameNames("seunghun", {
+            start: 0,
+            end: 5,
+        }),
+        repeat: -1,
+        frameRate: animsFrameRate * 0.6,
+    });
+
+    anims.create({
+        key: "seunghun_idle_up",
+        frames: anims.generateFrameNames("seunghun", {
+            start: 6,
+            end: 11,
+        }),
+        repeat: -1,
+        frameRate: animsFrameRate * 0.6,
+    });
+
+    anims.create({
+        key: "seunghun_idle_left",
+        frames: anims.generateFrameNames("seunghun", {
+            start: 12,
+            end: 17,
+        }),
+        repeat: -1,
+        frameRate: animsFrameRate * 0.6,
+    });
+
+    anims.create({
+        key: "seunghun_idle_down",
+        frames: anims.generateFrameNames("seunghun", {
+            start: 18,
+            end: 23,
+        }),
+        repeat: -1,
+        frameRate: animsFrameRate * 0.6,
+    });
+
+    anims.create({
+        key: "seunghun_run_right",
+        frames: anims.generateFrameNames("seunghun", {
+            start: 24,
+            end: 29,
+        }),
+        repeat: -1,
+        frameRate: animsFrameRate,
+    });
+
+    anims.create({
+        key: "seunghun_run_up",
+        frames: anims.generateFrameNames("seunghun", {
+            start: 30,
+            end: 35,
+        }),
+        repeat: -1,
+        frameRate: animsFrameRate,
+    });
+
+    anims.create({
+        key: "seunghun_run_left",
+        frames: anims.generateFrameNames("seunghun", {
+            start: 36,
+            end: 41,
+        }),
+        repeat: -1,
+        frameRate: animsFrameRate,
+    });
+
+    anims.create({
+        key: "seunghun_run_down",
+        frames: anims.generateFrameNames("seunghun", {
+            start: 42,
+            end: 47,
+        }),
+        repeat: -1,
+        frameRate: animsFrameRate,
+    });
+
+    anims.create({
+        key: "seunghun_sit_left",
+        frames: anims.generateFrameNames("seunghun", {
+            start: 48,
+            end: 48,
+        }),
+        repeat: 0,
+        frameRate: animsFrameRate,
+    });
+
+    anims.create({
+        key: "seunghun_sit_right",
+        frames: anims.generateFrameNames("seunghun", {
+            start: 49,
+            end: 49,
+        }),
+        repeat: 0,
+        frameRate: animsFrameRate,
+    });
+
+
 };
