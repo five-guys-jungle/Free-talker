@@ -21,7 +21,7 @@ import {
 } from "../stores/gameSlice";
 import { npcInfo } from "../characters/Npc";
 import { appendMessage, clearMessages } from "../stores/talkBoxSlice";
-import { appendCorrection, clearCorrections } from "../stores/reportSlice";
+import { appendCorrection, clearCorrections, setScore } from "../stores/reportSlice";
 import { appendSentence, clearSentences, setCanRequestRecommend } from "../stores/sentenceBoxSlice";
 import { setRecord, setMessage } from "../stores/recordSlice";
 import { handleScene } from "./common/handleScene";
@@ -263,6 +263,11 @@ export default class AirportScene extends Phaser.Scene {
 
         let valve_E = true;
         // npc 와의 대화를 위한 키 설정
+        let countUserSpeech: number;
+        const addCountUserSpeech = () => {
+            countUserSpeech++;
+            console.log("User Speech Count: ", countUserSpeech);
+        }
         let grammarCorrections: { userText: string; correctedText: string; }[] = [];
         const processGrammarCorrection = (data: { userText: string; correctedText: string; }) => {
             console.log("grammarCorrection event data: ", data);
@@ -401,7 +406,8 @@ export default class AirportScene extends Phaser.Scene {
                                 this.socket2 = null;
                                 // store.dispatch(clearMessages());
                                 // store.dispatch(openAirport());
-
+                                let score = ((countUserSpeech - grammarCorrections.length) / countUserSpeech)*100 ;
+                                store.dispatch(setScore({score: score}));
                                 grammarCorrections.forEach((data, index) => {
                                     console.log("grammarCorrection data: ", data);
                                     store.dispatch(
