@@ -402,9 +402,7 @@ export default class AirportScene extends Phaser.Scene {
                 }
             }
         }
-
-
-        );
+    );
         // 녹음 데이터를 보내고 응답을 받는 키 설정
         this.input.keyboard!.on("keydown-R", async () => {
             if (this.isAudioPlaying) {
@@ -599,6 +597,16 @@ export default class AirportScene extends Phaser.Scene {
         };
         npc1.sprite = this.physics.add.sprite(npc1.x, npc1.y, npc1.texture);
         this.npcList.push(npc1);
+
+        let chair: npcInfo = {
+            name: "airport_chair1",
+            x: 1400,
+            y: 1400,
+            texture: "airport_chair",
+            sprite: null,
+        };
+        chair.sprite = this.physics.add.sprite(chair.x, chair.y, chair.texture);
+        this.npcList.push(chair);
 
         let npc2: npcInfo = {
             name: "statueOfLiberty",
