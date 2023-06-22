@@ -28,11 +28,11 @@ export function socketEventHandler(socket: Socket) {
             // console.log("playerMovement, data: ", data);
             data.socketId = socket.id;
             players_airport[socket.id] = data;
-            // socket.broadcast.emit("playerMoved", players_airport[socket.id]);
+            socket.broadcast.emit("playerMoved", players_airport[socket.id]);
         } else if (data.scene === "USAScene") {
             data.socketId = socket.id;
             players_usa[socket.id] = data;
-            // socket.broadcast.emit("playerMoved", players_usa[socket.id]);
+            socket.broadcast.emit("playerMoved", players_usa[socket.id]);
         }
     });
     socket.on("getTexture", (data: Player) => {
