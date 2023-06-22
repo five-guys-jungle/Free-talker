@@ -1,13 +1,5 @@
 # Free_talker_test
 
-로컬에서 Development 모드로 실행하는 방법
-아래와 같이 명령어를 수정
-```
-npm start // 기존 서버 실행
-npm run start-dev // 로컬환경에서 개발할때
-npm run start // 배포 버전 서버 실행 할떄
-```
-
 현재까지 작성한 코드와 제가 코드 실행하는 방법 정리하여 올립니다.
 
 ## Express 서버하고 react 코드 연결하기

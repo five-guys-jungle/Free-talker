@@ -16,9 +16,7 @@ import MuiAlert, { AlertProps } from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
 // import MySnackbar from "./MySnackBar";
 
-// const DB_URL = "https://seunghunshin.shop";
-import dovenv from "dotenv";
-let DB_URL: string = process.env.REACT_APP_SERVER_URL!;
+const DB_URL = "http://localhost:5000";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     "& .MuiDialogContent-root": {
@@ -72,9 +70,6 @@ export default function SignUpDialog() {
         nickname: false,
     });
     const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false);
-    const [existingId, setExistingId] = useState(false);
-    const [existingNick, setExistingNick] = useState(false);
-    const [wrongId, setWrongId] = useState(false);
 
     const handleClickOpen = (): void => {
         setOpen(true);
@@ -84,7 +79,7 @@ export default function SignUpDialog() {
         setOpen(false);
     };
 
-    const handleSignUp = async () => {
+    async function handleSignUp() {
         // 빈칸 체크
         const errors: Record<string, boolean> = {
             userId: !userId,
@@ -102,30 +97,20 @@ export default function SignUpDialog() {
             userPw: password,
             userNickname: nickname,
         };
-        console.log("body : ", body);
+
         try {
-            console.log("try sign up!");
-            const response = await axios.post(`${DB_URL}/auth/signup`, body);
-            console.log(response);
-            if (response.data.status === 200) {
+            const response = await axios.post(`${DB_URL}/user/signup`, body);
+
+            if (response.data.statue === 200) {
                 console.log("Success!!");
-                handleClose();
-                setSuccessSnackbarOpen(true);
             }
         } catch (e) {
             console.log(e);
-            if (e instanceof AxiosError && e.response?.status === 409) {
-                if (e.response?.data.message === "User ID already exists")
-                    setExistingId(true); // 이미 존재하는 아이디일 경우 상태 업데이트
-                if (e.response?.data.message === "User Nickname already exists")
-                    setExistingNick(true); // 이미 존재하는 닉네임일 경우 상태 업데이트
-            }
-            else if (e instanceof AxiosError && e.response?.status === 400) {
-                setWrongId(true);
-                console.log("ID must be english and number.");
-            }
         }
-    };
+
+        setSuccessSnackbarOpen(true);
+        handleClose();
+    }
 
     const handleSnackbarClose = (): void => {
         setSuccessSnackbarOpen(false);
@@ -136,7 +121,7 @@ export default function SignUpDialog() {
             <Button
                 variant="contained"
                 color="primary"
-                type="button"
+                type="submit"
                 size="large"
                 form="login"
                 onClick={handleClickOpen}
@@ -160,15 +145,9 @@ export default function SignUpDialog() {
                         margin="normal"
                         value={userId}
                         onChange={(e) => setUserId(e.target.value)}
-                        error={formErrors.userId || existingId || wrongId}
+                        error={formErrors.userId}
                         helperText={
-                            formErrors.userId
-                                ? "빈칸을 채워주세요"
-                                : existingId
-                                ? "이미 존재하는 아이디 입니다"
-                                : wrongId
-                                ? "아이디는 영어와 숫자만 가능합니다"
-                                : ""
+                            formErrors.userId ? "빈칸을 채워주세요" : ""
                         }
                     />
                     <TextField
@@ -190,13 +169,9 @@ export default function SignUpDialog() {
                         margin="normal"
                         value={nickname}
                         onChange={(e) => setNickname(e.target.value)}
-                        error={formErrors.nickname || existingNick}
+                        error={formErrors.nickname}
                         helperText={
-                            formErrors.nickname
-                                ? "빈칸을 채워주세요"
-                                : existingNick
-                                ? "이미 존재하는 닉네임 입니다"
-                                : ""
+                            formErrors.nickname ? "빈칸을 채워주세요" : ""
                         }
                     />
                 </DialogContent>

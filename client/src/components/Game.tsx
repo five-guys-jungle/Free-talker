@@ -1,45 +1,44 @@
 import React, { useEffect, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import Phaser from "phaser";
-import AirPortScene from "../scenes/Airport";
-import styled from "styled-components";
+import AirPortScene from "../scenes/airPort";
+import { useRecoilValue } from "recoil";
 import {
-    setPlayerId,
-    setPlayerNickname,
-    setPlayerTexture,
-} from "../stores/userSlice";
-import {
-    selectPlayerId,
-    selectPlayerNickname,
-    selectPlayerTexture,
-} from "../stores/userSlice";
+    playerIdState,
+    playerNicknameState,
+    playerTextureState,
+} from "../recoil/user/atoms";
 
-import { GAME_STATUS } from "../stores/gameSlice";
-import { RootState } from "../stores";
-import NPCDialog from "./NPCDialog";
-import FreeDialog from "./FreeDialog";
-import Report from "./Report";  
+export default function Game() {
+    const playerId = useRecoilValue(playerIdState);
+    const playerNickname = useRecoilValue(playerNicknameState);
+    const playerTexture = useRecoilValue(playerTextureState);
 
-const Game = () => {
-    // socket intialization, connection
+    useEffect(() => {
+        const config = {
+            type: Phaser.AUTO,
+            width: 1440,
+            height: 960,
+            parent: "phaser-game", // 게임을 렌더링할 DOM 요소를 지정합니다.
+            physics: {
+                default: "arcade",
+                arcade: {
+                    gravity: { y: 0 },
+                },
+            },
+            scene: [AirPortScene],
+        };
 
-    const { START, AIRPORT, USA, NPCDIALOG, FREEDIALOG, REPORT } = GAME_STATUS;
-    const { mode } = useSelector((state: RootState) => {
-        return { ...state.mode };
-    });
+        const game = new Phaser.Game(config);
+        game.scene.start("AirPortScene", {
+            playerId: playerId,
+            playerNickname: playerNickname,
+            playerTexture: playerTexture,
+        });
 
-    return <BackgroundDiv>
-        {mode === NPCDIALOG && <NPCDialog />}
-        {mode === FREEDIALOG && <FreeDialog />}
-        {mode === REPORT && <Report/>}
-        </BackgroundDiv>;
-};
+        return () => {
+            game.destroy(true);
+        };
+    }, []);
 
-export { Game };
-
-const BackgroundDiv = styled.div`
-    width: 100%;
-    height: 100%;
-    // position: relative;
-    // overflow: hidden;
-`;
+    return <div id="phaser-game" />;
+}

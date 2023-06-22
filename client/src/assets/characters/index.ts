@@ -1,19 +1,17 @@
-import jinhoman from "./jinhoman.png";
-import jinhogirl from "./jinhogirl.png";
-import seunghun from "./seunghun.png"
-import doyoungboy from "./doyoungboy.png";
-import minsook from "./minsook.png";
+import adam from "./adam.png";
+import ash from "./ash.png";
+import lucy from "./lucy.png";
+import nancy from "./nancy.png";
 
 type Characters = {
     [key: string]: string;
 };
 
 const characters: Characters = {
-    jinhoman,
-    jinhogirl,
-    seunghun,
-    doyoungboy,
-    minsook
+    adam,
+    ash,
+    lucy,
+    nancy,
 };
 
 export default characters;
