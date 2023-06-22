@@ -616,7 +616,7 @@ export default class AirportScene extends Phaser.Scene {
             name: "immigrationOfficer",
             x: 1700,
             y: 1100,
-            texture: "npc",
+            texture: "immigrationOfficer",
             sprite: null,
         };
         npc1.sprite = this.physics.add.sprite(npc1.x, npc1.y, npc1.texture);

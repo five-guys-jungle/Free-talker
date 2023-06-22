@@ -15,6 +15,11 @@ export default class Background extends Phaser.Scene {
         console.log("preloading..............");
         this.load.image("background", "assets/backgrounds/sky.jpg");
         this.load.image("statueOfLiberty", "assets/characters/statue-of-liberty.png");
+        this.load.spritesheet("immigrationOfficer", "assets/characters/immigrationOfficer.png", {
+            frameWidth: 32,
+            frameHeight: 48,
+        });
+        
 
         // this.load.image("background", "assets/backgrounds/space.png");
         this.load.image("generic", "assets/tilesets/Generic.png");
