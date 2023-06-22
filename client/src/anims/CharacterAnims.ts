@@ -360,4 +360,244 @@ export const createCharacterAnims = (
         repeat: -1,
         frameRate: animsFrameRate,
     });
+
+    anims.create({
+        key: "jinhoman_idle_right",
+        frames: anims.generateFrameNames("jinhoman", {
+            start: 0,
+            end: 5,
+        }),
+        repeat: -1,
+        frameRate: animsFrameRate * 0.6,
+    });
+
+    anims.create({
+        key: "jinhoman_idle_up",
+        frames: anims.generateFrameNames("jinhoman", {
+            start: 6,
+            end: 11,
+        }),
+        repeat: -1,
+        frameRate: animsFrameRate * 0.6,
+    });
+
+    anims.create({
+        key: "jinhoman_idle_left",
+        frames: anims.generateFrameNames("jinhoman", {
+            start: 12,
+            end: 17,
+        }),
+        repeat: -1,
+        frameRate: animsFrameRate * 0.6,
+    });
+
+    anims.create({
+        key: "jinhoman_idle_down",
+        frames: anims.generateFrameNames("jinhoman", {
+            start: 18,
+            end: 23,
+        }),
+        repeat: -1,
+        frameRate: animsFrameRate * 0.6,
+    });
+
+    anims.create({
+        key: "jinhoman_run_right",
+        frames: anims.generateFrameNames("jinhoman", {
+            start: 24,
+            end: 29,
+        }),
+        repeat: -1,
+        frameRate: animsFrameRate,
+    });
+
+    anims.create({
+        key: "jinhoman_run_up",
+        frames: anims.generateFrameNames("jinhoman", {
+            start: 30,
+            end: 35,
+        }),
+        repeat: -1,
+        frameRate: animsFrameRate,
+    });
+
+    anims.create({
+        key: "jinhoman_run_left",
+        frames: anims.generateFrameNames("jinhoman", {
+            start: 36,
+            end: 41,
+        }),
+        repeat: -1,
+        frameRate: animsFrameRate,
+    });
+
+    anims.create({
+        key: "jinhoman_run_down",
+        frames: anims.generateFrameNames("jinhoman", {
+            start: 42,
+            end: 47,
+        }),
+        repeat: -1,
+        frameRate: animsFrameRate,
+    });
+
+    anims.create({
+        key: "jinhoman_sit_down",
+        frames: anims.generateFrameNames("jinhoman", {
+            start: 48,
+            end: 48,
+        }),
+        repeat: 0,
+        frameRate: animsFrameRate,
+    });
+
+    anims.create({
+        key: "jinhoman_sit_left",
+        frames: anims.generateFrameNames("jinhoman", {
+            start: 49,
+            end: 49,
+        }),
+        repeat: 0,
+        frameRate: animsFrameRate,
+    });
+
+    anims.create({
+        key: "jinhoman_sit_right",
+        frames: anims.generateFrameNames("jinhoman", {
+            start: 50,
+            end: 50,
+        }),
+        repeat: 0,
+        frameRate: animsFrameRate,
+    });
+
+    anims.create({
+        key: "jinhoman_sit_up",
+        frames: anims.generateFrameNames("jinhoman", {
+            start: 51,
+            end: 51,
+        }),
+        repeat: 0,
+        frameRate: animsFrameRate,
+    });
+
+    anims.create({
+        key: "jinhogirl_idle_right",
+        frames: anims.generateFrameNames("jinhogirl", {
+            start: 0,
+            end: 5,
+        }),
+        repeat: -1,
+        frameRate: animsFrameRate * 0.6,
+    });
+
+    anims.create({
+        key: "jinhogirl_idle_up",
+        frames: anims.generateFrameNames("jinhogirl", {
+            start: 6,
+            end: 11,
+        }),
+        repeat: -1,
+        frameRate: animsFrameRate * 0.6,
+    });
+
+    anims.create({
+        key: "jinhogirl_idle_left",
+        frames: anims.generateFrameNames("jinhogirl", {
+            start: 12,
+            end: 17,
+        }),
+        repeat: -1,
+        frameRate: animsFrameRate * 0.6,
+    });
+
+    anims.create({
+        key: "jinhogirl_idle_down",
+        frames: anims.generateFrameNames("jinhogirl", {
+            start: 18,
+            end: 23,
+        }),
+        repeat: -1,
+        frameRate: animsFrameRate * 0.6,
+    });
+
+    anims.create({
+        key: "jinhogirl_run_right",
+        frames: anims.generateFrameNames("jinhogirl", {
+            start: 24,
+            end: 29,
+        }),
+        repeat: -1,
+        frameRate: animsFrameRate,
+    });
+
+    anims.create({
+        key: "jinhogirl_run_up",
+        frames: anims.generateFrameNames("jinhogirl", {
+            start: 30,
+            end: 35,
+        }),
+        repeat: -1,
+        frameRate: animsFrameRate,
+    });
+
+    anims.create({
+        key: "jinhogirl_run_left",
+        frames: anims.generateFrameNames("jinhogirl", {
+            start: 36,
+            end: 41,
+        }),
+        repeat: -1,
+        frameRate: animsFrameRate,
+    });
+
+    anims.create({
+        key: "jinhogirl_run_down",
+        frames: anims.generateFrameNames("jinhogirl", {
+            start: 42,
+            end: 47,
+        }),
+        repeat: -1,
+        frameRate: animsFrameRate,
+    });
+
+    anims.create({
+        key: "jinhogirl_sit_down",
+        frames: anims.generateFrameNames("jinhogirl", {
+            start: 48,
+            end: 48,
+        }),
+        repeat: 0,
+        frameRate: animsFrameRate,
+    });
+
+    anims.create({
+        key: "jinhogirl_sit_left",
+        frames: anims.generateFrameNames("jinhogirl", {
+            start: 49,
+            end: 49,
+        }),
+        repeat: 0,
+        frameRate: animsFrameRate,
+    });
+
+    anims.create({
+        key: "jinhogirl_sit_right",
+        frames: anims.generateFrameNames("jinhogirl", {
+            start: 50,
+            end: 50,
+        }),
+        repeat: 0,
+        frameRate: animsFrameRate,
+    });
+
+    anims.create({
+        key: "jinhogirl_sit_up",
+        frames: anims.generateFrameNames("jinhogirl", {
+            start: 51,
+            end: 51,
+        }),
+        repeat: 0,
+        frameRate: animsFrameRate,
+    });
 };
