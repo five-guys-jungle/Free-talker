@@ -21,6 +21,7 @@ import {
 } from "../stores/gameSlice";
 import { npcInfo } from "../characters/Npc";
 import { appendMessage, clearMessages } from "../stores/talkBoxSlice";
+import { appendCorrection, clearCorrections } from "../stores/reportSlice";
 import { appendSentence, clearSentences, setCanRequestRecommend } from "../stores/sentenceBoxSlice";
 import { setRecord, setMessage } from "../stores/recordSlice";
 import { handleScene } from "./common/handleScene";
@@ -262,6 +263,11 @@ export default class AirportScene extends Phaser.Scene {
 
         let valve_E = true;
         // npc 와의 대화를 위한 키 설정
+        let grammarCorrections: { userText: string; correctedText: string; }[] = [];
+        const processGrammarCorrection = (data: { userText: string; correctedText: string; }) => {
+            console.log("grammarCorrection event data: ", data);
+            grammarCorrections.push(data);
+          };
         this.input.keyboard!.on("keydown-E", async () => {
 
             for (let npcInfo of this.npcList) {
@@ -308,6 +314,7 @@ export default class AirportScene extends Phaser.Scene {
                                     console.log("connect, interaction socket.id: ", this.socket2!.id);
                                     this.socket2!.on("speechToText", (response: string) => {
                                         console.log("USER: ", response);
+                                        console.log("playerTexture", this.playerTexture);
                                         store.dispatch(appendMessage({
                                             name: this.userNickname,
                                             img: this.playerTexture,
@@ -340,6 +347,8 @@ export default class AirportScene extends Phaser.Scene {
                                         };
                                         audio.play();
                                     });
+
+                                    this.socket2!.on("grammarCorrection", processGrammarCorrection);
                                     this.socket2!.on(
                                         "recommendedResponses",
                                         (responses: string[]) => {
@@ -392,12 +401,25 @@ export default class AirportScene extends Phaser.Scene {
                                 this.socket2 = null;
                                 // store.dispatch(clearMessages());
                                 // store.dispatch(openAirport());
+                            
+                            grammarCorrections.forEach((data, index) => {
+                                console.log("grammarCorrection data: ", data);
+                                store.dispatch(
+                                    appendCorrection({
+                                        original: data.userText,
+                                        correction: data.correctedText,
+                                    })
+                                );
+                            });
+                        
                                 store.dispatch(openReport());
-                                valve_E = false
+                            grammarCorrections = [];
+                            valve_E=false
                             }
 
                         }
                         else {
+                            store.dispatch(clearCorrections());
                             store.dispatch(clearMessages());
                             store.dispatch(clearSentences());
                             store.dispatch(openAirport());
@@ -600,7 +622,7 @@ export default class AirportScene extends Phaser.Scene {
             name: "immigrationOfficer",
             x: 1700,
             y: 1100,
-            texture: "npc",
+            texture: "immigrationOfficer",
             sprite: null,
         };
         npc1.sprite = this.physics.add.sprite(npc1.x, npc1.y, npc1.texture);
@@ -626,16 +648,5 @@ export default class AirportScene extends Phaser.Scene {
         npc2.sprite = this.physics.add.sprite(npc2.x, npc2.y, npc2.texture);
         npc2.sprite.setScale(0.35);
         // this.npcList.push(npc2);
-
-        let npc3: npcInfo = {
-            name: "statueOfLiberty",
-            x: 2030,
-            y: 1430,
-            texture: "statueOfLiberty2",
-            sprite: null,
-        };
-        npc3.sprite = this.physics.add.sprite(npc3.x, npc3.y, npc3.texture);
-        npc3.sprite.setScale(0.35);
-        // this.npcList.push(npc3);
     }
 }
