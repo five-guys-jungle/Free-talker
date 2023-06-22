@@ -34,12 +34,12 @@ const Report = (data:any) => {
     );
 
     let fix_playerTexture=playerTexture;
-    let temp_str=fix_playerTexture.split("");
-    let lowerChar;
-    lowerChar=fix_playerTexture.charCodeAt(0)
-    temp_str[0]=String.fromCharCode(lowerChar-32);
-    fix_playerTexture=temp_str.join("");
-    console.log(fix_playerTexture)
+    // let temp_str=fix_playerTexture.split("");
+    // let lowerChar;
+    // lowerChar=fix_playerTexture.charCodeAt(0)
+    // temp_str[0]=String.fromCharCode(lowerChar-32);
+    // fix_playerTexture=temp_str.join("");
+    // console.log(fix_playerTexture)
     
     let imgUrl= "./assets/characters/fiveguys/"+fix_playerTexture+".png"
     console.log(imgUrl)
@@ -106,7 +106,7 @@ const Report = (data:any) => {
                                 <div className="Character">
                                     <h4>My Character</h4>
                                     <center>
-                                    <ScaleImg className="Character__box" src={imgUrl} alt={fix_playerTexture} ></ScaleImg>
+                                    <ScaleImg className="Character__box" src={`./assets/characters//fiveguys/${playerTexture}.png`} alt={fix_playerTexture} ></ScaleImg>
                                     </center>
                                     <div className="Nickname"><span className="Character__title">Nickname: {playerNickname}</span></div>
                                 </div>
@@ -115,7 +115,7 @@ const Report = (data:any) => {
                                 <div className="Character">
                                     <h4>NPC</h4>
                                     <center>
-                                    <ScaleImg className="Character__box" src={`./assets/${messages[1].img}.png`} alt={"Nancy"} ></ScaleImg>
+                                    <ScaleImg className="Character__box" src={`./assets/characters//fiveguys/${messages[1].img}.png`} alt={messages[1].name} ></ScaleImg>
                                     </center>
                                     <div className="Nickname"><span className="Character__title">NPCname: {messages[1].name}</span></div>
                                 </div>
@@ -152,7 +152,7 @@ const Report = (data:any) => {
                                         <div
                                             className="msg-img"
                                             style={{
-                                                backgroundImage: `url(${`./assets/${message.img}.png`})`,
+                                                backgroundImage: `url(${`./assets/characters/fiveguys/${message.img}.png`})`,
                                             }}
                                         ></div>
 

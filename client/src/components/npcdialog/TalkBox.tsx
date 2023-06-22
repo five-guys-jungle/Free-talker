@@ -122,7 +122,7 @@ const TalkBox: React.FC = () => {
                 <div
                     className="msg-img"
                     style={{
-                    backgroundImage: `url(${message.side === "left" ? `./assets/${message.img}.png` : `./assets/${message.img}.png`})`,
+                    backgroundImage: `url(${message.side === "left" ? `./assets/characters/fiveguys/${message.img}.png` : `./assets/characters/fiveguys/${message.img}.png`})`,
                     }}
                 ></div>
 
