@@ -6,7 +6,7 @@ import recordSlice from "./recordSlice";
 import sentenceBoxSlice from "./sentenceBoxSlice";
 import correctionSlice from "./reportSlice";
 import scoreSlice  from "./scoreSlice";
-import rtcSlice from "./RtcSlice";
+import rtcSlice from "./socketSlice";
 import { useDispatch } from "react-redux";
 
 export const store = configureStore({

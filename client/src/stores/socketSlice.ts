@@ -9,7 +9,7 @@ export const initialState: RTCState = {
     socketNamespace: process.env.REACT_APP_SERVER_URL!,
 };
 
-export const rtcSlice = createSlice({
+export const socketSlice = createSlice({
     name: "rtc",
     initialState,
     reducers: {
@@ -22,6 +22,6 @@ export const rtcSlice = createSlice({
     },
 });
 
-export const { setSocketNamespace, appendSocketNamespace } = rtcSlice.actions;
+export const { setSocketNamespace, appendSocketNamespace } = socketSlice.actions;
 
-export default rtcSlice.reducer;
+export default socketSlice.reducer;

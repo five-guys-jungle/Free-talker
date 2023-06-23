@@ -9,7 +9,7 @@ import { CopyToClipboard } from "react-copy-to-clipboard"
 import Peer from "simple-peer"
 import {Instance} from "simple-peer"
 import io, { Socket } from "socket.io-client"
-import { setSocketNamespace } from "../../stores/RtcSlice"
+import { setSocketNamespace } from "../../stores/socketSlice"
 
 const FreeDialog = () => {
     const [ me, setMe ] = useState("")

@@ -30,7 +30,7 @@ import { RootState } from "../stores/index";
 
 import dotenv from "dotenv";
 import Report from "../components/Report";
-import { setSocketNamespace, appendSocketNamespace } from "../stores/RtcSlice";
+import { setSocketNamespace, appendSocketNamespace } from "../stores/socketSlice";
 
 const serverUrl: string = process.env.REACT_APP_SERVER_URL!;
 
@@ -286,7 +286,8 @@ export default class AirportScene extends Phaser.Scene {
 
                         console.log("chair");
                         // store.dispatch(setSocketNamespace({ socketNamespace:  `${serverUrl}/freedialog`}));
-                        store.dispatch(appendSocketNamespace({ socketNamespace: `/freedialog/${npcInfo.name}` }));
+                        // store.dispatch(appendSocketNamespace({ socketNamespace: `/freedialog/${npcInfo.name}` }));
+                        store.dispatch(appendSocketNamespace({ socketNamespace: `/freedialog` }));
                         store.dispatch(openFreedialog());
                     }
                     else {
