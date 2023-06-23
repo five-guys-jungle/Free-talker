@@ -31,6 +31,10 @@ export function freedialogsocketEventHandler(socket: Socket) {
 
 	socket.on("leaveCallEvent", () => {
 		socket.broadcast.emit("otheruserleave");
-	  });
+	});
+
+	socket.on("otheruserconnected", () => {
+		socket.broadcast.emit("otheruserconnected");
+	});
   }
   
