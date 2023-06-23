@@ -134,6 +134,7 @@ export function interactSocketEventHandler(socket: Socket) {
                     return res;
                 }) //
                 .catch((err) => {
+                    socket.emit("speechToText", "convertSpeechToText Error");
                     console.log("convert Speech to Text error: ", err);
                 });
         }

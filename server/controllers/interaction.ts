@@ -349,6 +349,7 @@ export function compareWithCorrectedText(
     inputText: string,
     correctedText: string
 ): boolean {
+    if (inputText === "you") return true;
     const lowercaseInputText = preprocessSentence(inputText);
     const lowercaseCorrectedText = preprocessSentence(correctedText);
     return lowercaseInputText === lowercaseCorrectedText;
