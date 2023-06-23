@@ -32,6 +32,8 @@ import { RootState } from "../stores/index";
 import dotenv from "dotenv";
 import Report from "../components/Report";
 import { GAME_STATUS } from "../stores/gameSlice";
+import { setSocketNamespace, appendSocketNamespace } from "../stores/socketSlice";
+
 
 const serverUrl: string = process.env.REACT_APP_SERVER_URL!;
 
@@ -293,6 +295,57 @@ export default class AirportScene extends Phaser.Scene {
                         playerTexture: this.playerTexture,});    
                     }
                     else {
+                        if (npcInfo.role === "freeTalkingPlace") {
+                            console.log("chair");
+    
+    
+                            if (valve_E === true) {
+                                store.dispatch(appendSocketNamespace({ socketNamespace: `/freedialog/${npcInfo.name}` }));
+                                // store.dispatch(appendSocketNamespace({ socketNamespace: `/freedialog` }));
+                                store.dispatch(openFreedialog());
+                                this.cursors!.left.enabled = false;
+                                this.cursors!.right.enabled = false;
+                                this.cursors!.up.enabled = false;
+                                this.cursors!.down.enabled = false;
+                                valve_E = false;
+                                window.addEventListener("exitcall", (e: Event) => {
+                                    console.log("exitcall event listener");
+                                    this.player1!.setVelocity(0, 0);
+                                    this.player1!.setPosition(this.player1!.x, this.player1!.y);
+    
+                                    this.cursors!.left.isDown = false;
+                                    this.cursors!.right.isDown = false;
+                                    this.cursors!.up.isDown = false;
+                                    this.cursors!.down.isDown = false;
+    
+                                    this.cursors!.left.enabled = true;
+                                    this.cursors!.right.enabled = true;
+                                    this.cursors!.up.enabled = true;
+                                    this.cursors!.down.enabled = true;
+    
+                                    store.dispatch(openAirport());
+                                    valve_E = true;
+    
+                                });
+                            } else {
+                                this.player1!.setVelocity(0, 0);
+                                this.player1!.setPosition(this.player1!.x, this.player1!.y);
+    
+                                this.cursors!.left.isDown = false;
+                                this.cursors!.right.isDown = false;
+                                this.cursors!.up.isDown = false;
+                                this.cursors!.down.isDown = false;
+    
+                                this.cursors!.left.enabled = true;
+                                this.cursors!.right.enabled = true;
+                                this.cursors!.up.enabled = true;
+                                this.cursors!.down.enabled = true;
+    
+                                store.dispatch(openAirport());
+                                valve_E = true;
+                            }
+    
+                        } else {
                         if (valve_E === true) {
                             if (this.isAudioPlaying) {
                                 return;
