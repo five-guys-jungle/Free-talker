@@ -47,6 +47,12 @@ const FreeDialog = () => {
 		
 		socket.current!.on("connect", () => {
 			console.log("socket is connected: ", socket.current!.id);
+			socket.current!.on("otheruserleave", () => {
+				const clickEvent = new CustomEvent('exitcall', {
+					detail: { message: "exitcall"}
+				});
+				window.dispatchEvent(clickEvent);
+			});
 		});
 		socket.current!.on("me", (id) => {
 			setMe(id);
@@ -122,9 +128,13 @@ const FreeDialog = () => {
 	const leaveCall = () => {
 		setCallEnded(true);
 		if (connectionRef.current) {
-		  connectionRef.current.destroy();
-		  socket.current!.emit("callEnded"); // 서버로 callEnded 이벤트 전송
-		  socket.current!.disconnect();
+			connectionRef.current.destroy();
+			socket.current!.emit("callEnded"); // 서버로 callEnded 이벤트 전송
+			socket.current!.emit("leaveCallEvent", { to: caller });
+			socket.current!.disconnect();
+		   // Airport 씬으로 이벤트 전달
+			window.dispatchEvent(new Event("exitcall"));
+			
 		}
 	  };
 
