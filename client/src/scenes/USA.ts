@@ -64,28 +64,43 @@ export default class USAScene extends Phaser.Scene {
         const map1 = this.make.tilemap({ key: "map1" });
         console.log(map1);
         const tileset_exteriors = map1.addTilesetImage("fiveguys_Exteriors", "fiveguys_Exteriors")!;
-        const tileset_interiors = map1.addTilesetImage("fiveguys_Interiors", "fiveguys_Interiors")!;
+        const tileset_interiors_1 = map1.addTilesetImage("fiveguys_Interiors_1", "fiveguys_Interiors_1")!;
+        const tileset_interiors_2 = map1.addTilesetImage("fiveguys_Interiors_2", "fiveguys_Interiors_2")!;
+        const tileset_interiors_3 = map1.addTilesetImage("fiveguys_Interiors_3", "fiveguys_Interiors_3")!;
+        const tileset_interiors_4 = map1.addTilesetImage("fiveguys_Interiors_4", "fiveguys_Interiors_4")!;
         const tileset_roombuilder = map1.addTilesetImage("fiveguys_Room_Builder", "fiveguys_Room_Builder")!;
 
         map1.createLayer("background/RoomBuilder", tileset_roombuilder);
-        const platform22 = map1.createLayer("boundary/RoomBuilder",tileset_roombuilder )!;
-        const platform33 = map1.createLayer("floor/RoomBuilder", tileset_roombuilder)!;
-        const platform44 = map1.createLayer("layer1/Interiors", tileset_interiors)!;
-        const platform45= map1.createLayer("layer2/Interiors", tileset_interiors)!;
-        const platform46 = map1.createLayer("layer3/Interiors", tileset_interiors)!;
-        const platform55 = map1.createLayer("layer1/Exteriors", tileset_exteriors)!;
-        const platform56= map1.createLayer("layer2/Exteriors", tileset_exteriors)!;
-        const platform57 = map1.createLayer("layer3/Exteriors", tileset_exteriors)!;
+        const roombuilder_1 = map1.createLayer("boundary/RoomBuilder",tileset_roombuilder )!;
+        const roombuilder_2 = map1.createLayer("floor/RoomBuilder", tileset_roombuilder)!;
+        const exteriors_1 = map1.createLayer("layer1/Exteriors", tileset_exteriors)!;
+        const exteriors_2= map1.createLayer("layer2/Exteriors", tileset_exteriors)!;
+        const exteriors_3 = map1.createLayer("layer3/Exteriors", tileset_exteriors)!;
+        const interiors_11 = map1.createLayer("layer1/Interiors1", tileset_interiors_1)!;
+        const interiors_12 = map1.createLayer("layer1/Interiors2", tileset_interiors_2)!;
+        const interiors_13 = map1.createLayer("layer1/Interiors3", tileset_interiors_3)!;
+        const interiors_14 = map1.createLayer("layer1/Interiors4", tileset_interiors_4)!;
+        const interiors_22 = map1.createLayer("layer2/Interiors2", tileset_interiors_2)!;
+        const interiors_23 = map1.createLayer("layer2/Interiors3", tileset_interiors_3)!;
+        const interiors_24 = map1.createLayer("layer2/Interiors4", tileset_interiors_4)!;
+        const interiors_32 = map1.createLayer("layer3/Interiors2", tileset_interiors_2)!;
+        const interiors_33 = map1.createLayer("layer3/Interiors3", tileset_interiors_3)!;
         
 
-        platform22.setCollisionByProperty({ collides: true });
-        platform33.setCollisionByProperty({ collides: true });
-        platform44.setCollisionByProperty({ collides: true });
-        platform45.setCollisionByProperty({ collides: true });
-        platform46.setCollisionByProperty({ collides: true });
-        platform55.setCollisionByProperty({ collides: true });
-        platform56.setCollisionByProperty({ collides: true });
-        platform57.setCollisionByProperty({ collides: true });
+        roombuilder_1.setCollisionByProperty({ collides: true });
+        roombuilder_2.setCollisionByProperty({ collides: true });
+        exteriors_1.setCollisionByProperty({ collides: true });
+        exteriors_2.setCollisionByProperty({ collides: true });
+        exteriors_3.setCollisionByProperty({ collides: true });
+        interiors_11.setCollisionByProperty({ collides: true });
+        interiors_12.setCollisionByProperty({ collides: true });
+        interiors_13.setCollisionByProperty({ collides: true });
+        interiors_14.setCollisionByProperty({ collides: true });
+        interiors_22.setCollisionByProperty({ collides: true });
+        interiors_23.setCollisionByProperty({ collides: true });
+        interiors_24.setCollisionByProperty({ collides: true });
+        interiors_32.setCollisionByProperty({ collides: true });
+        interiors_33.setCollisionByProperty({ collides: true });
 
         createCharacterAnims(this.anims);
 
@@ -215,14 +230,20 @@ export default class USAScene extends Phaser.Scene {
                 }
             });
 
-            this.physics.add.collider(this.player1, platform22);
-            this.physics.add.collider(this.player1, platform33);
-            this.physics.add.collider(this.player1, platform44);
-            this.physics.add.collider(this.player1, platform45);
-            this.physics.add.collider(this.player1, platform46);
-            this.physics.add.collider(this.player1, platform55);
-            this.physics.add.collider(this.player1, platform56);
-            this.physics.add.collider(this.player1, platform57);
+            this.physics.add.collider(this.player1, roombuilder_1);
+            this.physics.add.collider(this.player1, roombuilder_2);
+            this.physics.add.collider(this.player1, exteriors_1);
+            this.physics.add.collider(this.player1, exteriors_2);
+            this.physics.add.collider(this.player1, exteriors_3);
+            this.physics.add.collider(this.player1, interiors_11);
+            this.physics.add.collider(this.player1, interiors_12);
+            this.physics.add.collider(this.player1, interiors_13);
+            this.physics.add.collider(this.player1, interiors_14);
+            this.physics.add.collider(this.player1, interiors_22);
+            this.physics.add.collider(this.player1, interiors_23);
+            this.physics.add.collider(this.player1, interiors_24);
+            this.physics.add.collider(this.player1, interiors_32);
+            this.physics.add.collider(this.player1, interiors_33);
             
             this.npc = this.physics.add.sprite(500, 300, "npc");
         });
