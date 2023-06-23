@@ -4,10 +4,12 @@ import TextField from "@material-ui/core/TextField"
 import AssignmentIcon from "@material-ui/icons/Assignment"
 import PhoneIcon from "@material-ui/icons/Phone"
 import React, { useEffect, useRef, useState } from "react"
+import { useSelector, useDispatch } from "react-redux";
 import { CopyToClipboard } from "react-copy-to-clipboard"
 import Peer from "simple-peer"
 import {Instance} from "simple-peer"
 import io, { Socket } from "socket.io-client"
+import { setSocketNamespace } from "../../stores/socketSlice"
 
 const FreeDialog = () => {
     const [ me, setMe ] = useState("")
@@ -23,10 +25,17 @@ const FreeDialog = () => {
 	const userVideo = React.useRef<HTMLVideoElement>(null);
 	const connectionRef = React.useRef<Instance | null>(null);
     const socket = useRef<Socket | null>(null);
+
+	const socketNamespace = useSelector(
+		(state: { rtc: { socketNamespace: string } }) => state.rtc.socketNamespace
+	);
+    // const dispatch = useDispatch();
+	console.log("setSocketNamespace:::", socketNamespace);
+
 	
 	
     useEffect(() => {
-		socket.current = io("http://localhost:5000/freedialog");
+		socket.current = io(socketNamespace);
 		navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
             setStream(stream)
             if (myVideo.current) {

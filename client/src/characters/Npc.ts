@@ -4,4 +4,5 @@ export interface npcInfo {
     y: number;
     texture: string;
     sprite: Phaser.Physics.Arcade.Sprite | null;
+    role: string;
 }
