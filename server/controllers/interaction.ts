@@ -239,9 +239,10 @@ export async function grammarCorrection(inputText: string): Promise<string> {
         // "You are a grammar checker that looks for mistakes and makes sentence’s more fluent. You take all the input and auto correct it. Just reply to user input with the correct grammar, DO NOT reply the context of the question of the user input. If the user input is grammatically correct, just reply “sounds good”:\n\n${inputText}"
         // Make it correct in grammar and Do not give the reason for this change If it doesn't have grammatical issues, do not give a correction.
         // If it doesn't have grammatical issues, do not give a correction. 
+        // check the following text for spelling and grammar errors
         response = await openai.createCompletion({
             model: "text-davinci-003",
-            prompt: `"You are a grammar checker that looks for mistakes and makes sentences more fluent. If the sentence is grammatically correct then reply just “sounds good”. else correct this without any explanation. :\n\n${inputText}"`,
+            prompt: `"You are a grammar checker that check the following text for spelling and grammar errors. If the text is grammatically correct then reply just “sounds good”. else correct this without any explanation. :\n\n${inputText}"`,
             temperature: 0,
             max_tokens: 60,
             top_p: 1.0,
@@ -292,16 +293,16 @@ export async function recommendNextResponses(
             messages: [
                 {
                     role: "system",
-                    content: `I'm currently in immigration at the ${place}, Recommend me three expressions I can reply to the sentence that ${previous} without any explanations`,
+                    content: `I'm currently at the ${place}, Recommend me three expressions I can reply to the sentence that ${previous} without any explanations`,
                 },
                 {
                     role: "user",
-                    content: `I'm currently in immigration at the ${place}, Recommend me three expressions I can reply to the sentence that ${previous} without any explanations`,
+                    content: `I'm currently at the ${place}, Recommend me three expressions I can reply to the sentence that ${previous} without any explanations`,
                 },
             ],
             // messages: {`I'm currently at the ${place}, Recommend me three expressions I can reply to the ${previous} without any explanations`,}
             temperature: 0.2,
-            max_tokens: 60,
+            max_tokens: 50,
             top_p: 1.0,
             frequency_penalty: 0.0,
             presence_penalty: 0.0,
@@ -318,6 +319,10 @@ export async function recommendNextResponses(
 }
 
 function preprocessSentence(sentence: string): string {
+    if (!sentence) {
+        console.error('Invalid sentence:', sentence);
+        return '';
+    }
     const punctuationRegex = /[.,\/#!$%\^&\*;:{}=\-_`~()]/g;
     const lowercaseSentence = sentence.replace(punctuationRegex, '').toLowerCase();
     return lowercaseSentence;
@@ -330,4 +335,10 @@ export function checkIfSoundsGood(sentence: string): boolean {
         return true;
     }
     return lowercaseSentence.includes(targetPhrase);
+}
+
+export function compareWithCorrectedText(inputText: string, correctedText: string) : boolean {
+    const lowercaseInputText = preprocessSentence(inputText);
+    const lowercaseCorrectedText = preprocessSentence(correctedText);
+    return lowercaseInputText === lowercaseCorrectedText;
 }
