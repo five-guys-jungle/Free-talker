@@ -427,6 +427,7 @@ export default class AirportScene extends Phaser.Scene {
 
                         }
                         else {
+                            countUserSpeech = 0;
                             store.dispatch(setScore({score: 0}));
                             store.dispatch(clearCorrections());
                             store.dispatch(clearMessages());
