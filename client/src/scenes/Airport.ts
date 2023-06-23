@@ -285,6 +285,7 @@ export default class AirportScene extends Phaser.Scene {
                         console.log("chair");
 
 
+
                         if (valve_E === true) {
                             store.dispatch(setSocketNamespace({ socketNamespace: `${serverUrl}/freedialog/${npcInfo.name}` }));
                             // store.dispatch(appendSocketNamespace({ socketNamespace: `/freedialog` }));
@@ -331,7 +332,15 @@ export default class AirportScene extends Phaser.Scene {
                             valve_E = true;
                         }
 
-                    } else {
+                    }
+                    else if (npcInfo.name.includes("Liberty")) {
+                        console.log("liberty")
+                        handleScene("USA", 
+                           {playerId: this.playerId,
+                        playerNickname: this.userNickname,
+                        playerTexture: this.playerTexture,}); 
+                    }
+                    else {
                         if (valve_E === true) {
                             if (this.isAudioPlaying) {
                                 return;
@@ -715,7 +724,7 @@ export default class AirportScene extends Phaser.Scene {
         };
         npc2.sprite = this.physics.add.sprite(npc2.x, npc2.y, npc2.texture);
         npc2.sprite.setScale(0.35);
-        // this.npcList.push(npc2);
+        this.npcList.push(npc2);
     }
 
 }
