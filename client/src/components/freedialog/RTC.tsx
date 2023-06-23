@@ -21,7 +21,7 @@ const FreeDialog = () => {
 	const [ idToCall, setIdToCall ] = useState("")
 	const [ callEnded, setCallEnded] = useState(false)
 	const [ name, setName ] = useState("")
-	const [otherUserConnected, setOtherUserConnected] = useState(false); // 상대방 소켓 연결 여부
+
 
 	const myVideo = React.useRef<HTMLVideoElement>(null);
 	const userVideo = React.useRef<HTMLVideoElement>(null);
@@ -57,6 +57,10 @@ const FreeDialog = () => {
 				window.dispatchEvent(clickEvent);
 				socket.current!.disconnect();
 			});
+			socket.current!.on("userconnected", () => {
+				console.log("connected~~~~~~~~~~~~~~~~~~~~~~~~~~!!!!!!!!!!!!");
+				callUser(idToCall);
+			})
 		});// 상대방 소켓 연결 이벤트 핸들러
 		
 		socket.current!.on("me", (id) => {

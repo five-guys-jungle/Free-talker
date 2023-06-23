@@ -7,7 +7,8 @@ import {  Socket } from "socket.io"
 // freedialogsocketEventHandler 함수 수정
 export function freedialogsocketEventHandler(socket: Socket) {
 	console.log(socket.id, "connection---------------------------------");
-  
+
+	socket.broadcast.emit("userconnected");
 	socket.emit("me", socket.id);
   
 	socket.on("disconnect", () => {
