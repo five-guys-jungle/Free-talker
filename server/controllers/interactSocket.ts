@@ -21,6 +21,7 @@ import {
     convertTexttoSpeech,
     grammarCorrection,
     checkIfSoundsGood,
+    compareWithCorrectedText,
     recommendNextResponses,
     recommendExpressions,
     createChain,
@@ -44,6 +45,8 @@ export function interactSocketEventHandler(socket: Socket) {
                 const chat = new ChatOpenAI({
                     modelName: "gpt-3.5-turbo",
                     temperature: 0,
+                    timeout: 11000,
+                    maxTokens: 60,
                 });
                 const chatPrompt = ChatPromptTemplate.fromPromptMessages([
                     SystemMessagePromptTemplate.fromTemplate(
@@ -126,7 +129,7 @@ export function interactSocketEventHandler(socket: Socket) {
 
             grammarCorrection(inputText).then(
                 async (res) => {
-                    if (!checkIfSoundsGood(res)){
+                    if (!checkIfSoundsGood(res) && !compareWithCorrectedText(inputText, res)){ 
                         socket.emit("grammarCorrection", {
                             userText: inputText,
                             correctedText: res,

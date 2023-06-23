@@ -88,7 +88,7 @@ const Report = (data:any) => {
                                         <div className="text"> <span>Perfect!</span></div>
                                         </div></>)
                                     }
-                                    { score>=80 && (<>
+                                    { (score>=80 && score < 100) && (<>
                                       <p>대화에 무리 없는 수준이에요!</p>
                                         <p>상황에 따라 알맞은 대화를 할 수 있어요!</p>
                                         <div className="highlighted">
@@ -113,7 +113,7 @@ const Report = (data:any) => {
                                     <center>
                                     <ScaleImg className="Character__box" src={`./assets/characters/single/${playerTexture}.png`} alt={fix_playerTexture} ></ScaleImg>
                                     </center>
-                                    <div className="Nickname"><span className="Character__title">Nickname: {playerNickname}</span></div>
+                                    <div className="Nickname"><span className="Character__title">{playerNickname}</span></div>
                                 </div>
                             </div>
                             <div className="wrapChracterR">
@@ -122,12 +122,12 @@ const Report = (data:any) => {
                                     <center>
                                     <ScaleImg className="Character__box" src={`./assets/characters/single/${messages[1].img}.png`} alt={"Nancy"} ></ScaleImg>
                                     </center>
-                                    <div className="Nickname"><span className="Character__title">NPCname: {messages[1].name}</span></div>
+                                    <div className="Nickname"><span className="Character__title">{messages[1].name}</span></div>
                                 </div>
                             </div>
                             </>)
                         }
-                        {messages.length===0 &&
+                        {/* {messages.length===0 &&
                             (<>
                             <div className="Character" style={{gridColumn:'1/span 2', width:'50%', margin:'20px auto'}}>
                                     <h4>My Character</h4>
@@ -137,7 +137,7 @@ const Report = (data:any) => {
                                     <div className="Nickname"><span className="Character__title">Nickname: {playerNickname}</span></div>
                                 </div>
                             </>)
-                        }
+                        } */}
                         <div className="corrections"><span>Corrections</span>
                             <div className="corrections-list">
                                 {corrections.length!==0 && 

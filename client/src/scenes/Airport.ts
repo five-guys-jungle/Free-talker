@@ -339,6 +339,7 @@ export default class AirportScene extends Phaser.Scene {
                             this.player1!.setVelocity(0, 0);
                             this.player1!.anims.play(`${this.player1!.texture.key}_idle_down`, true);
                             store.dispatch(openNPCDialog());
+                            
 
                             this.cursors!.left.enabled = false;
                             this.cursors!.right.enabled = false;
@@ -349,6 +350,7 @@ export default class AirportScene extends Phaser.Scene {
                                 this.socket2 = io(`${serverUrl}/interaction`);
                                 this.socket2.on("connect", () => {
                                     console.log("connect, interaction socket.id: ", this.socket2!.id);
+                                    countUserSpeech = 0;
                                     this.isNpcSocketConnected = true;
                                     window.addEventListener('recomButtonClicked', (e: Event) => {
                                         const customEvent = e as CustomEvent;
@@ -459,6 +461,7 @@ export default class AirportScene extends Phaser.Scene {
                                 // store.dispatch(clearMessages());
                                 // store.dispatch(openAirport());
                                 let score = ((countUserSpeech - grammarCorrections.length) / countUserSpeech) * 100;
+                                console.log("score : ", score);
                                 store.dispatch(setScore({ score: score }));
                                 grammarCorrections.forEach((data, index) => {
                                     console.log("grammarCorrection data: ", data);
