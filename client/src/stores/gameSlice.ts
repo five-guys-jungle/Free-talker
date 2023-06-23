@@ -40,7 +40,6 @@ export const GameModeSlice = createSlice({
         },
         openFreedialog: (state) => {
             state.mode = GAME_STATUS.FREEDIALOG;
-            console.log("openFreedialog");
         },
         openReport: (state) => {
             state.mode = GAME_STATUS.REPORT;
