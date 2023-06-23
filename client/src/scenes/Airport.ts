@@ -60,13 +60,14 @@ export default class AirportScene extends Phaser.Scene {
     isAudioPlaying: boolean = false;
     npcList: npcInfo[] = [];
     alreadyRecommended: boolean = false;
-
+    
     constructor() {
         super("AirportScene");
     }
 
     preload() {
         this.load.tilemapTiledJSON("map", "assets/maps/airport.json");
+        
     }
 
     init(data: any) {
@@ -122,6 +123,8 @@ export default class AirportScene extends Phaser.Scene {
         platform7.setCollisionByProperty({ collides: true });
 
         createCharacterAnims(this.anims);
+
+
 
         this.socket = io(serverUrl);
 
@@ -257,15 +260,59 @@ export default class AirportScene extends Phaser.Scene {
         let valve_E = true;
         // npc 와의 대화를 위한 키 설정
         this.input.keyboard!.on("keydown-E", async () => {
-
             for (let npcInfo of this.npcList) {
                 if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y, npcInfo.x, npcInfo.y) < 100) {
                     console.log("npcInfo: ", npcInfo)
+                    
                     if (npcInfo.name.includes('chair')) {
-                        console.log("chair")
-                        store.dispatch(openFreedialog());
-                    }
-                    else {
+                        console.log("chair");
+                        
+                            
+                        if (valve_E === true) {
+                            store.dispatch(openFreedialog());
+                            this.cursors!.left.enabled = false;
+                            this.cursors!.right.enabled = false;
+                            this.cursors!.up.enabled = false;
+                            this.cursors!.down.enabled = false;
+                            valve_E = false;
+                            window.addEventListener("exitcall", (e: Event) => {
+                                console.log("exitcall event listener");
+                                this.player1!.setVelocity(0, 0);
+                                this.player1!.setPosition(this.player1!.x, this.player1!.y);
+                              
+                                this.cursors!.left.isDown = false;
+                                this.cursors!.right.isDown = false;
+                                this.cursors!.up.isDown = false;
+                                this.cursors!.down.isDown = false;
+                              
+                                this.cursors!.left.enabled = true;
+                                this.cursors!.right.enabled = true;
+                                this.cursors!.up.enabled = true;
+                                this.cursors!.down.enabled = true;
+                              
+                                store.dispatch(openAirport());
+                                valve_E = true;
+                        
+                             } );
+                        } else {
+                            this.player1!.setVelocity(0, 0);
+                            this.player1!.setPosition(this.player1!.x, this.player1!.y);
+                          
+                            this.cursors!.left.isDown = false;
+                            this.cursors!.right.isDown = false;
+                            this.cursors!.up.isDown = false;
+                            this.cursors!.down.isDown = false;
+                          
+                            this.cursors!.left.enabled = true;
+                            this.cursors!.right.enabled = true;
+                            this.cursors!.up.enabled = true;
+                            this.cursors!.down.enabled = true;
+                          
+                            store.dispatch(openAirport());
+                            valve_E = true;
+                        }
+                        
+                    } else { // not chair
                         if (valve_E === true) {
                             if (this.isAudioPlaying) {
                                 return;
@@ -631,5 +678,9 @@ export default class AirportScene extends Phaser.Scene {
         npc3.sprite = this.physics.add.sprite(npc3.x, npc3.y, npc3.texture);
         npc3.sprite.setScale(0.35);
         // this.npcList.push(npc3);
+        
     }
+
 }
+
+
