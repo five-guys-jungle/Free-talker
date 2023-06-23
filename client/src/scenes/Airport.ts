@@ -292,8 +292,9 @@ export default class AirportScene extends Phaser.Scene {
                         console.log("chair");
 
 
+
                         if (valve_E === true) {
-                            store.dispatch(appendSocketNamespace({ socketNamespace: `/freedialog/${npcInfo.name}` }));
+                            store.dispatch(setSocketNamespace({ socketNamespace: `${serverUrl}/freedialog/${npcInfo.name}` }));
                             // store.dispatch(appendSocketNamespace({ socketNamespace: `/freedialog` }));
                             store.dispatch(openFreedialog());
                             this.cursors!.left.enabled = false;
@@ -338,7 +339,15 @@ export default class AirportScene extends Phaser.Scene {
                             valve_E = true;
                         }
 
-                    } else {
+                    }
+                    else if (npcInfo.name.includes("Liberty")) {
+                        console.log("liberty")
+                        handleScene("USA", 
+                           {playerId: this.playerId,
+                        playerNickname: this.userNickname,
+                        playerTexture: this.playerTexture,}); 
+                    }
+                    else {
                         if (valve_E === true) {
                             if (this.isAudioPlaying) {
                                 return;
@@ -346,6 +355,7 @@ export default class AirportScene extends Phaser.Scene {
                             this.player1!.setVelocity(0, 0);
                             this.player1!.anims.play(`${this.player1!.texture.key}_idle_down`, true);
                             store.dispatch(openNPCDialog());
+                            
 
                             this.cursors!.left.enabled = false;
                             this.cursors!.right.enabled = false;
@@ -356,6 +366,7 @@ export default class AirportScene extends Phaser.Scene {
                                 this.socket2 = io(`${serverUrl}/interaction`);
                                 this.socket2.on("connect", () => {
                                     console.log("connect, interaction socket.id: ", this.socket2!.id);
+                                    countUserSpeech = 0;
                                     this.isNpcSocketConnected = true;
                                     window.addEventListener('recomButtonClicked', (e: Event) => {
                                         const customEvent = e as CustomEvent;
@@ -466,6 +477,7 @@ export default class AirportScene extends Phaser.Scene {
                                 // store.dispatch(clearMessages());
                                 // store.dispatch(openAirport());
                                 let score = ((countUserSpeech - grammarCorrections.length) / countUserSpeech) * 100;
+                                console.log("score : ", score);
                                 store.dispatch(setScore({ score: score }));
                                 grammarCorrections.forEach((data, index) => {
                                     console.log("grammarCorrection data: ", data);
@@ -484,7 +496,8 @@ export default class AirportScene extends Phaser.Scene {
 
                         }
                         else {
-                            store.dispatch(setScore({ score: 0 }));
+                            countUserSpeech = 0;
+                            store.dispatch(setScore({score: 0}));
                             store.dispatch(clearCorrections());
                             store.dispatch(clearMessages());
                             store.dispatch(clearSentences());
@@ -718,7 +731,7 @@ export default class AirportScene extends Phaser.Scene {
         };
         npc2.sprite = this.physics.add.sprite(npc2.x, npc2.y, npc2.texture);
         npc2.sprite.setScale(0.35);
-        // this.npcList.push(npc2);
+        this.npcList.push(npc2);
     }
 
 }
