@@ -523,9 +523,7 @@ export default class AirportScene extends Phaser.Scene {
             this.player1!.setVelocityY(velocityY);
 
             if (velocityX === 0 && velocityY === 0) {
-                this.player1!.anims.play(
-                    `${this.player1!.texture.key}_idle_down`
-                );
+                this.player1!.anims.play(`${this.player1!.texture.key}_idle_down`, true);
             }
         }
 
