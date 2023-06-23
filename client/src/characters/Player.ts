@@ -8,6 +8,8 @@ export class Player {
     sprite: Phaser.Physics.Arcade.Sprite;
     textObj: Phaser.GameObjects.Text | null = null;
     defaultVelocity: number = 200;
+    dashVelocity: number = 600;
+    dash: boolean = false;
 
     constructor(
         socketId: string,
@@ -16,7 +18,7 @@ export class Player {
         sprite: Phaser.Physics.Arcade.Sprite,
         x: number,
         y: number,
-        scene: string
+        scene: string,
     ) {
         this.socketId = socketId;
         this.nickname = name;
@@ -32,9 +34,10 @@ export class Player {
     move(deltaInSecond: number) {
         let destination: { x: number; y: number } = { x: this.x, y: this.y };
         let thisSprite: Phaser.Physics.Arcade.Sprite = this.sprite;
-        const dialgonalVelocity: number = this.defaultVelocity / Math.SQRT2;
+        const velocity:number = this.dash ? this.dashVelocity : this.defaultVelocity;
+        const dialgonalVelocity: number = velocity / Math.SQRT2;
         if (destination.x !== thisSprite.x || destination.y !== thisSprite.y) {
-
+            console.log('Other player is moving, dash: ', this.dash);
             let distanceX: number = destination.x - thisSprite.x;
             let distanceY: number = destination.y - thisSprite.y;
             // left-up
@@ -64,21 +67,21 @@ export class Player {
             else {
                 if (destination.x < thisSprite.x) {
                     thisSprite.anims.play(`${this.playerTexture}_run_left`, true);
-                    thisSprite.x -= (this.defaultVelocity * deltaInSecond);
+                    thisSprite.x -= (velocity * deltaInSecond);
                 }
                 else if (destination.x > thisSprite.x) {
                     thisSprite.anims.play(`${this.playerTexture}_run_right`, true);
-                    thisSprite.x += (this.defaultVelocity * deltaInSecond);
+                    thisSprite.x += (velocity * deltaInSecond);
                 }
 
 
                 if (destination.y < thisSprite.y) {
                     thisSprite.anims.play(`${this.playerTexture}_run_up`, true);
-                    thisSprite.y -= (this.defaultVelocity * deltaInSecond);
+                    thisSprite.y -= (velocity * deltaInSecond);
                 }
                 else if (destination.y > thisSprite.y) {
                     thisSprite.anims.play(`${this.playerTexture}_run_down`, true);
-                    thisSprite.y += (this.defaultVelocity * deltaInSecond);
+                    thisSprite.y += (velocity * deltaInSecond);
                 }
             }
 
@@ -125,14 +128,8 @@ export interface PlayerInfo {
     x: number;
     y: number;
     scene: string;
+    dash: boolean;
 }
 export interface PlayerInfoDictionary {
-    [key: string]: {
-        socketId: string;
-        nickname: string;
-        playerTexture: string;
-        x: number;
-        y: number;
-        scene: string;
-    };
+    [key: string]: PlayerInfo;
 }

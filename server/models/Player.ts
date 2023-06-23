@@ -5,6 +5,7 @@ export interface Player {
     x: number;
     y: number;
     scene: string;
+    dash: boolean;
 }
 
 export interface PlayerDictionary {

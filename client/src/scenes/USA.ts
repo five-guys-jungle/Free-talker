@@ -42,6 +42,8 @@ export default class USAScene extends Phaser.Scene {
     playerId: string = "";
     userNickname: string = "";
     playerTexture: string = "";
+    speed: number = 200;
+    dashSpeed: number = 600;
 
     constructor() {
         super("USAScene");
@@ -123,6 +125,7 @@ export default class USAScene extends Phaser.Scene {
                 x: this.initial_x,
                 y: this.initial_y,
                 scene: "USAScene",
+                dash: false,
             });
             // this.player1.setCollideWorldBounds(true); // player가 월드 경계를 넘어가지 않게 설정
             this.cameras.main.startFollow(this.player1);
@@ -163,6 +166,9 @@ export default class USAScene extends Phaser.Scene {
                                 this.allPlayers[
                                     otherPlayers[key].socketId
                                 ].sprite.y = otherPlayers[key].y;
+                                this.allPlayers[
+                                    otherPlayers[key].socketId
+                                ].dash = otherPlayers[key].dash;
                             }
                         }
                     }
@@ -178,6 +184,7 @@ export default class USAScene extends Phaser.Scene {
                             playerInfo.x;
                         this.allPlayers[playerInfo.socketId].sprite.y =
                             playerInfo.y;
+                        this.allPlayers[playerInfo.socketId].dash = playerInfo.dash;
                         console.log(
                             "newPlayerConnected, playerSprite: ",
                             this.allPlayers[playerInfo.socketId].sprite
@@ -204,6 +211,8 @@ export default class USAScene extends Phaser.Scene {
                             playerInfo.x;
                         this.allPlayers[playerInfo.socketId].sprite.y =
                             playerInfo.y;
+                        this.allPlayers[playerInfo.socketId].dash =
+                            playerInfo.dash;
                     } else {
                         console.log("not exist, so create new one");
                         let playerSprite: Phaser.Physics.Arcade.Sprite =
@@ -333,81 +342,62 @@ export default class USAScene extends Phaser.Scene {
             }
         });
     }
-    update() {
-        this.cursors = this.input.keyboard!.createCursorKeys();
-        const speed = 200;
+    update(time: number, delta: number) {
+        let speed: number = this.cursors?.shift.isDown ? this.dashSpeed : this.speed;
         let velocityX = 0;
         let velocityY = 0;
 
-        // `${this.player1!.texture.key}_idle_left`
         if (this.player1 !== null && this.player1 !== undefined) {
-            if (this.cursors!.left.isDown) {
-                velocityX = -speed;
-                this.player1!.anims.play(
-                    `${this.player1!.texture.key}_run_left`,
-                    true
-                );
-            } else if (this.cursors!.right.isDown) {
-                velocityX = speed;
-                this.player1!.anims.play(
-                    `${this.player1!.texture.key}_run_right`,
-                    true
-                );
-            }
+            // console.log("userNickname : ", this.userNickname);
+            this.userIdText!.setText(this.userNickname);
+            this.userIdText!.setOrigin(0.5, 0);
+            this.userIdText!.setX(this.player1!.x);
+            this.userIdText!.setY(this.player1!.y - 50);
+        }
 
-            if (this.cursors!.up.isDown) {
-                velocityY = -speed;
-                this.player1!.anims.play(
-                    `${this.player1!.texture.key}_run_up`,
-                    true
-                );
-            } else if (this.cursors!.down.isDown) {
-                velocityY = speed;
-                this.player1!.anims.play(
-                    `${this.player1!.texture.key}_run_down`,
-                    true
-                );
-            }
+        if (this.player1 !== null && this.player1 !== undefined &&
+            this.cursors!.left.enabled && this.cursors!.right.enabled &&
+            this.cursors!.up.enabled && this.cursors!.down.enabled) {
+            // First check diagonal movement
+            if (this.cursors!.left.isDown && this.cursors!.up.isDown) {
+                velocityX = -speed / Math.SQRT2;
+                velocityY = -speed / Math.SQRT2;
+                this.player1!.anims.play(`${this.player1!.texture.key}_run_left`, true);
+            } else if (this.cursors!.left.isDown && this.cursors!.down.isDown) {
+                velocityX = -speed / Math.SQRT2;
+                velocityY = speed / Math.SQRT2;
+                this.player1!.anims.play(`${this.player1!.texture.key}_run_down`, true);
+            } else if (this.cursors!.right.isDown && this.cursors!.up.isDown) {
+                velocityX = speed / Math.SQRT2;
+                velocityY = -speed / Math.SQRT2;
+                this.player1!.anims.play(`${this.player1!.texture.key}_run_right`, true);
+            } else if (this.cursors!.right.isDown && this.cursors!.down.isDown) {
+                velocityX = speed / Math.SQRT2;
+                velocityY = speed / Math.SQRT2;
+                this.player1!.anims.play(`${this.player1!.texture.key}_run_down`, true);
+            } else { // If not moving diagonally, then check horizontal and vertical movement
+                if (this.cursors!.left.isDown) {
+                    velocityX = -speed;
+                    this.player1!.anims.play(`${this.player1!.texture.key}_run_left`, true);
+                } else if (this.cursors!.right.isDown) {
+                    velocityX = speed;
+                    this.player1!.anims.play(`${this.player1!.texture.key}_run_right`, true);
+                }
 
-            // If moving diagonally, adjust speed
-            if (velocityX !== 0 && velocityY !== 0) {
-                velocityX /= Math.SQRT2;
-                velocityY /= Math.SQRT2;
+                if (this.cursors!.up.isDown) {
+                    velocityY = -speed;
+                    this.player1!.anims.play(`${this.player1!.texture.key}_run_up`, true);
+                } else if (this.cursors!.down.isDown) {
+                    velocityY = speed;
+                    this.player1!.anims.play(`${this.player1!.texture.key}_run_down`, true);
+                }
             }
 
             this.player1!.setVelocityX(velocityX);
             this.player1!.setVelocityY(velocityY);
 
             if (velocityX === 0 && velocityY === 0) {
-                this.player1!.anims.play(
-                    `${this.player1!.texture.key}_idle_down`
-                );
-            }
-        }
-
-        if (this.player1 !== null && this.player1 !== undefined) {
-            console.log("userNickname : ", this.userNickname);
-            this.userIdText!.setText(this.userNickname);
-            this.userIdText!.setOrigin(0.5, 0);
-            this.userIdText!.setX(this.player1!.x);
-            this.userIdText!.setY(this.player1!.y - 50);
-
-            // Check distance between players
-            if (
-                Phaser.Math.Distance.Between(
-                    this.player1!.x,
-                    this.player1!.y,
-                    this.npc!.x,
-                    this.npc!.y
-                ) < 100
-            ) {
-                this.interactText!.setText("Press X to interact");
-                // interactText position
-                this.interactText!.setOrigin(0.5, 0);
-                this.interactText!.setX(this.player1!.x);
-                this.interactText!.setY(this.player1!.y - 70);
-            } else {
-                this.interactText!.setText("");
+                this.player1!.anims.play(`${this.player1!.texture.key}_idle_down`, true);
             }
         }
 
@@ -425,15 +415,22 @@ export default class USAScene extends Phaser.Scene {
                     x: this.player1!.x,
                     y: this.player1!.y,
                     scene: "USAScene",
+                    dash: this.cursors?.shift.isDown
                 });
+            }
+            for (let key in this.allPlayers) {
+                if (key !== this.socket.id) {
+                    let deltaInSecond: number = delta / 1000;
+                    let otherPlayer: Player = this.allPlayers[key];
+                    otherPlayer.move(deltaInSecond);
+                    this.allPlayers[key].moveText(this);
+                }
             }
         }
     }
     createPlayer(playerInfo: PlayerInfo): Phaser.Physics.Arcade.Sprite {
         // Create a sprite for the player
         // Assuming you have an image asset called 'player'
-
-        this.socket!.emit("getTexture", playerInfo);
         let playerSprite = this.physics.add.sprite(
             playerInfo.x,
             playerInfo.y,
