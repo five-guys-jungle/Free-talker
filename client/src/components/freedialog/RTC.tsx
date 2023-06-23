@@ -38,6 +38,7 @@ const FreeDialog = () => {
 	
     useEffect(() => {
 		socket.current = io(socketNamespace);
+		// socket.current = io("http://localhost:5000/freedialog/airport_chair1");
 		navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
             setStream(stream)
             if (myVideo.current) {
