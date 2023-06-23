@@ -5,7 +5,8 @@ import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux"; // react-redux에서 useSelector를 불러옵니다.
 import TalkBox from "./npcdialog/TalkBox";
 import { TalkBoxState } from "../stores/talkBoxSlice";
-import { correctionState } from "../stores/reportSlice";
+import { correctionState} from "../stores/reportSlice";
+import { scoreState } from "../stores/scoreSlice"
 
 // interface NPCDialogProps {
 //     initialDialog?: string;
@@ -32,6 +33,10 @@ const Report = (data:any) => {
     const messages = useSelector(
         (state: { talkBox: TalkBoxState }) => state.talkBox.messages
     );
+
+    let score = useSelector(
+      (state: { score: scoreState }) => state.score.score
+  )
 
     let fix_playerTexture=playerTexture;
     // let temp_str=fix_playerTexture.split("");
@@ -62,7 +67,7 @@ const Report = (data:any) => {
         11: "November",
         12: "December"
     }
-    let score=100;
+
     return (
         <ReportDiv>
             <div className="main-content">
@@ -83,14 +88,14 @@ const Report = (data:any) => {
                                         <div className="text"> <span>Perfect!</span></div>
                                         </div></>)
                                     }
-                                    { score===80 && (<>
+                                    { score>=80 && (<>
                                       <p>대화에 무리 없는 수준이에요!</p>
                                         <p>상황에 따라 알맞은 대화를 할 수 있어요!</p>
                                         <div className="highlighted">
                                         <div className="text"> <span>Good!</span></div>
                                         </div></>)
                                     }
-                                    { score===60 && (<>
+                                    { score<80 && (<>
                                       <p>생존영어 가능!</p>
                                         <p>말 못해 죽진 않을 거 같아요!</p>
                                         <div className="highlighted">

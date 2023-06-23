@@ -1,4 +1,3 @@
-// sentenceBoxSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface Correction {
@@ -9,6 +8,7 @@ export interface Correction {
 export interface correctionState {
     corrections: Correction[];
 }
+
 
 export const initialState: correctionState = {
     corrections: [],
@@ -29,6 +29,7 @@ export const correctionSlice = createSlice({
         },
     },
 });
+
 
 export const { appendCorrection, clearCorrections } = correctionSlice.actions;
 
