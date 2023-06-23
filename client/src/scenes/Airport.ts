@@ -370,6 +370,14 @@ export default class AirportScene extends Phaser.Scene {
                                     this.interacting = true;
                                     console.log("connect, interaction socket.id: ", this.socket2!.id);
                                     this.socket2!.on("speechToText", (response: string) => {
+                                        if (response === ''){
+                                            store.dispatch(setMessage("다시 말씀해주세요"));
+                                            store.dispatch(setCanRequestRecommend(false));
+                                            store.dispatch(setRecord(true));
+                                            this.isAudioPlaying = false;
+                                            
+                                        } else {
+                                        
                                         addCountUserSpeech();
                                         console.log("USER: ", response);
                                         console.log("playerTexture", this.playerTexture);
@@ -379,7 +387,8 @@ export default class AirportScene extends Phaser.Scene {
                                             // img: "",
                                             side: "right",
                                             text: response
-                                        }));
+                                            }));
+                                        }
                                     });
                                     this.socket2!.on("npcResponse", (response: string) => {
                                         console.log("NPC: ", response);

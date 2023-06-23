@@ -117,7 +117,12 @@ export async function convertSpeechToText(
 }
 
 export async function createChain(npcName: string): Promise<ConversationChain> {
-    const chat = new ChatOpenAI({ modelName: "gpt-3.5-turbo", temperature: 0 });
+    const chat = new ChatOpenAI({
+        modelName: "gpt-3.5-turbo",
+        temperature: 0,
+        timeout: 11000,
+        maxTokens: 60,
+    });
 
     try {
         if (!preDefinedPrompt[npcName]) {
@@ -133,7 +138,7 @@ export async function createChain(npcName: string): Promise<ConversationChain> {
 
         const memory = new BufferMemory({
             returnMessages: true,
-            memoryKey: "history",
+            // memoryKey: "history",
             chatHistory: new RedisChatMessageHistory({
                 sessionId: new Date().toISOString(),
                 sessionTTL: 300,
@@ -156,7 +161,6 @@ export async function createChain(npcName: string): Promise<ConversationChain> {
             llm: chat,
         });
     } catch (error) {
-        console.log(error);
         throw error;
     }
 }
@@ -238,7 +242,7 @@ export async function grammarCorrection(inputText: string): Promise<string> {
         // ChatGPT API에 요청 보내기
         // "You are a grammar checker that looks for mistakes and makes sentence’s more fluent. You take all the input and auto correct it. Just reply to user input with the correct grammar, DO NOT reply the context of the question of the user input. If the user input is grammatically correct, just reply “sounds good”:\n\n${inputText}"
         // Make it correct in grammar and Do not give the reason for this change If it doesn't have grammatical issues, do not give a correction.
-        // If it doesn't have grammatical issues, do not give a correction. 
+        // If it doesn't have grammatical issues, do not give a correction.
         // check the following text for spelling and grammar errors
         response = await openai.createCompletion({
             model: "text-davinci-003",
@@ -251,7 +255,9 @@ export async function grammarCorrection(inputText: string): Promise<string> {
         });
         // ChatGPT API의 결과 받기
         correction = response.data.choices[0].text.trimStart();
-        console.log(`corrected text: ${correction}\n original text: ${inputText}`);
+        console.log(
+            `corrected text: ${correction}\n original text: ${inputText}`
+        );
         return correction;
     } catch (error) {
         console.log(error);
@@ -320,11 +326,13 @@ export async function recommendNextResponses(
 
 function preprocessSentence(sentence: string): string {
     if (!sentence) {
-        console.error('Invalid sentence:', sentence);
-        return '';
+        console.error("Invalid sentence:", sentence);
+        return "";
     }
     const punctuationRegex = /[.,\/#!$%\^&\*;:{}=\-_`~()]/g;
-    const lowercaseSentence = sentence.replace(punctuationRegex, '').toLowerCase();
+    const lowercaseSentence = sentence
+        .replace(punctuationRegex, "")
+        .toLowerCase();
     return lowercaseSentence;
 }
 
@@ -337,7 +345,10 @@ export function checkIfSoundsGood(sentence: string): boolean {
     return lowercaseSentence.includes(targetPhrase);
 }
 
-export function compareWithCorrectedText(inputText: string, correctedText: string) : boolean {
+export function compareWithCorrectedText(
+    inputText: string,
+    correctedText: string
+): boolean {
     const lowercaseInputText = preprocessSentence(inputText);
     const lowercaseCorrectedText = preprocessSentence(correctedText);
     return lowercaseInputText === lowercaseCorrectedText;
