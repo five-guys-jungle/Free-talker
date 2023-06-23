@@ -286,8 +286,8 @@ export default class AirportScene extends Phaser.Scene {
 
 
                         if (valve_E === true) {
-                            // store.dispatch(appendSocketNamespace({ socketNamespace: `/freedialog/${npcInfo.name}` }));
-                            store.dispatch(appendSocketNamespace({ socketNamespace: `/freedialog` }));
+                            store.dispatch(appendSocketNamespace({ socketNamespace: `/freedialog/${npcInfo.name}` }));
+                            // store.dispatch(appendSocketNamespace({ socketNamespace: `/freedialog` }));
                             store.dispatch(openFreedialog());
                             this.cursors!.left.enabled = false;
                             this.cursors!.right.enabled = false;
