@@ -92,6 +92,10 @@ export default class Background extends Phaser.Scene {
             "fiveguys_Room_Builder",
             "assets/tilesets/fiveguys_Room_Builder.png"
         );
+        this.load.image(
+            "fiveguys_logo",
+            "assets/tilesets/fiveguys_logo.png"
+        );
 
         
         console.log("Complete loading!!!!!!!!!!!!!!!");
