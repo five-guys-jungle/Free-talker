@@ -71,6 +71,8 @@ export default class AirportScene extends Phaser.Scene {
     isNpcSocketConnected: boolean = false;
     npcList: npcInfo[] = [];
     alreadyRecommended: boolean = false;
+    speed: number = 200;
+    dashSpeed: number = 600;
 
     constructor() {
         super("AirportScene");
@@ -147,6 +149,7 @@ export default class AirportScene extends Phaser.Scene {
                 x: this.initial_x,
                 y: this.initial_y,
                 scene: "AirportScene",
+                dash: false,
             });
 
             this.cameras.main.startFollow(this.player1);
@@ -159,6 +162,7 @@ export default class AirportScene extends Phaser.Scene {
                 x: this.initial_x,
                 y: this.initial_y,
                 scene: "AirportScene",
+                dash: false,
             });
 
             this.socket!.on(
@@ -187,6 +191,9 @@ export default class AirportScene extends Phaser.Scene {
                                     otherPlayers[key].x;
                                 this.allPlayers[otherPlayers[key].socketId].y =
                                     otherPlayers[key].y;
+                                this.allPlayers[
+                                    otherPlayers[key].socketId
+                                ].dash = otherPlayers[key].dash;
                             }
                         }
                     }
@@ -201,6 +208,8 @@ export default class AirportScene extends Phaser.Scene {
 
                         this.allPlayers[playerInfo.socketId].x = playerInfo.x;
                         this.allPlayers[playerInfo.socketId].y = playerInfo.y;
+                        this.allPlayers[playerInfo.socketId].dash =
+                            playerInfo.dash;
                     } else {
                         console.log("not exist, so create new one");
                         let playerSprite: Phaser.Physics.Arcade.Sprite =
@@ -220,6 +229,8 @@ export default class AirportScene extends Phaser.Scene {
                         console.log("already exist, so just set position");
                         this.allPlayers[playerInfo.socketId].x = playerInfo.x;
                         this.allPlayers[playerInfo.socketId].y = playerInfo.y;
+                        this.allPlayers[playerInfo.socketId].dash =
+                            playerInfo.dash;
                     } else {
                         console.log("not exist, so create new one");
                         let playerSprite: Phaser.Physics.Arcade.Sprite =
@@ -303,8 +314,8 @@ export default class AirportScene extends Phaser.Scene {
 
                         if (valve_E === true) {
                             store.dispatch(
-                                appendSocketNamespace({
-                                    socketNamespace: `/freedialog/${npcInfo.name}`,
+                                setSocketNamespace({
+                                    socketNamespace: `${serverUrl}/freedialog/${npcInfo.name}`,
                                 })
                             );
                             // store.dispatch(appendSocketNamespace({ socketNamespace: `/freedialog` }));
@@ -355,6 +366,13 @@ export default class AirportScene extends Phaser.Scene {
                             store.dispatch(openAirport());
                             valve_E = true;
                         }
+                    } else if (npcInfo.name.includes("Liberty")) {
+                        console.log("liberty");
+                        handleScene("USA", {
+                            playerId: this.playerId,
+                            playerNickname: this.userNickname,
+                            playerTexture: this.playerTexture,
+                        });
                     } else {
                         if (valve_E === true) {
                             if (this.isAudioPlaying) {
@@ -683,7 +701,9 @@ export default class AirportScene extends Phaser.Scene {
         });
     }
     update(time: number, delta: number) {
-        const speed = 200;
+        let speed: number = this.cursors?.shift.isDown
+            ? this.dashSpeed
+            : this.speed;
         let velocityX = 0;
         let velocityY = 0;
 
@@ -791,6 +811,7 @@ export default class AirportScene extends Phaser.Scene {
                     x: this.player1!.x,
                     y: this.player1!.y,
                     scene: "AirportScene",
+                    dash: this.cursors?.shift.isDown,
                 });
             }
             for (let key in this.allPlayers) {
@@ -806,7 +827,6 @@ export default class AirportScene extends Phaser.Scene {
     createPlayer(playerInfo: PlayerInfo): Phaser.Physics.Arcade.Sprite {
         // Create a sprite for the player
         // Assuming you have an image asset called 'player'
-        this.socket!.emit("getTexture", playerInfo);
         let playerSprite = this.physics.add.sprite(
             playerInfo.x,
             playerInfo.y,
@@ -900,6 +920,6 @@ export default class AirportScene extends Phaser.Scene {
         };
         npc2.sprite = this.physics.add.sprite(npc2.x, npc2.y, npc2.texture);
         npc2.sprite.setScale(0.35);
-        // this.npcList.push(npc2);
+        this.npcList.push(npc2);
     }
 }

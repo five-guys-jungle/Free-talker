@@ -42,49 +42,15 @@ export default class USAScene extends Phaser.Scene {
     playerId: string = "";
     userNickname: string = "";
     playerTexture: string = "";
+    speed: number = 200;
+    dashSpeed: number = 600;
 
     constructor() {
         super("USAScene");
     }
 
     preload() {
-        this.load.tilemapTiledJSON("map1", "assets/maps/usa.json");
-        // this.load.image("background", "assets/backgrounds/space.png");
-        // this.load.image("generic", "assets/tilesets/Generic.png");
-        // this.load.image("basement", "assets/tilesets/Basement.png");
-        // this.load.image("floor", "assets/tilesets/FloorAndGround.png");
-        // this.load.image("interior", "assets/tilesets/Interiors.png");
-        // this.load.image(
-        //     "pixel",
-        //     "assets/tilesets/pixel-cyberpunk-interior.png"
-        // );
-        // this.load.image(
-        //     "classroom",
-        //     "assets/tilesets/Classroom_and_library.png"
-        // );
-        // this.load.image('exterior','assets/tilesets/ModernExteriorsComplete.png');
-        // this.load.spritesheet("npc", "assets/characters/npc.png", {
-        //     frameWidth: 48,
-        //     frameHeight: 72,
-        //     startFrame: 0,
-        //     endFrame: 12,
-        // });
-        // this.load.spritesheet("adam", "assets/characters/adam.png", {
-        //     frameWidth: 32,
-        //     frameHeight: 48,
-        // });
-        // this.load.spritesheet("ash", "assets/characters/ash.png", {
-        //     frameWidth: 32,
-        //     frameHeight: 48,
-        // });
-        // this.load.spritesheet("lucy", "assets/characters/lucy.png", {
-        //     frameWidth: 32,
-        //     frameHeight: 48,
-        // });
-        // this.load.spritesheet("nancy", "assets/characters/nancy.png", {
-        //     frameWidth: 32,
-        //     frameHeight: 48,
-        // });
+        this.load.tilemapTiledJSON("map1", "assets/maps/usa_v2.json");
     }
 
     init(data: any) {
@@ -99,46 +65,44 @@ export default class USAScene extends Phaser.Scene {
         // 배경 설정
         const map1 = this.make.tilemap({ key: "map1" });
         console.log(map1);
-        const tileset_generic = map1.addTilesetImage("Generic", "generic")!;
-        const tileset_basement = map1.addTilesetImage("Basement", "basement")!;
-        const tileset_interior = map1.addTilesetImage("Interiors", "interior")!;
-        const tileset_classroom = map1.addTilesetImage(
-            "Classroom_and_library",
-            "classroom"
-        )!;
-        const tileset_floor = map1.addTilesetImage("FloorAndGround", "floor")!;
-        const tileset_pixel = map1.addTilesetImage(
-            "pixel-cyberpunk-interior",
-            "pixel"
-        )!;
-        const tileset_exterior = map1.addTilesetImage(
-            "ModernExteriorsComplete",
-            "exterior"
-        )!;
+        const tileset_exteriors = map1.addTilesetImage("fiveguys_Exteriors", "fiveguys_Exteriors")!;
+        const tileset_interiors_1 = map1.addTilesetImage("fiveguys_Interiors_1", "fiveguys_Interiors_1")!;
+        const tileset_interiors_2 = map1.addTilesetImage("fiveguys_Interiors_2", "fiveguys_Interiors_2")!;
+        const tileset_interiors_3 = map1.addTilesetImage("fiveguys_Interiors_3", "fiveguys_Interiors_3")!;
+        const tileset_interiors_4 = map1.addTilesetImage("fiveguys_Interiors_4", "fiveguys_Interiors_4")!;
+        const tileset_roombuilder = map1.addTilesetImage("fiveguys_Room_Builder", "fiveguys_Room_Builder")!;
 
-        map1.createLayer("background/Floor", tileset_floor);
-        const platform22 = map1.createLayer("boundary/Floor", tileset_floor)!;
-        const platform33 = map1.createLayer("floor/Floor", tileset_floor)!;
-        const platform44 = map1.createLayer("park/Exterior", tileset_exterior)!;
-        const platform55 = map1.createLayer(
-            "parkstuff/Exterior",
-            tileset_exterior
-        )!;
-        const platform66 = map1.createLayer(
-            "cityblock/Exterior",
-            tileset_exterior
-        )!;
-        const platform77 = map1.createLayer(
-            "citystuff/Exterior",
-            tileset_exterior
-        )!;
+        map1.createLayer("background/RoomBuilder", tileset_roombuilder);
+        const roombuilder_1 = map1.createLayer("boundary/RoomBuilder",tileset_roombuilder )!;
+        const roombuilder_2 = map1.createLayer("floor/RoomBuilder", tileset_roombuilder)!;
+        const exteriors_1 = map1.createLayer("layer1/Exteriors", tileset_exteriors)!;
+        const exteriors_2= map1.createLayer("layer2/Exteriors", tileset_exteriors)!;
+        const exteriors_3 = map1.createLayer("layer3/Exteriors", tileset_exteriors)!;
+        const interiors_11 = map1.createLayer("layer1/Interiors1", tileset_interiors_1)!;
+        const interiors_12 = map1.createLayer("layer1/Interiors2", tileset_interiors_2)!;
+        const interiors_13 = map1.createLayer("layer1/Interiors3", tileset_interiors_3)!;
+        const interiors_14 = map1.createLayer("layer1/Interiors4", tileset_interiors_4)!;
+        const interiors_22 = map1.createLayer("layer2/Interiors2", tileset_interiors_2)!;
+        const interiors_23 = map1.createLayer("layer2/Interiors3", tileset_interiors_3)!;
+        const interiors_24 = map1.createLayer("layer2/Interiors4", tileset_interiors_4)!;
+        const interiors_32 = map1.createLayer("layer3/Interiors2", tileset_interiors_2)!;
+        const interiors_33 = map1.createLayer("layer3/Interiors3", tileset_interiors_3)!;
+        
 
-        platform22.setCollisionByProperty({ collides: true });
-        platform33.setCollisionByProperty({ collides: true });
-        platform44.setCollisionByProperty({ collides: true });
-        platform55.setCollisionByProperty({ collides: true });
-        platform66.setCollisionByProperty({ collides: true });
-        platform77.setCollisionByProperty({ collides: true });
+        roombuilder_1.setCollisionByProperty({ collides: true });
+        roombuilder_2.setCollisionByProperty({ collides: true });
+        exteriors_1.setCollisionByProperty({ collides: true });
+        exteriors_2.setCollisionByProperty({ collides: true });
+        exteriors_3.setCollisionByProperty({ collides: true });
+        interiors_11.setCollisionByProperty({ collides: true });
+        interiors_12.setCollisionByProperty({ collides: true });
+        interiors_13.setCollisionByProperty({ collides: true });
+        interiors_14.setCollisionByProperty({ collides: true });
+        interiors_22.setCollisionByProperty({ collides: true });
+        interiors_23.setCollisionByProperty({ collides: true });
+        interiors_24.setCollisionByProperty({ collides: true });
+        interiors_32.setCollisionByProperty({ collides: true });
+        interiors_33.setCollisionByProperty({ collides: true });
 
         createCharacterAnims(this.anims);
 
@@ -161,6 +125,7 @@ export default class USAScene extends Phaser.Scene {
                 x: this.initial_x,
                 y: this.initial_y,
                 scene: "USAScene",
+                dash: false,
             });
             // this.player1.setCollideWorldBounds(true); // player가 월드 경계를 넘어가지 않게 설정
             this.cameras.main.startFollow(this.player1);
@@ -201,6 +166,9 @@ export default class USAScene extends Phaser.Scene {
                                 this.allPlayers[
                                     otherPlayers[key].socketId
                                 ].sprite.y = otherPlayers[key].y;
+                                this.allPlayers[
+                                    otherPlayers[key].socketId
+                                ].dash = otherPlayers[key].dash;
                             }
                         }
                     }
@@ -216,6 +184,7 @@ export default class USAScene extends Phaser.Scene {
                             playerInfo.x;
                         this.allPlayers[playerInfo.socketId].sprite.y =
                             playerInfo.y;
+                        this.allPlayers[playerInfo.socketId].dash = playerInfo.dash;
                         console.log(
                             "newPlayerConnected, playerSprite: ",
                             this.allPlayers[playerInfo.socketId].sprite
@@ -242,6 +211,8 @@ export default class USAScene extends Phaser.Scene {
                             playerInfo.x;
                         this.allPlayers[playerInfo.socketId].sprite.y =
                             playerInfo.y;
+                        this.allPlayers[playerInfo.socketId].dash =
+                            playerInfo.dash;
                     } else {
                         console.log("not exist, so create new one");
                         let playerSprite: Phaser.Physics.Arcade.Sprite =
@@ -268,13 +239,21 @@ export default class USAScene extends Phaser.Scene {
                 }
             });
 
-            this.physics.add.collider(this.player1, platform22);
-            this.physics.add.collider(this.player1, platform33);
-            this.physics.add.collider(this.player1, platform44);
-            this.physics.add.collider(this.player1, platform55);
-            this.physics.add.collider(this.player1, platform66);
-            this.physics.add.collider(this.player1, platform77);
-
+            this.physics.add.collider(this.player1, roombuilder_1);
+            this.physics.add.collider(this.player1, roombuilder_2);
+            this.physics.add.collider(this.player1, exteriors_1);
+            this.physics.add.collider(this.player1, exteriors_2);
+            this.physics.add.collider(this.player1, exteriors_3);
+            this.physics.add.collider(this.player1, interiors_11);
+            this.physics.add.collider(this.player1, interiors_12);
+            this.physics.add.collider(this.player1, interiors_13);
+            this.physics.add.collider(this.player1, interiors_14);
+            this.physics.add.collider(this.player1, interiors_22);
+            this.physics.add.collider(this.player1, interiors_23);
+            this.physics.add.collider(this.player1, interiors_24);
+            this.physics.add.collider(this.player1, interiors_32);
+            this.physics.add.collider(this.player1, interiors_33);
+            
             this.npc = this.physics.add.sprite(500, 300, "npc");
         });
 
@@ -363,81 +342,62 @@ export default class USAScene extends Phaser.Scene {
             }
         });
     }
-    update() {
-        this.cursors = this.input.keyboard!.createCursorKeys();
-        const speed = 200;
+    update(time: number, delta: number) {
+        let speed: number = this.cursors?.shift.isDown ? this.dashSpeed : this.speed;
         let velocityX = 0;
         let velocityY = 0;
 
-        // `${this.player1!.texture.key}_idle_left`
         if (this.player1 !== null && this.player1 !== undefined) {
-            if (this.cursors!.left.isDown) {
-                velocityX = -speed;
-                this.player1!.anims.play(
-                    `${this.player1!.texture.key}_run_left`,
-                    true
-                );
-            } else if (this.cursors!.right.isDown) {
-                velocityX = speed;
-                this.player1!.anims.play(
-                    `${this.player1!.texture.key}_run_right`,
-                    true
-                );
-            }
+            // console.log("userNickname : ", this.userNickname);
+            this.userIdText!.setText(this.userNickname);
+            this.userIdText!.setOrigin(0.5, 0);
+            this.userIdText!.setX(this.player1!.x);
+            this.userIdText!.setY(this.player1!.y - 50);
+        }
 
-            if (this.cursors!.up.isDown) {
-                velocityY = -speed;
-                this.player1!.anims.play(
-                    `${this.player1!.texture.key}_run_up`,
-                    true
-                );
-            } else if (this.cursors!.down.isDown) {
-                velocityY = speed;
-                this.player1!.anims.play(
-                    `${this.player1!.texture.key}_run_down`,
-                    true
-                );
-            }
+        if (this.player1 !== null && this.player1 !== undefined &&
+            this.cursors!.left.enabled && this.cursors!.right.enabled &&
+            this.cursors!.up.enabled && this.cursors!.down.enabled) {
+            // First check diagonal movement
+            if (this.cursors!.left.isDown && this.cursors!.up.isDown) {
+                velocityX = -speed / Math.SQRT2;
+                velocityY = -speed / Math.SQRT2;
+                this.player1!.anims.play(`${this.player1!.texture.key}_run_left`, true);
+            } else if (this.cursors!.left.isDown && this.cursors!.down.isDown) {
+                velocityX = -speed / Math.SQRT2;
+                velocityY = speed / Math.SQRT2;
+                this.player1!.anims.play(`${this.player1!.texture.key}_run_down`, true);
+            } else if (this.cursors!.right.isDown && this.cursors!.up.isDown) {
+                velocityX = speed / Math.SQRT2;
+                velocityY = -speed / Math.SQRT2;
+                this.player1!.anims.play(`${this.player1!.texture.key}_run_right`, true);
+            } else if (this.cursors!.right.isDown && this.cursors!.down.isDown) {
+                velocityX = speed / Math.SQRT2;
+                velocityY = speed / Math.SQRT2;
+                this.player1!.anims.play(`${this.player1!.texture.key}_run_down`, true);
+            } else { // If not moving diagonally, then check horizontal and vertical movement
+                if (this.cursors!.left.isDown) {
+                    velocityX = -speed;
+                    this.player1!.anims.play(`${this.player1!.texture.key}_run_left`, true);
+                } else if (this.cursors!.right.isDown) {
+                    velocityX = speed;
+                    this.player1!.anims.play(`${this.player1!.texture.key}_run_right`, true);
+                }
 
-            // If moving diagonally, adjust speed
-            if (velocityX !== 0 && velocityY !== 0) {
-                velocityX /= Math.SQRT2;
-                velocityY /= Math.SQRT2;
+                if (this.cursors!.up.isDown) {
+                    velocityY = -speed;
+                    this.player1!.anims.play(`${this.player1!.texture.key}_run_up`, true);
+                } else if (this.cursors!.down.isDown) {
+                    velocityY = speed;
+                    this.player1!.anims.play(`${this.player1!.texture.key}_run_down`, true);
+                }
             }
 
             this.player1!.setVelocityX(velocityX);
             this.player1!.setVelocityY(velocityY);
 
             if (velocityX === 0 && velocityY === 0) {
-                this.player1!.anims.play(
-                    `${this.player1!.texture.key}_idle_down`
-                );
-            }
-        }
-
-        if (this.player1 !== null && this.player1 !== undefined) {
-            console.log("userNickname : ", this.userNickname);
-            this.userIdText!.setText(this.userNickname);
-            this.userIdText!.setOrigin(0.5, 0);
-            this.userIdText!.setX(this.player1!.x);
-            this.userIdText!.setY(this.player1!.y - 50);
-
-            // Check distance between players
-            if (
-                Phaser.Math.Distance.Between(
-                    this.player1!.x,
-                    this.player1!.y,
-                    this.npc!.x,
-                    this.npc!.y
-                ) < 100
-            ) {
-                this.interactText!.setText("Press X to interact");
-                // interactText position
-                this.interactText!.setOrigin(0.5, 0);
-                this.interactText!.setX(this.player1!.x);
-                this.interactText!.setY(this.player1!.y - 70);
-            } else {
-                this.interactText!.setText("");
+                this.player1!.anims.play(`${this.player1!.texture.key}_idle_down`, true);
             }
         }
 
@@ -455,15 +415,22 @@ export default class USAScene extends Phaser.Scene {
                     x: this.player1!.x,
                     y: this.player1!.y,
                     scene: "USAScene",
+                    dash: this.cursors?.shift.isDown
                 });
+            }
+            for (let key in this.allPlayers) {
+                if (key !== this.socket.id) {
+                    let deltaInSecond: number = delta / 1000;
+                    let otherPlayer: Player = this.allPlayers[key];
+                    otherPlayer.move(deltaInSecond);
+                    this.allPlayers[key].moveText(this);
+                }
             }
         }
     }
     createPlayer(playerInfo: PlayerInfo): Phaser.Physics.Arcade.Sprite {
         // Create a sprite for the player
         // Assuming you have an image asset called 'player'
-
-        this.socket!.emit("getTexture", playerInfo);
         let playerSprite = this.physics.add.sprite(
             playerInfo.x,
             playerInfo.y,
