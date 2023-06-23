@@ -3,6 +3,7 @@ import { gsap } from "gsap";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { setRecord } from "../../stores/recordSlice";
+import { RootState } from "../../stores";
 
 const Record: React.FC = () => {
     const mainSVGRef = useRef<SVGSVGElement>(null);
@@ -12,6 +13,9 @@ const Record: React.FC = () => {
     );
     const message = useSelector(
         (state: { record: { message: string } }) => state.record.message
+    );
+    const messageColor: string = useSelector(
+        (state: RootState) => state.record.messageColor
     );
     const stateRef = useRef(state);
 
@@ -264,7 +268,9 @@ const Record: React.FC = () => {
                         </g>
                     </g>
                 </svg>
-                <Instructions>{message}</Instructions>
+                <Instructions style={{ color: messageColor }}>
+                    {message}
+                </Instructions>
             </Container>
         </RecDiv>
     );
