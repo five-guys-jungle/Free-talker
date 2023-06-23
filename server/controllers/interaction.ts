@@ -64,7 +64,7 @@ export async function interact(req: Request, res: Response): Promise<void> {
         let outputText: string;
 
         inputText = await convertSpeechToText(audioFilePath);
-        const correctedText = await grammerCorrection(inputText);
+        const correctedText = await grammarCorrection(inputText);
 
         console.log(`correctedText: ${correctedText}, inputText: ${inputText}`);
 
@@ -171,10 +171,6 @@ export async function textCompletion(
     let role_answer: string;
 
     try {
-        // const chain: ConversationChain = await createChain(
-        //     preDefinedPrompt[npcName].message
-        // );
-
         const response = await chain.call({
             input: inputText,
         });
@@ -235,24 +231,26 @@ export async function convertTexttoSpeech(
     }
 }
 
-export async function grammerCorrection(inputText: string): Promise<string> {
+export async function grammarCorrection(inputText: string): Promise<string> {
     let response: any;
     let correction: string;
     try {
         // ChatGPT API에 요청 보내기
+        // "You are a grammar checker that looks for mistakes and makes sentence’s more fluent. You take all the input and auto correct it. Just reply to user input with the correct grammar, DO NOT reply the context of the question of the user input. If the user input is grammatically correct, just reply “sounds good”:\n\n${inputText}"
+        // Make it correct in grammar and Do not give the reason for this change If it doesn't have grammatical issues, do not give a correction.
+        // If it doesn't have grammatical issues, do not give a correction. 
         response = await openai.createCompletion({
             model: "text-davinci-003",
-            prompt: `"Correct this to standard English:\n\n${inputText}"`,
-            temperature: 0.5,
+            prompt: `"You are a grammar checker that looks for mistakes and makes sentences more fluent. If the sentence is grammatically correct then reply just “sounds good”. else correct this without any explanation. :\n\n${inputText}"`,
+            temperature: 0,
             max_tokens: 60,
             top_p: 1.0,
             frequency_penalty: 0.0,
             presence_penalty: 0.0,
         });
         // ChatGPT API의 결과 받기
-        // console.log(response.data);
         correction = response.data.choices[0].text.trimStart();
-        // return correction;
+        console.log(`corrected text: ${correction}\n original text: ${inputText}`);
         return correction;
     } catch (error) {
         console.log(error);
@@ -317,4 +315,19 @@ export async function recommendNextResponses(
         console.log(error);
         return "ChatGPT API Error.";
     }
+}
+
+function preprocessSentence(sentence: string): string {
+    const punctuationRegex = /[.,\/#!$%\^&\*;:{}=\-_`~()]/g;
+    const lowercaseSentence = sentence.replace(punctuationRegex, '').toLowerCase();
+    return lowercaseSentence;
+}
+
+export function checkIfSoundsGood(sentence: string): boolean {
+    const targetPhrase = "sounds good";
+    const lowercaseSentence = preprocessSentence(sentence);
+    if (lowercaseSentence.trim() === "") {
+        return true;
+    }
+    return lowercaseSentence.includes(targetPhrase);
 }

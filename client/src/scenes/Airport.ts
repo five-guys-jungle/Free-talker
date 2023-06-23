@@ -21,6 +21,8 @@ import {
 } from "../stores/gameSlice";
 import { npcInfo } from "../characters/Npc";
 import { appendMessage, clearMessages } from "../stores/talkBoxSlice";
+import { appendCorrection, clearCorrections } from "../stores/reportSlice";
+import { setScore } from "../stores/scoreSlice";
 import { appendSentence, clearSentences, setCanRequestRecommend } from "../stores/sentenceBoxSlice";
 import { setRecord, setMessage } from "../stores/recordSlice";
 import { handleScene } from "./common/handleScene";
@@ -123,9 +125,9 @@ export default class AirportScene extends Phaser.Scene {
         platform7.setCollisionByProperty({ collides: true });
 
         createCharacterAnims(this.anims);
-
-
-
+        if (this.socket) {
+            this.socket.disconnect();
+        }
         this.socket = io(serverUrl);
 
         this.socket.on("connect", () => {
@@ -235,6 +237,10 @@ export default class AirportScene extends Phaser.Scene {
                     }
                 }
             });
+            this.socket!.on("disconnect", (reason: string) => {
+                console.log("client side disconnect, reason: ", reason);
+                window.location.reload();
+            });
 
             this.physics.add.collider(this.player1, platform2);
             this.physics.add.collider(this.player1, platform3);
@@ -259,6 +265,16 @@ export default class AirportScene extends Phaser.Scene {
 
         let valve_E = true;
         // npc 와의 대화를 위한 키 설정
+        let countUserSpeech: number;
+        const addCountUserSpeech = () => {
+            countUserSpeech++;
+            console.log("User Speech Count: ", countUserSpeech);
+        }
+        let grammarCorrections: { userText: string; correctedText: string; }[] = [];
+        const processGrammarCorrection = (data: { userText: string; correctedText: string; }) => {
+            console.log("grammarCorrection event data: ", data);
+            grammarCorrections.push(data);
+        };
         this.input.keyboard!.on("keydown-E", async () => {
             for (let npcInfo of this.npcList) {
                 if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y, npcInfo.x, npcInfo.y) < 100) {
@@ -348,7 +364,9 @@ export default class AirportScene extends Phaser.Scene {
                                     this.interacting = true;
                                     console.log("connect, interaction socket.id: ", this.socket2!.id);
                                     this.socket2!.on("speechToText", (response: string) => {
+                                        addCountUserSpeech();
                                         console.log("USER: ", response);
+                                        console.log("playerTexture", this.playerTexture);
                                         store.dispatch(appendMessage({
                                             name: this.userNickname,
                                             img: this.playerTexture,
@@ -381,6 +399,8 @@ export default class AirportScene extends Phaser.Scene {
                                         };
                                         audio.play();
                                     });
+
+                                    this.socket2!.on("grammarCorrection", processGrammarCorrection);
                                     this.socket2!.on(
                                         "recommendedResponses",
                                         (responses: string[]) => {
@@ -433,12 +453,27 @@ export default class AirportScene extends Phaser.Scene {
                                 this.socket2 = null;
                                 // store.dispatch(clearMessages());
                                 // store.dispatch(openAirport());
+                                let score = ((countUserSpeech - grammarCorrections.length) / countUserSpeech)*100 ;
+                                store.dispatch(setScore({score: score}));
+                                grammarCorrections.forEach((data, index) => {
+                                    console.log("grammarCorrection data: ", data);
+                                    store.dispatch(
+                                        appendCorrection({
+                                            original: data.userText,
+                                            correction: data.correctedText,
+                                        })
+                                    );
+                                });
+
                                 store.dispatch(openReport());
+                                grammarCorrections = [];
                                 valve_E = false
                             }
 
                         }
                         else {
+                            store.dispatch(setScore({score: 0}));
+                            store.dispatch(clearCorrections());
                             store.dispatch(clearMessages());
                             store.dispatch(clearSentences());
                             store.dispatch(openAirport());
@@ -493,7 +528,7 @@ export default class AirportScene extends Phaser.Scene {
         let velocityY = 0;
 
         if (this.player1 !== null && this.player1 !== undefined) {
-            console.log("userNickname : ", this.userNickname);
+            // console.log("userNickname : ", this.userNickname);
             this.userIdText!.setText(this.userNickname);
             this.userIdText!.setOrigin(0.5, 0);
             this.userIdText!.setX(this.player1!.x);
@@ -641,7 +676,7 @@ export default class AirportScene extends Phaser.Scene {
             name: "immigrationOfficer",
             x: 1700,
             y: 1100,
-            texture: "npc",
+            texture: "immigrationOfficer",
             sprite: null,
         };
         npc1.sprite = this.physics.add.sprite(npc1.x, npc1.y, npc1.texture);
@@ -667,18 +702,6 @@ export default class AirportScene extends Phaser.Scene {
         npc2.sprite = this.physics.add.sprite(npc2.x, npc2.y, npc2.texture);
         npc2.sprite.setScale(0.35);
         // this.npcList.push(npc2);
-
-        let npc3: npcInfo = {
-            name: "statueOfLiberty",
-            x: 2030,
-            y: 1430,
-            texture: "statueOfLiberty2",
-            sprite: null,
-        };
-        npc3.sprite = this.physics.add.sprite(npc3.x, npc3.y, npc3.texture);
-        npc3.sprite.setScale(0.35);
-        // this.npcList.push(npc3);
-        
     }
 
 }

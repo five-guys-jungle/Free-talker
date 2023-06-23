@@ -10,14 +10,6 @@ interface Message {
     text: string;
 }
 
-const BOT_MSGS = [
-    "Welcome to JUNGLE!",
-];
-
-const BOT_IMG = "./assets/adam.png";
-const PERSON_IMG = "./assets/nancy.png";
-const BOT_NAME = "BOT";
-const PERSON_NAME = "Sajad";
 
 const TalkBox: React.FC = () => {
     // const [messages, setMessages] = useState<Message[]>([]);
@@ -115,14 +107,13 @@ const TalkBox: React.FC = () => {
                     </span>
                 </div>
             </header> */}
-
             <main className="msger-chat" ref={msgerChatRef}>
             {messages.map((message, index) => (
                 <div className={`msg ${message.side}-msg`} key={index}>
                 <div
                     className="msg-img"
                     style={{
-                    backgroundImage: `url(${message.side === "left" ? `./assets/characters/fiveguys/${message.img}.png` : `./assets/characters/fiveguys/${message.img}.png`})`,
+                    backgroundImage: `url(${message.side === "left" ? `./assets/characters/single/${message.img}.png` : `./assets/characters/single/${message.img}.png`})`,
                     }}
                 ></div>
 

@@ -93,7 +93,7 @@ export class Player {
         }
         else {
             thisSprite.anims.play(`${this.playerTexture}_idle_down`, true);
-            console.log('Other player is not moving');
+            // console.log('Other player is not moving');
         }
     }
     moveText(scene: Phaser.Scene) {

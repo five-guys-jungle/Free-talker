@@ -58,9 +58,10 @@ const SentenceList: React.FC = () => {
             });
             window.dispatchEvent(clickEvent);
         }
-        if (!isOuterDivVisible && !record) {
-            // dispatch(setRecord(true));            
-        }
+        // if (!isOuterDivVisible && !record) {
+        //     // dispatch(setRecord(true));            
+        // }
+        
     };
 
     useEffect(() => {
@@ -178,7 +179,7 @@ const SentenceDiv = styled.div`
     .sentence {
         background-color: #f7fafc;
         // width: fit-content; // Adjust this
-
+        opacity: 1.0;
         // width: 600px;
         height: 45px;
         margin: 20px auto;
