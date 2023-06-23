@@ -11,7 +11,7 @@ export function freedialogsocketEventHandler(socket: Socket) {
 	socket.emit("me", socket.id);
   
 	socket.on("disconnect", () => {
-	  socket.broadcast.emit("callEnded");
+	//   socket.broadcast.emit("callEnded");
 	  console.log("disconnected~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 	});
   
@@ -26,15 +26,11 @@ export function freedialogsocketEventHandler(socket: Socket) {
 	});
   
 	socket.on("callEnded", () => {
-	  socket.broadcast.emit("callEnded");
+	  socket.broadcast.emit("otherusercallended");
 	});
 
 	socket.on("leaveCallEvent", () => {
 		socket.broadcast.emit("otheruserleave");
-	});
-
-	socket.on("otheruserconnected", () => {
-		socket.broadcast.emit("otheruserconnected");
-	});
+	  });
   }
   

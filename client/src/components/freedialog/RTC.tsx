@@ -54,13 +54,9 @@ const FreeDialog = () => {
 					detail: { message: "exitcall"}
 				});
 				window.dispatchEvent(clickEvent);
+				socket.current!.disconnect();
 			});
 		});// 상대방 소켓 연결 이벤트 핸들러
-		
-		socket.current!.on("otheruserconnected", () => {
-			setOtherUserConnected(true);
-			alert("대화 시작이 가능합니다");
-		});
 		
 		socket.current!.on("me", (id) => {
 			setMe(id);
@@ -75,7 +71,7 @@ const FreeDialog = () => {
 			console.log("callUser2222222222")
 		});
 		// useEffect에 callEnded 이벤트 핸들러 추가
-		socket.current!.on("callEnded", () => {
+		socket.current!.on("otherusercallended", () => {
 			setCallEnded(true);
 			if (connectionRef.current) {
 				connectionRef.current.destroy();
