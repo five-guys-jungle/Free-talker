@@ -2,8 +2,11 @@ import Phaser from "phaser";
 import { openLogin } from "../stores/gameSlice";
 import store from "../stores";
 
-export default class Background extends Phaser.Scene {
 
+export default class Background extends Phaser.Scene {
+    
+    
+    
     background!:Phaser.GameObjects.Image
 
     constructor() {
@@ -64,6 +67,33 @@ export default class Background extends Phaser.Scene {
             "exterior",
             "assets/tilesets/ModernExteriorsComplete.png"
         );
+        this.load.image(
+            "fiveguys_Exteriors",
+            "assets/tilesets/fiveguys_Exteriors.png"
+        );
+        this.load.image(
+            "fiveguys_Interiors_1",
+            "assets/tilesets/fiveguys_Interiors_1.png"
+        );
+        this.load.image(
+            "fiveguys_Interiors_2",
+            "assets/tilesets/fiveguys_Interiors_2.png"
+        );
+        this.load.image(
+            "fiveguys_Interiors_3",
+            "assets/tilesets/fiveguys_Interiors_3.png"
+        );
+        this.load.image(
+            "fiveguys_Interiors_4",
+            "assets/tilesets/fiveguys_Interiors_4.png"
+        );
+        
+        this.load.image(
+            "fiveguys_Room_Builder",
+            "assets/tilesets/fiveguys_Room_Builder.png"
+        );
+
+        
         console.log("Complete loading!!!!!!!!!!!!!!!");
     }
 
