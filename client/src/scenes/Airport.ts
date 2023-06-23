@@ -30,6 +30,7 @@ import { RootState } from "../stores/index";
 
 import dotenv from "dotenv";
 import Report from "../components/Report";
+import { setSocketNamespace, appendSocketNamespace } from "../stores/socketSlice";
 
 const serverUrl: string = process.env.REACT_APP_SERVER_URL!;
 
@@ -60,16 +61,17 @@ export default class AirportScene extends Phaser.Scene {
     recorder2: MediaRecorder | null = null;
 
     isAudioPlaying: boolean = false;
+    isNpcSocketConnected: boolean = false;
     npcList: npcInfo[] = [];
     alreadyRecommended: boolean = false;
-    
+
     constructor() {
         super("AirportScene");
     }
 
     preload() {
         this.load.tilemapTiledJSON("map", "assets/maps/airport.json");
-        
+
     }
 
     init(data: any) {
@@ -279,12 +281,13 @@ export default class AirportScene extends Phaser.Scene {
             for (let npcInfo of this.npcList) {
                 if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y, npcInfo.x, npcInfo.y) < 100) {
                     console.log("npcInfo: ", npcInfo)
-                    
-                    if (npcInfo.name.includes('chair')) {
+                    if (npcInfo.role === "freeTalkingPlace") {
                         console.log("chair");
-                        
-                            
+
+
                         if (valve_E === true) {
+                            store.dispatch(appendSocketNamespace({ socketNamespace: `/freedialog/${npcInfo.name}` }));
+                            // store.dispatch(appendSocketNamespace({ socketNamespace: `/freedialog` }));
                             store.dispatch(openFreedialog());
                             this.cursors!.left.enabled = false;
                             this.cursors!.right.enabled = false;
@@ -295,40 +298,40 @@ export default class AirportScene extends Phaser.Scene {
                                 console.log("exitcall event listener");
                                 this.player1!.setVelocity(0, 0);
                                 this.player1!.setPosition(this.player1!.x, this.player1!.y);
-                              
+
                                 this.cursors!.left.isDown = false;
                                 this.cursors!.right.isDown = false;
                                 this.cursors!.up.isDown = false;
                                 this.cursors!.down.isDown = false;
-                              
+
                                 this.cursors!.left.enabled = true;
                                 this.cursors!.right.enabled = true;
                                 this.cursors!.up.enabled = true;
                                 this.cursors!.down.enabled = true;
-                              
+
                                 store.dispatch(openAirport());
                                 valve_E = true;
-                        
-                             } );
+
+                            });
                         } else {
                             this.player1!.setVelocity(0, 0);
                             this.player1!.setPosition(this.player1!.x, this.player1!.y);
-                          
+
                             this.cursors!.left.isDown = false;
                             this.cursors!.right.isDown = false;
                             this.cursors!.up.isDown = false;
                             this.cursors!.down.isDown = false;
-                          
+
                             this.cursors!.left.enabled = true;
                             this.cursors!.right.enabled = true;
                             this.cursors!.up.enabled = true;
                             this.cursors!.down.enabled = true;
-                          
+
                             store.dispatch(openAirport());
                             valve_E = true;
                         }
-                        
-                    } else { // not chair
+
+                    } else {
                         if (valve_E === true) {
                             if (this.isAudioPlaying) {
                                 return;
@@ -345,7 +348,8 @@ export default class AirportScene extends Phaser.Scene {
                             if (this.socket2 === null || this.socket2 === undefined) {
                                 this.socket2 = io(`${serverUrl}/interaction`);
                                 this.socket2.on("connect", () => {
-
+                                    console.log("connect, interaction socket.id: ", this.socket2!.id);
+                                    this.isNpcSocketConnected = true;
                                     window.addEventListener('recomButtonClicked', (e: Event) => {
                                         const customEvent = e as CustomEvent;
                                         store.dispatch(clearSentences());
@@ -431,7 +435,8 @@ export default class AirportScene extends Phaser.Scene {
                                     );
                                 });
                             }
-                            else { // 이미 소켓이 연결되어 있는데 다시 한번 E키를 누른 경우
+                            else { // 이미 소켓이 연결되어 있는데 다시 한번 E키를 누른 경우 -> 대화 종료 상황
+                                this.isNpcSocketConnected = false;
                                 this.player1!.setVelocity(0, 0);
                                 this.player1!.setPosition(this.player1!.x, this.player1!.y);
 
@@ -453,8 +458,8 @@ export default class AirportScene extends Phaser.Scene {
                                 this.socket2 = null;
                                 // store.dispatch(clearMessages());
                                 // store.dispatch(openAirport());
-                                let score = ((countUserSpeech - grammarCorrections.length) / countUserSpeech)*100 ;
-                                store.dispatch(setScore({score: score}));
+                                let score = ((countUserSpeech - grammarCorrections.length) / countUserSpeech) * 100;
+                                store.dispatch(setScore({ score: score }));
                                 grammarCorrections.forEach((data, index) => {
                                     console.log("grammarCorrection data: ", data);
                                     store.dispatch(
@@ -488,6 +493,10 @@ export default class AirportScene extends Phaser.Scene {
         );
         // 녹음 데이터를 보내고 응답을 받는 키 설정
         this.input.keyboard!.on("keydown-R", async () => {
+            if (!this.isNpcSocketConnected) {
+                console.log("NPC와 연결되지 않았습니다.");
+                return;
+            }
             if (this.isAudioPlaying) {
                 return;
             }
@@ -578,9 +587,7 @@ export default class AirportScene extends Phaser.Scene {
             this.player1!.setVelocityY(velocityY);
 
             if (velocityX === 0 && velocityY === 0) {
-                this.player1!.anims.play(
-                    `${this.player1!.texture.key}_idle_down`
-                );
+                this.player1!.anims.play(`${this.player1!.texture.key}_idle_down`, true);
             }
         }
 
@@ -679,6 +686,7 @@ export default class AirportScene extends Phaser.Scene {
             y: 1100,
             texture: "immigrationOfficer",
             sprite: null,
+            role: "npc"
         };
         npc1.sprite = this.physics.add.sprite(npc1.x, npc1.y, npc1.texture);
         this.npcList.push(npc1);
@@ -689,6 +697,7 @@ export default class AirportScene extends Phaser.Scene {
             y: 1400,
             texture: "airport_chair",
             sprite: null,
+            role: "freeTalkingPlace"
         };
         chair.sprite = this.physics.add.sprite(chair.x, chair.y, chair.texture);
         this.npcList.push(chair);
@@ -699,6 +708,7 @@ export default class AirportScene extends Phaser.Scene {
             y: 1430,
             texture: "statueOfLiberty",
             sprite: null,
+            role: "npc"
         };
         npc2.sprite = this.physics.add.sprite(npc2.x, npc2.y, npc2.texture);
         npc2.sprite.setScale(0.35);
