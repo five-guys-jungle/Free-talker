@@ -18,6 +18,7 @@ import {
     openAirport,
     openFreedialog,
     openReport,
+    openUSA
 } from "../stores/gameSlice";
 import { npcInfo } from "../characters/Npc";
 import { appendMessage, clearMessages } from "../stores/talkBoxSlice";
@@ -30,6 +31,7 @@ import { RootState } from "../stores/index";
 
 import dotenv from "dotenv";
 import Report from "../components/Report";
+import { GAME_STATUS } from "../stores/gameSlice";
 
 const serverUrl: string = process.env.REACT_APP_SERVER_URL!;
 
@@ -282,6 +284,13 @@ export default class AirportScene extends Phaser.Scene {
                     if (npcInfo.name.includes('chair')) {
                         console.log("chair")
                         store.dispatch(openFreedialog());
+                    }
+                    else if (npcInfo.name.includes('Liberty')) {
+                        console.log("liberty")
+                        handleScene(GAME_STATUS.USA, 
+                           {playerId: this.playerId,
+                        playerNickname: this.userNickname,
+                        playerTexture: this.playerTexture,});    
                     }
                     else {
                         if (valve_E === true) {
@@ -656,6 +665,7 @@ export default class AirportScene extends Phaser.Scene {
         };
         npc2.sprite = this.physics.add.sprite(npc2.x, npc2.y, npc2.texture);
         npc2.sprite.setScale(0.35);
-        // this.npcList.push(npc2);
+
+        this.npcList.push(npc2);
     }
 }

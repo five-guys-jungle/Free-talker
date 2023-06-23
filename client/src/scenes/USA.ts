@@ -48,43 +48,7 @@ export default class USAScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.tilemapTiledJSON("map1", "assets/maps/usa.json");
-        // this.load.image("background", "assets/backgrounds/space.png");
-        // this.load.image("generic", "assets/tilesets/Generic.png");
-        // this.load.image("basement", "assets/tilesets/Basement.png");
-        // this.load.image("floor", "assets/tilesets/FloorAndGround.png");
-        // this.load.image("interior", "assets/tilesets/Interiors.png");
-        // this.load.image(
-        //     "pixel",
-        //     "assets/tilesets/pixel-cyberpunk-interior.png"
-        // );
-        // this.load.image(
-        //     "classroom",
-        //     "assets/tilesets/Classroom_and_library.png"
-        // );
-        // this.load.image('exterior','assets/tilesets/ModernExteriorsComplete.png');
-        // this.load.spritesheet("npc", "assets/characters/npc.png", {
-        //     frameWidth: 48,
-        //     frameHeight: 72,
-        //     startFrame: 0,
-        //     endFrame: 12,
-        // });
-        // this.load.spritesheet("adam", "assets/characters/adam.png", {
-        //     frameWidth: 32,
-        //     frameHeight: 48,
-        // });
-        // this.load.spritesheet("ash", "assets/characters/ash.png", {
-        //     frameWidth: 32,
-        //     frameHeight: 48,
-        // });
-        // this.load.spritesheet("lucy", "assets/characters/lucy.png", {
-        //     frameWidth: 32,
-        //     frameHeight: 48,
-        // });
-        // this.load.spritesheet("nancy", "assets/characters/nancy.png", {
-        //     frameWidth: 32,
-        //     frameHeight: 48,
-        // });
+        this.load.tilemapTiledJSON("map1", "assets/maps/usa_v2.json");
     }
 
     init(data: any) {
@@ -99,46 +63,29 @@ export default class USAScene extends Phaser.Scene {
         // 배경 설정
         const map1 = this.make.tilemap({ key: "map1" });
         console.log(map1);
-        const tileset_generic = map1.addTilesetImage("Generic", "generic")!;
-        const tileset_basement = map1.addTilesetImage("Basement", "basement")!;
-        const tileset_interior = map1.addTilesetImage("Interiors", "interior")!;
-        const tileset_classroom = map1.addTilesetImage(
-            "Classroom_and_library",
-            "classroom"
-        )!;
-        const tileset_floor = map1.addTilesetImage("FloorAndGround", "floor")!;
-        const tileset_pixel = map1.addTilesetImage(
-            "pixel-cyberpunk-interior",
-            "pixel"
-        )!;
-        const tileset_exterior = map1.addTilesetImage(
-            "ModernExteriorsComplete",
-            "exterior"
-        )!;
+        const tileset_exteriors = map1.addTilesetImage("fiveguys_Exteriors", "fiveguys_Exteriors")!;
+        const tileset_interiors = map1.addTilesetImage("fiveguys_Interiors", "fiveguys_Interiors")!;
+        const tileset_roombuilder = map1.addTilesetImage("fiveguys_Room_Builder", "fiveguys_Room_Builder")!;
 
-        map1.createLayer("background/Floor", tileset_floor);
-        const platform22 = map1.createLayer("boundary/Floor", tileset_floor)!;
-        const platform33 = map1.createLayer("floor/Floor", tileset_floor)!;
-        const platform44 = map1.createLayer("park/Exterior", tileset_exterior)!;
-        const platform55 = map1.createLayer(
-            "parkstuff/Exterior",
-            tileset_exterior
-        )!;
-        const platform66 = map1.createLayer(
-            "cityblock/Exterior",
-            tileset_exterior
-        )!;
-        const platform77 = map1.createLayer(
-            "citystuff/Exterior",
-            tileset_exterior
-        )!;
+        map1.createLayer("background/RoomBuilder", tileset_roombuilder);
+        const platform22 = map1.createLayer("boundary/RoomBuilder",tileset_roombuilder )!;
+        const platform33 = map1.createLayer("floor/RoomBuilder", tileset_roombuilder)!;
+        const platform44 = map1.createLayer("layer1/Interiors", tileset_interiors)!;
+        const platform45= map1.createLayer("layer2/Interiors", tileset_interiors)!;
+        const platform46 = map1.createLayer("layer3/Interiors", tileset_interiors)!;
+        const platform55 = map1.createLayer("layer1/Exteriors", tileset_exteriors)!;
+        const platform56= map1.createLayer("layer2/Exteriors", tileset_exteriors)!;
+        const platform57 = map1.createLayer("layer3/Exteriors", tileset_exteriors)!;
+        
 
         platform22.setCollisionByProperty({ collides: true });
         platform33.setCollisionByProperty({ collides: true });
         platform44.setCollisionByProperty({ collides: true });
+        platform45.setCollisionByProperty({ collides: true });
+        platform46.setCollisionByProperty({ collides: true });
         platform55.setCollisionByProperty({ collides: true });
-        platform66.setCollisionByProperty({ collides: true });
-        platform77.setCollisionByProperty({ collides: true });
+        platform56.setCollisionByProperty({ collides: true });
+        platform57.setCollisionByProperty({ collides: true });
 
         createCharacterAnims(this.anims);
 
@@ -271,10 +218,12 @@ export default class USAScene extends Phaser.Scene {
             this.physics.add.collider(this.player1, platform22);
             this.physics.add.collider(this.player1, platform33);
             this.physics.add.collider(this.player1, platform44);
+            this.physics.add.collider(this.player1, platform45);
+            this.physics.add.collider(this.player1, platform46);
             this.physics.add.collider(this.player1, platform55);
-            this.physics.add.collider(this.player1, platform66);
-            this.physics.add.collider(this.player1, platform77);
-
+            this.physics.add.collider(this.player1, platform56);
+            this.physics.add.collider(this.player1, platform57);
+            
             this.npc = this.physics.add.sprite(500, 300, "npc");
         });
 

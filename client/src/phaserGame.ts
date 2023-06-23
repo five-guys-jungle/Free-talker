@@ -21,6 +21,7 @@ const config = {
         // height: 2880,
         width: "100wh",
         height: "100vh",
+        
     },
     physics: {
         default: "arcade",
