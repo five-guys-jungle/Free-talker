@@ -35,13 +35,6 @@ export function socketEventHandler(socket: Socket) {
             socket.broadcast.emit("playerMoved", players_usa[socket.id]);
         }
     });
-    socket.on("getTexture", (data: Player) => {
-        if (data.scene === "AirportScene") {
-            socket.emit("updateTexture", players_airport[socket.id]);
-        } else if (data.scene === "USAScene") {
-            socket.emit("updateTexture", players_usa[socket.id]);
-        }
-    });
 
     socket.on("disconnect", (reason: string) => {
         console.log("Client disconnected, id: ", socket.id, ", reason: ", reason);

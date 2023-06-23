@@ -22,13 +22,22 @@ import {
 import { npcInfo } from "../characters/Npc";
 import { appendMessage, clearMessages } from "../stores/talkBoxSlice";
 import { appendCorrection, clearCorrections } from "../stores/reportSlice";
-import { appendSentence, clearSentences, setCanRequestRecommend } from "../stores/sentenceBoxSlice";
-import { setRecord, setMessage } from "../stores/recordSlice";
+import { setScore } from "../stores/scoreSlice";
+import {
+    appendSentence,
+    clearSentences,
+    setCanRequestRecommend,
+} from "../stores/sentenceBoxSlice";
+import { setRecord, setMessage, setMessageColor } from "../stores/recordSlice";
 import { handleScene } from "./common/handleScene";
 import { RootState } from "../stores/index";
 
 import dotenv from "dotenv";
 import Report from "../components/Report";
+import {
+    setSocketNamespace,
+    appendSocketNamespace,
+} from "../stores/socketSlice";
 
 const serverUrl: string = process.env.REACT_APP_SERVER_URL!;
 
@@ -59,8 +68,11 @@ export default class AirportScene extends Phaser.Scene {
     recorder2: MediaRecorder | null = null;
 
     isAudioPlaying: boolean = false;
+    isNpcSocketConnected: boolean = false;
     npcList: npcInfo[] = [];
     alreadyRecommended: boolean = false;
+    speed: number = 200;
+    dashSpeed: number = 600;
 
     constructor() {
         super("AirportScene");
@@ -123,7 +135,9 @@ export default class AirportScene extends Phaser.Scene {
         platform7.setCollisionByProperty({ collides: true });
 
         createCharacterAnims(this.anims);
-
+        if (this.socket) {
+            this.socket.disconnect();
+        }
         this.socket = io(serverUrl);
 
         this.socket.on("connect", () => {
@@ -135,6 +149,7 @@ export default class AirportScene extends Phaser.Scene {
                 x: this.initial_x,
                 y: this.initial_y,
                 scene: "AirportScene",
+                dash: false,
             });
 
             this.cameras.main.startFollow(this.player1);
@@ -147,6 +162,7 @@ export default class AirportScene extends Phaser.Scene {
                 x: this.initial_x,
                 y: this.initial_y,
                 scene: "AirportScene",
+                dash: false,
             });
 
             this.socket!.on(
@@ -175,6 +191,9 @@ export default class AirportScene extends Phaser.Scene {
                                     otherPlayers[key].x;
                                 this.allPlayers[otherPlayers[key].socketId].y =
                                     otherPlayers[key].y;
+                                this.allPlayers[
+                                    otherPlayers[key].socketId
+                                ].dash = otherPlayers[key].dash;
                             }
                         }
                     }
@@ -189,6 +208,8 @@ export default class AirportScene extends Phaser.Scene {
 
                         this.allPlayers[playerInfo.socketId].x = playerInfo.x;
                         this.allPlayers[playerInfo.socketId].y = playerInfo.y;
+                        this.allPlayers[playerInfo.socketId].dash =
+                            playerInfo.dash;
                     } else {
                         console.log("not exist, so create new one");
                         let playerSprite: Phaser.Physics.Arcade.Sprite =
@@ -208,6 +229,8 @@ export default class AirportScene extends Phaser.Scene {
                         console.log("already exist, so just set position");
                         this.allPlayers[playerInfo.socketId].x = playerInfo.x;
                         this.allPlayers[playerInfo.socketId].y = playerInfo.y;
+                        this.allPlayers[playerInfo.socketId].dash =
+                            playerInfo.dash;
                     } else {
                         console.log("not exist, so create new one");
                         let playerSprite: Phaser.Physics.Arcade.Sprite =
@@ -233,6 +256,10 @@ export default class AirportScene extends Phaser.Scene {
                     }
                 }
             });
+            this.socket!.on("disconnect", (reason: string) => {
+                console.log("client side disconnect, reason: ", reason);
+                window.location.reload();
+            });
 
             this.physics.add.collider(this.player1, platform2);
             this.physics.add.collider(this.player1, platform3);
@@ -257,27 +284,105 @@ export default class AirportScene extends Phaser.Scene {
 
         let valve_E = true;
         // npc 와의 대화를 위한 키 설정
-        let grammarCorrections: { userText: string; correctedText: string; }[] = [];
-        const processGrammarCorrection = (data: { userText: string; correctedText: string; }) => {
+        let countUserSpeech: number;
+        const addCountUserSpeech = () => {
+            countUserSpeech++;
+            console.log("User Speech Count: ", countUserSpeech);
+        };
+        let grammarCorrections: { userText: string; correctedText: string }[] =
+            [];
+        const processGrammarCorrection = (data: {
+            userText: string;
+            correctedText: string;
+        }) => {
             console.log("grammarCorrection event data: ", data);
             grammarCorrections.push(data);
-          };
+        };
         this.input.keyboard!.on("keydown-E", async () => {
-
             for (let npcInfo of this.npcList) {
-                if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y, npcInfo.x, npcInfo.y) < 100) {
-                    console.log("npcInfo: ", npcInfo)
-                    if (npcInfo.name.includes('chair')) {
-                        console.log("chair")
-                        store.dispatch(openFreedialog());
-                    }
-                    else {
+                if (
+                    Phaser.Math.Distance.Between(
+                        this.player1!.x,
+                        this.player1!.y,
+                        npcInfo.x,
+                        npcInfo.y
+                    ) < 100
+                ) {
+                    console.log("npcInfo: ", npcInfo);
+                    if (npcInfo.role === "freeTalkingPlace") {
+                        console.log("chair");
+
+                        if (valve_E === true) {
+                            store.dispatch(
+                                setSocketNamespace({
+                                    socketNamespace: `${serverUrl}/freedialog/${npcInfo.name}`,
+                                })
+                            );
+                            // store.dispatch(appendSocketNamespace({ socketNamespace: `/freedialog` }));
+                            store.dispatch(openFreedialog());
+                            this.cursors!.left.enabled = false;
+                            this.cursors!.right.enabled = false;
+                            this.cursors!.up.enabled = false;
+                            this.cursors!.down.enabled = false;
+                            valve_E = false;
+                            window.addEventListener("exitcall", (e: Event) => {
+                                console.log("exitcall event listener");
+                                this.player1!.setVelocity(0, 0);
+                                this.player1!.setPosition(
+                                    this.player1!.x,
+                                    this.player1!.y
+                                );
+
+                                this.cursors!.left.isDown = false;
+                                this.cursors!.right.isDown = false;
+                                this.cursors!.up.isDown = false;
+                                this.cursors!.down.isDown = false;
+
+                                this.cursors!.left.enabled = true;
+                                this.cursors!.right.enabled = true;
+                                this.cursors!.up.enabled = true;
+                                this.cursors!.down.enabled = true;
+
+                                store.dispatch(openAirport());
+                                valve_E = true;
+                            });
+                        } else {
+                            this.player1!.setVelocity(0, 0);
+                            this.player1!.setPosition(
+                                this.player1!.x,
+                                this.player1!.y
+                            );
+
+                            this.cursors!.left.isDown = false;
+                            this.cursors!.right.isDown = false;
+                            this.cursors!.up.isDown = false;
+                            this.cursors!.down.isDown = false;
+
+                            this.cursors!.left.enabled = true;
+                            this.cursors!.right.enabled = true;
+                            this.cursors!.up.enabled = true;
+                            this.cursors!.down.enabled = true;
+
+                            store.dispatch(openAirport());
+                            valve_E = true;
+                        }
+                    } else if (npcInfo.name.includes("Liberty")) {
+                        console.log("liberty");
+                        handleScene("USA", {
+                            playerId: this.playerId,
+                            playerNickname: this.userNickname,
+                            playerTexture: this.playerTexture,
+                        });
+                    } else {
                         if (valve_E === true) {
                             if (this.isAudioPlaying) {
                                 return;
                             }
                             this.player1!.setVelocity(0, 0);
-                            this.player1!.anims.play(`${this.player1!.texture.key}_idle_down`, true);
+                            this.player1!.anims.play(
+                                `${this.player1!.texture.key}_idle_down`,
+                                true
+                            );
                             store.dispatch(openNPCDialog());
 
                             this.cursors!.left.enabled = false;
@@ -285,64 +390,155 @@ export default class AirportScene extends Phaser.Scene {
                             this.cursors!.up.enabled = false;
                             this.cursors!.down.enabled = false;
 
-                            if (this.socket2 === null || this.socket2 === undefined) {
+                            if (
+                                this.socket2 === null ||
+                                this.socket2 === undefined
+                            ) {
                                 this.socket2 = io(`${serverUrl}/interaction`);
                                 this.socket2.on("connect", () => {
-
-                                    window.addEventListener('recomButtonClicked', (e: Event) => {
-                                        const customEvent = e as CustomEvent;
-                                        store.dispatch(clearSentences());
-                                        if (customEvent.detail.message === 0) {
+                                    console.log(
+                                        "connect, interaction socket.id: ",
+                                        this.socket2!.id
+                                    );
+                                    countUserSpeech = 0;
+                                    this.isNpcSocketConnected = true;
+                                    window.addEventListener(
+                                        "recomButtonClicked",
+                                        (e: Event) => {
+                                            const customEvent =
+                                                e as CustomEvent;
+                                            store.dispatch(clearSentences());
+                                            if (
+                                                customEvent.detail.message === 0
+                                            ) {
+                                                store.dispatch(
+                                                    appendSentence({
+                                                        _id: "1",
+                                                        sentence:
+                                                            "추천 문장을 준비 중입니다. 잠시만 기다려 주세요.",
+                                                    })
+                                                );
+                                            }
+                                            console.log(
+                                                "lastMessage in SectanceBox: ",
+                                                customEvent.detail.lastMessage
+                                            );
+                                            this.socket2!.emit(
+                                                "getRecommendedResponses",
+                                                this.alreadyRecommended,
+                                                customEvent.detail.lastMessage
+                                            );
                                             store.dispatch(
-                                                appendSentence({
-                                                    _id: "1",
-                                                    sentence: "추천 문장을 준비 중입니다. 잠시만 기다려 주세요.",
-                                                }));
+                                                setCanRequestRecommend(false)
+                                            );
                                         }
-                                        console.log("lastMessage in SectanceBox: ", customEvent.detail.lastMessage);
-                                        this.socket2!.emit("getRecommendedResponses", this.alreadyRecommended, customEvent.detail.lastMessage);
-                                        store.dispatch(setCanRequestRecommend(false));
-                                    });
+                                    );
 
                                     this.interacting = true;
-                                    console.log("connect, interaction socket.id: ", this.socket2!.id);
-                                    this.socket2!.on("speechToText", (response: string) => {
-                                        console.log("USER: ", response);
-                                        console.log("playerTexture", this.playerTexture);
-                                        store.dispatch(appendMessage({
-                                            name: this.userNickname,
-                                            img: this.playerTexture,
-                                            // img: "",
-                                            side: "right",
-                                            text: response
-                                        }));
-                                    });
-                                    this.socket2!.on("npcResponse", (response: string) => {
-                                        console.log("NPC: ", response);
-                                        store.dispatch(appendMessage({
-                                            name: npcInfo.name,
-                                            img: npcInfo.texture,
-                                            // img: "",
-                                            side: "left",
-                                            text: response
-                                        }));
-                                        store.dispatch(clearSentences());
-                                        this.alreadyRecommended = false;
-                                    });
-                                    this.socket2!.on("totalResponse", (response: any) => {
-                                        console.log("totalResponse event response: ", response);
-                                        // this.isAudioPlaying = true;
-                                        const audio = new Audio(response.audioUrl);
-                                        audio.onended = () => {
-                                            console.log("audio.onended");
-                                            this.isAudioPlaying = false;
-                                            store.dispatch(setMessage("R키를 눌러 녹음을 시작하세요"));
-                                            store.dispatch(setCanRequestRecommend(true));
-                                        };
-                                        audio.play();
-                                    });
+                                    console.log(
+                                        "connect, interaction socket.id: ",
+                                        this.socket2!.id
+                                    );
+                                    this.socket2!.on(
+                                        "speechToText",
+                                        (response: string) => {
+                                            if (
+                                                response === "" ||
+                                                response ===
+                                                    "convertSpeechToText Error"
+                                            ) {
+                                                store.dispatch(
+                                                    setMessage(
+                                                        "다시 말씀해주세요"
+                                                    )
+                                                );
+                                                store.dispatch(
+                                                    setMessageColor("red")
+                                                );
+                                                setTimeout(() => {
+                                                    store.dispatch(
+                                                        setMessage(
+                                                            "R키를 눌러 녹음을 시작하세요"
+                                                        )
+                                                    );
+                                                    store.dispatch(
+                                                        setMessageColor("black")
+                                                    );
+                                                }, 2500);
+                                                store.dispatch(
+                                                    setCanRequestRecommend(
+                                                        false
+                                                    )
+                                                );
+                                                store.dispatch(setRecord(true));
+                                                this.isAudioPlaying = false;
+                                            } else {
+                                                addCountUserSpeech();
+                                                console.log("USER: ", response);
+                                                console.log(
+                                                    "playerTexture",
+                                                    this.playerTexture
+                                                );
+                                                store.dispatch(
+                                                    appendMessage({
+                                                        name: this.userNickname,
+                                                        img: this.playerTexture,
+                                                        // img: "",
+                                                        side: "right",
+                                                        text: response,
+                                                    })
+                                                );
+                                            }
+                                        }
+                                    );
+                                    this.socket2!.on(
+                                        "npcResponse",
+                                        (response: string) => {
+                                            console.log("NPC: ", response);
+                                            store.dispatch(
+                                                appendMessage({
+                                                    name: npcInfo.name,
+                                                    img: npcInfo.texture,
+                                                    // img: "",
+                                                    side: "left",
+                                                    text: response,
+                                                })
+                                            );
+                                            store.dispatch(clearSentences());
+                                            this.alreadyRecommended = false;
+                                        }
+                                    );
+                                    this.socket2!.on(
+                                        "totalResponse",
+                                        (response: any) => {
+                                            console.log(
+                                                "totalResponse event response: ",
+                                                response
+                                            );
+                                            // this.isAudioPlaying = true;
+                                            const audio = new Audio(
+                                                response.audioUrl
+                                            );
+                                            audio.onended = () => {
+                                                console.log("audio.onended");
+                                                this.isAudioPlaying = false;
+                                                store.dispatch(
+                                                    setMessage(
+                                                        "R키를 눌러 녹음을 시작하세요"
+                                                    )
+                                                );
+                                                store.dispatch(
+                                                    setCanRequestRecommend(true)
+                                                );
+                                            };
+                                            audio.play();
+                                        }
+                                    );
 
-                                    this.socket2!.on("grammarCorrection", processGrammarCorrection);
+                                    this.socket2!.on(
+                                        "grammarCorrection",
+                                        processGrammarCorrection
+                                    );
                                     this.socket2!.on(
                                         "recommendedResponses",
                                         (responses: string[]) => {
@@ -352,30 +548,46 @@ export default class AirportScene extends Phaser.Scene {
                                             );
                                             // 요청 실패, 재요청
                                             if (responses.length === 1) {
-                                                console.log("요청 실패, 재요청");
+                                                console.log(
+                                                    "요청 실패, 재요청"
+                                                );
                                                 this.alreadyRecommended = false;
-                                                this.socket2!.emit("getRecommendedResponses", this.alreadyRecommended, responses[0]);
-                                                store.dispatch(setCanRequestRecommend(false));
+                                                this.socket2!.emit(
+                                                    "getRecommendedResponses",
+                                                    this.alreadyRecommended,
+                                                    responses[0]
+                                                );
+                                                store.dispatch(
+                                                    setCanRequestRecommend(
+                                                        false
+                                                    )
+                                                );
                                                 return;
                                             }
                                             // TODO : Store에 SentenceBox 상태정의하고 dispatch
                                             store.dispatch(clearSentences());
-                                            responses.forEach((response, index) => {
-                                                store.dispatch(
-                                                    appendSentence({
-                                                        _id: index.toString(),
-                                                        sentence: response,
-                                                    })
-                                                );
-                                            });
+                                            responses.forEach(
+                                                (response, index) => {
+                                                    store.dispatch(
+                                                        appendSentence({
+                                                            _id: index.toString(),
+                                                            sentence: response,
+                                                        })
+                                                    );
+                                                }
+                                            );
                                             this.alreadyRecommended = true;
                                         }
                                     );
                                 });
-                            }
-                            else { // 이미 소켓이 연결되어 있는데 다시 한번 E키를 누른 경우
+                            } else {
+                                // 이미 소켓이 연결되어 있는데 다시 한번 E키를 누른 경우 -> 대화 종료 상황
+                                this.isNpcSocketConnected = false;
                                 this.player1!.setVelocity(0, 0);
-                                this.player1!.setPosition(this.player1!.x, this.player1!.y);
+                                this.player1!.setPosition(
+                                    this.player1!.x,
+                                    this.player1!.y
+                                );
 
                                 this.cursors!.left.isDown = false;
                                 this.cursors!.right.isDown = false;
@@ -395,48 +607,69 @@ export default class AirportScene extends Phaser.Scene {
                                 this.socket2 = null;
                                 // store.dispatch(clearMessages());
                                 // store.dispatch(openAirport());
-                            
-                            grammarCorrections.forEach((data, index) => {
-                                console.log("grammarCorrection data: ", data);
-                                store.dispatch(
-                                    appendCorrection({
-                                        original: data.userText,
-                                        correction: data.correctedText,
-                                    })
-                                );
-                            });
-                        
-                                store.dispatch(openReport());
-                            grammarCorrections = [];
-                            valve_E=false
-                            }
+                                let score =
+                                    ((countUserSpeech -
+                                        grammarCorrections.length) /
+                                        countUserSpeech) *
+                                    100;
+                                console.log("score : ", score);
+                                store.dispatch(setScore({ score: score }));
+                                grammarCorrections.forEach((data, index) => {
+                                    console.log(
+                                        "grammarCorrection data: ",
+                                        data
+                                    );
+                                    store.dispatch(
+                                        appendCorrection({
+                                            original: data.userText,
+                                            correction: data.correctedText,
+                                        })
+                                    );
+                                });
 
-                        }
-                        else {
+                                store.dispatch(openReport());
+                                grammarCorrections = [];
+                                valve_E = false;
+                            }
+                        } else {
+                            countUserSpeech = 0;
+                            store.dispatch(setScore({ score: 0 }));
                             store.dispatch(clearCorrections());
                             store.dispatch(clearMessages());
                             store.dispatch(clearSentences());
                             store.dispatch(openAirport());
-                            valve_E = true
+                            valve_E = true;
                         }
                     }
                     break;
                 }
             }
-        }
-        );
+        });
         // 녹음 데이터를 보내고 응답을 받는 키 설정
         this.input.keyboard!.on("keydown-R", async () => {
+            if (!this.isNpcSocketConnected) {
+                console.log("NPC와 연결되지 않았습니다.");
+                return;
+            }
             if (this.isAudioPlaying) {
                 return;
             }
             for (let npcInfo of this.npcList) {
-                if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y, npcInfo.x, npcInfo.y) < 100 && this.socket2?.connected) {
-
+                if (
+                    Phaser.Math.Distance.Between(
+                        this.player1!.x,
+                        this.player1!.y,
+                        npcInfo.x,
+                        npcInfo.y
+                    ) < 100 &&
+                    this.socket2?.connected
+                ) {
                     console.log("R key pressed");
 
-
-                    if (this.recorder2 === null || this.recorder2 === undefined) {
+                    if (
+                        this.recorder2 === null ||
+                        this.recorder2 === undefined
+                    ) {
                         await this.recordEventHandler().then(() => {
                             // console.log("recordEventHandler finished");
                         });
@@ -445,71 +678,111 @@ export default class AirportScene extends Phaser.Scene {
                     if (this.recorder2) {
                         if (this.recorder2.state === "recording") {
                             store.dispatch(setRecord(true));
-                            store.dispatch(setMessage("R키를 눌러 녹음을 시작하세요"));
+                            store.dispatch(
+                                setMessage("R키를 눌러 녹음을 시작하세요")
+                            );
                             this.isAudioPlaying = true;
                             this.recorder2!.stop();
                         } else {
                             store.dispatch(setCanRequestRecommend(false));
                             store.dispatch(setRecord(false));
-                            store.dispatch(setMessage("녹음 중입니다. R키를 눌러 녹음을 종료하세요"));
+                            store.dispatch(
+                                setMessage(
+                                    "녹음 중입니다. R키를 눌러 녹음을 종료하세요"
+                                )
+                            );
                             this.recorder2!.start();
                         }
                     }
 
                     break;
                 }
-
             }
         });
     }
     update(time: number, delta: number) {
-        const speed = 200;
+        let speed: number = this.cursors?.shift.isDown
+            ? this.dashSpeed
+            : this.speed;
         let velocityX = 0;
         let velocityY = 0;
 
         if (this.player1 !== null && this.player1 !== undefined) {
-            console.log("userNickname : ", this.userNickname);
+            // console.log("userNickname : ", this.userNickname);
             this.userIdText!.setText(this.userNickname);
             this.userIdText!.setOrigin(0.5, 0);
             this.userIdText!.setX(this.player1!.x);
             this.userIdText!.setY(this.player1!.y - 50);
         }
 
-        if (this.player1 !== null && this.player1 !== undefined &&
-            this.cursors!.left.enabled && this.cursors!.right.enabled &&
-            this.cursors!.up.enabled && this.cursors!.down.enabled) {
+        if (
+            this.player1 !== null &&
+            this.player1 !== undefined &&
+            this.cursors!.left.enabled &&
+            this.cursors!.right.enabled &&
+            this.cursors!.up.enabled &&
+            this.cursors!.down.enabled
+        ) {
             // First check diagonal movement
             if (this.cursors!.left.isDown && this.cursors!.up.isDown) {
                 velocityX = -speed / Math.SQRT2;
                 velocityY = -speed / Math.SQRT2;
-                this.player1!.anims.play(`${this.player1!.texture.key}_run_left`, true);
+                this.player1!.anims.play(
+                    `${this.player1!.texture.key}_run_left`,
+                    true
+                );
             } else if (this.cursors!.left.isDown && this.cursors!.down.isDown) {
                 velocityX = -speed / Math.SQRT2;
                 velocityY = speed / Math.SQRT2;
-                this.player1!.anims.play(`${this.player1!.texture.key}_run_down`, true);
+                this.player1!.anims.play(
+                    `${this.player1!.texture.key}_run_down`,
+                    true
+                );
             } else if (this.cursors!.right.isDown && this.cursors!.up.isDown) {
                 velocityX = speed / Math.SQRT2;
                 velocityY = -speed / Math.SQRT2;
-                this.player1!.anims.play(`${this.player1!.texture.key}_run_right`, true);
-            } else if (this.cursors!.right.isDown && this.cursors!.down.isDown) {
+                this.player1!.anims.play(
+                    `${this.player1!.texture.key}_run_right`,
+                    true
+                );
+            } else if (
+                this.cursors!.right.isDown &&
+                this.cursors!.down.isDown
+            ) {
                 velocityX = speed / Math.SQRT2;
                 velocityY = speed / Math.SQRT2;
-                this.player1!.anims.play(`${this.player1!.texture.key}_run_down`, true);
-            } else { // If not moving diagonally, then check horizontal and vertical movement
+                this.player1!.anims.play(
+                    `${this.player1!.texture.key}_run_down`,
+                    true
+                );
+            } else {
+                // If not moving diagonally, then check horizontal and vertical movement
                 if (this.cursors!.left.isDown) {
                     velocityX = -speed;
-                    this.player1!.anims.play(`${this.player1!.texture.key}_run_left`, true);
+                    this.player1!.anims.play(
+                        `${this.player1!.texture.key}_run_left`,
+                        true
+                    );
                 } else if (this.cursors!.right.isDown) {
                     velocityX = speed;
-                    this.player1!.anims.play(`${this.player1!.texture.key}_run_right`, true);
+                    this.player1!.anims.play(
+                        `${this.player1!.texture.key}_run_right`,
+                        true
+                    );
                 }
 
                 if (this.cursors!.up.isDown) {
                     velocityY = -speed;
-                    this.player1!.anims.play(`${this.player1!.texture.key}_run_up`, true);
+                    this.player1!.anims.play(
+                        `${this.player1!.texture.key}_run_up`,
+                        true
+                    );
                 } else if (this.cursors!.down.isDown) {
                     velocityY = speed;
-                    this.player1!.anims.play(`${this.player1!.texture.key}_run_down`, true);
+                    this.player1!.anims.play(
+                        `${this.player1!.texture.key}_run_down`,
+                        true
+                    );
                 }
             }
 
@@ -518,7 +791,8 @@ export default class AirportScene extends Phaser.Scene {
 
             if (velocityX === 0 && velocityY === 0) {
                 this.player1!.anims.play(
-                    `${this.player1!.texture.key}_idle_down`
+                    `${this.player1!.texture.key}_idle_down`,
+                    true
                 );
             }
         }
@@ -537,6 +811,7 @@ export default class AirportScene extends Phaser.Scene {
                     x: this.player1!.x,
                     y: this.player1!.y,
                     scene: "AirportScene",
+                    dash: this.cursors?.shift.isDown,
                 });
             }
             for (let key in this.allPlayers) {
@@ -552,7 +827,6 @@ export default class AirportScene extends Phaser.Scene {
     createPlayer(playerInfo: PlayerInfo): Phaser.Physics.Arcade.Sprite {
         // Create a sprite for the player
         // Assuming you have an image asset called 'player'
-        this.socket!.emit("getTexture", playerInfo);
         let playerSprite = this.physics.add.sprite(
             playerInfo.x,
             playerInfo.y,
@@ -598,7 +872,9 @@ export default class AirportScene extends Phaser.Scene {
                     console.log("blob: ", blob);
                     blob.arrayBuffer().then((buffer) => {
                         console.log("buffer: ", buffer);
-                        store.dispatch(setMessage("응답 중입니다. 잠시만 기다려주세요"));
+                        store.dispatch(
+                            setMessage("응답 중입니다. 잠시만 기다려주세요")
+                        );
                         this.socket2!.emit("audioSend", {
                             userNickname: this.userNickname,
                             npcName: "ImmigrationOfficer", // TODO: npc 이름 받아오기
@@ -618,6 +894,7 @@ export default class AirportScene extends Phaser.Scene {
             y: 1100,
             texture: "immigrationOfficer",
             sprite: null,
+            role: "npc",
         };
         npc1.sprite = this.physics.add.sprite(npc1.x, npc1.y, npc1.texture);
         this.npcList.push(npc1);
@@ -628,6 +905,7 @@ export default class AirportScene extends Phaser.Scene {
             y: 1400,
             texture: "airport_chair",
             sprite: null,
+            role: "freeTalkingPlace",
         };
         chair.sprite = this.physics.add.sprite(chair.x, chair.y, chair.texture);
         this.npcList.push(chair);
@@ -638,9 +916,10 @@ export default class AirportScene extends Phaser.Scene {
             y: 1430,
             texture: "statueOfLiberty",
             sprite: null,
+            role: "npc",
         };
         npc2.sprite = this.physics.add.sprite(npc2.x, npc2.y, npc2.texture);
         npc2.sprite.setScale(0.35);
-        // this.npcList.push(npc2);
+        this.npcList.push(npc2);
     }
 }

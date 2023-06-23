@@ -5,11 +5,12 @@ import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux"; // react-redux에서 useSelector를 불러옵니다.
 import TalkBox from "./npcdialog/TalkBox";
 import { TalkBoxState } from "../stores/talkBoxSlice";
-import { correctionState } from "../stores/reportSlice";
+import { correctionState} from "../stores/reportSlice";
 import Button from "@mui/material/Button";
 import SaveIcon from "@material-ui/icons/Save";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { IconButton } from "@material-ui/core";
+import { scoreState } from "../stores/scoreSlice"
 
 // interface NPCDialogProps {
 //     initialDialog?: string;
@@ -35,6 +36,10 @@ const Report = (data:any) => {
     const messages = useSelector(
         (state: { talkBox: TalkBoxState }) => state.talkBox.messages
     );
+
+    let score = useSelector(
+      (state: { score: scoreState }) => state.score.score
+  )
 
     let fix_playerTexture=playerTexture;
     // let temp_str=fix_playerTexture.split("");
@@ -70,8 +75,7 @@ const Report = (data:any) => {
         11: "November",
         12: "December"
     }
-    let score=100;
-    
+
     return (
         <ReportDiv>
             <div className="main-content">
@@ -100,14 +104,14 @@ const Report = (data:any) => {
                                         <div className="text"> <span>Perfect!</span></div>
                                         </div></>)
                                     }
-                                    { score===80 && (<>
+                                    { (score>=80 && score < 100) && (<>
                                       <p>대화에 무리 없는 수준이에요!</p>
                                         <p>상황에 따라 알맞은 대화를 할 수 있어요!</p>
                                         <div className="highlighted">
                                         <div className="text"> <span>Good!</span></div>
                                         </div></>)
                                     }
-                                    { score===60 && (<>
+                                    { score<80 && (<>
                                       <p>생존영어 가능!</p>
                                         <p>말 못해 죽진 않을 거 같아요!</p>
                                         <div className="highlighted">
@@ -125,7 +129,7 @@ const Report = (data:any) => {
                                     <center>
                                     <ScaleImg className="Character__box" src={`./assets/characters/single/${playerTexture}.png`} alt={fix_playerTexture} ></ScaleImg>
                                     </center>
-                                    <div className="Nickname"><span className="Character__title">Nickname: {playerNickname}</span></div>
+                                    <div className="Nickname"><span className="Character__title">{playerNickname}</span></div>
                                 </div>
                             </div>
                             <div className="wrapChracterR">
@@ -134,12 +138,12 @@ const Report = (data:any) => {
                                     <center>
                                     <ScaleImg className="Character__box" src={`./assets/characters/single/${messages[1].img}.png`} alt={"Nancy"} ></ScaleImg>
                                     </center>
-                                    <div className="Nickname"><span className="Character__title">NPCname: {messages[1].name}</span></div>
+                                    <div className="Nickname"><span className="Character__title">{messages[1].name}</span></div>
                                 </div>
                             </div>
                             </>)
                         }
-                        {messages.length===0 &&
+                        {/* {messages.length===0 &&
                             (<>
                             <div className="Character" style={{gridColumn:'1/span 2', width:'50%', margin:'20px auto'}}>
                                     <h4>My Character</h4>
@@ -149,7 +153,7 @@ const Report = (data:any) => {
                                     <div className="Nickname"><span className="Character__title">Nickname: {playerNickname}</span></div>
                                 </div>
                             </>)
-                        }
+                        } */}
                         <div className="corrections"><span>Corrections</span>
                             <div className="corrections-list">
                                 {corrections.length!==0 && 

@@ -15,6 +15,7 @@ import authRouter from "./routes/authRouter";
 
 import { signup, login } from "./controllers/userController";
 import dotenv from "dotenv";
+import {createNamespace} from "./controllers/freeDialogSocket";
 // // import router from "./routes/basicRouter";
 // // import http from 'http'; // Load in http module
 
@@ -40,7 +41,9 @@ const io = new SocketIOServer(server);
 io.on("connection", socketEventHandler);
 
 const interactionSocket = io.of(`/interaction`);
-const freedialogSocket = io.of(`/freedialog`);
+interactionSocket.on("connection", interactSocketEventHandler);
+createNamespace(io, "/freedialog");
+// const freedialogSocket = io.of(`/freedialog`);
 
 // const allowedOrigins = [
 //     "http://127.0.0.1:3000",
@@ -64,8 +67,7 @@ app.get("/audio/npc_audio/*", function (req: Request, res: Response) {
     res.sendFile(path.join(__dirname, "audio/npc_audio", req.params[0]));
 });
 
-interactionSocket.on("connection", interactSocketEventHandler);
-freedialogSocket.on("connection", freedialogsocketEventHandler);
+// freedialogSocket.on("connection", freedialogsocketEventHandler);
 // app.post("/interact", upload.single("audio"), interact);
 // app.use(Router);
 app.use("/auth", authRouter);

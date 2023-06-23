@@ -4,10 +4,12 @@ import TextField from "@material-ui/core/TextField"
 import AssignmentIcon from "@material-ui/icons/Assignment"
 import PhoneIcon from "@material-ui/icons/Phone"
 import React, { useEffect, useRef, useState } from "react"
+import { useSelector, useDispatch } from "react-redux";
 import { CopyToClipboard } from "react-copy-to-clipboard"
 import Peer from "simple-peer"
 import {Instance} from "simple-peer"
 import io, { Socket } from "socket.io-client"
+import { setSocketNamespace } from "../../stores/socketSlice"
 
 const FreeDialog = () => {
     const [ me, setMe ] = useState("")
@@ -19,14 +21,24 @@ const FreeDialog = () => {
 	const [ idToCall, setIdToCall ] = useState("")
 	const [ callEnded, setCallEnded] = useState(false)
 	const [ name, setName ] = useState("")
+	const [otherUserConnected, setOtherUserConnected] = useState(false); // 상대방 소켓 연결 여부
+
 	const myVideo = React.useRef<HTMLVideoElement>(null);
 	const userVideo = React.useRef<HTMLVideoElement>(null);
 	const connectionRef = React.useRef<Instance | null>(null);
     const socket = useRef<Socket | null>(null);
+
+	const socketNamespace = useSelector(
+		(state: { rtc: { socketNamespace: string } }) => state.rtc.socketNamespace
+	);
+    // const dispatch = useDispatch();
+	console.log("setSocketNamespace:::", socketNamespace);
+
 	
 	
     useEffect(() => {
-		socket.current = io("http://localhost:5000/freedialog");
+		socket.current = io(socketNamespace);
+		// socket.current = io("http://localhost:5000/freedialog/airport_chair1");
 		navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
             setStream(stream)
             if (myVideo.current) {
@@ -38,7 +50,15 @@ const FreeDialog = () => {
 		
 		socket.current!.on("connect", () => {
 			console.log("socket is connected: ", socket.current!.id);
-		});
+			socket.current!.on("otheruserleave", () => {
+				const clickEvent = new CustomEvent('exitcall', {
+					detail: { message: "exitcall"}
+				});
+				window.dispatchEvent(clickEvent);
+				socket.current!.disconnect();
+			});
+		});// 상대방 소켓 연결 이벤트 핸들러
+		
 		socket.current!.on("me", (id) => {
 			setMe(id);
 			console.log("id:::", id)
@@ -52,12 +72,14 @@ const FreeDialog = () => {
 			console.log("callUser2222222222")
 		});
 		// useEffect에 callEnded 이벤트 핸들러 추가
-		socket.current!.on("callEnded", () => {
+		socket.current!.on("otherusercallended", () => {
 			setCallEnded(true);
 			if (connectionRef.current) {
 				connectionRef.current.destroy();
 			}
 		});
+		
+	  
 	}, []);
 
 
@@ -113,9 +135,13 @@ const FreeDialog = () => {
 	const leaveCall = () => {
 		setCallEnded(true);
 		if (connectionRef.current) {
-		  connectionRef.current.destroy();
-		  socket.current!.emit("callEnded"); // 서버로 callEnded 이벤트 전송
-		  socket.current!.disconnect();
+			connectionRef.current.destroy();
+			socket.current!.emit("callEnded"); // 서버로 callEnded 이벤트 전송
+			socket.current!.emit("leaveCallEvent", { to: caller });
+			socket.current!.disconnect();
+		   // Airport 씬으로 이벤트 전달
+			window.dispatchEvent(new Event("exitcall"));
+			
 		}
 	  };
 
@@ -129,13 +155,20 @@ const FreeDialog = () => {
 					<div className="call-button" style={{ position: 'fixed', textAlign: 'center', top: '5px'}}>
 						
 						{callAccepted && !callEnded ? (
+							<div className="caller" style={{ display: 'inline-flex', alignItems: 'center', bottom : '5px' }}>
+
 							<IconButton color="secondary" aria-label="endcall" onClick={leaveCall}>
+								<PhoneIcon fontSize="large" /> 
+							</IconButton>
+							<h4>통화를 종료하면 맵으로 돌아갑니다.</h4>
+							</div>
+						) : (
+							
+							<IconButton color="primary" aria-label="call" onClick={() => callUser(idToCall)}>
 								<PhoneIcon fontSize="large" />
 							</IconButton>
-						) : (
-							<IconButton color="primary" aria-label="call" onClick={() => callUser(idToCall)}>
-							<PhoneIcon fontSize="large" />
-							</IconButton>
+							
+							
 						)}
 						{receivingCall && !callAccepted && (
 							<div className="caller" style={{ display: 'inline-flex', alignItems: 'center', bottom : '5px' }}>
@@ -143,6 +176,7 @@ const FreeDialog = () => {
 								<Button variant="contained" color="primary" onClick={answerCall}>
 									Answer
 								</Button>
+								
 							</div>
 						)}
 						{idToCall}
