@@ -350,12 +350,14 @@ export default class AirportScene extends Phaser.Scene {
                                             ) {
                                                 store.dispatch(
                                                     setMessage(
-                                                        "다시 말씀해주세요"
+                                                        "잠시 후 다시 시도해주세요"
                                                     )
                                                 );
                                                 store.dispatch(
                                                     setMessageColor("red")
                                                 );
+                                                store.dispatch(setRecord(true));
+                                                this.isAudioPlaying = true;
                                                 setTimeout(() => {
                                                     store.dispatch(
                                                         setMessage(
@@ -363,16 +365,19 @@ export default class AirportScene extends Phaser.Scene {
                                                         )
                                                     );
                                                     store.dispatch(
+                                                        setRecord(false)
+                                                    );
+                                                    this.isAudioPlaying = false;
+                                                    store.dispatch(
                                                         setMessageColor("black")
                                                     );
                                                 }, 2500);
+
                                                 store.dispatch(
                                                     setCanRequestRecommend(
                                                         false
                                                     )
                                                 );
-                                                store.dispatch(setRecord(true));
-                                                this.isAudioPlaying = false;
                                             } else {
                                                 addCountUserSpeech();
                                                 console.log("USER: ", response);
@@ -381,7 +386,9 @@ export default class AirportScene extends Phaser.Scene {
                                                     this.playerTexture
                                                 );
                                                 store.dispatch(
+                                                    // this.userIdText
                                                     appendMessage({
+                                                        playerId: this.playerId,
                                                         name: this.userNickname,
                                                         img: this.playerTexture,
                                                         // img: "",
@@ -398,6 +405,7 @@ export default class AirportScene extends Phaser.Scene {
                                             console.log("NPC: ", response);
                                             store.dispatch(
                                                 appendMessage({
+                                                    playerId: this.playerId,
                                                     name: npcInfo.name,
                                                     img: npcInfo.texture,
                                                     // img: "",

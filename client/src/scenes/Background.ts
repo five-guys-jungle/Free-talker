@@ -2,12 +2,8 @@ import Phaser from "phaser";
 import { openLogin } from "../stores/gameSlice";
 import store from "../stores";
 
-
 export default class Background extends Phaser.Scene {
-    
-    
-    
-    background!:Phaser.GameObjects.Image
+    background!: Phaser.GameObjects.Image;
 
     constructor() {
         super("background");
@@ -17,12 +13,65 @@ export default class Background extends Phaser.Scene {
     preload() {
         console.log("preloading..............");
         this.load.image("background", "assets/backgrounds/sky.jpg");
-        this.load.image("statueOfLiberty", "assets/characters/statue-of-liberty.png");
-        this.load.spritesheet("immigrationOfficer", "assets/characters/immigrationOfficer.png", {
+        this.load.image(
+            "statueOfLiberty",
+            "assets/characters/statue-of-liberty.png"
+        );
+        this.load.spritesheet(
+            "immigrationOfficer",
+            "assets/characters/immigrationOfficer.png",
+            {
+                frameWidth: 32,
+                frameHeight: 48,
+            }
+        );
+
+        this.load.spritesheet("Chef", "assets/characters/Chef.png", {
             frameWidth: 32,
             frameHeight: 48,
         });
-        
+
+        this.load.spritesheet(
+            "MartCashier",
+            "assets/characters/MartCashier.png",
+            {
+                frameWidth: 32,
+                frameHeight: 48,
+            }
+        );
+
+        this.load.spritesheet(
+            "HotelReceptionist",
+            "assets/characters/HotelReceptionist.png",
+            {
+                frameWidth: 32,
+                frameHeight: 48,
+            }
+        );
+
+        this.load.spritesheet(
+            "ClothingShopStaff",
+            "assets/characters/ClothingShopStaff.png",
+            {
+                frameWidth: 32,
+                frameHeight: 48,
+            }
+        );
+
+        this.load.spritesheet("Doctor", "assets/characters/Doctor.png", {
+            frameWidth: 32,
+            frameHeight: 48,
+        });
+
+        this.load.spritesheet("Nurse", "assets/characters/Nurse.png", {
+            frameWidth: 32,
+            frameHeight: 48,
+        });
+
+        this.load.spritesheet("Barista", "assets/characters/Barista.png", {
+            frameWidth: 32,
+            frameHeight: 48,
+        });
 
         // this.load.image("background", "assets/backgrounds/space.png");
         this.load.image("generic", "assets/tilesets/Generic.png");
@@ -37,12 +86,7 @@ export default class Background extends Phaser.Scene {
             "classroom",
             "assets/tilesets/Classroom_and_library.png"
         );
-        this.load.spritesheet("npc", "assets/characters/npc.png", {
-            frameWidth: 48,
-            frameHeight: 72,
-            startFrame: 0,
-            endFrame: 12,
-        });
+
         this.load.spritesheet("jinhoman", "assets/characters/jinhoman.png", {
             frameWidth: 32,
             frameHeight: 48,
@@ -55,10 +99,14 @@ export default class Background extends Phaser.Scene {
             frameWidth: 32,
             frameHeight: 48,
         });
-        this.load.spritesheet("doyoungboy", "assets/characters/doyoungboy.png", {
-            frameWidth: 32,
-            frameHeight: 48,
-        });
+        this.load.spritesheet(
+            "doyoungboy",
+            "assets/characters/doyoungboy.png",
+            {
+                frameWidth: 32,
+                frameHeight: 48,
+            }
+        );
         this.load.spritesheet("minsook", "assets/characters/minsook.png", {
             frameWidth: 32,
             frameHeight: 48,
@@ -87,18 +135,17 @@ export default class Background extends Phaser.Scene {
             "fiveguys_Interiors_4",
             "assets/tilesets/fiveguys_Interiors_4.png"
         );
-        
+
         this.load.image(
             "fiveguys_Room_Builder",
             "assets/tilesets/fiveguys_Room_Builder.png"
         );
+        this.load.image("fiveguys_logo", "assets/tilesets/fiveguys_logo.png");
 
-        
         console.log("Complete loading!!!!!!!!!!!!!!!");
     }
 
     create() {
-        
         this.background = this.add
             .image(0, 0, "background")
             .setDisplaySize(this.game.scale.width, this.game.scale.height)
