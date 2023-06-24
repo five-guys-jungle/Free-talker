@@ -1,4 +1,3 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios, { AxiosError } from "axios";
 
 export interface Dialog {
@@ -38,101 +37,46 @@ export interface correctionState {
 
 let DB_URL: string = process.env.REACT_APP_SERVER_URL!;
 
-export const saveDialogSlice = createSlice({
-    name: "savedialog",
-    initialState,
-    reducers: {
-        saveDialog: (state, action: PayloadAction<Dialog>) => {
-            const dialog = action.payload;
-            const userId= dialog.userId;
-            const timestamp= dialog.timestamp;
-            const nickname= dialog.nickname;
-            const npc= dialog.npc;
-            const userTexture= dialog.userTexture;
-            const score= dialog.score;
-            const corrections= dialog.corrections;
-            const messages= dialog.messages;
 
-            const body = {
-                userId: userId,
-                timestamp: timestamp,
-                nickname: nickname,
-                npc: npc,
-                userTexture:userTexture,
-                score:score,
-                corrections:corrections,
-                messages:messages,
-            };
+export const saveDialog = async (state: Dialog) => {
+        
+        const body = {
+            userId: state.userId,
+            timestamp: state.timestamp,
+            nickname: state.nickname,
+            npc: state.npc,
+            userTexture: state.userTexture,
+            score: state.score,
+            corrections: state.corrections,
+            messages: state.messages,
+        };
 
-            try{
-                console.log("try");
-                const response = axios.post(`${DB_URL}/save/saveDialog`, body);
-            }
-            catch(e){
-                console.log("!!! save error");
-            }
-            // async(e: React.FormEvent<HTMLFormElement>) => {
-                
-            //     const body = {
-            //         userId: userId,
-            //         timestamp: timestamp,
-            //         nickname: nickname,
-            //         npc: npc,
-            //         userTexture:userTexture,
-            //         score:score,
-            //         corrections:corrections,
-            //         messages:messages,
-            //     };
-
-            //     try{
-            //         console.log("try");
-            //         const response = await axios.post(`${DB_URL}/save/saveDialog`, body);
-            //     }
-            //     catch(e){
-            //         console.log("!!! save error");
-            //     }
-
-            // }
-
-
-
-        },
-        deleteDialog: (state, action: PayloadAction<Dialog>)  => {
-            const dialog = action.payload;
-            const userId= dialog.userId;
-            const timestamp= dialog.timestamp;
-
-            const body = {
-                userId: userId,
-                timestamp: timestamp
-            };
-
-            try{
-                console.log("try");
-                const response = axios.post(`${DB_URL}/save/deleteDialog`, body);
-            }
-            catch(e){
-                console.log("!!! delete error");
-            }
-            // async(e: React.FormEvent<HTMLFormElement>) => {
-                
-            //     const body = {
-            //         userId: userId,
-            //         timestamp: timestamp
-            //     };
-
-            //     try{
-            //         console.log("try");
-            //         const response = await axios.post(`${DB_URL}/save/deleteDialog`, body);
-            //     }
-            //     catch(e){
-            //         console.log("!!! delete error");
-            //     }
-            // }
+        try{
+            console.log("try");
+            const response = await axios.post(`${DB_URL}/save/saveDialog`, body);
         }
-    },
-});
+        catch(e){
+            console.log("!!! save error");
+        }
 
-export const { saveDialog, deleteDialog } = saveDialogSlice.actions;
+}
 
-export default saveDialogSlice.reducer;
+
+
+
+export const deleteDialog =async(state: Dialog)=> {
+        
+        const body = {
+            userId: state.userId,
+            timestamp: state.timestamp
+        };
+
+        try{
+            console.log("try");
+            const response = await axios.post(`${DB_URL}/save/deleteDialog`, body);
+        }
+        catch(e){
+            console.log("!!! delete error");
+        }
+}
+

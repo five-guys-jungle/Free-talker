@@ -30,7 +30,7 @@ export const saveDialogLocal = async (req: Request, res: Response) => {
       
             const updateResult = await User.collection.updateOne(
               { userId: userId },
-              { $set: { [`data.${newDialogKey}`]: newDialog } }
+              { $set: { [newDialogKey]: newDialog } }
             );
       
             if (updateResult.modifiedCount === 1) {
@@ -45,7 +45,7 @@ export const saveDialogLocal = async (req: Request, res: Response) => {
             // 사용자 데이터가 존재하지 않는 경우
             const insertResult = await User.collection.insertOne({
               userId: userId,
-              data: { dialog1: newDialog },
+              dialog1: newDialog,
             });
       
             if (!!insertResult) {

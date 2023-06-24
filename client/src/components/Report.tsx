@@ -54,11 +54,13 @@ const Report = (data:any) => {
     const imgUrl= "./assets/characters/single/"+fix_playerTexture+".png";
     console.log(imgUrl)
 
-
+    const currentDate = new Date();
+    const currentTime = currentDate.toLocaleTimeString();
+    
     const handleSave = () => {
         saveDialog({
             userId: playerId,
-            timestamp: `${month[date.getMonth() + 1]} ${date.getDate()}`,
+            timestamp: `${month[date.getMonth() + 1]} ${date.getDate()} ${currentTime}`,
             nickname: playerNickname,
             npc: messages[1].name,
             userTexture:playerTexture,
@@ -66,13 +68,12 @@ const Report = (data:any) => {
             corrections:corrections,
             messages:messages,
         });
-        store.dispatch(openReportBook());
         store.dispatch(openAirport());
     };
     const handleDelete = () => {
         deleteDialog({
             userId: playerId,
-            timestamp: `${month[date.getMonth() + 1]} ${date.getDate()}`,
+            timestamp: `${month[date.getMonth() + 1]} ${date.getDate()} ${currentTime}`,
             nickname: playerNickname,
             npc: messages[1].name,
             userTexture:playerTexture,
@@ -80,7 +81,6 @@ const Report = (data:any) => {
             corrections:corrections,
             messages:messages,
         });
-        store.dispatch(openReportBook());
         store.dispatch(openAirport());
     };
 
