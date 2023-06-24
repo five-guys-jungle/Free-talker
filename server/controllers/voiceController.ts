@@ -14,8 +14,8 @@ export function freedialogsocketEventHandler(socket: Socket) {
 	socket.on("otherchar", ({playerNickname: playerNickname, playerTexture:playerTexture}) =>{
 		socket.broadcast.emit("otherusercharacter",{playerNickname: playerNickname, playerTexture:playerTexture})
 	})
-	socket.on("mychar", ({playerNickname: playerNickname, playerTexture:playerTexture}) =>{
-		socket.broadcast.emit("usercharacter",{playerNickname: playerNickname, playerTexture:playerTexture})
+	socket.on("mychar", ({otherNickname: playerNickname, otherTexture:playerTexture}) =>{
+		socket.broadcast.emit("usercharacter",{otherNickname: playerNickname, otherTexture:playerTexture})
 	})
 	socket.on("disconnect", () => {
 	//   socket.broadcast.emit("callEnded");

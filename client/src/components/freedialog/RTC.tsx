@@ -12,6 +12,7 @@ import io, { Socket } from "socket.io-client"
 import { setSocketNamespace } from "../../stores/socketSlice"
 import { TalkBoxState } from "../../stores/talkBoxSlice";
 import store, { RootState, useAppDispatch } from "../../stores";
+import {setUserCharacter} from "../../stores/userboxslice";
 
 const FreeDialog = () => {
     const [ me, setMe ] = useState("")
@@ -24,7 +25,7 @@ const FreeDialog = () => {
 	const [ callEnded, setCallEnded] = useState(false)
 	const [ name, setName ] = useState("")
 
-
+	const dispatch = useAppDispatch();
 	const myVideo = React.useRef<HTMLVideoElement>(null);
 	const userVideo = React.useRef<HTMLVideoElement>(null);
 	const connectionRef = React.useRef<Instance | null>(null);
@@ -56,6 +57,7 @@ const FreeDialog = () => {
 			socket.current!.emit("otherchar", {playerNickname: playerNickname, playerTexture:playerTexture});
 			socket.current!.on("otherusercharacter", ({playerNickname: playerNickname, playerTexture:playerTexture}) => {
 				console.log(playerNickname,playerTexture)
+				dispatch(setUserCharacter({playerNickname, playerTexture}));
 			})
 			socket.current!.on("otheruserleave", () => {
 				const clickEvent = new CustomEvent('exitcall', {
@@ -66,14 +68,15 @@ const FreeDialog = () => {
 			});
 			socket.current!.on("userconnected", () => {
 				console.log("connected~~~~~~~~~~~~~~~~~~~~~~~~~~!!!!!!!!!!!!");
-				socket.current!.emit("mychar", {playerNickname: playerNickname, playerTexture:playerTexture});
+				socket.current!.emit("mychar", {otherNickname: playerNickname, otherTexture:playerTexture});
 				// callUser(idToCall);
 				// document.getElementById("call-btn")?.click();
 				// console.log("clickclickclick!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 			})
-			socket.current!.on("usercharacter", ({playerNickname: playerNickname, playerTexture:playerTexture}) => {
-				console.log(playerNickname,playerTexture)
-			})
+			socket.current!.on("usercharacter", ({otherNickname: playerNickname, otherTexture:playerTexture}) => {
+				console.log(playerNickname, playerTexture);
+				dispatch(setUserCharacter({playerNickname, playerTexture}));
+			  });
 		});// 상대방 소켓 연결 이벤트 핸들러
 		
 		socket.current!.on("me", (id) => {
