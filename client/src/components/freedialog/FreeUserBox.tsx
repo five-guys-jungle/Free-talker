@@ -5,9 +5,9 @@ import Typography from '@mui/material/Typography';
 import { useSelector, useDispatch } from "react-redux";
 import { TalkBoxState } from "../../stores/talkBoxSlice";
 import store, { RootState, useAppDispatch } from "../../stores";
-// Sample image URLs
-const avatarImage1 = './assets/낸시.png';
-const avatarImage2 = './assets/아담.png';
+import io, { Socket } from "socket.io-client"
+import {clearcharacters} from "../../stores/userboxslice"
+
 
 const Image = styled('img')`
   width: 150%;
@@ -41,26 +41,37 @@ const UserBoxWrapper = styled(Box)`
 `;
 
 const UserBox: React.FC = () => {
-  const {playerId, playerNickname, playerTexture} = useSelector((state: RootState) => {return {...state.user}});
-    
+  const { playerId, playerNickname, playerTexture } = useSelector((state: RootState) => {return {...state.user}});
+  // const { playerId, playerNickname, playerTexture } = useSelector((state: RootState) => state.user);
+  const socket = useRef<Socket | null>(null);
+  const {otherNickname, otherTexture} = useSelector((state: RootState) => {return {...state.userbox}});
+  const dispatch = useAppDispatch();
+	const socketNamespace = useSelector(
+		(state: { rtc: { socketNamespace: string } }) => state.rtc.socketNamespace
+	);
   useEffect(() => {
       console.log(playerId)
       console.log(playerNickname)
       console.log(playerTexture)
-
+    return () => {
+      dispatch(clearcharacters());
+    }
   }, [playerId, playerNickname, playerTexture]);
 
-
   
-  const messages = useSelector(
-      (state: { talkBox: TalkBoxState }) => state.talkBox.messages
-  );
-
+  // const messages = useSelector(
+  //     (state: { talkBox: TalkBoxState }) => state.talkBox.messages
+  // );
 
   let fix_playerTexture=playerTexture;
 
-  
-  const imgUrl= "./assets/characters/single/"+fix_playerTexture+".png";
+  useEffect(() => {
+    console.log("char~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    return () => {
+      dispatch(clearcharacters());
+    }
+  }, [otherNickname, otherTexture]);
+
 
   return (
     <UserBoxWrapper>
@@ -74,8 +85,8 @@ const UserBox: React.FC = () => {
           <Typography variant="body1" align="center">{playerNickname}</Typography>
         </AvatarContainer>
         <AvatarContainer>
-          <Image src={avatarImage2} alt="User Avatar" />
-          <Typography variant="body1" align="center">User Name 2</Typography>
+          <Image src={`../assets/characters/single/${otherTexture}.png`} alt="User Avatar" />
+          <Typography variant="body1" align="center">{otherNickname}</Typography>
         </AvatarContainer>
       </Box>
     </UserBoxWrapper>

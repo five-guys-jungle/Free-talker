@@ -11,6 +11,9 @@ import {Instance} from "simple-peer"
 import io, { Socket } from "socket.io-client"
 import { setSocketNamespace } from "../../stores/socketSlice"
 import { current } from "@reduxjs/toolkit"
+import { TalkBoxState } from "../../stores/talkBoxSlice";
+import store, { RootState, useAppDispatch } from "../../stores";
+import {setUserCharacter} from "../../stores/userboxslice";
 
 const FreeDialog = () => {
     const [ me, setMe ] = useState("")
@@ -22,8 +25,10 @@ const FreeDialog = () => {
 	const [ idToCall, setIdToCall ] = useState("")
 	const [ callEnded, setCallEnded] = useState(false)
 	const [ name, setName ] = useState("")
-	let num_User = 0;
+	
 
+
+	const dispatch = useAppDispatch();
 	const myVideo = React.useRef<HTMLVideoElement>(null);
 	const userVideo = React.useRef<HTMLVideoElement>(null);
 	const connectionRef = React.useRef<Instance | null>(null);
@@ -36,7 +41,8 @@ const FreeDialog = () => {
 	console.log("setSocketNamespace:::", socketNamespace);
 
 	
-	
+	const {playerNickname, playerTexture} = useSelector((state: RootState) => {return {...state.user}});
+
     useEffect(() => {
 		socket.current = io(socketNamespace);
 		// socket.current = io("http://localhost:5000/freedialog/airport_chair1");
@@ -76,10 +82,14 @@ const FreeDialog = () => {
 			)
 
 		console.log("socket is connected: ", socket.current!.id);
-			// setTimeout(() => {
-			// 		callUser(idToCall);
-			// 	  }, 7000);
-		socket.current!.on("otheruserleave", () => {
+		
+			
+			socket.current!.emit("otherchar", {playerNickname: playerNickname, playerTexture:playerTexture});
+			socket.current!.on("otherusercharacter", ({playerNickname: playerNickname, playerTexture:playerTexture}) => {
+				console.log(playerNickname,playerTexture)
+				dispatch(setUserCharacter({playerNickname, playerTexture}));
+			})
+			socket.current!.on("otheruserleave", () => {
 				const clickEvent = new CustomEvent('exitcall', {
 					detail: { message: "exitcall"}
 				});
@@ -88,12 +98,15 @@ const FreeDialog = () => {
 			});
 		socket.current!.on("userconnected", () => {
 				console.log("connected~~~~~~~~~~~~~~~~~~~~~~~~~~!!!!!!!!!!!!");
-				// setTimeout(() => {
-				// 	callUser(idToCall);
-				//   }, 7000);
+				socket.current!.emit("mychar", {otherNickname: playerNickname, otherTexture:playerTexture});
+				// callUser(idToCall);
 				// document.getElementById("call-btn")?.click();
 				// console.log("clickclickclick!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 			})
+			socket.current!.on("usercharacter", ({otherNickname: playerNickname, otherTexture:playerTexture}) => {
+				console.log(playerNickname, playerTexture);
+				dispatch(setUserCharacter({playerNickname, playerTexture}));
+			  });
 		// });// 상대방 소켓 연결 이벤트 핸들러
 		
 		socket.current!.on("me", (id) => {
@@ -119,6 +132,7 @@ const FreeDialog = () => {
 			socket.current!.disconnect();
 		}
 	  
+	
 	}, []);
 
 
@@ -142,9 +156,9 @@ const FreeDialog = () => {
 		})
 		peer.on("stream", (stream) => {
 			console.log("video~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-			userVideo.current!.srcObject = stream
+			userVideo.current!.srcObject = stream;
 			
-		})
+		});
 		socket.current!.on("callAccepted", (signal) => {
 			setCallAccepted(true)
 			peer.signal(signal)
@@ -191,9 +205,7 @@ const FreeDialog = () => {
 					justifyContent: 'center', 
 					alignItems: 'center', 
 				}}>
-					<h1>
-						{num_User}
-					</h1>
+					
 					<div className="call-button" style={{ position: 'fixed', textAlign: 'center', top: '5px'}}>
 						
 						{callAccepted && !callEnded ? (
@@ -204,16 +216,14 @@ const FreeDialog = () => {
 							</IconButton>
 							<h4>통화를 종료하면 맵으로 돌아갑니다.</h4>
 							</div>
-						) 
-						 	: (
+						) : (
 							
-						 	<IconButton className="call-btn" color="primary" aria-label="call" onClick={() => callUser(idToCall)}>
-						 		<PhoneIcon fontSize="large" />
-						 	</IconButton>
+						  	<IconButton className="call-btn" color="primary" aria-label="call" onClick={() => callUser(idToCall)}>
+						  		<PhoneIcon fontSize="large" />
+						  	</IconButton>
 							
-							
-						 )}
-						  {/* : null} */}
+						  )} 
+						  
 						{receivingCall && !callAccepted && (
 							<div className="caller" style={{ display: 'inline-flex', alignItems: 'center', bottom : '5px' }}>
 								<h1> {name} is calling... </h1>

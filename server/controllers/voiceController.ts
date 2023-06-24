@@ -44,11 +44,18 @@ export function freedialogsocketEventHandler(socket: Socket) {
 		//   socket.broadcast.emit("disconnected", freeRoom_Num[place_name]);
 		});
 	socket.broadcast.emit("userconnected");
+	
 	socket.emit("me", socket.id);
-	socket.on("charactertexture", ({playerNickname: playerNickname, playerTexture:playerTexture}) =>{
+	socket.on("otherchar", ({playerNickname: playerNickname, playerTexture:playerTexture}) =>{
 		socket.broadcast.emit("otherusercharacter",{playerNickname: playerNickname, playerTexture:playerTexture})
 	})
-	
+	socket.on("mychar", ({otherNickname: playerNickname, otherTexture:playerTexture}) =>{
+		socket.broadcast.emit("usercharacter",{otherNickname: playerNickname, otherTexture:playerTexture})
+	})
+	socket.on("disconnect", () => {
+	//   socket.broadcast.emit("callEnded");
+	  console.log("disconnected~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+	});
   
 	socket.on("callUser", (data: { userToCall: any; signalData: any; from: any; name: any }) => {
 	  console.log("callUser: 서버에서 데이터를 받았음");
