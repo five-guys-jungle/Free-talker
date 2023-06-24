@@ -95,6 +95,11 @@ export default class USAScene extends Phaser.Scene {
     
     gameResume(pausedX:number, pausedY:number){
         console.log("Scene is Resumed: USA");
+        console.log("allPlayer in Resumed: ", this.allPlayers);
+        for(let key in this.allPlayers){
+            if(this.allPlayers[key].nickname === this.userNickname){
+            }
+        }
     }
     onSceneWake() {
         console.log("Scene has been woken up!, scene: USA");
