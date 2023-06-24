@@ -59,7 +59,9 @@ const FreeDialog = () => {
 			});
 			socket.current!.on("userconnected", () => {
 				console.log("connected~~~~~~~~~~~~~~~~~~~~~~~~~~!!!!!!!!!!!!");
-				callUser(idToCall);
+				// callUser(idToCall);
+				// document.getElementById("call-btn")?.click();
+				// console.log("clickclickclick!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 			})
 		});// 상대방 소켓 연결 이벤트 핸들러
 		
@@ -106,8 +108,8 @@ const FreeDialog = () => {
 			})
 		})
 		peer.on("stream", (stream) => {
-			
-				userVideo.current!.srcObject = stream
+			console.log("video~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+			userVideo.current!.srcObject = stream
 			
 		})
 		socket.current!.on("callAccepted", (signal) => {
@@ -166,14 +168,16 @@ const FreeDialog = () => {
 							</IconButton>
 							<h4>통화를 종료하면 맵으로 돌아갑니다.</h4>
 							</div>
-						) : (
+						) 
+						 	: (
 							
-							<IconButton color="primary" aria-label="call" onClick={() => callUser(idToCall)}>
-								<PhoneIcon fontSize="large" />
-							</IconButton>
+						 	<IconButton className="call-btn" color="primary" aria-label="call" onClick={() => callUser(idToCall)}>
+						 		<PhoneIcon fontSize="large" />
+						 	</IconButton>
 							
 							
-						)}
+						 )}
+						  {/* : null} */}
 						{receivingCall && !callAccepted && (
 							<div className="caller" style={{ display: 'inline-flex', alignItems: 'center', bottom : '5px' }}>
 								<h1> {name} is calling... </h1>
@@ -183,7 +187,7 @@ const FreeDialog = () => {
 								
 							</div>
 						)}
-						{idToCall}
+						{idToCall}  
 						</div>
 
 				</div>
