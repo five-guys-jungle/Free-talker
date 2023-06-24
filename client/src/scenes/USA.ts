@@ -946,6 +946,16 @@ export default class USAScene extends Phaser.Scene {
         };
         npc7.sprite = this.physics.add.sprite(npc7.x, npc7.y, npc7.texture);
         this.npcList.push(npc7);
+        let npc8: npcInfo = {
+            name: "Waitress",
+            x: 2928,
+            y: 432,
+            texture: "Waitress",
+            sprite: null,
+            role: "npc",
+        };
+        npc8.sprite = this.physics.add.sprite(npc8.x, npc8.y, npc8.texture);
+        this.npcList.push(npc8);
     }
     gameSocketEventHandler(initial: boolean = true) {
         this.socket = io(serverUrl);

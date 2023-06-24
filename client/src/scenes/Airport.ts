@@ -346,7 +346,8 @@ export default class AirportScene extends Phaser.Scene {
                                             if (
                                                 response === "" ||
                                                 response ===
-                                                    "convertSpeechToText Error"
+                                                    "convertSpeechToText Error" ||
+                                                response === "chain call error"
                                             ) {
                                                 store.dispatch(
                                                     setMessage(
