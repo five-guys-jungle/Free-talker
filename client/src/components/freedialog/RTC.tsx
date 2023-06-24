@@ -10,6 +10,8 @@ import Peer from "simple-peer"
 import {Instance} from "simple-peer"
 import io, { Socket } from "socket.io-client"
 import { setSocketNamespace } from "../../stores/socketSlice"
+import { TalkBoxState } from "../../stores/talkBoxSlice";
+import store, { RootState, useAppDispatch } from "../../stores";
 
 const FreeDialog = () => {
     const [ me, setMe ] = useState("")
@@ -35,7 +37,8 @@ const FreeDialog = () => {
 	console.log("setSocketNamespace:::", socketNamespace);
 
 	
-	
+	const {playerNickname, playerTexture} = useSelector((state: RootState) => {return {...state.user}});
+
     useEffect(() => {
 		socket.current = io(socketNamespace);
 		// socket.current = io("http://localhost:5000/freedialog/airport_chair1");
@@ -50,6 +53,10 @@ const FreeDialog = () => {
 		
 		socket.current!.on("connect", () => {
 			console.log("socket is connected: ", socket.current!.id);
+			socket.current!.emit("charactertexture", {playerNickname: playerNickname, playerTexture:playerTexture});
+			socket.current!.on("otherusercharacter", ({playerNickname: playerNickname, playerTexture:playerTexture}) => {
+				console.log(playerNickname,playerTexture)
+			})
 			socket.current!.on("otheruserleave", () => {
 				const clickEvent = new CustomEvent('exitcall', {
 					detail: { message: "exitcall"}
@@ -87,6 +94,7 @@ const FreeDialog = () => {
 		});
 		
 	  
+	
 	}, []);
 
 

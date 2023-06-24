@@ -10,7 +10,9 @@ export function freedialogsocketEventHandler(socket: Socket) {
 
 	socket.broadcast.emit("userconnected");
 	socket.emit("me", socket.id);
-  
+	socket.on("charactertexture", ({playerNickname: playerNickname, playerTexture:playerTexture}) =>{
+		socket.broadcast.emit("otherusercharacter",{playerNickname: playerNickname, playerTexture:playerTexture})
+	})
 	socket.on("disconnect", () => {
 	//   socket.broadcast.emit("callEnded");
 	  console.log("disconnected~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
