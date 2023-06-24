@@ -53,7 +53,7 @@ const FreeDialog = () => {
 		
 		socket.current!.on("connect", () => {
 			console.log("socket is connected: ", socket.current!.id);
-			socket.current!.emit("charactertexture", {playerNickname: playerNickname, playerTexture:playerTexture});
+			socket.current!.emit("otherchar", {playerNickname: playerNickname, playerTexture:playerTexture});
 			socket.current!.on("otherusercharacter", ({playerNickname: playerNickname, playerTexture:playerTexture}) => {
 				console.log(playerNickname,playerTexture)
 			})
@@ -66,10 +66,13 @@ const FreeDialog = () => {
 			});
 			socket.current!.on("userconnected", () => {
 				console.log("connected~~~~~~~~~~~~~~~~~~~~~~~~~~!!!!!!!!!!!!");
-
+				socket.current!.emit("mychar", {playerNickname: playerNickname, playerTexture:playerTexture});
 				// callUser(idToCall);
 				// document.getElementById("call-btn")?.click();
 				// console.log("clickclickclick!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+			})
+			socket.current!.on("usercharacter", ({playerNickname: playerNickname, playerTexture:playerTexture}) => {
+				console.log(playerNickname,playerTexture)
 			})
 		});// 상대방 소켓 연결 이벤트 핸들러
 		
