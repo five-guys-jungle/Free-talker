@@ -20,11 +20,32 @@ en-US-Wavenet-I, MALE
 en-US-Wavenet-J, MALE
 */
 preDefinedVoiceType["ImmigrationOfficer"] = {
-    voiceType: "en-US-Standard-E",
+    voiceType: "en-US-Standard-B",
 };
 preDefinedVoiceType["Barista"] = {
     voiceType: "en-US-Standard-A",
 };
 preDefinedVoiceType["MartCashier"] = {
     voiceType: "en-US-Standard-F",
+};
+preDefinedVoiceType["Waitress"] = {
+    voiceType: "en-US-Standard-F",
+};
+preDefinedVoiceType["HotelReceptionist"] = {
+    voiceType: "en-US-Standard-J",
+};
+preDefinedVoiceType["TaxiDriver"] = {
+    voiceType: "en-US-Standard-I",
+};
+preDefinedVoiceType["Chef"] = {
+    voiceType: "en-US-Standard-A",
+};
+preDefinedVoiceType["Doctor"] = {
+    voiceType: "en-US-Standard-J",
+};
+preDefinedVoiceType["Nurse"] = {
+    voiceType: "en-US-Standard-E",
+};
+preDefinedVoiceType["ClothingShopStaff"] = {
+    voiceType: "en-US-Standard-A",
 };
