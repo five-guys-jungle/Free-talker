@@ -117,29 +117,93 @@ export default class USAScene extends Phaser.Scene {
         // 배경 설정
         const map1 = this.make.tilemap({ key: "map1" });
         console.log(map1);
-        const tileset_exteriors = map1.addTilesetImage("fiveguys_Exteriors", "fiveguys_Exteriors")!;
-        const tileset_interiors_1 = map1.addTilesetImage("fiveguys_Interiors_1", "fiveguys_Interiors_1")!;
-        const tileset_interiors_2 = map1.addTilesetImage("fiveguys_Interiors_2", "fiveguys_Interiors_2")!;
-        const tileset_interiors_3 = map1.addTilesetImage("fiveguys_Interiors_3", "fiveguys_Interiors_3")!;
-        const tileset_interiors_4 = map1.addTilesetImage("fiveguys_Interiors_4", "fiveguys_Interiors_4")!;
-        const tileset_roombuilder = map1.addTilesetImage("fiveguys_Room_Builder", "fiveguys_Room_Builder")!;
+        const tileset_exteriors = map1.addTilesetImage(
+            "fiveguys_Exteriors",
+            "fiveguys_Exteriors"
+        )!;
+        const tileset_interiors_1 = map1.addTilesetImage(
+            "fiveguys_Interiors_1",
+            "fiveguys_Interiors_1"
+        )!;
+        const tileset_interiors_2 = map1.addTilesetImage(
+            "fiveguys_Interiors_2",
+            "fiveguys_Interiors_2"
+        )!;
+        const tileset_interiors_3 = map1.addTilesetImage(
+            "fiveguys_Interiors_3",
+            "fiveguys_Interiors_3"
+        )!;
+        const tileset_interiors_4 = map1.addTilesetImage(
+            "fiveguys_Interiors_4",
+            "fiveguys_Interiors_4"
+        )!;
+        const tileset_roombuilder = map1.addTilesetImage(
+            "fiveguys_Room_Builder",
+            "fiveguys_Room_Builder"
+        )!;
+        const tileset_logo = map1.addTilesetImage(
+            "fiveguys_logo",
+            "fiveguys_logo"
+        )!;
 
         map1.createLayer("background/RoomBuilder", tileset_roombuilder);
-        const roombuilder_1 = map1.createLayer("boundary/RoomBuilder", tileset_roombuilder)!;
-        const roombuilder_2 = map1.createLayer("floor/RoomBuilder", tileset_roombuilder)!;
-        const exteriors_1 = map1.createLayer("layer1/Exteriors", tileset_exteriors)!;
-        const exteriors_2 = map1.createLayer("layer2/Exteriors", tileset_exteriors)!;
-        const exteriors_3 = map1.createLayer("layer3/Exteriors", tileset_exteriors)!;
-        const interiors_11 = map1.createLayer("layer1/Interiors1", tileset_interiors_1)!;
-        const interiors_12 = map1.createLayer("layer1/Interiors2", tileset_interiors_2)!;
-        const interiors_13 = map1.createLayer("layer1/Interiors3", tileset_interiors_3)!;
-        const interiors_14 = map1.createLayer("layer1/Interiors4", tileset_interiors_4)!;
-        const interiors_22 = map1.createLayer("layer2/Interiors2", tileset_interiors_2)!;
-        const interiors_23 = map1.createLayer("layer2/Interiors3", tileset_interiors_3)!;
-        const interiors_24 = map1.createLayer("layer2/Interiors4", tileset_interiors_4)!;
-        const interiors_32 = map1.createLayer("layer3/Interiors2", tileset_interiors_2)!;
-        const interiors_33 = map1.createLayer("layer3/Interiors3", tileset_interiors_3)!;
-
+        const roombuilder_1 = map1.createLayer(
+            "boundary/RoomBuilder",
+            tileset_roombuilder
+        )!;
+        const roombuilder_2 = map1.createLayer(
+            "floor/RoomBuilder",
+            tileset_roombuilder
+        )!;
+        const exteriors_1 = map1.createLayer(
+            "layer1/Exteriors",
+            tileset_exteriors
+        )!;
+        const exteriors_2 = map1.createLayer(
+            "layer2/Exteriors",
+            tileset_exteriors
+        )!;
+        const exteriors_3 = map1.createLayer(
+            "layer3/Exteriors",
+            tileset_exteriors
+        )!;
+        const logo = map1.createLayer("logo/logo", tileset_logo)!;
+        const interiors_11 = map1.createLayer(
+            "layer1/Interiors1",
+            tileset_interiors_1
+        )!;
+        const interiors_12 = map1.createLayer(
+            "layer1/Interiors2",
+            tileset_interiors_2
+        )!;
+        const interiors_13 = map1.createLayer(
+            "layer1/Interiors3",
+            tileset_interiors_3
+        )!;
+        const interiors_14 = map1.createLayer(
+            "layer1/Interiors4",
+            tileset_interiors_4
+        )!;
+        const interiors_22 = map1.createLayer(
+            "layer2/Interiors2",
+            tileset_interiors_2
+        )!;
+        const interiors_23 = map1.createLayer(
+            "layer2/Interiors3",
+            tileset_interiors_3
+        )!;
+        const interiors_24 = map1.createLayer(
+            "layer2/Interiors4",
+            tileset_interiors_4
+        )!;
+        const interiors_32 = map1.createLayer(
+            "layer3/Interiors2",
+            tileset_interiors_2
+        )!;
+        const interiors_33 = map1.createLayer(
+            "layer3/Interiors3",
+            tileset_interiors_3
+        )!;
 
         roombuilder_1.setCollisionByProperty({ collides: true });
         roombuilder_2.setCollisionByProperty({ collides: true });
@@ -741,7 +805,7 @@ export default class USAScene extends Phaser.Scene {
             });
     }
     createUSANpc() {
-        let npc1: npcInfo = {
+        let gate: npcInfo = {
             name: "statueOfLiberty",
             x: this.initial_x,
             y: this.initial_y,
@@ -749,9 +813,88 @@ export default class USAScene extends Phaser.Scene {
             sprite: null,
             role: "npc",
         };
+        gate.sprite = this.physics.add.sprite(gate.x, gate.y, gate.texture);
+        gate.sprite.setScale(0.35);
+        this.npcList.push(gate);
+
+        this.physics.add.sprite(1819, 1200, "statueOfLiberty");
+
+        let npc1: npcInfo = {
+            name: "HotelReceptionist",
+            x: 650,
+            y: 1632,
+            texture: "HotelReceptionist",
+            sprite: null,
+            role: "npc",
+        };
         npc1.sprite = this.physics.add.sprite(npc1.x, npc1.y, npc1.texture);
-        npc1.sprite.setScale(0.35);
         this.npcList.push(npc1);
+
+        let npc2: npcInfo = {
+            name: "Barista",
+            x: 1810,
+            y: 428,
+            texture: "Barista",
+            sprite: null,
+            role: "npc",
+        };
+        npc2.sprite = this.physics.add.sprite(npc2.x, npc2.y, npc2.texture);
+        this.npcList.push(npc2);
+
+        let npc3: npcInfo = {
+            name: "Doctor",
+            x: 1741,
+            y: 2413,
+            texture: "Doctor",
+            sprite: null,
+            role: "npc",
+        };
+        npc3.sprite = this.physics.add.sprite(npc3.x, npc3.y, npc3.texture);
+        this.npcList.push(npc3);
+
+        let npc4: npcInfo = {
+            name: "Nurse",
+            x: 1784,
+            y: 2413,
+            texture: "Nurse",
+            sprite: null,
+            role: "npc",
+        };
+        npc4.sprite = this.physics.add.sprite(npc4.x, npc4.y, npc4.texture);
+        this.npcList.push(npc4);
+
+        let npc5: npcInfo = {
+            name: "ClothingShopStaff",
+            x: 3102,
+            y: 2235,
+            texture: "ClothingShopStaff",
+            sprite: null,
+            role: "npc",
+        };
+        npc5.sprite = this.physics.add.sprite(npc5.x, npc5.y, npc5.texture);
+        this.npcList.push(npc5);
+
+        let npc6: npcInfo = {
+            name: "MartCashier",
+            x: 2737,
+            y: 1850,
+            texture: "MartCashier",
+            sprite: null,
+            role: "npc",
+        };
+        npc6.sprite = this.physics.add.sprite(npc6.x, npc6.y, npc6.texture);
+        this.npcList.push(npc6);
+
+        let npc7: npcInfo = {
+            name: "Chef",
+            x: 3216,
+            y: 417,
+            texture: "Chef",
+            sprite: null,
+            role: "npc",
+        };
+        npc7.sprite = this.physics.add.sprite(npc7.x, npc7.y, npc7.texture);
+        this.npcList.push(npc7);
     }
     gameSocketEventHandler(initial: boolean = true) {
         this.socket = io(serverUrl);
