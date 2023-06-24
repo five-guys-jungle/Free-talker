@@ -71,6 +71,7 @@ export default class USAScene extends Phaser.Scene {
         const tileset_interiors_3 = map1.addTilesetImage("fiveguys_Interiors_3", "fiveguys_Interiors_3")!;
         const tileset_interiors_4 = map1.addTilesetImage("fiveguys_Interiors_4", "fiveguys_Interiors_4")!;
         const tileset_roombuilder = map1.addTilesetImage("fiveguys_Room_Builder", "fiveguys_Room_Builder")!;
+        const tileset_logo = map1.addTilesetImage("fiveguys_logo", "fiveguys_logo")!;
 
         map1.createLayer("background/RoomBuilder", tileset_roombuilder);
         const roombuilder_1 = map1.createLayer("boundary/RoomBuilder",tileset_roombuilder )!;
@@ -78,6 +79,7 @@ export default class USAScene extends Phaser.Scene {
         const exteriors_1 = map1.createLayer("layer1/Exteriors", tileset_exteriors)!;
         const exteriors_2= map1.createLayer("layer2/Exteriors", tileset_exteriors)!;
         const exteriors_3 = map1.createLayer("layer3/Exteriors", tileset_exteriors)!;
+        const logo = map1.createLayer("logo/logo", tileset_logo)!;
         const interiors_11 = map1.createLayer("layer1/Interiors1", tileset_interiors_1)!;
         const interiors_12 = map1.createLayer("layer1/Interiors2", tileset_interiors_2)!;
         const interiors_13 = map1.createLayer("layer1/Interiors3", tileset_interiors_3)!;

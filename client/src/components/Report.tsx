@@ -6,6 +6,10 @@ import { useSelector, useDispatch } from "react-redux"; // react-redux에서 use
 import TalkBox from "./npcdialog/TalkBox";
 import { TalkBoxState } from "../stores/talkBoxSlice";
 import { correctionState} from "../stores/reportSlice";
+import Button from "@mui/material/Button";
+import SaveIcon from "@material-ui/icons/Save";
+import DeleteIcon from "@material-ui/icons/Delete";
+import { IconButton } from "@material-ui/core";
 import { scoreState } from "../stores/scoreSlice"
 
 // interface NPCDialogProps {
@@ -24,7 +28,6 @@ const Report = (data:any) => {
 
 
     }, [playerId, playerNickname, playerTexture]);
-
     const corrections = useSelector(
       (state: { correction: correctionState }) => state.correction.corrections
     );
@@ -48,7 +51,12 @@ const Report = (data:any) => {
     
     const imgUrl= "./assets/characters/single/"+fix_playerTexture+".png";
     console.log(imgUrl)
-    const handleClose = () => {
+
+
+    const handleSave = () => {
+        store.dispatch(openAirport());
+    };
+    const handleDelete = () => {
         store.dispatch(openAirport());
     };
 
@@ -75,6 +83,14 @@ const Report = (data:any) => {
                     <div className="notebook__inner">
                         <div className="title">
                             <h1>REPORT</h1>
+                            <IconButton color="primary" onClick={handleSave}
+                            style={{gridArea:'s3',marginLeft:'auto', marginRight:'30px', marginTop:'19px',width:'50px',height:'25px'}}>
+                                <SaveIcon />
+                            </IconButton>
+                            <IconButton color="secondary" onClick={handleDelete}
+                            style={{gridArea:'s3',marginLeft:'auto',marginTop:'19px',width:'50px',height:'25px'}}>
+                                <DeleteIcon />
+                            </IconButton>
                             <h3>&lt; {month[date.getMonth() + 1]} {date.getDate()} &gt;</h3>
                         </div>
                         <div className="results">
@@ -256,6 +272,12 @@ const ReportDiv = styled.div`
     grid-area: title;
     text-align: center;
     grid-column: 1 / span 4;
+    display: grid;
+    grid-template-columns: 25% 25% 25% 25%;
+    grid-template-rows: 70% 30%;
+    grid-template-areas:
+        "s1 s2 s2 s3"
+        "s4 s5 s5 s6";
   }
   .title h1 {
     font: 50px/1 "Lexend Peta", cursive;
@@ -265,12 +287,14 @@ const ReportDiv = styled.div`
     padding: 5px;
     background: rgba(186, 114, 123, 0.5);
     border-radius: 5px;
+    grid-area: s1/s1/s2/s3;
   }
   .title h3 {
     font: 18px/1 "Lexend Peta", cursive;
     font-weight: bold;
     margin: 8px;
     text-align: right;
+    grid-area: s6;
   }
   
   .results {
