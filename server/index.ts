@@ -12,6 +12,7 @@ import { Server as SocketIOServer, Socket } from "socket.io";
 import { connectDB } from "./database/db";
 import { connectDBLocal } from "./database/dbLocal";
 import authRouter from "./routes/authRouter";
+import saveRouter from "./routes/saveDialogRouter";
 
 import { signup, login } from "./controllers/userController";
 import dotenv from "dotenv";
@@ -72,6 +73,7 @@ app.get("/audio/npc_audio/*", function (req: Request, res: Response) {
 // app.use(Router);
 app.use("/auth", authRouter);
 
+app.use("/save", saveRouter);
 // app.post("/signup", signup);
 // app.post("/login", login);
 

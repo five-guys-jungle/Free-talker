@@ -18,7 +18,7 @@ import { scoreState } from "../stores/scoreSlice"
 //     onClose: () => void;
 // }
 
-const Report = (data:any) => {
+const ReportBook = (data:any) => {
     
     const {playerId, playerNickname, playerTexture} = useSelector((state: RootState) => {return {...state.user}});
     
@@ -66,7 +66,6 @@ const Report = (data:any) => {
             corrections:corrections,
             messages:messages,
         });
-        store.dispatch(openReportBook());
         store.dispatch(openAirport());
     };
     const handleDelete = () => {
@@ -80,8 +79,20 @@ const Report = (data:any) => {
             corrections:corrections,
             messages:messages,
         });
-        store.dispatch(openReportBook());
         store.dispatch(openAirport());
+    };
+    const handleBook = () => {
+        deleteDialog({
+            userId: playerId,
+            timestamp: `${month[date.getMonth() + 1]} ${date.getDate()}`,
+            nickname: playerNickname,
+            npc: messages[1].name,
+            userTexture:playerTexture,
+            score:score,
+            corrections:corrections,
+            messages:messages,
+        });
+        store.dispatch(openReportBook());
     };
 
     const date = new Date();
@@ -101,132 +112,134 @@ const Report = (data:any) => {
     }
 
     return (
-        <ReportDiv>
-            <div className="main-content">
-                <div className="notebook">
-                    <div className="notebook__inner">
-                        <div className="title">
-                            <h1>REPORT</h1>
-                            <IconButton color="primary" onClick={handleSave}
-                            style={{gridArea:'s3',marginLeft:'auto', marginRight:'30px', marginTop:'19px',width:'50px',height:'25px'}}>
-                                <SaveIcon />
-                            </IconButton>
-                            <IconButton color="secondary" onClick={handleDelete}
-                            style={{gridArea:'s3',marginLeft:'auto',marginTop:'19px',width:'50px',height:'25px'}}>
-                                <DeleteIcon />
-                            </IconButton>
-                            <h3>&lt; {month[date.getMonth() + 1]} {date.getDate()} &gt;</h3>
-                        </div>
-                        <div className="results">
-                            <div className="results__item">
-                                <div className="results__name">✔︎ 내 대화는?</div>
-                                <div className="results__list">
-                                    { score===100 && (<>
-                                      <p>원어민 수준이에요!</p>
-                                        <p>영어로 대화가 자연스러워요!</p>
-                                        <div className="highlighted">
-                                        <div className="text"> <span>Perfect!</span></div>
-                                        </div></>)
-                                    }
-                                    { (score>=80 && score < 100) && (<>
-                                      <p>대화에 무리 없는 수준이에요!</p>
-                                        <p>상황에 따라 알맞은 대화를 할 수 있어요!</p>
-                                        <div className="highlighted">
-                                        <div className="text"> <span>Good!</span></div>
-                                        </div></>)
-                                    }
-                                    { score<80 && (<>
-                                      <p>생존영어 가능!</p>
-                                        <p>말 못해 죽진 않을 거 같아요!</p>
-                                        <div className="highlighted">
-                                        <div className="text"> <span>You can survive!</span></div>
-                                        </div></>)
+        <Button color="primary" onClick={handleBook}>
+            <ReportDiv>
+                <div className="main-content">
+                    <div className="notebook">
+                        <div className="notebook__inner">
+                            <div className="title">
+                                <h1>REPORT</h1>
+                                <IconButton color="primary" onClick={handleSave}
+                                style={{gridArea:'s3',marginLeft:'auto', marginRight:'30px', marginTop:'19px',width:'50px',height:'25px'}}>
+                                    <SaveIcon />
+                                </IconButton>
+                                <IconButton color="secondary" onClick={handleDelete}
+                                style={{gridArea:'s3',marginLeft:'auto',marginTop:'19px',width:'50px',height:'25px'}}>
+                                    <DeleteIcon />
+                                </IconButton>
+                                <h3>&lt; {month[date.getMonth() + 1]} {date.getDate()} &gt;</h3>
+                            </div>
+                            <div className="results">
+                                <div className="results__item">
+                                    <div className="results__name">✔︎ 내 대화는?</div>
+                                    <div className="results__list">
+                                        { score===100 && (<>
+                                        <p>원어민 수준이에요!</p>
+                                            <p>영어로 대화가 자연스러워요!</p>
+                                            <div className="highlighted">
+                                            <div className="text"> <span>Perfect!</span></div>
+                                            </div></>)
+                                        }
+                                        { (score>=80 && score < 100) && (<>
+                                        <p>대화에 무리 없는 수준이에요!</p>
+                                            <p>상황에 따라 알맞은 대화를 할 수 있어요!</p>
+                                            <div className="highlighted">
+                                            <div className="text"> <span>Good!</span></div>
+                                            </div></>)
+                                        }
+                                        { score<80 && (<>
+                                        <p>생존영어 가능!</p>
+                                            <p>말 못해 죽진 않을 거 같아요!</p>
+                                            <div className="highlighted">
+                                            <div className="text"> <span>You can survive!</span></div>
+                                            </div></>)
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            {messages.length!==0 &&
+                                (<>
+                                <div className="wrapChracterL">
+                                    <div className="Character">
+                                        <h4>My Character</h4>
+                                        <center>
+                                        <ScaleImg className="Character__box" src={`./assets/characters/single/${playerTexture}.png`} alt={fix_playerTexture} ></ScaleImg>
+                                        </center>
+                                        <div className="Nickname"><span className="Character__title">{playerNickname}</span></div>
+                                    </div>
+                                </div>
+                                <div className="wrapChracterR">
+                                    <div className="Character">
+                                        <h4>NPC</h4>
+                                        <center>
+                                        <ScaleImg className="Character__box" src={`./assets/characters/single/${messages[1].img}.png`} alt={"Nancy"} ></ScaleImg>
+                                        </center>
+                                        <div className="Nickname"><span className="Character__title">{messages[1].name}</span></div>
+                                    </div>
+                                </div>
+                                </>)
+                            }
+                            {/* {messages.length===0 &&
+                                (<>
+                                <div className="Character" style={{gridColumn:'1/span 2', width:'50%', margin:'20px auto'}}>
+                                        <h4>My Character</h4>
+                                        <center>
+                                        <ScaleImg className="Character__box" src={imgUrl} alt={fix_playerTexture} ></ScaleImg>
+                                        </center>
+                                        <div className="Nickname"><span className="Character__title">Nickname: {playerNickname}</span></div>
+                                    </div>
+                                </>)
+                            } */}
+                            <div className="corrections"><span>Corrections</span>
+                                <div className="corrections-list">
+                                    {corrections.length!==0 && 
+                                    corrections.map((correction, index) => (
+                                    <div className="correction-div" key={index}>
+                                        <p>User Sentence : {correction.original}</p>
+                                        <p>Corrected Sentence: {correction.correction}</p>
+                                    </div>
+                                    ))
                                     }
                                 </div>
                             </div>
-                        </div>
-                        {messages.length!==0 &&
-                            (<>
-                            <div className="wrapChracterL">
-                                <div className="Character">
-                                    <h4>My Character</h4>
+                            <div className="talks">
+                                {messages.length!==0 &&
+                                    messages.map((message, index) => (
+                                        <div className={`msg ${message.side}-msg`} key={index}>
+                                            <div
+                                                className="msg-img"
+                                                style={{
+                                                    backgroundImage: `url(${`./assets/characters/single/${message.img}.png`})`,
+                                                }}
+                                            ></div>
+
+                                            <div className="msg-bubble">
+                                                <div className="msg-info">
+                                                    <div className="msg-info-name">
+                                                        {message.name}
+                                                    </div>
+                                                </div>
+
+                                                <div className="msg-text">{message.text}</div>
+                                            </div>
+                                        </div>
+                                    ))
+                                }
+                                {messages.length===0 &&
                                     <center>
-                                    <ScaleImg className="Character__box" src={`./assets/characters/single/${playerTexture}.png`} alt={fix_playerTexture} ></ScaleImg>
+                                        <p style={{textAlign:'center', marginTop:'50%', fontSize:'20px'}}>Try talk!</p>
                                     </center>
-                                    <div className="Nickname"><span className="Character__title">{playerNickname}</span></div>
-                                </div>
-                            </div>
-                            <div className="wrapChracterR">
-                                <div className="Character">
-                                    <h4>NPC</h4>
-                                    <center>
-                                    <ScaleImg className="Character__box" src={`./assets/characters/single/${messages[1].img}.png`} alt={"Nancy"} ></ScaleImg>
-                                    </center>
-                                    <div className="Nickname"><span className="Character__title">{messages[1].name}</span></div>
-                                </div>
-                            </div>
-                            </>)
-                        }
-                        {/* {messages.length===0 &&
-                            (<>
-                            <div className="Character" style={{gridColumn:'1/span 2', width:'50%', margin:'20px auto'}}>
-                                    <h4>My Character</h4>
-                                    <center>
-                                    <ScaleImg className="Character__box" src={imgUrl} alt={fix_playerTexture} ></ScaleImg>
-                                    </center>
-                                    <div className="Nickname"><span className="Character__title">Nickname: {playerNickname}</span></div>
-                                </div>
-                            </>)
-                        } */}
-                        <div className="corrections"><span>Corrections</span>
-                            <div className="corrections-list">
-                                {corrections.length!==0 && 
-                                corrections.map((correction, index) => (
-                                  <div className="correction-div" key={index}>
-                                    <p>User Sentence : {correction.original}</p>
-                                    <p>Corrected Sentence: {correction.correction}</p>
-                                  </div>
-                                ))
                                 }
                             </div>
                         </div>
-                        <div className="talks">
-                            {messages.length!==0 &&
-                                messages.map((message, index) => (
-                                    <div className={`msg ${message.side}-msg`} key={index}>
-                                        <div
-                                            className="msg-img"
-                                            style={{
-                                                backgroundImage: `url(${`./assets/characters/single/${message.img}.png`})`,
-                                            }}
-                                        ></div>
-
-                                        <div className="msg-bubble">
-                                            <div className="msg-info">
-                                                <div className="msg-info-name">
-                                                    {message.name}
-                                                </div>
-                                            </div>
-
-                                            <div className="msg-text">{message.text}</div>
-                                        </div>
-                                    </div>
-                                ))
-                            }
-                            {messages.length===0 &&
-                                <center>
-                                    <p style={{textAlign:'center', marginTop:'50%', fontSize:'20px'}}>Try talk!</p>
-                                </center>
-                            }
-                        </div>
                     </div>
                 </div>
-            </div>
-        </ReportDiv>
+            </ReportDiv>
+        </Button>
     );
 };
 
-export default Report;
+export default ReportBook;
 
 const ScaleImg=styled.img`
 width:50%;

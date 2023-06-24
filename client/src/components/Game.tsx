@@ -19,6 +19,7 @@ import { RootState } from "../stores";
 import NPCDialog from "./NPCDialog";
 import FreeDialog from "./FreeDialog";
 import Report from "./Report";  
+import ReportBook from "./Reportbook";  
 
 const Game = () => {
     // socket intialization, connection
@@ -32,6 +33,7 @@ const Game = () => {
         {mode === NPCDIALOG && <NPCDialog />}
         {mode === FREEDIALOG && <FreeDialog />}
         {mode === REPORT && <Report/>}
+        {mode !== REPORT || mode !== NPCDIALOG || mode !== FREEDIALOG&& <ReportBook/>}
         </BackgroundDiv>;
 };
 
