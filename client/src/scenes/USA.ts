@@ -1,25 +1,44 @@
 import Phaser from "phaser";
 import axios from "axios";
 import io, { Socket } from "socket.io-client";
+import store from "../stores/index";
 import { keyboard } from "@testing-library/user-event/dist/keyboard";
+import phaserGame from "../phaserGame";
 import {
     Player,
     PlayerDictionary,
     PlayerInfo,
     PlayerInfoDictionary,
 } from "../characters/Player";
-import { useRecoilValue } from "recoil";
-import {
-    playerIdState,
-    playerNicknameState,
-    playerTextureState,
-} from "../recoil/user/atoms";
+
 // import { playerNicknameState } from '../recoil/user/atoms';
 import { createCharacterAnims } from "../anims/CharacterAnims";
-
-// import "./airPort"
+import {
+    openNPCDialog,
+    openAirport,
+    openFreedialog,
+    openReport,
+    GAME_STATUS,
+} from "../stores/gameSlice";
 import { npcInfo } from "../characters/Npc";
+import { appendMessage, clearMessages } from "../stores/talkBoxSlice";
+import { appendCorrection, clearCorrections } from "../stores/reportSlice";
+import { setScore } from "../stores/scoreSlice";
+import {
+    appendSentence,
+    clearSentences,
+    setCanRequestRecommend,
+} from "../stores/sentenceBoxSlice";
+import { setRecord, setMessage, setMessageColor } from "../stores/recordSlice";
+import { handleScene } from "./common/handleScene";
+import { RootState } from "../stores/index";
+
 import dotenv from "dotenv";
+import Report from "../components/Report";
+import {
+    setSocketNamespace,
+    appendSocketNamespace,
+} from "../stores/socketSlice";
 
 const serverUrl: string = process.env.REACT_APP_SERVER_URL!;
 
@@ -28,23 +47,34 @@ let audioContext = new window.AudioContext();
 
 export default class USAScene extends Phaser.Scene {
     player1: Phaser.Physics.Arcade.Sprite | null = null;
-    npc: Phaser.Physics.Arcade.Sprite | null = null;
     cursors: Phaser.Types.Input.Keyboard.CursorKeys | null = null;
     interactKey: Phaser.Input.Keyboard.Key | null = null;
     interactText: Phaser.GameObjects.Text | null = null;
     userIdText: Phaser.GameObjects.Text | null = null;
-    initial_x: number = 1920;
-    initial_y: number = 720;
+    initial_x: number = 1850;
+    initial_y: number = 800;
     allPlayers: PlayerDictionary = {};
-    npcList: npcInfo[] = [];
     recorder: MediaRecorder | null = null;
     socket: Socket | null = null;
 
     playerId: string = "";
     userNickname: string = "";
     playerTexture: string = "";
+
+    userText: Phaser.GameObjects.Text | null = null;
+    npcText: Phaser.GameObjects.Text | null = null;
+    socket2: Socket | null = null;
+    interacting: boolean = false;
+    recorder2: MediaRecorder | null = null;
+
+    isAudioPlaying: boolean = false;
+    isNpcSocketConnected: boolean = false;
+    npcList: npcInfo[] = [];
+    alreadyRecommended: boolean = false;
     speed: number = 200;
     dashSpeed: number = 600;
+    tilemapLayerList: Phaser.Tilemaps.TilemapLayer[] = [];
+    currNpcName: string = "";
 
     constructor() {
         super("USAScene");
@@ -61,7 +91,27 @@ export default class USAScene extends Phaser.Scene {
         console.log("data: ", data);
     }
 
+    onSceneWake() {
+        console.log("Scene has been woken up!, scene: USA");
+        this.allPlayers = {};
+        this.gameSocketEventHandler(false);
+    }
+
+    onSceneSleep() {
+        console.log("Scene is now asleep!, scene: USA");
+        this.socket?.disconnect();
+        this.socket = null;
+        for (let socketId in this.allPlayers) {
+            this.allPlayers[socketId].textObj?.destroy();
+            this.allPlayers[socketId].sprite.destroy();
+            delete this.allPlayers[socketId];
+        }
+        this.player1 = null;
+    }
+
     create() {
+        this.events.on('wake', this.onSceneWake, this);
+        this.events.on('sleep', this.onSceneSleep, this);
         // this.add.image(400, 300, "background");
         // 배경 설정
         const map1 = this.make.tilemap({ key: "map1" });
@@ -169,161 +219,28 @@ export default class USAScene extends Phaser.Scene {
         interiors_32.setCollisionByProperty({ collides: true });
         interiors_33.setCollisionByProperty({ collides: true });
 
+        this.tilemapLayerList.push(roombuilder_1);
+        this.tilemapLayerList.push(roombuilder_2);
+        this.tilemapLayerList.push(exteriors_1);
+        this.tilemapLayerList.push(exteriors_2);
+        this.tilemapLayerList.push(exteriors_3);
+        this.tilemapLayerList.push(interiors_11);
+        this.tilemapLayerList.push(interiors_12);
+        this.tilemapLayerList.push(interiors_13);
+        this.tilemapLayerList.push(interiors_14);
+        this.tilemapLayerList.push(interiors_22);
+        this.tilemapLayerList.push(interiors_23);
+        this.tilemapLayerList.push(interiors_24);
+        this.tilemapLayerList.push(interiors_32);
+        this.tilemapLayerList.push(interiors_33);
+
         createCharacterAnims(this.anims);
-
-        this.socket = io(serverUrl);
-
-        this.socket.on("connect", () => {
-            console.log("connect, socket.id: ", this.socket!.id);
-            // create user
-            console.log("playerInfo : ", {
-                socketId: this.socket!.id,
-                nickname: this.userNickname,
-                playerTexture: this.playerTexture,
-                x: this.initial_x,
-                y: this.initial_y,
-            });
-            this.player1 = this.createPlayer({
-                socketId: this.socket!.id,
-                nickname: this.userNickname,
-                playerTexture: this.playerTexture,
-                x: this.initial_x,
-                y: this.initial_y,
-                scene: "USAScene",
-                dash: false,
-            });
-            // this.player1.setCollideWorldBounds(true); // player가 월드 경계를 넘어가지 않게 설정
-            this.cameras.main.startFollow(this.player1);
-
-            this.socket!.emit("connected", {
-                socketId: this.socket!.id,
-                nickname: this.userNickname,
-                playerTexture: this.playerTexture,
-                x: this.initial_x,
-                y: this.initial_y,
-                scene: "USAScene",
-            });
-
-            this.socket!.on(
-                "updateAlluser",
-                (otherPlayers: PlayerInfoDictionary) => {
-                    console.log("updateAlluser, allPlayers: ", otherPlayers);
-                    for (let key in otherPlayers) {
-                        console.log("updateAlluser, key: ", key);
-                        if (otherPlayers[key].socketId !== this.socket!.id) {
-                            if (
-                                !(otherPlayers[key].socketId in this.allPlayers)
-                            ) {
-                                let playerSprite: Phaser.Physics.Arcade.Sprite =
-                                    this.createPlayer(otherPlayers[key]);
-                                // playerSprite.setCollideWorldBounds(true);
-                                playerSprite.anims.play(
-                                    `${otherPlayers[key].playerTexture}_idle_down`,
-                                    true
-                                );
-                            } else {
-                                console.log(
-                                    "updateAlluser, already exist, so just set position"
-                                );
-                                this.allPlayers[
-                                    otherPlayers[key].socketId
-                                ].sprite.x = otherPlayers[key].x;
-                                this.allPlayers[
-                                    otherPlayers[key].socketId
-                                ].sprite.y = otherPlayers[key].y;
-                                this.allPlayers[
-                                    otherPlayers[key].socketId
-                                ].dash = otherPlayers[key].dash;
-                            }
-                        }
-                    }
-                }
-            );
-
-            this.socket!.on("newPlayerConnected", (playerInfo: PlayerInfo) => {
-                if (playerInfo.scene === "USAScene") {
-                    console.log("newPlayerConnected, playerInfo: ", playerInfo);
-                    if (playerInfo.socketId in this.allPlayers) {
-                        console.log("already exist, so just set position");
-                        this.allPlayers[playerInfo.socketId].sprite.x =
-                            playerInfo.x;
-                        this.allPlayers[playerInfo.socketId].sprite.y =
-                            playerInfo.y;
-                        this.allPlayers[playerInfo.socketId].dash =
-                            playerInfo.dash;
-                        console.log(
-                            "newPlayerConnected, playerSprite: ",
-                            this.allPlayers[playerInfo.socketId].sprite
-                        );
-                    } else {
-                        console.log("not exist, so create new one");
-                        let playerSprite: Phaser.Physics.Arcade.Sprite =
-                            this.createPlayer(playerInfo);
-                        // playerSprite.setCollideWorldBounds(true); // player가 월드 경계를 넘어가지 않게 설정;
-                        playerSprite.anims.play(
-                            `${playerInfo.playerTexture}_idle_down`,
-                            true
-                        );
-                    }
-                }
-            });
-
-            this.socket!.on("playerMoved", (playerInfo: PlayerInfo) => {
-                if (playerInfo.scene === "USAScene") {
-                    console.log("playerMoved, playerInfo: ", playerInfo);
-                    if (playerInfo.socketId in this.allPlayers) {
-                        console.log("already exist, so just set position");
-                        this.allPlayers[playerInfo.socketId].sprite.x =
-                            playerInfo.x;
-                        this.allPlayers[playerInfo.socketId].sprite.y =
-                            playerInfo.y;
-                        this.allPlayers[playerInfo.socketId].dash =
-                            playerInfo.dash;
-                    } else {
-                        console.log("not exist, so create new one");
-                        let playerSprite: Phaser.Physics.Arcade.Sprite =
-                            this.createPlayer(playerInfo);
-                        // playerSprite.setCollideWorldBounds(true); // player가 월드 경계를 넘어가지 않게 설정;
-                        playerSprite.anims.play(
-                            `${playerInfo.playerTexture}_idle_down`,
-                            true
-                        );
-                    }
-                }
-            });
-
-            this.socket!.on("playerDeleted", (playerInfo: PlayerInfo) => {
-                if (playerInfo.scene === "USAScene") {
-                    console.log("playerDeleted, playerInfo: ", playerInfo);
-                    if (playerInfo.socketId in this.allPlayers) {
-                        console.log("exist, deleted");
-                        this.allPlayers[playerInfo.socketId].sprite.destroy();
-                        delete this.allPlayers[playerInfo.socketId];
-                    } else {
-                        console.log("not exist, so do nothing");
-                    }
-                }
-            });
-
-            this.physics.add.collider(this.player1, roombuilder_1);
-            this.physics.add.collider(this.player1, roombuilder_2);
-            this.physics.add.collider(this.player1, exteriors_1);
-            this.physics.add.collider(this.player1, exteriors_2);
-            this.physics.add.collider(this.player1, exteriors_3);
-            this.physics.add.collider(this.player1, interiors_11);
-            this.physics.add.collider(this.player1, interiors_12);
-            this.physics.add.collider(this.player1, interiors_13);
-            this.physics.add.collider(this.player1, interiors_14);
-            this.physics.add.collider(this.player1, interiors_22);
-            this.physics.add.collider(this.player1, interiors_23);
-            this.physics.add.collider(this.player1, interiors_24);
-            this.physics.add.collider(this.player1, interiors_32);
-            this.physics.add.collider(this.player1, interiors_33);
-            this.createUSANpc();
-        });
-
+        if (this.socket) {
+            this.socket.disconnect();
+        }
+        this.gameSocketEventHandler();
+        
         this.cursors = this.input.keyboard!.createCursorKeys();
-        this.interactKey = this.input.keyboard!.addKey("X");
         this.interactText = this.add.text(10, 10, "", {
             color: "black",
             fontSize: "16px",
@@ -333,71 +250,414 @@ export default class USAScene extends Phaser.Scene {
             fontSize: "16px",
         });
 
-        this.input.keyboard!.on("keydown-X", async () => {
-            if (
-                Phaser.Math.Distance.Between(
-                    this.player1!.x,
-                    this.player1!.y,
-                    this.npc!.x,
-                    this.npc!.y
-                ) < 100
-            ) {
-                await navigator.mediaDevices
-                    .getUserMedia({ audio: true })
-                    .then((stream) => {
-                        if (
-                            this.recorder === null ||
-                            this.recorder === undefined
-                        ) {
-                            console.log("recorder is null, so create new one");
-                            this.recorder = new MediaRecorder(stream);
-                        }
-                        this.recorder.ondataavailable = (e) => {
-                            // console.log("ondataavailable_this: ", this);
-                            // console.log("ondataavailable_chunks: ", chunks);
-                            chunks.push(e.data);
-                        };
-                        this.recorder.onstop = () => {
-                            // console.log("onstop_chunks: ", chunks);
-                            const blob = new Blob(chunks, {
-                                type: "audio/wav",
-                            });
-                            // const file = new File([blob], "recording.ogg", { type: blob.type });
-                            const formData = new FormData();
-                            chunks = [];
-                            formData.append("audio", blob, "recording.wav");
+        let valve_E = true;
+        // npc 와의 대화를 위한 키 설정
+        let countUserSpeech: number;
+        const addCountUserSpeech = () => {
+            countUserSpeech++;
+            console.log("User Speech Count: ", countUserSpeech);
+        };
+        let grammarCorrections: { userText: string; correctedText: string }[] =
+            [];
+        const processGrammarCorrection = (data: {
+            userText: string;
+            correctedText: string;
+        }) => {
+            console.log("grammarCorrection event data: ", data);
+            grammarCorrections.push(data);
+        };
+        this.input.keyboard!.on("keydown-E", async () => {
+            if(this.player1 === null || this.player1 === undefined){
+                return;
+            }
+            for (let npcInfo of this.npcList) {
+                if (
+                    Phaser.Math.Distance.Between(
+                        this.player1!.x,
+                        this.player1!.y,
+                        npcInfo.x,
+                        npcInfo.y
+                    ) < 100
+                ) {
+                    console.log("npcInfo: ", npcInfo);
+                    if (npcInfo.role === "freeTalkingPlace") {
+                        console.log("chair");
 
-                            axios
-                                .post(serverUrl + "/interact", formData, {
-                                    headers: {
-                                        "Content-Type": "multipart/form-data",
-                                    },
+                        if (valve_E === true) {
+                            store.dispatch(
+                                setSocketNamespace({
+                                    socketNamespace: `${serverUrl}/freedialog/${npcInfo.name}`,
                                 })
-                                .then((response) => {
-                                    // console.log(response);
-                                    console.log(response.data);
-                                    if (response.data.audioUrl) {
-                                        // If the audio URL is provided
-                                        const audio = new Audio(
-                                            response.data.audioUrl
-                                        );
-                                        audio.play();
-                                    }
-                                })
-                                .catch((error) => {
-                                    console.log(error);
-                                });
-                        };
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                    });
-                if (this.recorder) {
-                    if (this.recorder.state === "recording") {
-                        this.recorder.stop();
+                            );
+                            // store.dispatch(appendSocketNamespace({ socketNamespace: `/freedialog` }));
+                            store.dispatch(openFreedialog());
+                            this.cursors!.left.enabled = false;
+                            this.cursors!.right.enabled = false;
+                            this.cursors!.up.enabled = false;
+                            this.cursors!.down.enabled = false;
+                            valve_E = false;
+                            window.addEventListener("exitcall", (e: Event) => {
+                                console.log("exitcall event listener");
+                                this.player1!.setVelocity(0, 0);
+                                this.player1!.setPosition(
+                                    this.player1!.x,
+                                    this.player1!.y
+                                );
+
+                                this.cursors!.left.isDown = false;
+                                this.cursors!.right.isDown = false;
+                                this.cursors!.up.isDown = false;
+                                this.cursors!.down.isDown = false;
+
+                                this.cursors!.left.enabled = true;
+                                this.cursors!.right.enabled = true;
+                                this.cursors!.up.enabled = true;
+                                this.cursors!.down.enabled = true;
+
+                                store.dispatch(openAirport());
+                                valve_E = true;
+                            });
+                        } else {
+                            this.player1!.setVelocity(0, 0);
+                            this.player1!.setPosition(
+                                this.player1!.x,
+                                this.player1!.y
+                            );
+
+                            this.cursors!.left.isDown = false;
+                            this.cursors!.right.isDown = false;
+                            this.cursors!.up.isDown = false;
+                            this.cursors!.down.isDown = false;
+
+                            this.cursors!.left.enabled = true;
+                            this.cursors!.right.enabled = true;
+                            this.cursors!.up.enabled = true;
+                            this.cursors!.down.enabled = true;
+
+                            store.dispatch(openAirport());
+                            valve_E = true;
+                        }
+                    } else if (npcInfo.name.includes("Liberty")) {
+                        console.log("liberty");
+                        handleScene(GAME_STATUS.AIRPORT, {});
                     } else {
-                        this.recorder.start();
+                        if (valve_E === true) {
+                            if (this.isAudioPlaying) {
+                                return;
+                            }
+                            this.player1!.setVelocity(0, 0);
+                            this.player1!.anims.play(
+                                `${this.player1!.texture.key}_idle_down`,
+                                true
+                            );
+                            store.dispatch(openNPCDialog());
+
+                            this.cursors!.left.enabled = false;
+                            this.cursors!.right.enabled = false;
+                            this.cursors!.up.enabled = false;
+                            this.cursors!.down.enabled = false;
+
+                            if (this.socket2 === null || this.socket2 === undefined) {
+                                this.socket2 = io(`${serverUrl}/interaction`);
+                                this.socket2.on("connect", () => {
+                                    this.currNpcName = npcInfo.name;
+                                    console.log("connect, interaction socket.id: ", this.socket2!.id);
+                                    countUserSpeech = 0;
+                                    this.isNpcSocketConnected = true;
+                                    window.addEventListener(
+                                        "recomButtonClicked",
+                                        (e: Event) => {
+                                            const customEvent =
+                                                e as CustomEvent;
+                                            store.dispatch(clearSentences());
+                                            if (
+                                                customEvent.detail.message === 0
+                                            ) {
+                                                store.dispatch(
+                                                    appendSentence({
+                                                        _id: "1",
+                                                        sentence:
+                                                            "추천 문장을 준비 중입니다. 잠시만 기다려 주세요.",
+                                                    })
+                                                );
+                                            }
+                                            console.log(
+                                                "lastMessage in SectanceBox: ",
+                                                customEvent.detail.lastMessage
+                                            );
+                                            this.socket2!.emit(
+                                                "getRecommendedResponses",
+                                                this.alreadyRecommended,
+                                                customEvent.detail.lastMessage
+                                            );
+                                            store.dispatch(
+                                                setCanRequestRecommend(false)
+                                            );
+                                        }
+                                    );
+
+                                    this.interacting = true;
+                                    console.log(
+                                        "connect, interaction socket.id: ",
+                                        this.socket2!.id
+                                    );
+                                    this.socket2!.on(
+                                        "speechToText",
+                                        (response: string) => {
+                                            if (
+                                                response === "" ||
+                                                response ===
+                                                "convertSpeechToText Error"
+                                            ) {
+                                                store.dispatch(
+                                                    setMessage(
+                                                        "다시 말씀해주세요"
+                                                    )
+                                                );
+                                                store.dispatch(
+                                                    setMessageColor("red")
+                                                );
+                                                setTimeout(() => {
+                                                    store.dispatch(
+                                                        setMessage(
+                                                            "R키를 눌러 녹음을 시작하세요"
+                                                        )
+                                                    );
+                                                    store.dispatch(
+                                                        setMessageColor("black")
+                                                    );
+                                                }, 2500);
+                                                store.dispatch(
+                                                    setCanRequestRecommend(
+                                                        false
+                                                    )
+                                                );
+                                                store.dispatch(setRecord(true));
+                                                this.isAudioPlaying = false;
+                                            } else {
+                                                addCountUserSpeech();
+                                                console.log("USER: ", response);
+                                                console.log(
+                                                    "playerTexture",
+                                                    this.playerTexture
+                                                );
+                                                store.dispatch(
+                                                    appendMessage({
+                                                        playerId: this.playerId,
+                                                        name: this.userNickname,
+                                                        img: this.playerTexture,
+                                                        // img: "",
+                                                        side: "right",
+                                                        text: response,
+                                                    })
+                                                );
+                                            }
+                                        }
+                                    );
+                                    this.socket2!.on(
+                                        "npcResponse",
+                                        (response: string) => {
+                                            console.log("NPC: ", response);
+                                            store.dispatch(
+                                                appendMessage({
+                                                    playerId: this.playerId,
+                                                    name: npcInfo.name,
+                                                    img: npcInfo.texture,
+                                                    // img: "",
+                                                    side: "left",
+                                                    text: response,
+                                                })
+                                            );
+                                            store.dispatch(clearSentences());
+                                            this.alreadyRecommended = false;
+                                        }
+                                    );
+                                    this.socket2!.on(
+                                        "totalResponse",
+                                        (response: any) => {
+                                            console.log(
+                                                "totalResponse event response: ",
+                                                response
+                                            );
+                                            // this.isAudioPlaying = true;
+                                            const audio = new Audio(
+                                                response.audioUrl
+                                            );
+                                            audio.onended = () => {
+                                                console.log("audio.onended");
+                                                this.isAudioPlaying = false;
+                                                store.dispatch(
+                                                    setMessage(
+                                                        "R키를 눌러 녹음을 시작하세요"
+                                                    )
+                                                );
+                                                store.dispatch(
+                                                    setCanRequestRecommend(true)
+                                                );
+                                            };
+                                            audio.play();
+                                        }
+                                    );
+
+                                    this.socket2!.on(
+                                        "grammarCorrection",
+                                        processGrammarCorrection
+                                    );
+                                    this.socket2!.on(
+                                        "recommendedResponses",
+                                        (responses: string[]) => {
+                                            console.log(
+                                                "Recommended Responses: ",
+                                                responses
+                                            );
+                                            // 요청 실패, 재요청
+                                            if (responses.length === 1) {
+                                                console.log(
+                                                    "요청 실패, 재요청"
+                                                );
+                                                this.alreadyRecommended = false;
+                                                this.socket2!.emit(
+                                                    "getRecommendedResponses",
+                                                    this.alreadyRecommended,
+                                                    responses[0]
+                                                );
+                                                store.dispatch(
+                                                    setCanRequestRecommend(
+                                                        false
+                                                    )
+                                                );
+                                                return;
+                                            }
+                                            // TODO : Store에 SentenceBox 상태정의하고 dispatch
+                                            store.dispatch(clearSentences());
+                                            responses.forEach(
+                                                (response, index) => {
+                                                    store.dispatch(
+                                                        appendSentence({
+                                                            _id: index.toString(),
+                                                            sentence: response,
+                                                        })
+                                                    );
+                                                }
+                                            );
+                                            this.alreadyRecommended = true;
+                                        }
+                                    );
+                                });
+                            } else {
+                                // 이미 소켓이 연결되어 있는데 다시 한번 E키를 누른 경우 -> 대화 종료 상황
+                                this.currNpcName = "";
+                                this.isNpcSocketConnected = false;
+                                this.player1!.setVelocity(0, 0);
+                                this.player1!.setPosition(
+                                    this.player1!.x,
+                                    this.player1!.y
+                                );
+
+                                this.cursors!.left.isDown = false;
+                                this.cursors!.right.isDown = false;
+                                this.cursors!.up.isDown = false;
+                                this.cursors!.down.isDown = false;
+
+                                this.cursors!.left.enabled = true;
+                                this.cursors!.right.enabled = true;
+                                this.cursors!.up.enabled = true;
+                                this.cursors!.down.enabled = true;
+
+                                this.interacting = false;
+                                this.alreadyRecommended = false;
+                                store.dispatch(setCanRequestRecommend(false));
+
+                                this.socket2?.disconnect();
+                                this.socket2 = null;
+                                // store.dispatch(clearMessages());
+                                // store.dispatch(openAirport());
+                                let score =
+                                    ((countUserSpeech -
+                                        grammarCorrections.length) /
+                                        countUserSpeech) *
+                                    100;
+                                console.log("score : ", score);
+                                store.dispatch(setScore({ score: score }));
+                                grammarCorrections.forEach((data, index) => {
+                                    console.log(
+                                        "grammarCorrection data: ",
+                                        data
+                                    );
+                                    store.dispatch(
+                                        appendCorrection({
+                                            original: data.userText,
+                                            correction: data.correctedText,
+                                        })
+                                    );
+                                });
+
+                                store.dispatch(openReport());
+                                grammarCorrections = [];
+                                valve_E = false;
+                            }
+                        } else {
+                            countUserSpeech = 0;
+                            store.dispatch(setScore({ score: 0 }));
+                            store.dispatch(clearCorrections());
+                            store.dispatch(clearMessages());
+                            store.dispatch(clearSentences());
+                            store.dispatch(openAirport());
+                            valve_E = true;
+                        }
                     }
+                    break;
+                }
+            }
+        });
+        // 녹음 데이터를 보내고 응답을 받는 키 설정
+        this.input.keyboard!.on("keydown-R", async () => {
+            if (!this.isNpcSocketConnected) {
+                console.log("NPC와 연결되지 않았습니다.");
+                return;
+            }
+            if (this.isAudioPlaying) {
+                return;
+            }
+            for (let npcInfo of this.npcList) {
+                if (
+                    Phaser.Math.Distance.Between(
+                        this.player1!.x,
+                        this.player1!.y,
+                        npcInfo.x,
+                        npcInfo.y
+                    ) < 100 &&
+                    this.socket2?.connected
+                ) {
+                    console.log("R key pressed");
+
+                    if (this.recorder2 === null || this.recorder2 === undefined) {
+                        await this.recordEventHandler().then(() => {
+                            // console.log("recordEventHandler finished");
+                        });
+                    }
+
+                    if (this.recorder2) {
+                        if (this.recorder2.state === "recording") {
+                            store.dispatch(setRecord(true));
+                            store.dispatch(
+                                setMessage("R키를 눌러 녹음을 시작하세요")
+                            );
+                            this.isAudioPlaying = true;
+                            this.recorder2!.stop();
+                        } else {
+                            store.dispatch(setCanRequestRecommend(false));
+                            store.dispatch(setRecord(false));
+                            store.dispatch(
+                                setMessage(
+                                    "녹음 중입니다. R키를 눌러 녹음을 종료하세요"
+                                )
+                            );
+                            this.recorder2!.start();
+                        }
+                    }
+
+                    break;
                 }
             }
         });
@@ -548,16 +808,55 @@ export default class USAScene extends Phaser.Scene {
         );
 
         // Add the sprite to the Phaser scene
-        // this.add.existing(newPlayer.sprite);
-        // this.physics.add.existing(newPlayer.sprite);
-        // this.anims.play(`${playerInfo.playerTexture}_idle_down`, true);
-        console.log("createPlayer, newPlayer: ", newPlayer);
         this.allPlayers[playerInfo.socketId] = newPlayer;
-        console.log("createPlayer, allPlayers: ", this.allPlayers);
         return playerSprite;
     }
+    async recordEventHandler() {
 
+        await navigator.mediaDevices
+            .getUserMedia({ audio: true })
+            .then((stream) => {
+                if (this.recorder2 === null || this.recorder2 === undefined) {
+                    this.recorder2 = new MediaRecorder(stream);
+                }
+
+                this.recorder2.ondataavailable = (e) => {
+                    chunks.push(e.data);
+                };
+
+                this.recorder2.onstop = () => {
+                    const blob: Blob = new Blob(chunks, { type: "audio/wav" });
+                    chunks = [];
+                    blob.arrayBuffer().then((buffer) => {
+                        console.log("buffer: ", buffer);
+                        store.dispatch(
+                            setMessage("응답 중입니다. 잠시만 기다려주세요")
+                        );
+                        this.socket2!.emit("audioSend", {
+                            userNickname: this.userNickname,
+                            npcName: this.currNpcName, // TODO: npc 이름 받아오기
+                            audioDataBuffer: buffer,
+                        });
+                    });
+                };
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
     createUSANpc() {
+        let gate: npcInfo = {
+            name: "statueOfLiberty",
+            x: this.initial_x,
+            y: this.initial_y,
+            texture: "statueOfLiberty",
+            sprite: null,
+            role: "npc",
+        };
+        gate.sprite = this.physics.add.sprite(gate.x, gate.y, gate.texture);
+        gate.sprite.setScale(0.35);
+        this.npcList.push(gate);
+
         this.physics.add.sprite(1819, 1200, "statueOfLiberty");
 
         let npc1: npcInfo = {
@@ -637,6 +936,133 @@ export default class USAScene extends Phaser.Scene {
         npc7.sprite = this.physics.add.sprite(npc7.x, npc7.y, npc7.texture);
         this.npcList.push(npc7);
     }
+    gameSocketEventHandler(initial: boolean = true) {
+        this.socket = io(serverUrl);
 
+        this.socket!.on("connect", () => {
+            console.log("connect, socket.id: ", this.socket!.id);
+            this.player1 = this.createPlayer({
+                socketId: this.socket!.id,
+                nickname: this.userNickname,
+                playerTexture: this.playerTexture,
+                x: this.initial_x,
+                y: this.initial_y,
+                scene: "USAScene",
+                dash: false,
+            });
 
+            this.cameras.main.startFollow(this.player1);
+            this.cameras.main.zoom = 1.2;
+
+            this.socket!.emit("connected", {
+                socketId: this.socket!.id,
+                nickname: this.userNickname,
+                playerTexture: this.playerTexture,
+                x: this.initial_x,
+                y: this.initial_y,
+                scene: "USAScene",
+                dash: false,
+            });
+
+            this.socket!.on("updateAlluser", (otherPlayers: PlayerInfoDictionary) => {
+                console.log("updateAlluser, allPlayers: ", otherPlayers);
+                for (let key in otherPlayers) {
+                    console.log("updateAlluser, key: ", key);
+                    if (otherPlayers[key].socketId !== this.socket!.id) {
+                        if (
+                            !(otherPlayers[key].socketId in this.allPlayers)
+                        ) {
+                            let playerSprite: Phaser.Physics.Arcade.Sprite =
+                                this.createPlayer(otherPlayers[key]);
+                            // playerSprite.setCollideWorldBounds(true);
+                            playerSprite.anims.play(
+                                `${otherPlayers[key].playerTexture}_idle_down`,
+                                true
+                            );
+                        } else {
+                            console.log(
+                                "updateAlluser, already exist, so just set position"
+                            );
+
+                            this.allPlayers[otherPlayers[key].socketId].x =
+                                otherPlayers[key].x;
+                            this.allPlayers[otherPlayers[key].socketId].y =
+                                otherPlayers[key].y;
+                            this.allPlayers[
+                                otherPlayers[key].socketId
+                            ].dash = otherPlayers[key].dash;
+                        }
+                    }
+                }
+            }
+            );
+
+            this.socket!.on("newPlayerConnected", (playerInfo: PlayerInfo) => {
+                if (playerInfo.scene === "USAScene") {
+                    console.log("newPlayerConnected, playerInfo: ", playerInfo);
+                    if (playerInfo.socketId in this.allPlayers) {
+                        console.log("already exist, so just set position");
+
+                        this.allPlayers[playerInfo.socketId].x = playerInfo.x;
+                        this.allPlayers[playerInfo.socketId].y = playerInfo.y;
+                        this.allPlayers[playerInfo.socketId].dash =
+                            playerInfo.dash;
+                    } else {
+                        console.log("not exist, so create new one");
+                        let playerSprite: Phaser.Physics.Arcade.Sprite =
+                            this.createPlayer(playerInfo);
+                        playerSprite.anims.play(
+                            `${playerInfo.playerTexture}_idle_down`,
+                            true
+                        );
+                    }
+                }
+            });
+
+            this.socket!.on("playerMoved", (playerInfo: PlayerInfo) => {
+                if (playerInfo.scene === "USAScene") {
+                    console.log("playerMoved, playerInfo: ", playerInfo);
+                    if (playerInfo.socketId in this.allPlayers) {
+                        console.log("already exist, so just set position");
+                        this.allPlayers[playerInfo.socketId].x = playerInfo.x;
+                        this.allPlayers[playerInfo.socketId].y = playerInfo.y;
+                        this.allPlayers[playerInfo.socketId].dash =
+                            playerInfo.dash;
+                    } else {
+                        console.log("not exist, so create new one");
+                        let playerSprite: Phaser.Physics.Arcade.Sprite =
+                            this.createPlayer(playerInfo);
+                        playerSprite.anims.play(
+                            `${playerInfo.playerTexture}_idle_down`,
+                            true
+                        );
+                    }
+                }
+            });
+
+            this.socket!.on("playerDeleted", (playerInfo: PlayerInfo) => {
+                if (playerInfo.scene === "USAScene") {
+                    console.log("playerDeleted, playerInfo: ", playerInfo);
+                    if (playerInfo.socketId in this.allPlayers) {
+                        console.log("exist, deleted");
+                        this.allPlayers[playerInfo.socketId].textObj?.destroy();
+                        this.allPlayers[playerInfo.socketId].sprite.destroy();
+                        delete this.allPlayers[playerInfo.socketId];
+                    } else {
+                        console.log("not exist, so do nothing");
+                    }
+                }
+            });
+            this.socket!.on("disconnect", (reason: string) => {
+                console.log("client side disconnect, reason: ", reason);
+                // window.location.reload();
+            });
+            for (let platform of this.tilemapLayerList) {
+                this.physics.add.collider(this.player1, platform);
+            }
+            if (initial) {
+                this.createUSANpc();
+            }
+        });
+    }
 }

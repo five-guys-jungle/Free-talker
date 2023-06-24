@@ -18,6 +18,7 @@ import {
     openAirport,
     openFreedialog,
     openReport,
+    GAME_STATUS,
 } from "../stores/gameSlice";
 import { npcInfo } from "../characters/Npc";
 import { appendMessage, clearMessages } from "../stores/talkBoxSlice";
@@ -73,6 +74,8 @@ export default class AirportScene extends Phaser.Scene {
     alreadyRecommended: boolean = false;
     speed: number = 200;
     dashSpeed: number = 600;
+    tilemapLayerList: Phaser.Tilemaps.TilemapLayer[] = [];
+    currNpcName: string = "";
 
     constructor() {
         super("AirportScene");
@@ -88,8 +91,27 @@ export default class AirportScene extends Phaser.Scene {
         this.playerTexture = data.playerTexture;
         console.log("data: ", data);
     }
+    onSceneWake() {
+        console.log("Scene has been woken up!, scene: AirportScene");
+        console.log("allPlayers: ", this.allPlayers);
+        this.gameSocketEventHandler(false);
+    }
+
+    onSceneSleep() {
+        console.log("Scene is now asleep!, scene: AirportScene");
+        this.socket?.disconnect();
+        this.socket = null;
+        for (let socketId in this.allPlayers) {
+            this.allPlayers[socketId].textObj?.destroy();
+            this.allPlayers[socketId].sprite.destroy();
+            delete this.allPlayers[socketId];
+        }
+        this.player1 = null;
+    }
 
     create() {
+        this.events.on('wake', this.onSceneWake, this);
+        this.events.on('sleep', this.onSceneSleep, this);
         // this.add.image(400, 300, "background");
         // 배경 설정
         this.cursors = this.input.keyboard!.createCursorKeys();
@@ -134,145 +156,20 @@ export default class AirportScene extends Phaser.Scene {
         platform6.setCollisionByProperty({ collides: true });
         platform7.setCollisionByProperty({ collides: true });
 
+        this.tilemapLayerList.push(platform2);
+        this.tilemapLayerList.push(platform3);
+        this.tilemapLayerList.push(platform4);
+        this.tilemapLayerList.push(platform5);
+        this.tilemapLayerList.push(platform6);
+        this.tilemapLayerList.push(platform7);
+
         createCharacterAnims(this.anims);
         if (this.socket) {
             this.socket.disconnect();
         }
-        this.socket = io(serverUrl);
-
-        this.socket.on("connect", () => {
-            console.log("connect, socket.id: ", this.socket!.id);
-            this.player1 = this.createPlayer({
-                socketId: this.socket!.id,
-                nickname: this.userNickname,
-                playerTexture: this.playerTexture,
-                x: this.initial_x,
-                y: this.initial_y,
-                scene: "AirportScene",
-                dash: false,
-            });
-
-            this.cameras.main.startFollow(this.player1);
-            this.cameras.main.zoom = 1.2;
-
-            this.socket!.emit("connected", {
-                socketId: this.socket!.id,
-                nickname: this.userNickname,
-                playerTexture: this.playerTexture,
-                x: this.initial_x,
-                y: this.initial_y,
-                scene: "AirportScene",
-                dash: false,
-            });
-
-            this.socket!.on(
-                "updateAlluser",
-                (otherPlayers: PlayerInfoDictionary) => {
-                    console.log("updateAlluser, allPlayers: ", otherPlayers);
-                    for (let key in otherPlayers) {
-                        console.log("updateAlluser, key: ", key);
-                        if (otherPlayers[key].socketId !== this.socket!.id) {
-                            if (
-                                !(otherPlayers[key].socketId in this.allPlayers)
-                            ) {
-                                let playerSprite: Phaser.Physics.Arcade.Sprite =
-                                    this.createPlayer(otherPlayers[key]);
-                                // playerSprite.setCollideWorldBounds(true);
-                                playerSprite.anims.play(
-                                    `${otherPlayers[key].playerTexture}_idle_down`,
-                                    true
-                                );
-                            } else {
-                                console.log(
-                                    "updateAlluser, already exist, so just set position"
-                                );
-
-                                this.allPlayers[otherPlayers[key].socketId].x =
-                                    otherPlayers[key].x;
-                                this.allPlayers[otherPlayers[key].socketId].y =
-                                    otherPlayers[key].y;
-                                this.allPlayers[
-                                    otherPlayers[key].socketId
-                                ].dash = otherPlayers[key].dash;
-                            }
-                        }
-                    }
-                }
-            );
-
-            this.socket!.on("newPlayerConnected", (playerInfo: PlayerInfo) => {
-                if (playerInfo.scene === "AirportScene") {
-                    console.log("newPlayerConnected, playerInfo: ", playerInfo);
-                    if (playerInfo.socketId in this.allPlayers) {
-                        console.log("already exist, so just set position");
-
-                        this.allPlayers[playerInfo.socketId].x = playerInfo.x;
-                        this.allPlayers[playerInfo.socketId].y = playerInfo.y;
-                        this.allPlayers[playerInfo.socketId].dash =
-                            playerInfo.dash;
-                    } else {
-                        console.log("not exist, so create new one");
-                        let playerSprite: Phaser.Physics.Arcade.Sprite =
-                            this.createPlayer(playerInfo);
-                        playerSprite.anims.play(
-                            `${playerInfo.playerTexture}_idle_down`,
-                            true
-                        );
-                    }
-                }
-            });
-
-            this.socket!.on("playerMoved", (playerInfo: PlayerInfo) => {
-                if (playerInfo.scene === "AirportScene") {
-                    console.log("playerMoved, playerInfo: ", playerInfo);
-                    if (playerInfo.socketId in this.allPlayers) {
-                        console.log("already exist, so just set position");
-                        this.allPlayers[playerInfo.socketId].x = playerInfo.x;
-                        this.allPlayers[playerInfo.socketId].y = playerInfo.y;
-                        this.allPlayers[playerInfo.socketId].dash =
-                            playerInfo.dash;
-                    } else {
-                        console.log("not exist, so create new one");
-                        let playerSprite: Phaser.Physics.Arcade.Sprite =
-                            this.createPlayer(playerInfo);
-                        playerSprite.anims.play(
-                            `${playerInfo.playerTexture}_idle_down`,
-                            true
-                        );
-                    }
-                }
-            });
-
-            this.socket!.on("playerDeleted", (playerInfo: PlayerInfo) => {
-                if (playerInfo.scene === "AirportScene") {
-                    console.log("playerDeleted, playerInfo: ", playerInfo);
-                    if (playerInfo.socketId in this.allPlayers) {
-                        console.log("exist, deleted");
-                        this.allPlayers[playerInfo.socketId].textObj?.destroy();
-                        this.allPlayers[playerInfo.socketId].sprite.destroy();
-                        delete this.allPlayers[playerInfo.socketId];
-                    } else {
-                        console.log("not exist, so do nothing");
-                    }
-                }
-            });
-            this.socket!.on("disconnect", (reason: string) => {
-                console.log("client side disconnect, reason: ", reason);
-                window.location.reload();
-            });
-
-            this.physics.add.collider(this.player1, platform2);
-            this.physics.add.collider(this.player1, platform3);
-            this.physics.add.collider(this.player1, platform4);
-            this.physics.add.collider(this.player1, platform5);
-            this.physics.add.collider(this.player1, platform6);
-            this.physics.add.collider(this.player1, platform7);
-
-            this.createAirportNpc();
-        });
-
+        this.gameSocketEventHandler();
+        
         this.cursors = this.input.keyboard!.createCursorKeys();
-        this.interactKey = this.input.keyboard!.addKey("X");
         this.interactText = this.add.text(10, 10, "", {
             color: "black",
             fontSize: "16px",
@@ -299,6 +196,9 @@ export default class AirportScene extends Phaser.Scene {
             grammarCorrections.push(data);
         };
         this.input.keyboard!.on("keydown-E", async () => {
+            if(this.player1 === null || this.player1 === undefined){
+                return;
+            }
             for (let npcInfo of this.npcList) {
                 if (
                     Phaser.Math.Distance.Between(
@@ -368,7 +268,7 @@ export default class AirportScene extends Phaser.Scene {
                         }
                     } else if (npcInfo.name.includes("Liberty")) {
                         console.log("liberty");
-                        handleScene("USA", {
+                        handleScene(GAME_STATUS.USA, {
                             playerId: this.playerId,
                             playerNickname: this.userNickname,
                             playerTexture: this.playerTexture,
@@ -396,6 +296,7 @@ export default class AirportScene extends Phaser.Scene {
                             ) {
                                 this.socket2 = io(`${serverUrl}/interaction`);
                                 this.socket2.on("connect", () => {
+                                    this.currNpcName = npcInfo.name;
                                     console.log(
                                         "connect, interaction socket.id: ",
                                         this.socket2!.id
@@ -445,7 +346,7 @@ export default class AirportScene extends Phaser.Scene {
                                             if (
                                                 response === "" ||
                                                 response ===
-                                                    "convertSpeechToText Error"
+                                                "convertSpeechToText Error"
                                             ) {
                                                 store.dispatch(
                                                     setMessage(
@@ -589,6 +490,7 @@ export default class AirportScene extends Phaser.Scene {
                                     );
                                 });
                             } else {
+                                this.currNpcName = "";
                                 // 이미 소켓이 연결되어 있는데 다시 한번 E키를 누른 경우 -> 대화 종료 상황
                                 this.isNpcSocketConnected = false;
                                 this.player1!.setVelocity(0, 0);
@@ -853,19 +755,15 @@ export default class AirportScene extends Phaser.Scene {
         );
 
         // Add the sprite to the Phaser scene
-        console.log("createPlayer, newPlayer: ", newPlayer);
         this.allPlayers[playerInfo.socketId] = newPlayer;
-        console.log("createPlayer, allPlayers: ", this.allPlayers);
         return playerSprite;
     }
     async recordEventHandler() {
-        console.log("recordEventHandler");
 
         await navigator.mediaDevices
             .getUserMedia({ audio: true })
             .then((stream) => {
                 if (this.recorder2 === null || this.recorder2 === undefined) {
-                    console.log("recorder is null, so create new one");
                     this.recorder2 = new MediaRecorder(stream);
                 }
 
@@ -876,16 +774,15 @@ export default class AirportScene extends Phaser.Scene {
                 this.recorder2.onstop = () => {
                     const blob: Blob = new Blob(chunks, { type: "audio/wav" });
                     chunks = [];
-                    console.log("record2 onstop event callback function");
-                    console.log("blob: ", blob);
                     blob.arrayBuffer().then((buffer) => {
                         console.log("buffer: ", buffer);
                         store.dispatch(
                             setMessage("응답 중입니다. 잠시만 기다려주세요")
                         );
+                        console.log("this.currNpcName: ", this.currNpcName);
                         this.socket2!.emit("audioSend", {
                             userNickname: this.userNickname,
-                            npcName: "ImmigrationOfficer", // TODO: npc 이름 받아오기
+                            npcName: this.currNpcName, // TODO: npc 이름 받아오기
                             audioDataBuffer: buffer,
                         });
                     });
@@ -897,7 +794,7 @@ export default class AirportScene extends Phaser.Scene {
     }
     createAirportNpc() {
         let npc1: npcInfo = {
-            name: "immigrationOfficer",
+            name: "ImmigrationOfficer",
             x: 1700,
             y: 1100,
             texture: "immigrationOfficer",
@@ -930,4 +827,136 @@ export default class AirportScene extends Phaser.Scene {
         npc2.sprite.setScale(0.35);
         this.npcList.push(npc2);
     }
+    gameSocketEventHandler(initial: boolean = true) {
+        this.socket = io(serverUrl);
+
+        this.socket.on("connect", () => {
+            console.log("connect, socket.id: ", this.socket!.id);
+            this.player1 = this.createPlayer({
+                socketId: this.socket!.id,
+                nickname: this.userNickname,
+                playerTexture: this.playerTexture,
+                x: this.initial_x,
+                y: this.initial_y,
+                scene: "AirportScene",
+                dash: false,
+            });
+
+            this.cameras.main.startFollow(this.player1);
+            this.cameras.main.zoom = 1.2;
+
+            this.socket!.emit("connected", {
+                socketId: this.socket!.id,
+                nickname: this.userNickname,
+                playerTexture: this.playerTexture,
+                x: this.initial_x,
+                y: this.initial_y,
+                scene: "AirportScene",
+                dash: false,
+            });
+
+            this.socket!.on(
+                "updateAlluser",
+                (otherPlayers: PlayerInfoDictionary) => {
+                    console.log("updateAlluser, allPlayers: ", otherPlayers);
+                    for (let key in otherPlayers) {
+                        console.log("updateAlluser, key: ", key);
+                        if (otherPlayers[key].socketId !== this.socket!.id) {
+                            if (
+                                !(otherPlayers[key].socketId in this.allPlayers)
+                            ) {
+                                let playerSprite: Phaser.Physics.Arcade.Sprite =
+                                    this.createPlayer(otherPlayers[key]);
+                                // playerSprite.setCollideWorldBounds(true);
+                                playerSprite.anims.play(
+                                    `${otherPlayers[key].playerTexture}_idle_down`,
+                                    true
+                                );
+                            } else {
+                                console.log(
+                                    "updateAlluser, already exist, so just set position"
+                                );
+
+                                this.allPlayers[otherPlayers[key].socketId].x =
+                                    otherPlayers[key].x;
+                                this.allPlayers[otherPlayers[key].socketId].y =
+                                    otherPlayers[key].y;
+                                this.allPlayers[
+                                    otherPlayers[key].socketId
+                                ].dash = otherPlayers[key].dash;
+                            }
+                        }
+                    }
+                }
+            );
+
+            this.socket!.on("newPlayerConnected", (playerInfo: PlayerInfo) => {
+                if (playerInfo.scene === "AirportScene") {
+                    console.log("newPlayerConnected, playerInfo: ", playerInfo);
+                    if (playerInfo.socketId in this.allPlayers) {
+                        console.log("already exist, so just set position");
+
+                        this.allPlayers[playerInfo.socketId].x = playerInfo.x;
+                        this.allPlayers[playerInfo.socketId].y = playerInfo.y;
+                        this.allPlayers[playerInfo.socketId].dash =
+                            playerInfo.dash;
+                    } else {
+                        console.log("not exist, so create new one");
+                        let playerSprite: Phaser.Physics.Arcade.Sprite =
+                            this.createPlayer(playerInfo);
+                        playerSprite.anims.play(
+                            `${playerInfo.playerTexture}_idle_down`,
+                            true
+                        );
+                    }
+                }
+            });
+
+            this.socket!.on("playerMoved", (playerInfo: PlayerInfo) => {
+                if (playerInfo.scene === "AirportScene") {
+                    console.log("playerMoved, playerInfo: ", playerInfo);
+                    if (playerInfo.socketId in this.allPlayers) {
+                        console.log("already exist, so just set position");
+                        this.allPlayers[playerInfo.socketId].x = playerInfo.x;
+                        this.allPlayers[playerInfo.socketId].y = playerInfo.y;
+                        this.allPlayers[playerInfo.socketId].dash =
+                            playerInfo.dash;
+                    } else {
+                        console.log("not exist, so create new one");
+                        let playerSprite: Phaser.Physics.Arcade.Sprite =
+                            this.createPlayer(playerInfo);
+                        playerSprite.anims.play(
+                            `${playerInfo.playerTexture}_idle_down`,
+                            true
+                        );
+                    }
+                }
+            });
+
+            this.socket!.on("playerDeleted", (playerInfo: PlayerInfo) => {
+                if (playerInfo.scene === "AirportScene") {
+                    console.log("playerDeleted, playerInfo: ", playerInfo);
+                    if (playerInfo.socketId in this.allPlayers) {
+                        console.log("exist, deleted");
+                        this.allPlayers[playerInfo.socketId].textObj?.destroy();
+                        this.allPlayers[playerInfo.socketId].sprite.destroy();
+                        delete this.allPlayers[playerInfo.socketId];
+                    } else {
+                        console.log("not exist, so do nothing");
+                    }
+                }
+            });
+            this.socket!.on("disconnect", (reason: string) => {
+                console.log("client side disconnect, reason: ", reason);
+                // window.location.reload();
+            });
+            for (let platform of this.tilemapLayerList) {
+                this.physics.add.collider(this.player1, platform);
+            }
+            if (initial) {
+                this.createAirportNpc();
+            }
+        });
+    }
+
 }

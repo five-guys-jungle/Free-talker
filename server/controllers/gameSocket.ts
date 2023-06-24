@@ -31,7 +31,7 @@ export function socketEventHandler(socket: Socket) {
             players_airport[socket.id] = data;
             socket.broadcast.emit("playerMoved", players_airport[socket.id]);
         } else if (data.scene === "USAScene") {
-            console.log("playerMovement, data: ", data);
+            // console.log("playerMovement, data: ", data);
             data.socketId = socket.id;
             players_usa[socket.id] = data;
             socket.broadcast.emit("playerMoved", players_usa[socket.id]);
@@ -43,10 +43,12 @@ export function socketEventHandler(socket: Socket) {
         if (players_airport[socket.id] != null) {
             let playerDeleted: Player = players_airport[socket.id];
             delete players_airport[socket.id];
+            console.log("players_airport: ", players_airport);
             socket.broadcast.emit("playerDeleted", playerDeleted);
         } else if (players_usa[socket.id] != null) {
             let playerDeleted: Player = players_usa[socket.id];
             delete players_usa[socket.id];
+            console.log("players_usa: ", players_usa);
             socket.broadcast.emit("playerDeleted", playerDeleted);
         }
     });
