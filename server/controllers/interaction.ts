@@ -19,6 +19,7 @@ import {
 } from "langchain/prompts";
 import { BufferMemory } from "langchain/memory";
 import { RedisChatMessageHistory } from "langchain/stores/message/redis";
+import { preDefinedVoiceType } from "../models/voiceType";
 
 dotenv.config();
 const configuration = new Configuration({
@@ -203,12 +204,13 @@ export async function textCompletion(
 
 export async function convertTexttoSpeech(
     inputText: string,
-    outputText: string
+    outputText: string,
+    npcName: string = "ImmigrationOfficer",
 ): Promise<Object> {
     try {
         const request: any = {
             input: { text: outputText },
-            voice: { languageCode: "en-US", ssmlGender: "NEUTRAL" },
+            voice: { languageCode: "en-US", name: preDefinedVoiceType[npcName].voiceType },
             audioConfig: { audioEncoding: "MP3" },
         };
         const [response_audio]: any = await client.synthesizeSpeech(request);

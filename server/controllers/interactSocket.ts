@@ -93,7 +93,8 @@ export function interactSocketEventHandler(socket: Socket) {
 
                                 response = await convertTexttoSpeech(
                                     inputText,
-                                    outputText
+                                    outputText,
+                                    data.npcName,
                                 )
                                     .then((res) => {
                                         socket.emit("totalResponse", res);
