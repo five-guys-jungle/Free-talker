@@ -110,8 +110,8 @@ export default class USAScene extends Phaser.Scene {
     }
 
     create() {
-        this.events.on('wake', this.onSceneWake, this);
-        this.events.on('sleep', this.onSceneSleep, this);
+        this.events.on("wake", this.onSceneWake, this);
+        this.events.on("sleep", this.onSceneSleep, this);
         // this.add.image(400, 300, "background");
         // 배경 설정
         const map1 = this.make.tilemap({ key: "map1" });
@@ -239,7 +239,7 @@ export default class USAScene extends Phaser.Scene {
             this.socket.disconnect();
         }
         this.gameSocketEventHandler();
-        
+
         this.cursors = this.input.keyboard!.createCursorKeys();
         this.interactText = this.add.text(10, 10, "", {
             color: "black",
@@ -267,7 +267,7 @@ export default class USAScene extends Phaser.Scene {
             grammarCorrections.push(data);
         };
         this.input.keyboard!.on("keydown-E", async () => {
-            if(this.player1 === null || this.player1 === undefined){
+            if (this.player1 === null || this.player1 === undefined) {
                 return;
             }
             for (let npcInfo of this.npcList) {
@@ -357,11 +357,17 @@ export default class USAScene extends Phaser.Scene {
                             this.cursors!.up.enabled = false;
                             this.cursors!.down.enabled = false;
 
-                            if (this.socket2 === null || this.socket2 === undefined) {
+                            if (
+                                this.socket2 === null ||
+                                this.socket2 === undefined
+                            ) {
                                 this.socket2 = io(`${serverUrl}/interaction`);
                                 this.socket2.on("connect", () => {
                                     this.currNpcName = npcInfo.name;
-                                    console.log("connect, interaction socket.id: ", this.socket2!.id);
+                                    console.log(
+                                        "connect, interaction socket.id: ",
+                                        this.socket2!.id
+                                    );
                                     countUserSpeech = 0;
                                     this.isNpcSocketConnected = true;
                                     window.addEventListener(
@@ -387,6 +393,7 @@ export default class USAScene extends Phaser.Scene {
                                             );
                                             this.socket2!.emit(
                                                 "getRecommendedResponses",
+                                                this.currNpcName,
                                                 this.alreadyRecommended,
                                                 customEvent.detail.lastMessage
                                             );
@@ -407,7 +414,8 @@ export default class USAScene extends Phaser.Scene {
                                             if (
                                                 response === "" ||
                                                 response ===
-                                                "convertSpeechToText Error"
+                                                    "convertSpeechToText Error" ||
+                                                response === "chain call error"
                                             ) {
                                                 store.dispatch(
                                                     setMessage(
@@ -518,6 +526,7 @@ export default class USAScene extends Phaser.Scene {
                                                 this.alreadyRecommended = false;
                                                 this.socket2!.emit(
                                                     "getRecommendedResponses",
+                                                    this.currNpcName,
                                                     this.alreadyRecommended,
                                                     responses[0]
                                                 );
@@ -631,7 +640,10 @@ export default class USAScene extends Phaser.Scene {
                 ) {
                     console.log("R key pressed");
 
-                    if (this.recorder2 === null || this.recorder2 === undefined) {
+                    if (
+                        this.recorder2 === null ||
+                        this.recorder2 === undefined
+                    ) {
                         await this.recordEventHandler().then(() => {
                             // console.log("recordEventHandler finished");
                         });
@@ -812,7 +824,6 @@ export default class USAScene extends Phaser.Scene {
         return playerSprite;
     }
     async recordEventHandler() {
-
         await navigator.mediaDevices
             .getUserMedia({ audio: true })
             .then((stream) => {
@@ -894,8 +905,8 @@ export default class USAScene extends Phaser.Scene {
 
         let npc4: npcInfo = {
             name: "Nurse",
-            x: 1784,
-            y: 2413,
+            x: 1741,
+            y: 2213,
             texture: "Nurse",
             sprite: null,
             role: "npc",
@@ -964,37 +975,39 @@ export default class USAScene extends Phaser.Scene {
                 dash: false,
             });
 
-            this.socket!.on("updateAlluser", (otherPlayers: PlayerInfoDictionary) => {
-                console.log("updateAlluser, allPlayers: ", otherPlayers);
-                for (let key in otherPlayers) {
-                    console.log("updateAlluser, key: ", key);
-                    if (otherPlayers[key].socketId !== this.socket!.id) {
-                        if (
-                            !(otherPlayers[key].socketId in this.allPlayers)
-                        ) {
-                            let playerSprite: Phaser.Physics.Arcade.Sprite =
-                                this.createPlayer(otherPlayers[key]);
-                            // playerSprite.setCollideWorldBounds(true);
-                            playerSprite.anims.play(
-                                `${otherPlayers[key].playerTexture}_idle_down`,
-                                true
-                            );
-                        } else {
-                            console.log(
-                                "updateAlluser, already exist, so just set position"
-                            );
+            this.socket!.on(
+                "updateAlluser",
+                (otherPlayers: PlayerInfoDictionary) => {
+                    console.log("updateAlluser, allPlayers: ", otherPlayers);
+                    for (let key in otherPlayers) {
+                        console.log("updateAlluser, key: ", key);
+                        if (otherPlayers[key].socketId !== this.socket!.id) {
+                            if (
+                                !(otherPlayers[key].socketId in this.allPlayers)
+                            ) {
+                                let playerSprite: Phaser.Physics.Arcade.Sprite =
+                                    this.createPlayer(otherPlayers[key]);
+                                // playerSprite.setCollideWorldBounds(true);
+                                playerSprite.anims.play(
+                                    `${otherPlayers[key].playerTexture}_idle_down`,
+                                    true
+                                );
+                            } else {
+                                console.log(
+                                    "updateAlluser, already exist, so just set position"
+                                );
 
-                            this.allPlayers[otherPlayers[key].socketId].x =
-                                otherPlayers[key].x;
-                            this.allPlayers[otherPlayers[key].socketId].y =
-                                otherPlayers[key].y;
-                            this.allPlayers[
-                                otherPlayers[key].socketId
-                            ].dash = otherPlayers[key].dash;
+                                this.allPlayers[otherPlayers[key].socketId].x =
+                                    otherPlayers[key].x;
+                                this.allPlayers[otherPlayers[key].socketId].y =
+                                    otherPlayers[key].y;
+                                this.allPlayers[
+                                    otherPlayers[key].socketId
+                                ].dash = otherPlayers[key].dash;
+                            }
                         }
                     }
                 }
-            }
             );
 
             this.socket!.on("newPlayerConnected", (playerInfo: PlayerInfo) => {
