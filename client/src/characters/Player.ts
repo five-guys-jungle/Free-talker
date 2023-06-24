@@ -42,45 +42,75 @@ export class Player {
             let distanceY: number = destination.y - thisSprite.y;
             // left-up
             if (distanceX < 0 && distanceY < 0) {
-                thisSprite.anims.play(`${this.playerTexture}_run_left`, true);
+                if(thisSprite.anims.isPlaying){
+                    if(thisSprite.anims.currentAnim?.key !== `${this.playerTexture}_run_left`){
+                        thisSprite.anims.play(`${this.playerTexture}_run_left`, true);
+                    }
+                }
                 thisSprite.x -= (dialgonalVelocity * deltaInSecond);
                 thisSprite.y -= (dialgonalVelocity * deltaInSecond);
             }
             // left-down
             else if (distanceX < 0 && distanceY > 0) {
-                thisSprite.anims.play(`${this.playerTexture}_run_down`, true);
+                if(thisSprite.anims.isPlaying){
+                    if(thisSprite.anims.currentAnim?.key !== `${this.playerTexture}_run_down`){
+                        thisSprite.anims.play(`${this.playerTexture}_run_down`, true);
+                    }
+                }
                 thisSprite.x -= (dialgonalVelocity * deltaInSecond);
                 thisSprite.y += (dialgonalVelocity * deltaInSecond);
             }
             // right-up
             else if (distanceX > 0 && distanceY < 0) {
-                thisSprite.anims.play(`${this.playerTexture}_run_right`, true);
+                if(thisSprite.anims.isPlaying){
+                    if(thisSprite.anims.currentAnim?.key !== `${this.playerTexture}_run_right`){
+                        thisSprite.anims.play(`${this.playerTexture}_run_right`, true);
+                    }
+                }
                 thisSprite.x += (dialgonalVelocity * deltaInSecond);
                 thisSprite.y -= (dialgonalVelocity * deltaInSecond);
             }
             // right-down
             else if (distanceX > 0 && distanceY > 0) {
-                thisSprite.anims.play(`${this.playerTexture}_run_down`, true);
+                if(thisSprite.anims.isPlaying){
+                    if(thisSprite.anims.currentAnim?.key !== `${this.playerTexture}_run_down`){
+                        thisSprite.anims.play(`${this.playerTexture}_run_down`, true);
+                    }
+                }
                 thisSprite.x += (dialgonalVelocity * deltaInSecond);
                 thisSprite.y += (dialgonalVelocity * deltaInSecond);
             }
             else {
                 if (destination.x < thisSprite.x) {
-                    thisSprite.anims.play(`${this.playerTexture}_run_left`, true);
+                    if(thisSprite.anims.isPlaying){
+                        if(thisSprite.anims.currentAnim?.key !== `${this.playerTexture}_run_left`){
+                            thisSprite.anims.play(`${this.playerTexture}_run_left`, true);
+                        }
+                    }
                     thisSprite.x -= (velocity * deltaInSecond);
                 }
                 else if (destination.x > thisSprite.x) {
-                    thisSprite.anims.play(`${this.playerTexture}_run_right`, true);
+                    if(thisSprite.anims.isPlaying){
+                        if(thisSprite.anims.currentAnim?.key !== `${this.playerTexture}_run_right`){
+                            thisSprite.anims.play(`${this.playerTexture}_run_right`, true);
+                        }
+                    }
                     thisSprite.x += (velocity * deltaInSecond);
                 }
-
-
-                if (destination.y < thisSprite.y) {
-                    thisSprite.anims.play(`${this.playerTexture}_run_up`, true);
+                else if (destination.y < thisSprite.y) {
+                    if(thisSprite.anims.isPlaying){
+                        if(thisSprite.anims.currentAnim?.key !== `${this.playerTexture}_run_up`){
+                            thisSprite.anims.play(`${this.playerTexture}_run_up`, true);
+                        }
+                    }
                     thisSprite.y -= (velocity * deltaInSecond);
                 }
                 else if (destination.y > thisSprite.y) {
-                    thisSprite.anims.play(`${this.playerTexture}_run_down`, true);
+                    if(thisSprite.anims.isPlaying){
+                        if(thisSprite.anims.currentAnim?.key !== `${this.playerTexture}_run_down`){
+                            thisSprite.anims.play(`${this.playerTexture}_run_down`, true);
+                        }
+                    }
                     thisSprite.y += (velocity * deltaInSecond);
                 }
             }
@@ -95,7 +125,13 @@ export class Player {
             }
         }
         else {
-            thisSprite.anims.play(`${this.playerTexture}_idle_down`, true);
+            if(thisSprite.anims.isPlaying)
+                {
+                    let idle_anims:string = thisSprite.anims.currentAnim!.key;
+                    idle_anims = idle_anims.replace('run', 'idle');
+                    thisSprite.anims.play(idle_anims, true);
+                }
+            // thisSprite.anims.play(`${this.playerTexture}_idle_down`, true);
             // console.log('Other player is not moving');
         }
     }
