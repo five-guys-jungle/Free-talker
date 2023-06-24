@@ -110,8 +110,8 @@ export default class AirportScene extends Phaser.Scene {
     }
 
     create() {
-        this.events.on('wake', this.onSceneWake, this);
-        this.events.on('sleep', this.onSceneSleep, this);
+        this.events.on("wake", this.onSceneWake, this);
+        this.events.on("sleep", this.onSceneSleep, this);
         // this.add.image(400, 300, "background");
         // 배경 설정
         this.cursors = this.input.keyboard!.createCursorKeys();
@@ -168,7 +168,7 @@ export default class AirportScene extends Phaser.Scene {
             this.socket.disconnect();
         }
         this.gameSocketEventHandler();
-        
+
         this.cursors = this.input.keyboard!.createCursorKeys();
         this.interactText = this.add.text(10, 10, "", {
             color: "black",
@@ -196,7 +196,7 @@ export default class AirportScene extends Phaser.Scene {
             grammarCorrections.push(data);
         };
         this.input.keyboard!.on("keydown-E", async () => {
-            if(this.player1 === null || this.player1 === undefined){
+            if (this.player1 === null || this.player1 === undefined) {
                 return;
             }
             for (let npcInfo of this.npcList) {
@@ -346,7 +346,7 @@ export default class AirportScene extends Phaser.Scene {
                                             if (
                                                 response === "" ||
                                                 response ===
-                                                "convertSpeechToText Error"
+                                                    "convertSpeechToText Error"
                                             ) {
                                                 store.dispatch(
                                                     setMessage(
@@ -759,7 +759,6 @@ export default class AirportScene extends Phaser.Scene {
         return playerSprite;
     }
     async recordEventHandler() {
-
         await navigator.mediaDevices
             .getUserMedia({ audio: true })
             .then((stream) => {
@@ -797,7 +796,7 @@ export default class AirportScene extends Phaser.Scene {
             name: "ImmigrationOfficer",
             x: 1700,
             y: 1100,
-            texture: "immigrationOfficer",
+            texture: "ImmigrationOfficer",
             sprite: null,
             role: "npc",
         };
@@ -958,5 +957,4 @@ export default class AirportScene extends Phaser.Scene {
             }
         });
     }
-
 }

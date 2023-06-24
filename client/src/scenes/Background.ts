@@ -18,8 +18,8 @@ export default class Background extends Phaser.Scene {
             "assets/characters/statue-of-liberty.png"
         );
         this.load.spritesheet(
-            "immigrationOfficer",
-            "assets/characters/immigrationOfficer.png",
+            "ImmigrationOfficer",
+            "assets/characters/ImmigrationOfficer.png",
             {
                 frameWidth: 32,
                 frameHeight: 48,
