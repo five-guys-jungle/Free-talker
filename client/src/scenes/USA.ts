@@ -558,6 +558,8 @@ export default class USAScene extends Phaser.Scene {
     }
 
     createUSANpc() {
+        this.physics.add.sprite(1819, 1200, "statueOfLiberty");
+
         let npc1: npcInfo = {
             name: "HotelReceptionist",
             x: 650,
@@ -635,4 +637,6 @@ export default class USAScene extends Phaser.Scene {
         npc7.sprite = this.physics.add.sprite(npc7.x, npc7.y, npc7.texture);
         this.npcList.push(npc7);
     }
+
+
 }
