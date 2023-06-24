@@ -10,6 +10,7 @@ import Peer from "simple-peer"
 import {Instance} from "simple-peer"
 import io, { Socket } from "socket.io-client"
 import { setSocketNamespace } from "../../stores/socketSlice"
+import { current } from "@reduxjs/toolkit"
 
 const FreeDialog = () => {
     const [ me, setMe ] = useState("")
@@ -21,7 +22,7 @@ const FreeDialog = () => {
 	const [ idToCall, setIdToCall ] = useState("")
 	const [ callEnded, setCallEnded] = useState(false)
 	const [ name, setName ] = useState("")
-
+	let num_User = 0;
 
 	const myVideo = React.useRef<HTMLVideoElement>(null);
 	const userVideo = React.useRef<HTMLVideoElement>(null);
@@ -47,23 +48,53 @@ const FreeDialog = () => {
             }
         })
 		
-		
+		const place_name = socketNamespace.substring(socketNamespace.lastIndexOf("/") + 1);
+		console.log("place_name:::", place_name);
+		// socket.current!.emit("join", { place_name });
+
+		socket.current!.emit("join", { place_name });
 		socket.current!.on("connect", () => {
-			console.log("socket is connected: ", socket.current!.id);
-			socket.current!.on("otheruserleave", () => {
+			
+			// socket.current!.on("joined", (current) => {
+			// 	console.log("current:::", current);
+			// 	num_User = current
+			// })
+
+			
+			})
+		socket.current!.on("roomFull", () => {
+			socket.current!.disconnect();
+		})
+
+		socket.current!.on("joined", () => {
+			console.log("joined!!!!!!!!!!!!!!!!")
+			const seatEvent = new CustomEvent('seat', {
+				detail: { message: "seat"}
+			});
+			window.dispatchEvent(seatEvent);
+		}
+			)
+
+		console.log("socket is connected: ", socket.current!.id);
+			// setTimeout(() => {
+			// 		callUser(idToCall);
+			// 	  }, 7000);
+		socket.current!.on("otheruserleave", () => {
 				const clickEvent = new CustomEvent('exitcall', {
 					detail: { message: "exitcall"}
 				});
 				window.dispatchEvent(clickEvent);
-				socket.current!.disconnect();
+				// socket.current!.disconnect();
 			});
-			socket.current!.on("userconnected", () => {
+		socket.current!.on("userconnected", () => {
 				console.log("connected~~~~~~~~~~~~~~~~~~~~~~~~~~!!!!!!!!!!!!");
-				// callUser(idToCall);
+				// setTimeout(() => {
+				// 	callUser(idToCall);
+				//   }, 7000);
 				// document.getElementById("call-btn")?.click();
 				// console.log("clickclickclick!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 			})
-		});// 상대방 소켓 연결 이벤트 핸들러
+		// });// 상대방 소켓 연결 이벤트 핸들러
 		
 		socket.current!.on("me", (id) => {
 			setMe(id);
@@ -84,7 +115,9 @@ const FreeDialog = () => {
 				connectionRef.current.destroy();
 			}
 		});
-		
+		return () => {
+			socket.current!.disconnect();
+		}
 	  
 	}, []);
 
@@ -158,6 +191,9 @@ const FreeDialog = () => {
 					justifyContent: 'center', 
 					alignItems: 'center', 
 				}}>
+					<h1>
+						{num_User}
+					</h1>
 					<div className="call-button" style={{ position: 'fixed', textAlign: 'center', top: '5px'}}>
 						
 						{callAccepted && !callEnded ? (
