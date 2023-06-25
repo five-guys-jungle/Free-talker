@@ -70,6 +70,10 @@ const FreeDialog = () => {
 			})
 		socket.current!.on("roomFull", () => {
 			socket.current!.disconnect();
+			const clickEvent = new CustomEvent('exitcall', {
+				detail: { message: "exitcall"}
+			});
+			window.dispatchEvent(clickEvent);
 		})
 
 		socket.current!.on("joined", () => {

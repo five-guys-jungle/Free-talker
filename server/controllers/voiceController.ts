@@ -8,6 +8,7 @@ const freeRoom_Num: {
 	[key: string]: number;
 } = {
 	airport_chair1: 0,
+	coach_park: 0,
 }
 
 // freedialogsocketEventHandler 함수 수정

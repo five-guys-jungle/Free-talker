@@ -17,6 +17,7 @@ export default class Background extends Phaser.Scene {
             "statueOfLiberty",
             "assets/characters/statue-of-liberty.png"
         );
+        this.load.image("coach_park", "assets/characters/coach_sprite.png");
         this.load.spritesheet(
             "ImmigrationOfficer",
             "assets/characters/ImmigrationOfficer.png",
