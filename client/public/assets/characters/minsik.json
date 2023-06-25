@@ -1,7 +1,7 @@
 {"frames": [
 
 {
-	"filename": "jinhogirl_idle_anim_1.png",
+	"filename": "minsik_idle_anim_1.png",
 	"frame": {"x":0,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -9,7 +9,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_idle_anim_2.png",
+	"filename": "minsik_idle_anim_2.png",
 	"frame": {"x":32,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -17,7 +17,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_idle_anim_3.png",
+	"filename": "minsik_idle_anim_3.png",
 	"frame": {"x":64,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -25,7 +25,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_idle_anim_4.png",
+	"filename": "minsik_idle_anim_4.png",
 	"frame": {"x":96,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -33,7 +33,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_idle_anim_5.png",
+	"filename": "minsik_idle_anim_5.png",
 	"frame": {"x":128,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -41,7 +41,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_idle_anim_6.png",
+	"filename": "minsik_idle_anim_6.png",
 	"frame": {"x":160,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -49,7 +49,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_idle_anim_7.png",
+	"filename": "minsik_idle_anim_7.png",
 	"frame": {"x":192,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -57,7 +57,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_idle_anim_8.png",
+	"filename": "minsik_idle_anim_8.png",
 	"frame": {"x":224,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -65,7 +65,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_idle_anim_9.png",
+	"filename": "minsik_idle_anim_9.png",
 	"frame": {"x":256,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -73,7 +73,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_idle_anim_10.png",
+	"filename": "minsik_idle_anim_10.png",
 	"frame": {"x":288,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -81,7 +81,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_idle_anim_11.png",
+	"filename": "minsik_idle_anim_11.png",
 	"frame": {"x":320,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -89,7 +89,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_idle_anim_12.png",
+	"filename": "minsik_idle_anim_12.png",
 	"frame": {"x":352,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -97,7 +97,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_idle_anim_13.png",
+	"filename": "minsik_idle_anim_13.png",
 	"frame": {"x":384,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -105,7 +105,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_idle_anim_14.png",
+	"filename": "minsik_idle_anim_14.png",
 	"frame": {"x":416,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -113,7 +113,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_idle_anim_15.png",
+	"filename": "minsik_idle_anim_15.png",
 	"frame": {"x":448,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -121,7 +121,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_idle_anim_16.png",
+	"filename": "minsik_idle_anim_16.png",
 	"frame": {"x":480,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -129,7 +129,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_idle_anim_17.png",
+	"filename": "minsik_idle_anim_17.png",
 	"frame": {"x":512,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -137,7 +137,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_idle_anim_18.png",
+	"filename": "minsik_idle_anim_18.png",
 	"frame": {"x":544,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -145,7 +145,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_idle_anim_19.png",
+	"filename": "minsik_idle_anim_19.png",
 	"frame": {"x":576,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -153,7 +153,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_idle_anim_20.png",
+	"filename": "minsik_idle_anim_20.png",
 	"frame": {"x":608,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -161,7 +161,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_idle_anim_21.png",
+	"filename": "minsik_idle_anim_21.png",
 	"frame": {"x":640,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -169,7 +169,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_idle_anim_22.png",
+	"filename": "minsik_idle_anim_22.png",
 	"frame": {"x":672,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -177,7 +177,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_idle_anim_23.png",
+	"filename": "minsik_idle_anim_23.png",
 	"frame": {"x":704,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -185,7 +185,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_idle_anim_24.png",
+	"filename": "minsik_idle_anim_24.png",
 	"frame": {"x":736,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -193,7 +193,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_run_1.png",
+	"filename": "minsik_run_1.png",
 	"frame": {"x":768,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -201,7 +201,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_run_2.png",
+	"filename": "minsik_run_2.png",
 	"frame": {"x":800,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -209,7 +209,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_run_3.png",
+	"filename": "minsik_run_3.png",
 	"frame": {"x":832,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -217,7 +217,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_run_4.png",
+	"filename": "minsik_run_4.png",
 	"frame": {"x":864,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -225,7 +225,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_run_5.png",
+	"filename": "minsik_run_5.png",
 	"frame": {"x":896,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -233,7 +233,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_run_6.png",
+	"filename": "minsik_run_6.png",
 	"frame": {"x":928,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -241,7 +241,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_run_7.png",
+	"filename": "minsik_run_7.png",
 	"frame": {"x":960,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -249,7 +249,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_run_8.png",
+	"filename": "minsik_run_8.png",
 	"frame": {"x":992,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -257,7 +257,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_run_9.png",
+	"filename": "minsik_run_9.png",
 	"frame": {"x":1024,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -265,7 +265,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_run_10.png",
+	"filename": "minsik_run_10.png",
 	"frame": {"x":1056,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -273,7 +273,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_run_11.png",
+	"filename": "minsik_run_11.png",
 	"frame": {"x":1088,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -281,7 +281,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_run_12.png",
+	"filename": "minsik_run_12.png",
 	"frame": {"x":1120,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -289,7 +289,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_run_13.png",
+	"filename": "minsik_run_13.png",
 	"frame": {"x":1152,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -297,7 +297,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_run_14.png",
+	"filename": "minsik_run_14.png",
 	"frame": {"x":1184,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -305,7 +305,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_run_15.png",
+	"filename": "minsik_run_15.png",
 	"frame": {"x":1216,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -313,7 +313,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_run_16.png",
+	"filename": "minsik_run_16.png",
 	"frame": {"x":1248,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -321,7 +321,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_run_17.png",
+	"filename": "minsik_run_17.png",
 	"frame": {"x":1280,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -329,7 +329,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_run_18.png",
+	"filename": "minsik_run_18.png",
 	"frame": {"x":1312,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -337,7 +337,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_run_19.png",
+	"filename": "minsik_run_19.png",
 	"frame": {"x":1344,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -345,7 +345,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_run_20.png",
+	"filename": "minsik_run_20.png",
 	"frame": {"x":1376,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -353,7 +353,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_run_21.png",
+	"filename": "minsik_run_21.png",
 	"frame": {"x":1408,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -361,7 +361,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_run_22.png",
+	"filename": "minsik_run_22.png",
 	"frame": {"x":1440,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -369,7 +369,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_run_23.png",
+	"filename": "minsik_run_23.png",
 	"frame": {"x":1472,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -377,7 +377,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_run_24.png",
+	"filename": "minsik_run_24.png",
 	"frame": {"x":1504,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -385,16 +385,16 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_sit_left.png",
-	"frame": {"x":1536,"y":0,"w":32,"h":48},
+	"filename": "minsik_sit_left.png",
+	"frame": {"x":1568,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":48},
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhogirl_sit_right.png",
-	"frame": {"x":1568,"y":0,"w":32,"h":48},
+	"filename": "minsik_sit_right.png",
+	"frame": {"x":1600,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":48},
@@ -403,10 +403,10 @@
 "meta": {
 	"app": "https://www.codeandweb.com/texturepacker",
 	"version": "1.0",
-	"image": "jinhogirl.png",
+	"image": "minsik.png",
 	"format": "RGBA8888",
 	"size": {"w":1664,"h":48},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:36ea2cf2e8be8d8c23ed755e43b7a394:cdfb5c510b72fc1ad4a5795f9572b0d4:f0756af072b7a2180e64d177da5aa6f9$"
+	"smartupdate": "$TexturePacker:SmartUpdate:de92ca931b4bf10b22e82930ff5a48d7:8297e5c64910fd280be607037f92daa9:9c17caf0cdea1ae8b03c160a26567854$"
 }
 }

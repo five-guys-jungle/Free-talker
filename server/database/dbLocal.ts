@@ -1,6 +1,7 @@
 import fs from "fs";
 import mongoose from "mongoose";
 import { User } from "../models/User";
+import { Dialog } from "../models/Dialog";
 import { connect } from "http2";
 import "dotenv/config";
 
@@ -13,6 +14,7 @@ export async function connectDBLocal() {
             await mongoose.connect(dbHost);
             console.log("MongoDB에 연결되었습니다.");
             await createCollection("user"); // 컬렉션 생성 함수 호출
+            await createCollection("dialog"); // 컬렉션 생성 함수 호출
         } else {
             throw new Error("DB_HOST is not defined");
         }
@@ -29,6 +31,9 @@ async function createCollection(modelName: string) {
     switch (modelName) {
         case "user":
             new User();
+            break;
+        case "dialog":
+            new Dialog();
             break;
     }
 }

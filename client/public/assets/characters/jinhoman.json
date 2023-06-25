@@ -385,7 +385,7 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhoman_sit_down.png",
+	"filename": "jinhoman_sit_left.png",
 	"frame": {"x":1536,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
@@ -393,24 +393,8 @@
 	"sourceSize": {"w":32,"h":48}
 },
 {
-	"filename": "jinhoman_sit_left.png",
-	"frame": {"x":1568,"y":0,"w":32,"h":48},
-	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":48},
-	"sourceSize": {"w":32,"h":48}
-},
-{
 	"filename": "jinhoman_sit_right.png",
-	"frame": {"x":1600,"y":0,"w":32,"h":48},
-	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":48},
-	"sourceSize": {"w":32,"h":48}
-},
-{
-	"filename": "jinhoman_sit_up.png",
-	"frame": {"x":1632,"y":0,"w":32,"h":48},
+	"frame": {"x":1568,"y":0,"w":32,"h":48},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":48},

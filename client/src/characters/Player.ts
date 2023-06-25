@@ -10,6 +10,7 @@ export class Player {
     defaultVelocity: number = 200;
     dashVelocity: number = 600;
     dash: boolean = false;
+    seat: boolean = false;
 
     constructor(
         socketId: string,
@@ -165,6 +166,7 @@ export interface PlayerInfo {
     y: number;
     scene: string;
     dash: boolean;
+    seat: boolean;
 }
 export interface PlayerInfoDictionary {
     [key: string]: PlayerInfo;

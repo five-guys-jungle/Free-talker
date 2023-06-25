@@ -6,6 +6,7 @@ export interface Player {
     y: number;
     scene: string;
     dash: boolean;
+    seat: boolean;
 }
 
 export interface PlayerDictionary {

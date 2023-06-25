@@ -1,11 +1,12 @@
 import React, { useEffect,useState } from "react";
 import store, { RootState, useAppDispatch } from "../stores";
-import { openAirport } from "../stores/gameSlice";
+import { openAirport, openReportBook } from "../stores/gameSlice";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux"; // react-redux에서 useSelector를 불러옵니다.
 import TalkBox from "./npcdialog/TalkBox";
 import { TalkBoxState } from "../stores/talkBoxSlice";
 import { correctionState} from "../stores/reportSlice";
+import { saveDialog, deleteDialog } from "../stores/saveDialogSlice";
 import Button from "@mui/material/Button";
 import SaveIcon from "@material-ui/icons/Save";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -28,6 +29,7 @@ const Report = (data:any) => {
 
 
     }, [playerId, playerNickname, playerTexture]);
+
     const corrections = useSelector(
       (state: { correction: correctionState }) => state.correction.corrections
     );
@@ -52,11 +54,33 @@ const Report = (data:any) => {
     const imgUrl= "./assets/characters/single/"+fix_playerTexture+".png";
     console.log(imgUrl)
 
-
+    const currentDate = new Date();
+    const currentTime = currentDate.toLocaleTimeString();
+    
     const handleSave = () => {
+        saveDialog({
+            userId: playerId,
+            timestamp: `${month[date.getMonth() + 1]} ${date.getDate()} ${currentTime}`,
+            nickname: playerNickname,
+            npc: messages[1].name,
+            userTexture:playerTexture,
+            score:score,
+            corrections:corrections,
+            messages:messages,
+        });
         store.dispatch(openAirport());
     };
     const handleDelete = () => {
+        deleteDialog({
+            userId: playerId,
+            timestamp: `${month[date.getMonth() + 1]} ${date.getDate()} ${currentTime}`,
+            nickname: playerNickname,
+            npc: messages[1].name,
+            userTexture:playerTexture,
+            score:score,
+            corrections:corrections,
+            messages:messages,
+        });
         store.dispatch(openAirport());
     };
 
