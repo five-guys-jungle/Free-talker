@@ -153,6 +153,27 @@ export default class Background extends Phaser.Scene {
         console.log("Complete loading!!!!!!!!!!!!!!!");
     }
 
+    gamePause() {
+        console.log("Game is paused");
+        for (let scene of phaserGame.scene.getScenes()) {
+            const sceneKey = scene.scene.key;
+            if (phaserGame.scene.isActive(sceneKey)) {
+                const resumedScene: Phaser.Scene = phaserGame.scene.getScene(sceneKey);
+                switch(sceneKey){
+                    case "AirportScene":
+                        const beforePauseXAirport:number = (resumedScene as AirportScene).player1!.x;
+                        const beforePauseYAirport:number = (resumedScene as AirportScene).player1!.y;
+                        (resumedScene as AirportScene).gamePause(beforePauseXAirport, beforePauseYAirport);
+                        break;
+                    case "USAScene":
+                        const beforePauseXUSA:number = (resumedScene as USAScene).player1!.x;
+                        const beforePauseYUSA:number = (resumedScene as USAScene).player1!.y;
+                        (resumedScene as USAScene).gamePause(beforePauseXUSA, beforePauseYUSA);
+                }
+            }
+        }
+    }
+
     gameResume() {
         console.log("Game is resumed");
         for (let scene of phaserGame.scene.getScenes()) {
@@ -172,7 +193,6 @@ export default class Background extends Phaser.Scene {
                 }
             }
         }
-        // window.location.reload();
     }
 
     create() {

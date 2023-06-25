@@ -93,14 +93,20 @@ export default class AirportScene extends Phaser.Scene {
         this.playerTexture = data.playerTexture;
         console.log("data: ", data);
     }
-    gameResume(pausedX:number, pausedY:number){
+    gamePause(pausedX: number, pausedY: number) {
+        console.log("Scene is Paused: Airport");
+        // this.intervalId = setInterval(() => {
+        //     this.socket!.emit('heartbeat');
+        // }, 5000);
+
+    }
+    gameResume(pausedX: number, pausedY: number) {
         console.log("Scene is Resumed: Airport");
         console.log("allPlayer in Resumed: ", this.allPlayers);
-        for(let key in this.allPlayers){
-            if(this.allPlayers[key].nickname === this.userNickname){
-                
-            }
-        }
+        // if(this.intervalId){
+        //     clearInterval(this.intervalId);
+        //     this.intervalId = null;
+        // }
     }
     onSceneWake() {
         console.log("Scene has been woken up!, scene: AirportScene");
@@ -635,7 +641,19 @@ export default class AirportScene extends Phaser.Scene {
             }
         });
     }
+    deleteNotVaildScoket(){
+        for(let key in this.allPlayers){
+            // console.log(`allPlayer[${key}]: ${this.allPlayers[key]}, socket: ${this.socket}`);
+            if(this.socket!.id !== key && this.userNickname === this.allPlayers[key].nickname){
+                console.log(`allPlayer[${key}]: ${this.allPlayers[key]}, socket: ${this.socket}`);
+                this.allPlayers[key].textObj?.destroy();
+                this.allPlayers[key].sprite.destroy();
+                delete this.allPlayers[key];
+            }
+        }
+    }
     update(time: number, delta: number) {
+        this.deleteNotVaildScoket();
 
         let speed: number = this.cursors?.shift.isDown
             ? this.dashSpeed
