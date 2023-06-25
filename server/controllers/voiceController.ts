@@ -8,6 +8,7 @@ const freeRoom_Num: {
 	[key: string]: number;
 } = {
 	airport_chair1: 0,
+	coach_park: 0,
 }
 
 // freedialogsocketEventHandler 함수 수정
@@ -41,6 +42,7 @@ export function freedialogsocketEventHandler(socket: Socket) {
 		  console.log("disconnected~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 		  freeRoom_Num[temp]--;
 		  console.log("freeRoom_Num: ", freeRoom_Num[temp]);
+		  socket.broadcast.emit("outcharacter");
 		//   socket.broadcast.emit("disconnected", freeRoom_Num[place_name]);
 		});
 	socket.broadcast.emit("userconnected");
@@ -52,10 +54,10 @@ export function freedialogsocketEventHandler(socket: Socket) {
 	socket.on("mychar", ({otherNickname: playerNickname, otherTexture:playerTexture}) =>{
 		socket.broadcast.emit("usercharacter",{otherNickname: playerNickname, otherTexture:playerTexture})
 	})
-	socket.on("disconnect", () => {
-	//   socket.broadcast.emit("callEnded");
-	  console.log("disconnected~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-	});
+	// socket.on("disconnect", () => {
+	// //   socket.broadcast.emit("callEnded");
+	//   console.log("disconnected~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+	// });
   
 	socket.on("callUser", (data: { userToCall: any; signalData: any; from: any; name: any }) => {
 	  console.log("callUser: 서버에서 데이터를 받았음");

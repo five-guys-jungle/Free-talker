@@ -5,7 +5,8 @@ const textureNameList: string[] = [
     "jinhogirl",
     "seunghun",
     "doyoungboy",
-    "minsook"
+    "minsook",
+    "minsik"
 ];
 
 export const createCharacterAnims = (
@@ -115,4 +116,10 @@ export const createCharacterAnims = (
             frameRate: animsFrameRate,
         });
     }
+    anims.create({
+        key: 'gateAnim',
+        frames: anims.generateFrameNumbers('gate', { start: 0, end: 5 }),
+        frameRate: 7,
+        repeat: 0
+    });
 };

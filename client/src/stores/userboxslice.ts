@@ -28,7 +28,8 @@ export const userboxSlice = createSlice({
       state.characters.push(action.payload);
     },
     clearcharacters: (state) => {
-      state.characters = [];
+      state.otherTexture = "";
+      state.otherNickname = "";
     },
     // Add setUserCharacter action
     setUserCharacter: (state, action: PayloadAction<{playerNickname: string, playerTexture: string}>) => {
