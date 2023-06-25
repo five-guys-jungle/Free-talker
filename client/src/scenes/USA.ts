@@ -352,10 +352,11 @@ export default class USAScene extends Phaser.Scene {
                                 this.cursors!.up.enabled = true;
                                 this.cursors!.down.enabled = true;
 
-                                store.dispatch(openUSA());
+                                
                                 valve_E = true;
                                 this.allPlayers[this.socket!.id].seat = false;
                                 this.seatEvent = true;
+                                store.dispatch(openUSA());
                             });
                         } else {
                             this.player1!.setVelocity(0, 0);
@@ -374,10 +375,11 @@ export default class USAScene extends Phaser.Scene {
                             this.cursors!.up.enabled = true;
                             this.cursors!.down.enabled = true;
 
-                            store.dispatch(openUSA());
+                            
                             valve_E = true;
                             this.allPlayers[this.socket!.id].seat = false;
                             this.seatEvent = true;
+                            store.dispatch(openUSA());
                         }
                     } else if (npcInfo.name.includes("Liberty")) {
                         console.log("liberty");
