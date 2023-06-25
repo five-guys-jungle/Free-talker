@@ -93,13 +93,13 @@ const FreeDialog = () => {
 				console.log(playerNickname,playerTexture)
 				dispatch(setUserCharacter({playerNickname, playerTexture}));
 			})
-			socket.current!.on("otheruserleave", () => {
-				const clickEvent = new CustomEvent('exitcall', {
-					detail: { message: "exitcall"}
-				});
-				window.dispatchEvent(clickEvent);
+			// socket.current!.on("otheruserleave", () => {
+			// 	const clickEvent = new CustomEvent('exitcall', {
+			// 		detail: { message: "exitcall"}
+			// 	});
+			// 	window.dispatchEvent(clickEvent);
 				// socket.current!.disconnect();
-			});
+			// });
 		socket.current!.on("userconnected", () => {
 				console.log("connected~~~~~~~~~~~~~~~~~~~~~~~~~~!!!!!!!!!!!!");
 				socket.current!.emit("mychar", {otherNickname: playerNickname, otherTexture:playerTexture});
@@ -135,6 +135,11 @@ const FreeDialog = () => {
 			setCallEnded(true);
 			if (connectionRef.current) {
 				connectionRef.current.destroy();
+				const clickEvent = new CustomEvent('exitcall', {
+							detail: { message: "exitcall"}
+						});
+						window.dispatchEvent(clickEvent);
+						socket.current!.disconnect();
 			}
 		});
 		return () => {
@@ -200,9 +205,11 @@ const FreeDialog = () => {
 			connectionRef.current.destroy();
 			socket.current!.emit("callEnded"); // 서버로 callEnded 이벤트 전송
 			socket.current!.emit("leaveCallEvent", { to: caller });
-			socket.current!.disconnect();
-		   // Airport 씬으로 이벤트 전달
+			// Airport 씬으로 이벤트 전달
 			window.dispatchEvent(new Event("exitcall"));
+			socket.current!.disconnect();
+
+		   
 			
 		}
 	  };
