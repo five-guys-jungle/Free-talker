@@ -1,7 +1,7 @@
 import { Server as SocketIOServer, Socket } from "socket.io";
 import { freedialogsocketEventHandler } from "./voiceController";   
 
-let talkingPlaces:string[] = ["airport_chair1"];
+let talkingPlaces:string[] = ["airport_chair1", "coach_park"];
 const maxConnections = 2;
 let currentConnections = 0;
 export function createNamespace(io:SocketIOServer, namespace:string) {

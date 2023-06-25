@@ -13,7 +13,7 @@ import { setSocketNamespace } from "../../stores/socketSlice"
 import { current } from "@reduxjs/toolkit"
 import { TalkBoxState } from "../../stores/talkBoxSlice";
 import store, { RootState, useAppDispatch } from "../../stores";
-import {setUserCharacter} from "../../stores/userboxslice";
+import {setUserCharacter, clearcharacters} from "../../stores/userboxslice";
 
 const FreeDialog = () => {
     const [ me, setMe ] = useState("")
@@ -70,6 +70,10 @@ const FreeDialog = () => {
 			})
 		socket.current!.on("roomFull", () => {
 			socket.current!.disconnect();
+			const clickEvent = new CustomEvent('exitcall', {
+				detail: { message: "exitcall"}
+			});
+			window.dispatchEvent(clickEvent);
 		})
 
 		socket.current!.on("joined", () => {
@@ -107,6 +111,11 @@ const FreeDialog = () => {
 				console.log(playerNickname, playerTexture);
 				dispatch(setUserCharacter({playerNickname, playerTexture}));
 			  });
+			socket.current!.on("outcharacter", () => {
+				console.log("outcharacter=========================================");
+
+				dispatch(clearcharacters());
+			});  
 		// });// 상대방 소켓 연결 이벤트 핸들러
 		
 		socket.current!.on("me", (id) => {
