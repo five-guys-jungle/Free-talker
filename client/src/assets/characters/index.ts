@@ -3,7 +3,7 @@ import jinhogirl from "./jinhogirl.png";
 import seunghun from "./seunghun.png"
 import doyoungboy from "./doyoungboy.png";
 import minsook from "./minsook.png";
-
+import minsik from "./minsik.png";
 type Characters = {
     [key: string]: string;
 };
@@ -13,7 +13,8 @@ const characters: Characters = {
     jinhogirl,
     seunghun,
     doyoungboy,
-    minsook
+    minsook,
+    minsik
 };
 
 export default characters;

@@ -105,15 +105,15 @@ export default class Background extends Phaser.Scene {
             frameWidth: 32,
             frameHeight: 48,
         });
-        this.load.spritesheet(
-            "doyoungboy",
-            "assets/characters/doyoungboy.png",
-            {
+        this.load.spritesheet("doyoungboy", "assets/characters/doyoungboy.png", {
                 frameWidth: 32,
                 frameHeight: 48,
-            }
-        );
+        });
         this.load.spritesheet("minsook", "assets/characters/minsook.png", {
+            frameWidth: 32,
+            frameHeight: 48,
+        });
+        this.load.spritesheet("minsik", "assets/characters/minsik.png", {
             frameWidth: 32,
             frameHeight: 48,
         });
