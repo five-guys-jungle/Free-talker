@@ -19,6 +19,7 @@ import {
     openFreedialog,
     openReport,
     GAME_STATUS,
+    openUSA,
 } from "../stores/gameSlice";
 import { npcInfo } from "../characters/Npc";
 import { appendMessage, clearMessages } from "../stores/talkBoxSlice";
@@ -324,7 +325,7 @@ export default class USAScene extends Phaser.Scene {
                                 this.cursors!.up.enabled = true;
                                 this.cursors!.down.enabled = true;
 
-                                store.dispatch(openAirport());
+                                store.dispatch(openUSA());
                                 valve_E = true;
                                 this.allPlayers[this.socket!.id].seat = false;
                                 this.seatEvent = true;
@@ -346,7 +347,7 @@ export default class USAScene extends Phaser.Scene {
                             this.cursors!.up.enabled = true;
                             this.cursors!.down.enabled = true;
 
-                            store.dispatch(openAirport());
+                            store.dispatch(openUSA());
                             valve_E = true;
                             this.allPlayers[this.socket!.id].seat = false;
                             this.seatEvent = true;
@@ -625,7 +626,7 @@ export default class USAScene extends Phaser.Scene {
                             store.dispatch(clearCorrections());
                             store.dispatch(clearMessages());
                             store.dispatch(clearSentences());
-                            store.dispatch(openAirport());
+                            store.dispatch(openUSA());
                             valve_E = true;
                         }
                     }
