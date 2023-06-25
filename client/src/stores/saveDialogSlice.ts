@@ -1,5 +1,6 @@
 import axios, { AxiosError } from "axios";
-
+import { appendMessage, clearMessages } from "./talkBoxSlice";
+import store from "../stores/index";
 export interface Dialog {
     userId: string;
     timestamp: string;
@@ -54,6 +55,7 @@ export const saveDialog = async (state: Dialog) => {
         try{
             console.log("try");
             const response = await axios.post(`${DB_URL}/save/saveDialog`, body);
+            store.dispatch(clearMessages());
         }
         catch(e){
             console.log("!!! save error");
@@ -73,6 +75,7 @@ export const deleteDialog =async(state: Dialog)=> {
         try{
             console.log("try");
             const response = await axios.post(`${DB_URL}/save/deleteDialog`, body);
+            store.dispatch(clearMessages());
         }
         catch(e){
             console.log("!!! delete error");
