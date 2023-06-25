@@ -91,9 +91,9 @@ const UserBox: React.FC = () => {
 
   useEffect(() => {
     console.log("char~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-    return () => {
-      dispatch(clearcharacters());
-    }
+    // return () => {
+    //   dispatch(clearcharacters());
+    // }
   }, [otherNickname, otherTexture]);
 
   const renderUserAvatar = () => {
