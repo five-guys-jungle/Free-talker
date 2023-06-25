@@ -102,7 +102,7 @@ export const createCharacterAnims = (
                 start: 48,
                 end: 48,
             }),
-            repeat: 0,
+            repeat: -1,
             frameRate: animsFrameRate,
         });
     
@@ -112,7 +112,7 @@ export const createCharacterAnims = (
                 start: 49,
                 end: 49,
             }),
-            repeat: 0,
+            repeat: -1,
             frameRate: animsFrameRate,
         });
     }
