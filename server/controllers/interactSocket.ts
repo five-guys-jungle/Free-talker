@@ -93,7 +93,8 @@ export function interactSocketEventHandler(socket: Socket) {
 
                                 response = await convertTexttoSpeech(
                                     inputText,
-                                    outputText
+                                    outputText,
+                                    data.npcName,
                                 )
                                     .then((res) => {
                                         socket.emit("totalResponse", res);
@@ -127,6 +128,7 @@ export function interactSocketEventHandler(socket: Socket) {
                                 );
                             })
                             .catch((err) => {
+                                socket.emit("speechToText", "chain call error");
                                 console.log("chain call error: ", err);
                             });
                     }
@@ -141,10 +143,14 @@ export function interactSocketEventHandler(socket: Socket) {
     );
     socket.on(
         "getRecommendedResponses",
-        async (alreadyRecommended: boolean, outputText: string) => {
+        async (
+            npcName: string,
+            alreadyRecommended: boolean,
+            outputText: string
+        ) => {
             if (!alreadyRecommended) {
                 console.log("getRecommendedResponses start");
-                await recommendNextResponses(outputText, "airport")
+                await recommendNextResponses(outputText, npcName)
                     .then((res) => {
                         if (res === "ChatGPT API Error.") {
                             socket.emit("recommendedResponses", [outputText]);

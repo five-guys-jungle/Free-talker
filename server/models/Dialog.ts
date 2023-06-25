@@ -28,3 +28,26 @@ export const Dialog = model<DialogInfo>("dialog", dialog); // user 스키마를 
 
 export interface DialogDocument extends DialogInfo, Document {} // user 모델의 인터페이스 정의
 // export interface IUserModel extends Model<IUserDocument> {}
+export interface Dialog {
+    userId: string;
+    timestamp: number;
+    nickname: string;
+    npc: string;
+    userTexture: string;
+    score: number;
+    corrections: Correction[];
+    messages: Message[];
+}
+
+export interface Message {
+    userId: string;
+    name: string;
+    img: string;
+    side: string;
+    text: string;
+}
+
+export interface Correction {
+    original: string;
+    correction: string;
+}

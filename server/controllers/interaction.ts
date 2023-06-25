@@ -19,6 +19,7 @@ import {
 } from "langchain/prompts";
 import { BufferMemory } from "langchain/memory";
 import { RedisChatMessageHistory } from "langchain/stores/message/redis";
+import { preDefinedVoiceType } from "../models/voiceType";
 
 dotenv.config();
 const configuration = new Configuration({
@@ -121,7 +122,7 @@ export async function createChain(npcName: string): Promise<ConversationChain> {
         modelName: "gpt-3.5-turbo",
         temperature: 0,
         timeout: 11000,
-        maxTokens: 60,
+        maxTokens: 100,
     });
 
     try {
@@ -203,12 +204,13 @@ export async function textCompletion(
 
 export async function convertTexttoSpeech(
     inputText: string,
-    outputText: string
+    outputText: string,
+    npcName: string = "ImmigrationOfficer",
 ): Promise<Object> {
     try {
         const request: any = {
             input: { text: outputText },
-            voice: { languageCode: "en-US", ssmlGender: "NEUTRAL" },
+            voice: { languageCode: "en-US", name: preDefinedVoiceType[npcName].voiceType },
             audioConfig: { audioEncoding: "MP3" },
         };
         const [response_audio]: any = await client.synthesizeSpeech(request);
@@ -288,7 +290,7 @@ export async function recommendExpressions(place: string) {
 
 export async function recommendNextResponses(
     previous: string,
-    place: string = "airport immigration office"
+    npcName: string = "airport immigration officer"
 ) {
     let response: any;
     let recommendations: string;
@@ -299,11 +301,15 @@ export async function recommendNextResponses(
             messages: [
                 {
                     role: "system",
-                    content: `I'm currently at the ${place}, Recommend me three expressions I can reply to the sentence that ${previous} without any explanations`,
+                    content: `I'm currently talking with the ${npcName}, Recommend me three expressions I can reply to the sentence that ${previous} without any explanations`,
                 },
                 {
                     role: "user",
-                    content: `I'm currently at the ${place}, Recommend me three expressions I can reply to the sentence that ${previous} without any explanations`,
+                    content: `I'm currently talking with the ${npcName}, Recommend me three expressions I can reply to the sentence that ${previous} without any explanations`,
+                },
+                {
+                    role: "user",
+                    content: "reply three sentences in maximum",
                 },
             ],
             // messages: {`I'm currently at the ${place}, Recommend me three expressions I can reply to the ${previous} without any explanations`,}
