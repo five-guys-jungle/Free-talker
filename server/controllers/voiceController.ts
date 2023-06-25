@@ -3,13 +3,55 @@ const http = require("http")
 const app = express()
 const server = http.createServer(app)
 import {  Socket } from "socket.io"	
+const maxConnections = 2;
+const freeRoom_Num: {
+	[key: string]: number;
+} = {
+	airport_chair1: 0,
+}
 
 // freedialogsocketEventHandler 함수 수정
 export function freedialogsocketEventHandler(socket: Socket) {
 	console.log(socket.id, "connection---------------------------------");
-  
+	let temp: string = "";
+	socket.on("join", (data: { place_name: string }) => {
+		const { place_name } = data;
+  		console.log("join: ", place_name);
+		temp = place_name;
+		if (freeRoom_Num[place_name] == maxConnections) {
+			freeRoom_Num[place_name]++;
+			socket.emit("roomFull");
+			return;
+		
+		}
+
+		else {
+
+			freeRoom_Num[place_name]++;
+			socket.emit("joined");
+			console.log("freeRoom_Num: ", freeRoom_Num[place_name]);
+			// socket.emit("joined",  freeRoom_Num[place_name] );
+		}
+
+
+		
+	});
+	socket.on("disconnect", () => {
+		//   socket.broadcast.emit("callEnded");
+		  console.log("disconnected~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+		  freeRoom_Num[temp]--;
+		  console.log("freeRoom_Num: ", freeRoom_Num[temp]);
+		//   socket.broadcast.emit("disconnected", freeRoom_Num[place_name]);
+		});
+	socket.broadcast.emit("userconnected");
+	
 	socket.emit("me", socket.id);
-  
+	socket.on("otherchar", ({playerNickname: playerNickname, playerTexture:playerTexture}) =>{
+		socket.broadcast.emit("otherusercharacter",{playerNickname: playerNickname, playerTexture:playerTexture})
+	})
+	socket.on("mychar", ({otherNickname: playerNickname, otherTexture:playerTexture}) =>{
+		socket.broadcast.emit("usercharacter",{otherNickname: playerNickname, otherTexture:playerTexture})
+	})
 	socket.on("disconnect", () => {
 	//   socket.broadcast.emit("callEnded");
 	  console.log("disconnected~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");

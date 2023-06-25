@@ -225,6 +225,14 @@ export default class AirportScene extends Phaser.Scene {
                             this.cursors!.up.enabled = false;
                             this.cursors!.down.enabled = false;
                             valve_E = false;
+                            window.addEventListener("seat", (e: Event) => {
+                                console.log("seat event listener");
+                                this.player1!.anims.play(
+                                    `${this.player1!.texture.key}_sit_left`,
+                                    true
+                                );
+                            });
+
                             window.addEventListener("exitcall", (e: Event) => {
                                 console.log("exitcall event listener");
                                 this.player1!.setVelocity(0, 0);
@@ -232,6 +240,8 @@ export default class AirportScene extends Phaser.Scene {
                                     this.player1!.x,
                                     this.player1!.y
                                 );
+                            
+
 
                                 this.cursors!.left.isDown = false;
                                 this.cursors!.right.isDown = false;
