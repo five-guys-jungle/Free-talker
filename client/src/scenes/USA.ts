@@ -873,12 +873,6 @@ export default class USAScene extends Phaser.Scene {
                     let otherPlayer: Player = this.allPlayers[key];
                     otherPlayer.move(deltaInSecond);
                     this.allPlayers[key].moveText(this);
-                    if (otherPlayer.seat == true) {
-                        otherPlayer.sprite.anims.play(
-                            `${otherPlayer.sprite.texture.key}_sit_left`,
-                            true
-                        );
-                    }
                 }
             }
         }
