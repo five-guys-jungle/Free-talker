@@ -336,6 +336,7 @@ export default class AirportScene extends Phaser.Scene {
                                             );
                                             this.socket2!.emit(
                                                 "getRecommendedResponses",
+                                                this.currNpcName,
                                                 this.alreadyRecommended,
                                                 customEvent.detail.lastMessage
                                             );
@@ -474,6 +475,7 @@ export default class AirportScene extends Phaser.Scene {
                                                 this.alreadyRecommended = false;
                                                 this.socket2!.emit(
                                                     "getRecommendedResponses",
+                                                    this.currNpcName,
                                                     this.alreadyRecommended,
                                                     responses[0]
                                                 );

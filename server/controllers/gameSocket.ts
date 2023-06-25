@@ -25,7 +25,6 @@ export function socketEventHandler(socket: Socket) {
     });
     socket.on("playerMovement", (data: Player) => {
         if (data.scene === "AirportScene") {
-            
             // console.log("playerMovement, data: ", data);
             data.socketId = socket.id;
             players_airport[socket.id] = data;
@@ -39,7 +38,12 @@ export function socketEventHandler(socket: Socket) {
     });
 
     socket.on("disconnect", (reason: string) => {
-        console.log("Client disconnected, id: ", socket.id, ", reason: ", reason);
+        console.log(
+            "Client disconnected, id: ",
+            socket.id,
+            ", reason: ",
+            reason
+        );
         if (players_airport[socket.id] != null) {
             let playerDeleted: Player = players_airport[socket.id];
             delete players_airport[socket.id];
