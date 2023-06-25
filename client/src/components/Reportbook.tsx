@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from "react-redux"; // react-redux에서 use
 import TalkBox from "./npcdialog/TalkBox";
 import { TalkBoxState } from "../stores/talkBoxSlice";
 import { correctionState} from "../stores/reportSlice";
-import { saveDialog, deleteDialog } from "../stores/saveDialogSlice";
+import { saveDialog, deleteDialog, loadDialog, dialogState} from "../stores/saveDialogSlice";
 import Button from "@mui/material/Button";
 import SaveIcon from "@material-ui/icons/Save";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -18,8 +18,13 @@ import { scoreState } from "../stores/scoreSlice"
 //     onClose: () => void;
 // }
 
+let dialogsArr: dialogState = {
+  dialogs: [],
+};
+
 const ReportBook = (data:any) => {
-    
+    const [openbook, setOpenbook] = useState(false);
+
     const {playerId, playerNickname, playerTexture} = useSelector((state: RootState) => {return {...state.user}});
     
     useEffect(() => {
@@ -68,31 +73,42 @@ const ReportBook = (data:any) => {
         });
         store.dispatch(openAirport());
     };
-    const handleDelete = () => {
+    const handleDelete = (userId: string, timestamp: string) => {
         deleteDialog({
-            userId: playerId,
-            timestamp: `${month[date.getMonth() + 1]} ${date.getDate()}`,
-            nickname: playerNickname,
-            npc: messages[1].name,
-            userTexture:playerTexture,
-            score:score,
-            corrections:corrections,
-            messages:messages,
+            userId: userId,
+            timestamp: timestamp,
+            nickname: "",
+            npc: "",
+            userTexture:"",
+            score:0,
+            corrections:[],
+            messages:[],
         });
         store.dispatch(openAirport());
     };
-    const handleBook = () => {
-        deleteDialog({
+
+    
+
+    const handleBook = async() => {
+        dialogsArr.dialogs= await loadDialog({
             userId: playerId,
             timestamp: `${month[date.getMonth() + 1]} ${date.getDate()}`,
             nickname: playerNickname,
-            npc: messages[1].name,
+            npc: "",
             userTexture:playerTexture,
-            score:score,
-            corrections:corrections,
-            messages:messages,
+            score:0,
+            corrections:[],
+            messages:[],
         });
-        store.dispatch(openReportBook());
+
+        console.log(openbook);
+        setOpenbook(!openbook);
+
+        console.log(dialogsArr.dialogs)
+
+        dialogsArr.dialogs.map((dialog)=>
+        console.log(dialog.timestamp))
+        // store.dispatch(openReportBook());
     };
 
     const date = new Date();
@@ -112,8 +128,11 @@ const ReportBook = (data:any) => {
     }
 
     return (
-        <Button color="primary" onClick={handleBook}>
-            <ReportDiv>
+        <Button color="primary" onClick={handleBook} style={{width:'50px', height:'50px'}}>
+          {dialogsArr.dialogs.map((dialog)=>
+          <div style={{margin:'800px 0px 0px 800px'}}>
+          {openbook==true && (
+              <ReportDiv>
                 <div className="main-content">
                     <div className="notebook">
                         <div className="notebook__inner">
@@ -123,31 +142,31 @@ const ReportBook = (data:any) => {
                                 style={{gridArea:'s3',marginLeft:'auto', marginRight:'30px', marginTop:'19px',width:'50px',height:'25px'}}>
                                     <SaveIcon />
                                 </IconButton>
-                                <IconButton color="secondary" onClick={handleDelete}
+                                <IconButton color="secondary" onClick={()=>handleDelete(dialog.userId, dialog.timestamp)}
                                 style={{gridArea:'s3',marginLeft:'auto',marginTop:'19px',width:'50px',height:'25px'}}>
                                     <DeleteIcon />
                                 </IconButton>
-                                <h3>&lt; {month[date.getMonth() + 1]} {date.getDate()} &gt;</h3>
+                                <h3>&lt; {dialog.timestamp} &gt;</h3>
                             </div>
                             <div className="results">
                                 <div className="results__item">
                                     <div className="results__name">✔︎ 내 대화는?</div>
                                     <div className="results__list">
-                                        { score===100 && (<>
+                                        { dialog.score===100 && (<>
                                         <p>원어민 수준이에요!</p>
                                             <p>영어로 대화가 자연스러워요!</p>
                                             <div className="highlighted">
                                             <div className="text"> <span>Perfect!</span></div>
                                             </div></>)
                                         }
-                                        { (score>=80 && score < 100) && (<>
+                                        { (dialog.score>=80 && dialog.score < 100) && (<>
                                         <p>대화에 무리 없는 수준이에요!</p>
                                             <p>상황에 따라 알맞은 대화를 할 수 있어요!</p>
                                             <div className="highlighted">
                                             <div className="text"> <span>Good!</span></div>
                                             </div></>)
                                         }
-                                        { score<80 && (<>
+                                        { dialog.score<80 && (<>
                                         <p>생존영어 가능!</p>
                                             <p>말 못해 죽진 않을 거 같아요!</p>
                                             <div className="highlighted">
@@ -157,24 +176,24 @@ const ReportBook = (data:any) => {
                                     </div>
                                 </div>
                             </div>
-                            {messages.length!==0 &&
+                            {dialog.messages.length!==0 &&
                                 (<>
                                 <div className="wrapChracterL">
                                     <div className="Character">
                                         <h4>My Character</h4>
                                         <center>
-                                        <ScaleImg className="Character__box" src={`./assets/characters/single/${playerTexture}.png`} alt={fix_playerTexture} ></ScaleImg>
+                                        <ScaleImg className="Character__box" src={`./assets/characters/single/${dialog.userTexture}.png`} alt={dialog.userTexture} ></ScaleImg>
                                         </center>
-                                        <div className="Nickname"><span className="Character__title">{playerNickname}</span></div>
+                                        <div className="Nickname"><span className="Character__title">{dialog.nickname}</span></div>
                                     </div>
                                 </div>
                                 <div className="wrapChracterR">
                                     <div className="Character">
                                         <h4>NPC</h4>
                                         <center>
-                                        <ScaleImg className="Character__box" src={`./assets/characters/single/${messages[1].img}.png`} alt={"Nancy"} ></ScaleImg>
+                                        <ScaleImg className="Character__box" src={`./assets/characters/single/${dialog.npc}.png`} alt={"dialog.npc"} ></ScaleImg>
                                         </center>
-                                        <div className="Nickname"><span className="Character__title">{messages[1].name}</span></div>
+                                        <div className="Nickname"><span className="Character__title">{dialog.npc}</span></div>
                                     </div>
                                 </div>
                                 </>)
@@ -192,8 +211,8 @@ const ReportBook = (data:any) => {
                             } */}
                             <div className="corrections"><span>Corrections</span>
                                 <div className="corrections-list">
-                                    {corrections.length!==0 && 
-                                    corrections.map((correction, index) => (
+                                    {dialog.corrections.length!==0 && 
+                                    dialog.corrections.map((correction, index) => (
                                     <div className="correction-div" key={index}>
                                         <p>User Sentence : {correction.original}</p>
                                         <p>Corrected Sentence: {correction.correction}</p>
@@ -203,8 +222,8 @@ const ReportBook = (data:any) => {
                                 </div>
                             </div>
                             <div className="talks">
-                                {messages.length!==0 &&
-                                    messages.map((message, index) => (
+                                {dialog.messages.length!==0 &&
+                                    dialog.messages.map((message, index) => (
                                         <div className={`msg ${message.side}-msg`} key={index}>
                                             <div
                                                 className="msg-img"
@@ -225,7 +244,7 @@ const ReportBook = (data:any) => {
                                         </div>
                                     ))
                                 }
-                                {messages.length===0 &&
+                                {dialog.messages.length===0 &&
                                     <center>
                                         <p style={{textAlign:'center', marginTop:'50%', fontSize:'20px'}}>Try talk!</p>
                                     </center>
@@ -234,8 +253,11 @@ const ReportBook = (data:any) => {
                         </div>
                     </div>
                 </div>
-            </ReportDiv>
-        </Button>
+              </ReportDiv>
+              )}
+              </div>
+          )}
+          </Button>
     );
 };
 

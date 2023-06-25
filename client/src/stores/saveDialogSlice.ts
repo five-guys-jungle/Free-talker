@@ -63,7 +63,6 @@ export const saveDialog = async (state: Dialog) => {
 
 
 
-
 export const deleteDialog =async(state: Dialog)=> {
         
         const body = {
@@ -78,5 +77,23 @@ export const deleteDialog =async(state: Dialog)=> {
         catch(e){
             console.log("!!! delete error");
         }
+}
+
+export const loadDialog =async(state: Dialog)=> {
+        
+    const body = {
+        userId: state.userId
+    };
+
+    try{
+        console.log("try");
+        const response = await axios.post(`${DB_URL}/save/loadDialog`, body);
+        // console.log(response.data.existingDialogs)
+
+        return (response.data.existingDialogs)
+    }
+    catch(e){
+        console.log("!!! delete error");
+    }
 }
 

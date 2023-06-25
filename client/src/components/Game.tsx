@@ -33,7 +33,8 @@ const Game = () => {
         {mode === NPCDIALOG && <NPCDialog />}
         {mode === FREEDIALOG && <FreeDialog />}
         {mode === REPORT && <Report/>}
-        {mode !== REPORT || mode !== NPCDIALOG || mode !== FREEDIALOG&& <ReportBook/>}
+        {mode === AIRPORT || mode === USA && <ReportBook/>}
+        <ReportBook/>
         </BackgroundDiv>;
 };
 

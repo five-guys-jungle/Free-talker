@@ -114,3 +114,31 @@ export const deleteDialog = async (req: Request, res: Response) => {
         console.log(err);
     }
 };
+
+export const loadDialog = async (req: Request, res: Response) => {
+    try {
+        const { userId, timestamp } = req.body;
+
+        const deleteParams = {
+            TableName: tableName,
+            Key: {
+                userId: { S: userId },
+            },
+            ConditionExpression: `attribute_exists(data.dialog${timestamp})`,
+        };
+
+        const deleteItem = new DeleteItemCommand(deleteParams);
+        const data = await client.send(deleteItem);
+
+        if (data !== undefined) {
+            console.log("Successfully deleted dialog");
+            return res.json({
+                success: true,
+                message: "Successfully deleted dialog",
+                status: 200, // 200: 성공
+            });
+        }
+    } catch (err) {
+        console.log(err);
+    }
+};
