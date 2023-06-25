@@ -76,6 +76,8 @@ export default class USAScene extends Phaser.Scene {
     dashSpeed: number = 600;
     tilemapLayerList: Phaser.Tilemaps.TilemapLayer[] = [];
     currNpcName: string = "";
+    beforeSleepX: number = this.initial_x;
+    beforeSleepY: number = this.initial_y;
 
     constructor() {
         super("USAScene");
@@ -91,10 +93,32 @@ export default class USAScene extends Phaser.Scene {
         this.playerTexture = data.playerTexture;
         console.log("data: ", data);
     }
+    
+    gamePause(pausedX: number, pausedY: number) {
+        console.log("Scene is Paused: USA");
+        // this.intervalId = setInterval(() => {
+        //     this.socket!.emit('heartbeat');
+        // }, 5000);
 
+    }
+    gameResume(pausedX: number, pausedY: number) {
+        console.log("Scene is Resumed: USA");
+        console.log("allPlayer in Resumed: ", this.allPlayers);
+        // if(this.intervalId){
+        //     clearInterval(this.intervalId);
+        //     this.intervalId = null;
+        // }
+    }
     onSceneWake() {
         console.log("Scene has been woken up!, scene: USA");
-        this.allPlayers = {};
+        this.socket?.disconnect();
+        this.socket = null;
+        for (let socketId in this.allPlayers) {
+            this.allPlayers[socketId].textObj?.destroy();
+            this.allPlayers[socketId].sprite.destroy();
+            delete this.allPlayers[socketId];
+        }
+        this.player1 = null;
         this.gameSocketEventHandler(false);
     }
 
@@ -102,6 +126,8 @@ export default class USAScene extends Phaser.Scene {
         console.log("Scene is now asleep!, scene: USA");
         this.socket?.disconnect();
         this.socket = null;
+        this.beforeSleepX = this.player1 ? this.player1!.x: this.initial_x;
+        this.beforeSleepY = this.player1 ? this.player1!.y: this.initial_y;
         for (let socketId in this.allPlayers) {
             this.allPlayers[socketId].textObj?.destroy();
             this.allPlayers[socketId].sprite.destroy();
@@ -111,6 +137,7 @@ export default class USAScene extends Phaser.Scene {
     }
 
     create() {
+        // this.game.events.on('pause', this.gamePause);
         this.events.on("wake", this.onSceneWake, this);
         this.events.on("sleep", this.onSceneSleep, this);
         // this.add.image(400, 300, "background");
@@ -429,7 +456,7 @@ export default class USAScene extends Phaser.Scene {
                                             if (
                                                 response === "" ||
                                                 response ===
-                                                    "convertSpeechToText Error" ||
+                                                "convertSpeechToText Error" ||
                                                 response === "chain call error"
                                             ) {
                                                 store.dispatch(
@@ -689,7 +716,19 @@ export default class USAScene extends Phaser.Scene {
             }
         });
     }
+    deleteNotVaildScoket(){
+        for(let key in this.allPlayers){
+            // console.log(`allPlayer[${key}]: ${this.allPlayers[key]}, socket: ${this.socket}`);
+            if(this.socket!.id !== key && this.userNickname === this.allPlayers[key].nickname){
+                console.log(`allPlayer[${key}]: ${this.allPlayers[key]}, socket: ${this.socket}`);
+                this.allPlayers[key].textObj?.destroy();
+                this.allPlayers[key].sprite.destroy();
+                delete this.allPlayers[key];
+            }
+        }
+    }
     update(time: number, delta: number) {
+        this.deleteNotVaildScoket();
         let speed: number = this.cursors?.shift.isDown
             ? this.dashSpeed
             : this.speed;
@@ -779,10 +818,11 @@ export default class USAScene extends Phaser.Scene {
             this.player1!.setVelocityY(velocityY);
 
             if (velocityX === 0 && velocityY === 0) {
-                this.player1!.anims.play(
-                    `${this.player1!.texture.key}_idle_down`,
-                    true
-                );
+                if (this.player1.anims.isPlaying) {
+                    let idle_anims: string = this.player1!.anims.currentAnim!.key;
+                    idle_anims = idle_anims.replace('run', 'idle');
+                    this.player1!.anims.play(idle_anims, true);
+                }
             }
         }
 
@@ -910,6 +950,7 @@ export default class USAScene extends Phaser.Scene {
             role: "npc",
         };
         gate.sprite = this.physics.add.sprite(gate.x, gate.y, gate.texture);
+        gate.sprite.alpha = 0;
         gate.sprite.setScale(0.35);
         this.npcList.push(gate);
 
@@ -1028,6 +1069,8 @@ export default class USAScene extends Phaser.Scene {
                 dash: false,
                 seat: false
             });
+            this.player1!.x = this.beforeSleepX
+            this.player1!.y = this.beforeSleepY;
 
             this.cameras.main.startFollow(this.player1);
             this.cameras.main.zoom = 1.2;
@@ -1036,8 +1079,8 @@ export default class USAScene extends Phaser.Scene {
                 socketId: this.socket!.id,
                 nickname: this.userNickname,
                 playerTexture: this.playerTexture,
-                x: this.initial_x,
-                y: this.initial_y,
+                x: this.player1.x,
+                y: this.player1.y,
                 scene: "USAScene",
                 dash: false,
             });

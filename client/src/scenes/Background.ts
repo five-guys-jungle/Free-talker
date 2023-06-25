@@ -1,6 +1,9 @@
 import Phaser from "phaser";
 import { openLogin } from "../stores/gameSlice";
 import store from "../stores";
+import phaserGame from "../phaserGame";
+import AirportScene from "./Airport";
+import USAScene from "./USA";
 
 export default class Background extends Phaser.Scene {
     background!: Phaser.GameObjects.Image;
@@ -117,6 +120,12 @@ export default class Background extends Phaser.Scene {
             frameWidth: 32,
             frameHeight: 48,
         });
+
+        this.load.spritesheet('gate', 'assets/gate.png', {
+             frameWidth: 64, 
+             frameHeight: 64 
+            });
+
         this.load.image(
             "exterior",
             "assets/tilesets/ModernExteriorsComplete.png"
@@ -151,7 +160,55 @@ export default class Background extends Phaser.Scene {
         console.log("Complete loading!!!!!!!!!!!!!!!");
     }
 
+    gamePause() {
+        console.log("Game is paused");
+        for (let scene of phaserGame.scene.getScenes()) {
+            const sceneKey = scene.scene.key;
+            if (phaserGame.scene.isActive(sceneKey)) {
+                const resumedScene: Phaser.Scene = phaserGame.scene.getScene(sceneKey);
+                switch(sceneKey){
+                    case "AirportScene":
+                        const beforePauseXAirport:number = (resumedScene as AirportScene).player1!.x;
+                        const beforePauseYAirport:number = (resumedScene as AirportScene).player1!.y;
+                        (resumedScene as AirportScene).gamePause(beforePauseXAirport, beforePauseYAirport);
+                        break;
+                    case "USAScene":
+                        const beforePauseXUSA:number = (resumedScene as USAScene).player1!.x;
+                        const beforePauseYUSA:number = (resumedScene as USAScene).player1!.y;
+                        (resumedScene as USAScene).gamePause(beforePauseXUSA, beforePauseYUSA);
+                }
+            }
+        }
+    }
+
+    gameResume() {
+        console.log("Game is resumed");
+        for (let scene of phaserGame.scene.getScenes()) {
+            const sceneKey = scene.scene.key;
+            if (phaserGame.scene.isActive(sceneKey)) {
+                const resumedScene: Phaser.Scene = phaserGame.scene.getScene(sceneKey);
+                switch(sceneKey){
+                    case "AirportScene":
+                        const beforePauseXAirport:number = (resumedScene as AirportScene).player1!.x;
+                        const beforePauseYAirport:number = (resumedScene as AirportScene).player1!.y;
+                        (resumedScene as AirportScene).gameResume(beforePauseXAirport, beforePauseYAirport);
+                        break;
+                    case "USAScene":
+                        const beforePauseXUSA:number = (resumedScene as USAScene).player1!.x;
+                        const beforePauseYUSA:number = (resumedScene as USAScene).player1!.y;
+                        (resumedScene as USAScene).gameResume(beforePauseXUSA, beforePauseYUSA);
+                }
+            }
+        }
+    }
+
     create() {
+        // 'pause' 이벤트를 처리하는 리스너 추가
+        // this.game.events.on('pause', this.gamePause.bind(this));
+
+        // 'resume' 이벤트를 처리하는 리스너 추가
+        this.game.events.on('resume', this.gameResume);
+
         this.background = this.add
             .image(0, 0, "background")
             .setDisplaySize(this.game.scale.width, this.game.scale.height)
