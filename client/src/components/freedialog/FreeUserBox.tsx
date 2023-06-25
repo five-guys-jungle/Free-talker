@@ -8,7 +8,7 @@ import store, { RootState, useAppDispatch } from "../../stores";
 import io, { Socket } from "socket.io-client"
 import {clearcharacters} from "../../stores/userboxslice"
 
-
+const blankchar = '../assets/characters/blankchar2.png';
 const Image = styled('img')`
   width: 150%;
   height: auto;
@@ -49,21 +49,45 @@ const UserBox: React.FC = () => {
 	const socketNamespace = useSelector(
 		(state: { rtc: { socketNamespace: string } }) => state.rtc.socketNamespace
 	);
+
+  // useEffect(() => {
+  //     console.log(playerId)
+  //     console.log(playerNickname)
+  //     console.log(playerTexture)
+  //   return () => {
+  //     dispatch(clearcharacters());
+  //   }
+  // }, [playerId, playerNickname, playerTexture]);
+
+  
   useEffect(() => {
-      console.log(playerId)
-      console.log(playerNickname)
-      console.log(playerTexture)
+    console.log(playerId)
+    console.log(playerNickname)
+    console.log(playerTexture)
     return () => {
       dispatch(clearcharacters());
     }
-  }, [playerId, playerNickname, playerTexture]);
+}, [playerId, playerNickname, playerTexture]);
 
+  
   
   // const messages = useSelector(
   //     (state: { talkBox: TalkBoxState }) => state.talkBox.messages
   // );
 
+
+  // const messages = useSelector(
+  //     (state: { talkBox: TalkBoxState }) => state.talkBox.messages
+  // );
+
   let fix_playerTexture=playerTexture;
+
+  // useEffect(() => {
+  //   console.log("char~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+  //   return () => {
+  //     dispatch(clearcharacters());
+  //   }
+  // }, [otherNickname, otherTexture]);
 
   useEffect(() => {
     console.log("char~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
@@ -72,6 +96,21 @@ const UserBox: React.FC = () => {
     }
   }, [otherNickname, otherTexture]);
 
+  const renderUserAvatar = () => {
+    if (otherTexture) {
+      return <Image src={`../assets/characters/single/${otherTexture}.png`} alt="User Avatar" />;
+    } else {
+      return <Image src={blankchar} alt="Blank Avatar" />;
+    }
+  };
+
+  const renderOtherNickname = () => {
+    if (otherNickname) {
+      return <Typography variant="body1" align="center">{otherNickname}</Typography>;
+    } else {
+      return <Typography variant="body1" align="center">대화 상대를 기다려 주세요</Typography>;
+    }
+  };
 
   return (
     <UserBoxWrapper>
@@ -85,8 +124,10 @@ const UserBox: React.FC = () => {
           <Typography variant="body1" align="center">{playerNickname}</Typography>
         </AvatarContainer>
         <AvatarContainer>
-          <Image src={`../assets/characters/single/${otherTexture}.png`} alt="User Avatar" />
-          <Typography variant="body1" align="center">{otherNickname}</Typography>
+          {/* <Image src={`../assets/characters/single/${otherTexture}.png`} alt="User Avatar" /> */}
+          {/* <Typography variant="body1" align="center">{otherNickname}</Typography> */}
+          {renderUserAvatar()}
+          {renderOtherNickname()}
         </AvatarContainer>
       </Box>
     </UserBoxWrapper>
