@@ -314,7 +314,7 @@ export async function recommendNextResponses(
             ],
             // messages: {`I'm currently at the ${place}, Recommend me three expressions I can reply to the ${previous} without any explanations`,}
             temperature: 0.2,
-            max_tokens: 50,
+            max_tokens: 100,
             top_p: 1.0,
             frequency_penalty: 0.0,
             presence_penalty: 0.0,
