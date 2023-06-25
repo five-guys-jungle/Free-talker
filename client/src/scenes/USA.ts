@@ -125,8 +125,8 @@ export default class USAScene extends Phaser.Scene {
         console.log("Scene is now asleep!, scene: USA");
         this.socket?.disconnect();
         this.socket = null;
-        this.beforeSleepX = this.player1!.x;
-        this.beforeSleepY = this.player1!.y;
+        this.beforeSleepX = this.player1 ? this.player1!.x: this.initial_x;
+        this.beforeSleepY = this.player1 ? this.player1!.y: this.initial_y;
         for (let socketId in this.allPlayers) {
             this.allPlayers[socketId].textObj?.destroy();
             this.allPlayers[socketId].sprite.destroy();
@@ -905,6 +905,7 @@ export default class USAScene extends Phaser.Scene {
             role: "npc",
         };
         gate.sprite = this.physics.add.sprite(gate.x, gate.y, gate.texture);
+        gate.sprite.alpha = 0;
         gate.sprite.setScale(0.35);
         this.npcList.push(gate);
 

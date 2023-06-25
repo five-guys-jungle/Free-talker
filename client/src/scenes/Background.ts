@@ -119,6 +119,12 @@ export default class Background extends Phaser.Scene {
             frameWidth: 32,
             frameHeight: 48,
         });
+
+        this.load.spritesheet('gate', 'assets/gate.png', {
+             frameWidth: 64, 
+             frameHeight: 64 
+            });
+
         this.load.image(
             "exterior",
             "assets/tilesets/ModernExteriorsComplete.png"

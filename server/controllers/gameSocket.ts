@@ -25,7 +25,7 @@ export function socketEventHandler(socket: Socket) {
     });
     socket.on("playerMovement", (data: Player) => {
         if (data.scene === "AirportScene") {
-            // console.log("playerMovement, data: ", data);
+            console.log("playerMovement, data: ", data);
             data.socketId = socket.id;
             players_airport[socket.id] = data;
             socket.broadcast.emit("playerMoved", players_airport[socket.id]);

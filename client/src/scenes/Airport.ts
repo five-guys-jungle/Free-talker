@@ -125,8 +125,8 @@ export default class AirportScene extends Phaser.Scene {
         console.log("Scene is now asleep!, scene: AirportScene");
         this.socket?.disconnect();
         this.socket = null;
-        this.beforeSleepX = this.player1!.x;
-        this.beforeSleepY = this.player1!.y;
+        this.beforeSleepX = this.player1 ? this.player1!.x: this.initial_x;
+        this.beforeSleepY = this.player1 ? this.player1!.y: this.initial_y;
         for (let socketId in this.allPlayers) {
             this.allPlayers[socketId].textObj?.destroy();
             this.allPlayers[socketId].sprite.destroy();
@@ -295,12 +295,23 @@ export default class AirportScene extends Phaser.Scene {
                             valve_E = true;
                         }
                     } else if (npcInfo.name.includes("Liberty")) {
-                        console.log("liberty");
-                        handleScene(GAME_STATUS.USA, {
-                            playerId: this.playerId,
-                            playerNickname: this.userNickname,
-                            playerTexture: this.playerTexture,
+                        let gate: Phaser.Physics.Arcade.Sprite = npcInfo.sprite!;
+                        gate.on('animationcomplete', () => {
+                            // 여기서 애니메이션이 완료된 후 수행할 로직을 작성합니다.
+                            console.log('Animation complete!');
+                            handleScene(GAME_STATUS.USA, {
+                                playerId: this.playerId,
+                                playerNickname: this.userNickname,
+                                playerTexture: this.playerTexture,
+                            });
                         });
+                        gate.play('gateAnim'); // 생성한 sprite에 애니메이션 적용
+                        console.log("liberty");
+                        // handleScene(GAME_STATUS.USA, {
+                        //     playerId: this.playerId,
+                        //     playerNickname: this.userNickname,
+                        //     playerTexture: this.playerTexture,
+                        // });
                     } else {
                         if (valve_E === true) {
                             if (this.isAudioPlaying) {
@@ -641,10 +652,10 @@ export default class AirportScene extends Phaser.Scene {
             }
         });
     }
-    deleteNotVaildScoket(){
-        for(let key in this.allPlayers){
+    deleteNotVaildScoket() {
+        for (let key in this.allPlayers) {
             // console.log(`allPlayer[${key}]: ${this.allPlayers[key]}, socket: ${this.socket}`);
-            if(this.socket!.id !== key && this.userNickname === this.allPlayers[key].nickname){
+            if (this.socket!.id !== key && this.userNickname === this.allPlayers[key].nickname) {
                 console.log(`allPlayer[${key}]: ${this.allPlayers[key]}, socket: ${this.socket}`);
                 this.allPlayers[key].textObj?.destroy();
                 this.allPlayers[key].sprite.destroy();
@@ -839,7 +850,7 @@ export default class AirportScene extends Phaser.Scene {
         let npc1: npcInfo = {
             name: "ImmigrationOfficer",
             x: 1700,
-            y: 1100,
+            y: 1300,
             texture: "ImmigrationOfficer",
             sprite: null,
             role: "npc",
@@ -847,28 +858,40 @@ export default class AirportScene extends Phaser.Scene {
         npc1.sprite = this.physics.add.sprite(npc1.x, npc1.y, npc1.texture);
         this.npcList.push(npc1);
 
-        let chair: npcInfo = {
-            name: "airport_chair1",
-            x: 1400,
-            y: 1400,
-            texture: "airport_chair",
-            sprite: null,
-            role: "freeTalkingPlace",
-        };
-        chair.sprite = this.physics.add.sprite(chair.x, chair.y, chair.texture);
-        this.npcList.push(chair);
+        // let chair: npcInfo = {
+        //     name: "airport_chair1",
+        //     x: 1400,
+        //     y: 1400,
+        //     texture: "airport_chair",
+        //     sprite: null,
+        //     role: "freeTalkingPlace",
+        // };
+        // chair.sprite = this.physics.add.sprite(chair.x, chair.y, chair.texture);
+        // this.npcList.push(chair);
 
-        let npc2: npcInfo = {
+        // let npc2: npcInfo = {
+        //     name: "statueOfLiberty",
+        //     x: 2150,
+        //     y: 1430,
+        //     texture: "statueOfLiberty",
+        //     sprite: null,
+        //     role: "npc",
+        // };
+        // npc2.sprite = this.physics.add.sprite(npc2.x, npc2.y, npc2.texture);
+        // npc2.sprite.setScale(0.35);
+        // this.npcList.push(npc2);
+        let gate: npcInfo = {
             name: "statueOfLiberty",
-            x: 2150,
-            y: 1430,
-            texture: "statueOfLiberty",
+            x: 1695,
+            y: 1100,
+            texture: "gate",
             sprite: null,
             role: "npc",
         };
-        npc2.sprite = this.physics.add.sprite(npc2.x, npc2.y, npc2.texture);
-        npc2.sprite.setScale(0.35);
-        this.npcList.push(npc2);
+        gate.sprite = this.physics.add.sprite(gate.x, gate.y, gate.texture);
+        gate.sprite.setScale(1.6);
+        // gate.sprite.play("gateAnim");
+        this.npcList.push(gate);
     }
     gameSocketEventHandler(initial: boolean = true) {
         this.socket = io(serverUrl);
@@ -889,7 +912,7 @@ export default class AirportScene extends Phaser.Scene {
 
             this.cameras.main.startFollow(this.player1);
             this.cameras.main.zoom = 1.2;
-            
+
             this.socket!.emit("connected", {
                 socketId: this.socket!.id,
                 nickname: this.userNickname,
