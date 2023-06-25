@@ -12,6 +12,8 @@ import SaveIcon from "@material-ui/icons/Save";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { IconButton } from "@material-ui/core";
 import { scoreState } from "../stores/scoreSlice"
+import { Navigation } from "swiper";
+import { Swiper, SwiperSlide } from "swiper/react";
 
 // interface NPCDialogProps {
 //     initialDialog?: string;
@@ -129,9 +131,11 @@ const ReportBook = (data:any) => {
 
     return (
         <Button color="primary" onClick={handleBook} style={{width:'50px', height:'50px'}}>
-          {dialogsArr.dialogs.map((dialog)=>
+          
           <div style={{margin:'800px 0px 0px 800px'}}>
-          {openbook==true && (
+          {openbook==true && (<>
+              {dialogsArr.dialogs.map((dialog)=>
+
               <ReportDiv>
                 <div className="main-content">
                     <div className="notebook">
@@ -254,9 +258,12 @@ const ReportBook = (data:any) => {
                     </div>
                 </div>
               </ReportDiv>
+
+
+              )}
+              </>
               )}
               </div>
-          )}
           </Button>
     );
 };
