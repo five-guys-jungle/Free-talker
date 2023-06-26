@@ -109,8 +109,8 @@ export default class Background extends Phaser.Scene {
             frameHeight: 48,
         });
         this.load.spritesheet("doyoungboy", "assets/characters/doyoungboy.png", {
-                frameWidth: 32,
-                frameHeight: 48,
+            frameWidth: 32,
+            frameHeight: 48,
         });
         this.load.spritesheet("minsook", "assets/characters/minsook.png", {
             frameWidth: 32,
@@ -122,9 +122,13 @@ export default class Background extends Phaser.Scene {
         });
 
         this.load.spritesheet('gate', 'assets/gate.png', {
-             frameWidth: 64, 
-             frameHeight: 64 
-            });
+            frameWidth: 64,
+            frameHeight: 64
+        });
+        this.load.spritesheet('arrowDown', 'assets/UI/UI_arrow_down_32x32.png', {
+            frameWidth: 32,
+            frameHeight: 32
+        });
 
         this.load.image(
             "exterior",
@@ -156,6 +160,10 @@ export default class Background extends Phaser.Scene {
             "assets/tilesets/fiveguys_Room_Builder.png"
         );
         this.load.image("fiveguys_logo", "assets/tilesets/fiveguys_logo.png");
+        this.load.image(
+            "E_keyboard",
+            "assets/UI/Keyboard_E.png"
+        );
 
         console.log("Complete loading!!!!!!!!!!!!!!!");
     }
@@ -166,15 +174,15 @@ export default class Background extends Phaser.Scene {
             const sceneKey = scene.scene.key;
             if (phaserGame.scene.isActive(sceneKey)) {
                 const resumedScene: Phaser.Scene = phaserGame.scene.getScene(sceneKey);
-                switch(sceneKey){
+                switch (sceneKey) {
                     case "AirportScene":
-                        const beforePauseXAirport:number = (resumedScene as AirportScene).player1!.x;
-                        const beforePauseYAirport:number = (resumedScene as AirportScene).player1!.y;
+                        const beforePauseXAirport: number = (resumedScene as AirportScene).player1!.x;
+                        const beforePauseYAirport: number = (resumedScene as AirportScene).player1!.y;
                         (resumedScene as AirportScene).gamePause(beforePauseXAirport, beforePauseYAirport);
                         break;
                     case "USAScene":
-                        const beforePauseXUSA:number = (resumedScene as USAScene).player1!.x;
-                        const beforePauseYUSA:number = (resumedScene as USAScene).player1!.y;
+                        const beforePauseXUSA: number = (resumedScene as USAScene).player1!.x;
+                        const beforePauseYUSA: number = (resumedScene as USAScene).player1!.y;
                         (resumedScene as USAScene).gamePause(beforePauseXUSA, beforePauseYUSA);
                 }
             }
@@ -187,15 +195,15 @@ export default class Background extends Phaser.Scene {
             const sceneKey = scene.scene.key;
             if (phaserGame.scene.isActive(sceneKey)) {
                 const resumedScene: Phaser.Scene = phaserGame.scene.getScene(sceneKey);
-                switch(sceneKey){
+                switch (sceneKey) {
                     case "AirportScene":
-                        const beforePauseXAirport:number = (resumedScene as AirportScene).player1!.x;
-                        const beforePauseYAirport:number = (resumedScene as AirportScene).player1!.y;
+                        const beforePauseXAirport: number = (resumedScene as AirportScene).player1!.x;
+                        const beforePauseYAirport: number = (resumedScene as AirportScene).player1!.y;
                         (resumedScene as AirportScene).gameResume(beforePauseXAirport, beforePauseYAirport);
                         break;
                     case "USAScene":
-                        const beforePauseXUSA:number = (resumedScene as USAScene).player1!.x;
-                        const beforePauseYUSA:number = (resumedScene as USAScene).player1!.y;
+                        const beforePauseXUSA: number = (resumedScene as USAScene).player1!.x;
+                        const beforePauseYUSA: number = (resumedScene as USAScene).player1!.y;
                         (resumedScene as USAScene).gameResume(beforePauseXUSA, beforePauseYUSA);
                 }
             }

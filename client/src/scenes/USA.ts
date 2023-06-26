@@ -78,6 +78,8 @@ export default class USAScene extends Phaser.Scene {
     currNpcName: string = "";
     beforeSleepX: number = this.initial_x;
     beforeSleepY: number = this.initial_y;
+    interactionSprite: Phaser.Physics.Arcade.Sprite | null = null;
+    interactionSpriteE: Phaser.Physics.Arcade.Sprite | null = null;
 
     constructor() {
         super("USAScene");
@@ -93,7 +95,7 @@ export default class USAScene extends Phaser.Scene {
         this.playerTexture = data.playerTexture;
         console.log("data: ", data);
     }
-    
+
     gamePause(pausedX: number, pausedY: number) {
         console.log("Scene is Paused: USA");
         // this.intervalId = setInterval(() => {
@@ -126,8 +128,8 @@ export default class USAScene extends Phaser.Scene {
         console.log("Scene is now asleep!, scene: USA");
         this.socket?.disconnect();
         this.socket = null;
-        this.beforeSleepX = this.player1 ? this.player1!.x: this.initial_x;
-        this.beforeSleepY = this.player1 ? this.player1!.y: this.initial_y;
+        this.beforeSleepX = this.player1 ? this.player1!.x : this.initial_x;
+        this.beforeSleepY = this.player1 ? this.player1!.y : this.initial_y;
         for (let socketId in this.allPlayers) {
             this.allPlayers[socketId].textObj?.destroy();
             this.allPlayers[socketId].sprite.destroy();
@@ -267,6 +269,15 @@ export default class USAScene extends Phaser.Scene {
             this.socket.disconnect();
         }
         this.gameSocketEventHandler();
+        this.interactionSprite = this.physics.add.sprite(0, 0, "arrowDown");
+        this.interactionSprite.setVisible(false);
+        this.interactionSprite.setScale(1.3);
+        this.interactionSprite.setDepth(100);
+
+        this.interactionSpriteE = this.physics.add.sprite(0, 0, "E_keyboard");
+        this.interactionSpriteE.setVisible(false);
+        this.interactionSpriteE.setScale(0.5);
+        this.interactionSpriteE.setDepth(100);
 
         this.cursors = this.input.keyboard!.createCursorKeys();
         this.interactText = this.add.text(10, 10, "", {
@@ -352,7 +363,7 @@ export default class USAScene extends Phaser.Scene {
                                 this.cursors!.up.enabled = true;
                                 this.cursors!.down.enabled = true;
 
-                                
+
                                 valve_E = true;
                                 this.allPlayers[this.socket!.id].seat = false;
                                 this.seatEvent = true;
@@ -375,14 +386,13 @@ export default class USAScene extends Phaser.Scene {
                             this.cursors!.up.enabled = true;
                             this.cursors!.down.enabled = true;
 
-                            
+
                             valve_E = true;
                             this.allPlayers[this.socket!.id].seat = false;
                             this.seatEvent = true;
                             store.dispatch(openUSA());
                         }
-                    } else if (npcInfo.name.includes("Liberty")) {
-                        console.log("liberty");
+                    } else if (npcInfo.name === "gate") {
                         handleScene(GAME_STATUS.AIRPORT, {});
                     } else {
                         if (valve_E === true) {
@@ -657,7 +667,7 @@ export default class USAScene extends Phaser.Scene {
                             store.dispatch(clearMessages());
                             store.dispatch(clearSentences());
                             store.dispatch(openUSA());
-                            
+
                         }
                     }
                     break;
@@ -719,10 +729,26 @@ export default class USAScene extends Phaser.Scene {
             }
         });
     }
-    deleteNotVaildScoket(){
-        for(let key in this.allPlayers){
+    playInteractionAnims() {
+        for (let npcInfo of this.npcList) {
+            if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y, npcInfo.x, npcInfo.y) < 100) {
+                this.interactionSprite?.setPosition(npcInfo.x, npcInfo.y - 50);
+                this.interactionSprite?.setVisible(true);
+                this.interactionSprite?.play('arrowDownAnim', true);
+                
+                this.interactionSpriteE?.setPosition(npcInfo.x + 30, npcInfo.y - 50);
+                this.interactionSpriteE?.setVisible(true);
+                break;
+            } else {
+                this.interactionSprite?.setVisible(false);
+                this.interactionSpriteE?.setVisible(false);
+            }
+        }
+    }
+    deleteNotVaildScoket() {
+        for (let key in this.allPlayers) {
             // console.log(`allPlayer[${key}]: ${this.allPlayers[key]}, socket: ${this.socket}`);
-            if(this.socket!.id !== key && this.userNickname === this.allPlayers[key].nickname){
+            if (this.socket!.id !== key && this.userNickname === this.allPlayers[key].nickname) {
                 console.log(`allPlayer[${key}]: ${this.allPlayers[key]}, socket: ${this.socket}`);
                 this.allPlayers[key].textObj?.destroy();
                 this.allPlayers[key].sprite.destroy();
@@ -739,6 +765,7 @@ export default class USAScene extends Phaser.Scene {
         let velocityY = 0;
 
         if (this.player1 !== null && this.player1 !== undefined) {
+            this.playInteractionAnims();
             // console.log("userNickname : ", this.userNickname);
             this.userIdText!.setText(this.userNickname);
             this.userIdText!.setOrigin(0.5, 0);
@@ -849,18 +876,18 @@ export default class USAScene extends Phaser.Scene {
             }
 
             if (this.seatEvent === true) {
-                this.socket!.emit("seat", 
-                {
-                    socketId: this.socket!.id,
-                    nickname: this.allPlayers[this.socket!.id].nickname,
-                    playerTexture: this.allPlayers[this.socket!.id].playerTexture,
-                    x: this.allPlayers[this.socket!.id].x,
-                    y: this.allPlayers[this.socket!.id].y,
-                    scene: this.allPlayers[this.socket!.id].scene,
-                    dash: this.allPlayers[this.socket!.id].dash,
-                    seat: this.allPlayers[this.socket!.id].seat,
-                },
-                this.seatEvent = false
+                this.socket!.emit("seat",
+                    {
+                        socketId: this.socket!.id,
+                        nickname: this.allPlayers[this.socket!.id].nickname,
+                        playerTexture: this.allPlayers[this.socket!.id].playerTexture,
+                        x: this.allPlayers[this.socket!.id].x,
+                        y: this.allPlayers[this.socket!.id].y,
+                        scene: this.allPlayers[this.socket!.id].scene,
+                        dash: this.allPlayers[this.socket!.id].dash,
+                        seat: this.allPlayers[this.socket!.id].seat,
+                    },
+                    this.seatEvent = false
                 )
             }
 
@@ -868,7 +895,8 @@ export default class USAScene extends Phaser.Scene {
                 if (playerInfo.scene == "USAScene") {
                     this.allPlayers[playerInfo.socketId].seat = playerInfo.seat;
                     console.log("otherseat", playerInfo);
-                }});
+                }
+            });
 
             for (let key in this.allPlayers) {
                 if (key !== this.socket.id) {
@@ -939,10 +967,10 @@ export default class USAScene extends Phaser.Scene {
     }
     createUSANpc() {
         let gate: npcInfo = {
-            name: "statueOfLiberty",
+            name: "gate",
             x: this.initial_x,
-            y: this.initial_y,
-            texture: "statueOfLiberty",
+            y: this.initial_y + 50,
+            texture: "gate",
             sprite: null,
             role: "npc",
         };
