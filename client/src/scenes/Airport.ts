@@ -30,6 +30,7 @@ import {
     setCanRequestRecommend,
 } from "../stores/sentenceBoxSlice";
 import { setRecord, setMessage, setMessageColor } from "../stores/recordSlice";
+import { reportOn, reportOff } from "../stores/reportOnoffSlice";
 import { handleScene } from "./common/handleScene";
 import { RootState } from "../stores/index";
 
@@ -337,10 +338,11 @@ export default class AirportScene extends Phaser.Scene {
                         //     playerTexture: this.playerTexture,
                         // });
                     } else {
-                        if (valve_E === true) {
+                        
                             if (this.isAudioPlaying) {
                                 return;
                             }
+
                             this.player1!.setVelocity(0, 0);
                             this.player1!.anims.play(
                                 `${this.player1!.texture.key}_idle_down`,
@@ -357,6 +359,11 @@ export default class AirportScene extends Phaser.Scene {
                                 this.socket2 === null ||
                                 this.socket2 === undefined
                             ) {
+                                store.dispatch(reportOff());
+                                store.dispatch(setScore({ score: 0 }));
+                                store.dispatch(clearCorrections());
+                                store.dispatch(clearMessages());
+                                store.dispatch(clearSentences());
                                 this.socket2 = io(`${serverUrl}/interaction`);
                                 this.socket2.on("connect", () => {
                                     this.currNpcName = npcInfo.name;
@@ -604,18 +611,10 @@ export default class AirportScene extends Phaser.Scene {
                                 });
 
                                 store.dispatch(openReport());
+                                store.dispatch(reportOn());
                                 grammarCorrections = [];
-                                valve_E = false;
                             }
-                        } else {
                             countUserSpeech = 0;
-                            store.dispatch(setScore({ score: 0 }));
-                            store.dispatch(clearCorrections());
-                            store.dispatch(clearMessages());
-                            store.dispatch(clearSentences());
-                            store.dispatch(openAirport());
-                            valve_E = true;
-                        }
                     }
                     break;
                 }

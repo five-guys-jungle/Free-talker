@@ -96,12 +96,12 @@ export default class USAScene extends Phaser.Scene {
         console.log("data: ", data);
     }
 
+
     gamePause(pausedX: number, pausedY: number) {
         console.log("Scene is Paused: USA");
         // this.intervalId = setInterval(() => {
         //     this.socket!.emit('heartbeat');
         // }, 5000);
-
     }
     gameResume(pausedX: number, pausedY: number) {
         console.log("Scene is Resumed: USA");
@@ -468,7 +468,7 @@ export default class USAScene extends Phaser.Scene {
                                             if (
                                                 response === "" ||
                                                 response ===
-                                                "convertSpeechToText Error" ||
+                                                    "convertSpeechToText Error" ||
                                                 response === "chain call error"
                                             ) {
                                                 store.dispatch(
@@ -849,8 +849,9 @@ export default class USAScene extends Phaser.Scene {
 
             if (velocityX === 0 && velocityY === 0) {
                 if (this.player1.anims.isPlaying) {
-                    let idle_anims: string = this.player1!.anims.currentAnim!.key;
-                    idle_anims = idle_anims.replace('run', 'idle');
+                    let idle_anims: string =
+                        this.player1!.anims.currentAnim!.key;
+                    idle_anims = idle_anims.replace("run", "idle");
                     this.player1!.anims.play(idle_anims, true);
                 }
             }
@@ -912,11 +913,9 @@ export default class USAScene extends Phaser.Scene {
     createPlayer(playerInfo: PlayerInfo): Phaser.Physics.Arcade.Sprite {
         // Create a sprite for the player
         // Assuming you have an image asset called 'player'
-        let playerSprite = this.physics.add.sprite(
-            playerInfo.x,
-            playerInfo.y,
-            playerInfo.playerTexture
-        ).setDepth(2);
+        let playerSprite = this.physics.add
+            .sprite(playerInfo.x, playerInfo.y, playerInfo.playerTexture)
+            .setDepth(2);
 
         // Create a new player instance
         const newPlayer = new Player(
@@ -995,7 +994,7 @@ export default class USAScene extends Phaser.Scene {
         let npc2: npcInfo = {
             name: "Barista",
             x: 1810,
-            y: 428,
+            y: 426,
             texture: "Barista",
             sprite: null,
             role: "npc",
@@ -1022,7 +1021,9 @@ export default class USAScene extends Phaser.Scene {
             sprite: null,
             role: "npc",
         };
-        npc4.sprite = this.physics.add.sprite(npc4.x, npc4.y, npc4.texture).setDepth(1);
+        npc4.sprite = this.physics.add
+            .sprite(npc4.x, npc4.y, npc4.texture)
+            .setDepth(1);
         this.npcList.push(npc4);
 
         let npc5: npcInfo = {
@@ -1076,7 +1077,11 @@ export default class USAScene extends Phaser.Scene {
             sprite: null,
             role: "freeTalkingPlace",
         };
-        interact_sprite.sprite = this.physics.add.sprite(interact_sprite.x, interact_sprite.y, interact_sprite.texture);
+        interact_sprite.sprite = this.physics.add.sprite(
+            interact_sprite.x,
+            interact_sprite.y,
+            interact_sprite.texture
+        );
         this.npcList.push(interact_sprite);
     }
     gameSocketEventHandler(initial: boolean = true) {
@@ -1092,9 +1097,9 @@ export default class USAScene extends Phaser.Scene {
                 y: this.initial_y,
                 scene: "USAScene",
                 dash: false,
-                seat: false
+                seat: false,
             });
-            this.player1!.x = this.beforeSleepX
+            this.player1!.x = this.beforeSleepX;
             this.player1!.y = this.beforeSleepY;
 
             this.cameras.main.startFollow(this.player1);

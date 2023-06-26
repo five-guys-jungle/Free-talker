@@ -30,6 +30,10 @@ const Game = () => {
         return { ...state.mode };
     });
 
+    const { reportonoff  } = useSelector((state: RootState) => {
+        return { ...state.reportonoff };
+    });
+
     return <BackgroundDiv>
         {mode === NPCDIALOG && <NPCDialog />}
         {mode === FREEDIALOG && <FreeDialog />}

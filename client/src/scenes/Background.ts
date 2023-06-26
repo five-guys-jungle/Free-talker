@@ -63,7 +63,7 @@ export default class Background extends Phaser.Scene {
             "assets/characters/ClothingShopStaff.png",
             {
                 frameWidth: 32,
-                frameHeight: 48,
+                frameHeight: 40,
             }
         );
 
@@ -79,7 +79,7 @@ export default class Background extends Phaser.Scene {
 
         this.load.spritesheet("Barista", "assets/characters/Barista.png", {
             frameWidth: 32,
-            frameHeight: 48,
+            frameHeight: 40,
         });
 
         // this.load.image("background", "assets/backgrounds/space.png");
@@ -108,10 +108,14 @@ export default class Background extends Phaser.Scene {
             frameWidth: 32,
             frameHeight: 48,
         });
-        this.load.spritesheet("doyoungboy", "assets/characters/doyoungboy.png", {
-            frameWidth: 32,
-            frameHeight: 48,
-        });
+        this.load.spritesheet(
+            "doyoungboy",
+            "assets/characters/doyoungboy.png",
+            {
+                frameWidth: 32,
+                frameHeight: 48,
+            }
+        );
         this.load.spritesheet("minsook", "assets/characters/minsook.png", {
             frameWidth: 32,
             frameHeight: 48,
@@ -215,7 +219,7 @@ export default class Background extends Phaser.Scene {
         // this.game.events.on('pause', this.gamePause.bind(this));
 
         // 'resume' 이벤트를 처리하는 리스너 추가
-        this.game.events.on('resume', this.gameResume);
+        this.game.events.on("resume", this.gameResume);
 
         this.background = this.add
             .image(0, 0, "background")

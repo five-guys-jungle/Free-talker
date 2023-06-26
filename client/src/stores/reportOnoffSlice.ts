@@ -2,26 +2,26 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface reportOnoff {
-    Onoff: boolean;
+    reportonoff: boolean;
 }
 
 export const initialState: reportOnoff = {
-    Onoff: true,
+    reportonoff: false,
 };
 
 export const reportOnoffSlice = createSlice({
     name: "reportonoff",
     initialState,
     reducers: {
-        OnreportOnoff: (state) => {
-            state.Onoff = true;
+        reportOn: (state) => {
+            state.reportonoff = true;
         },
-        OffreportOnoff: (state) => {
-            state.Onoff = false;
+        reportOff: (state) => {
+            state.reportonoff = false;
         },
     },
 });
 
-export const { OnreportOnoff, OffreportOnoff } = reportOnoffSlice.actions;
+export const { reportOn, reportOff } = reportOnoffSlice.actions;
 
 export default reportOnoffSlice.reducer;

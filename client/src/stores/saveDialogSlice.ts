@@ -19,7 +19,7 @@ export interface Message {
     text: string;
 }
 
-export interface dialogState{
+export interface dialogState {
     dialogs: Dialog[];
 }
 
@@ -38,65 +38,90 @@ export interface correctionState {
 
 let DB_URL: string = process.env.REACT_APP_SERVER_URL!;
 
-
 export const saveDialog = async (state: Dialog) => {
-        
-        const body = {
-            userId: state.userId,
-            timestamp: state.timestamp,
-            nickname: state.nickname,
-            npc: state.npc,
-            userTexture: state.userTexture,
-            score: state.score,
-            corrections: state.corrections,
-            messages: state.messages,
-        };
-
-        try{
-            console.log("try");
-            const response = await axios.post(`${DB_URL}/save/saveDialog`, body);
-            store.dispatch(clearMessages());
-        }
-        catch(e){
-            console.log("!!! save error");
-        }
-
-}
-
-
-
-export const deleteDialog =async(state: Dialog)=> {
-        
-        const body = {
-            userId: state.userId,
-            timestamp: state.timestamp
-        };
-
-        try{
-            console.log("try");
-            const response = await axios.post(`${DB_URL}/save/deleteDialog`, body);
-            store.dispatch(clearMessages());
-        }
-        catch(e){
-            console.log("!!! delete error");
-        }
-}
-
-export const loadDialog =async(state: Dialog)=> {
-        
     const body = {
-        userId: state.userId
+        userId: state.userId,
+        timestamp: state.timestamp,
+        nickname: state.nickname,
+        npc: state.npc,
+        userTexture: state.userTexture,
+        score: state.score,
+        corrections: state.corrections,
+        messages: state.messages,
     };
 
-    try{
+    try {
         console.log("try");
-        const response = await axios.post(`${DB_URL}/save/loadDialog`, body);
-        // console.log(response.data.existingDialogs)
+        // console.log(body);
 
-        return (response.data.existingDialogs)
+        const response = await axios.post(`${DB_URL}/save/saveDialog`, body);
+        store.dispatch(clearMessages());
+    } catch (e) {
+        console.log("!!! save error");
     }
-    catch(e){
+};
+
+export const deleteDialog = async (state: Dialog) => {
+    const body = {
+        userId: state.userId,
+        timestamp: state.timestamp,
+    };
+
+    try {
+        console.log("try");
+        const response = await axios.post(`${DB_URL}/save/deleteDialog`, body);
+        store.dispatch(clearMessages());
+    } catch (e) {
         console.log("!!! delete error");
     }
-}
+};
 
+export const loadDialog = async (state: Dialog) => {
+    const body = {
+        userId: state.userId,
+    };
+
+    try {
+        console.log("loading Dialog....");
+        const response = await axios.post(`${DB_URL}/save/loadDialog`, body);
+        console.log("before sorting: ", response.data.existingDialogs);
+        let existingDialogs = response.data.existingDialogs;
+        existingDialogs.sort((dialogA: any, dialogB: any) => {
+            const convertTimestamp = (timestamp: string) => {
+                const year = new Date().getFullYear(); // Assume current year
+                const [month, day, partOfDay, time] = timestamp.split(" ");
+                const monthNumber =
+                    new Date(Date.parse(month + " 1, 2012")).getMonth() + 1; // Convert month name to number
+                const [hour, minute, second] = time.split(":");
+                const convertedHour =
+                    partOfDay === "오후" && +hour !== 12 ? +hour + 12 : +hour; // Convert to 24-hour format
+                return `${year}-${monthNumber}-${day} ${convertedHour}:${minute}:${second}`;
+            };
+
+            const convertedTimestampA = convertTimestamp(dialogA.timestamp);
+            const convertedTimestampB = convertTimestamp(dialogB.timestamp);
+            const timestampA = Date.parse(convertedTimestampA);
+            const timestampB = Date.parse(convertedTimestampB);
+
+            console.log(
+                `Converted timestamp A: ${convertedTimestampA}, parsed: ${timestampA}`
+            );
+            console.log(
+                `Converted timestamp B: ${convertedTimestampB}, parsed: ${timestampB}`
+            );
+
+            if (timestampA > timestampB) {
+                return -1;
+            } else if (timestampA < timestampB) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+        console.log("after sorting: ", existingDialogs);
+        // console.log(existingDialogs)
+        return existingDialogs;
+    } catch (e) {
+        console.log("!!! delete error");
+    }
+};
