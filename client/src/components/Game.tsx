@@ -32,9 +32,9 @@ const Game = () => {
     return <BackgroundDiv>
         {mode === NPCDIALOG && <NPCDialog />}
         {mode === FREEDIALOG && <FreeDialog />}
+        {(mode === AIRPORT || mode === USA) && <ReportBook/>}
         {mode === REPORT && <Report/>}
-        {mode === AIRPORT || mode === USA && <ReportBook/>}
-        <ReportBook/>
+        
         </BackgroundDiv>;
 };
 
