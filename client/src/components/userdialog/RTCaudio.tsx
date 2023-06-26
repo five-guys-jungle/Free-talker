@@ -25,7 +25,7 @@ const UserDialog = () => {
 	const [ idToCall, setIdToCall ] = useState("")
 	const [ callEnded, setCallEnded] = useState(false)
 	const [ name, setName ] = useState("")
-	
+	let player_Role: string = ""
 
 
 	const dispatch = useAppDispatch();
@@ -42,7 +42,7 @@ const UserDialog = () => {
 
 	
 	const {playerNickname, playerTexture} = useSelector((state: RootState) => {return {...state.user}});
-
+	
 	useEffect(() => {
 		socket.current = io(socketNamespace);
 		navigator.mediaDevices
@@ -87,10 +87,12 @@ const UserDialog = () => {
 			)
 		socket.current!.on("Cashier", () => {
 			console.log("Cashier!!!!!!!!!!!!!!!!")
+			player_Role = "Cashier"
 		})
 
 		socket.current!.on("Customer", () => {
 			console.log("Customer!!!!!!!!!!!!!!!!")
+			player_Role = "Customer"
 		})
 
 		console.log("socket is connected: ", socket.current!.id);
@@ -146,6 +148,7 @@ const UserDialog = () => {
 			}
 		});
 		return () => {
+			socket.current!.emit("out_Role" , {player_Role: player_Role, place_name: place_name});
 			socket.current!.disconnect();
 		}
 	  
@@ -218,6 +221,7 @@ const UserDialog = () => {
 		if (connectionRef.current) {
 			connectionRef.current.destroy();
 			socket.current!.emit("callEnded"); // 서버로 callEnded 이벤트 전송
+			socket.current!.emit("out_Role2" , {player_Role: player_Role});
 			socket.current!.emit("leaveCallEvent", { to: caller });
 			// Airport 씬으로 이벤트 전달
 			window.dispatchEvent(new Event("exitcall"));

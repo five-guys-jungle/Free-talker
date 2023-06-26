@@ -56,12 +56,29 @@ export function dialogsocketEventHandler(socket: Socket) {
 				socket.emit("Cashier");
 				Role_Num[place_name].Cashier++;
 			}
-
-
 		}
 
 		
 	});
+	socket.on("out_Role" , ({ player_Role: player_Role, place_name: place_name }) => {
+		if (player_Role == "Cashier") {
+		  Role_Num[place_name].Cashier--;
+		} else if (player_Role == "Customer") {
+		  Role_Num[place_name].Customer--;
+		}
+		console.log("Role_Num: ", Role_Num[place_name]);
+	  });
+	
+	  socket.on("out_Role2" , ({ player_Role: player_Role}) => {
+		if (player_Role == "Cashier") {
+		  Role_Num[temp].Cashier--;
+		} else if (player_Role == "Customer") {
+		  Role_Num[temp].Customer--;
+		}
+		console.log("Role_Num: ", Role_Num[temp]);
+	  });
+		
+
 	socket.on("disconnect", () => {
 		//   socket.broadcast.emit("callEnded");
 		  console.log("disconnected~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
