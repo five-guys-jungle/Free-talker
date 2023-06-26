@@ -12,6 +12,15 @@ import SaveIcon from "@material-ui/icons/Save";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { IconButton } from "@material-ui/core";
 import { scoreState } from "../stores/scoreSlice"
+import { appendMessage, clearMessages } from "../stores/talkBoxSlice";
+import { appendCorrection, clearCorrections } from "../stores/reportSlice";
+import { setScore } from "../stores/scoreSlice";
+import {
+  appendSentence,
+  clearSentences,
+  setCanRequestRecommend,
+} from "../stores/sentenceBoxSlice";
+import { reportOn, reportOff } from "../stores/reportOnoffSlice"
 
 // interface NPCDialogProps {
 //     initialDialog?: string;
@@ -59,7 +68,8 @@ const Report = (data:any) => {
     
     const handleSave = () => {
         // console.log(messages);
-        saveDialog({
+        if (messages.length!==0){
+          saveDialog({
             userId: playerId,
             timestamp: `${month[date.getMonth() + 1]} ${date.getDate()} ${currentTime}`,
             nickname: playerNickname,
@@ -69,9 +79,17 @@ const Report = (data:any) => {
             corrections:corrections,
             messages:messages,
         });
+        }
+        
+        store.dispatch(reportOff());
+        store.dispatch(setScore({ score: 0 }));
+        store.dispatch(clearCorrections());
+        store.dispatch(clearMessages());
+        store.dispatch(clearSentences());
         store.dispatch(openAirport());
     };
     const handleDelete = () => {
+      if (messages.length!==0){
         deleteDialog({
             userId: playerId,
             timestamp: `${month[date.getMonth() + 1]} ${date.getDate()} ${currentTime}`,
@@ -82,6 +100,13 @@ const Report = (data:any) => {
             corrections:corrections,
             messages:messages,
         });
+      }
+        
+        store.dispatch(reportOff());
+        store.dispatch(setScore({ score: 0 }));
+        store.dispatch(clearCorrections());
+        store.dispatch(clearMessages());
+        store.dispatch(clearSentences());
         store.dispatch(openAirport());
     };
 
