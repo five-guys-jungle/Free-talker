@@ -84,11 +84,31 @@ export const loadDialog = async (state: Dialog) => {
     try {
         console.log("loading Dialog....");
         const response = await axios.post(`${DB_URL}/save/loadDialog`, body);
-
+        console.log("before sorting: ", response.data.existingDialogs);
         let existingDialogs = response.data.existingDialogs;
         existingDialogs.sort((dialogA: any, dialogB: any) => {
-            const timestampA = Date.parse(dialogA.timestamp);
-            const timestampB = Date.parse(dialogB.timestamp);
+            const convertTimestamp = (timestamp: string) => {
+                const year = new Date().getFullYear(); // Assume current year
+                const [month, day, partOfDay, time] = timestamp.split(" ");
+                const monthNumber =
+                    new Date(Date.parse(month + " 1, 2012")).getMonth() + 1; // Convert month name to number
+                const [hour, minute, second] = time.split(":");
+                const convertedHour =
+                    partOfDay === "오후" && +hour !== 12 ? +hour + 12 : +hour; // Convert to 24-hour format
+                return `${year}-${monthNumber}-${day} ${convertedHour}:${minute}:${second}`;
+            };
+
+            const convertedTimestampA = convertTimestamp(dialogA.timestamp);
+            const convertedTimestampB = convertTimestamp(dialogB.timestamp);
+            const timestampA = Date.parse(convertedTimestampA);
+            const timestampB = Date.parse(convertedTimestampB);
+
+            console.log(
+                `Converted timestamp A: ${convertedTimestampA}, parsed: ${timestampA}`
+            );
+            console.log(
+                `Converted timestamp B: ${convertedTimestampB}, parsed: ${timestampB}`
+            );
 
             if (timestampA > timestampB) {
                 return -1;
@@ -98,7 +118,7 @@ export const loadDialog = async (state: Dialog) => {
                 return 0;
             }
         });
-
+        console.log("after sorting: ", existingDialogs);
         // console.log(existingDialogs)
         return existingDialogs;
     } catch (e) {
