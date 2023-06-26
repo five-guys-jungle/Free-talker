@@ -1,5 +1,5 @@
 import { Server as SocketIOServer, Socket } from "socket.io";
-import { freedialogsocketEventHandler } from "./voiceController";   
+import { dialogsocketEventHandler } from "./voiceController";   
 
 let talkingPlaces:string[] = ["airport_chair1", "coach_park"];
 const maxConnections = 2;
@@ -8,7 +8,7 @@ export function createNamespace(io:SocketIOServer, namespace:string) {
     for(let name of talkingPlaces)
     {
         console.log("createNamespace: ", `${namespace}/${name}`);
-        const freedialogSocket = io.of(`${namespace}/${name}`);
+        const dialogSocket = io.of(`${namespace}/${name}`);
         // freedialogSocket.use((socket, next) => {
         //     if (currentConnections >= maxConnections) {
         //       next(new Error('Max connections limit reached'));
@@ -28,6 +28,6 @@ export function createNamespace(io:SocketIOServer, namespace:string) {
         //       console.log('A client disconnected.');
         //     });
         //   });
-        freedialogSocket.on("connection", freedialogsocketEventHandler);
+        dialogSocket.on("connection", dialogsocketEventHandler);
     }
 }

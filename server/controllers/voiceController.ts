@@ -4,7 +4,7 @@ const app = express()
 const server = http.createServer(app)
 import {  Socket } from "socket.io"	
 const maxConnections = 2;
-const freeRoom_Num: {
+const Room_Num: {
 	[key: string]: number;
 } = {
 	airport_chair1: 0,
@@ -12,15 +12,15 @@ const freeRoom_Num: {
 }
 
 // freedialogsocketEventHandler 함수 수정
-export function freedialogsocketEventHandler(socket: Socket) {
+export function dialogsocketEventHandler(socket: Socket) {
 	console.log(socket.id, "connection---------------------------------");
 	let temp: string = "";
 	socket.on("join", (data: { place_name: string }) => {
 		const { place_name } = data;
   		console.log("join: ", place_name);
 		temp = place_name;
-		if (freeRoom_Num[place_name] == maxConnections) {
-			freeRoom_Num[place_name]++;
+		if (Room_Num[place_name] == maxConnections) {
+			Room_Num[place_name]++;
 			socket.emit("roomFull");
 			return;
 		
@@ -28,10 +28,10 @@ export function freedialogsocketEventHandler(socket: Socket) {
 
 		else {
 
-			freeRoom_Num[place_name]++;
+			Room_Num[place_name]++;
 			socket.emit("joined");
-			console.log("freeRoom_Num: ", freeRoom_Num[place_name]);
-			// socket.emit("joined",  freeRoom_Num[place_name] );
+			console.log("Room_Num: ", Room_Num[place_name]);
+			// socket.emit("joined",  Room_Num[place_name] );
 		}
 
 
@@ -40,10 +40,10 @@ export function freedialogsocketEventHandler(socket: Socket) {
 	socket.on("disconnect", () => {
 		//   socket.broadcast.emit("callEnded");
 		  console.log("disconnected~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-		  freeRoom_Num[temp]--;
-		  console.log("freeRoom_Num: ", freeRoom_Num[temp]);
+		  Room_Num[temp]--;
+		  console.log("Room_Num: ", Room_Num[temp]);
 		  socket.broadcast.emit("outcharacter");
-		//   socket.broadcast.emit("disconnected", freeRoom_Num[place_name]);
+		//   socket.broadcast.emit("disconnected", Room_Num[place_name]);
 		});
 	socket.broadcast.emit("userconnected");
 	

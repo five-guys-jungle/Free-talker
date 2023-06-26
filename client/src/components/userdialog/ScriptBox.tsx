@@ -5,7 +5,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import styled from "styled-components";
 
-const VocaBox: React.FC = () => {
+const ScriptBox: React.FC = () => {
   const [value, setValue] = React.useState(0);
   const ref = React.useRef<HTMLDivElement>(null);
   const [messages, setMessages] = React.useState(() => refreshMessages());
@@ -16,8 +16,8 @@ const VocaBox: React.FC = () => {
   }, [value, setMessages]);
 
   return (
-    <Box sx={{ width: '50%', height: '70%', pb: 20 }}>
-      <Title>Today’s voca and idium</Title>
+    <Box sx={{ width: '70%', height: '70%', pb: 20 }}>
+      <Title>많이 사용하는 문장</Title>
       <Box sx={{ overflow: 'auto', height: '100%', backgroundColor: '#e3f2fd' }} ref={ref}>
         <List>
           {messages.map(({ primary, secondary }, index) => (
@@ -36,9 +36,9 @@ const VocaBox: React.FC = () => {
   );
 };
 
-export default VocaBox;
+export default ScriptBox;
 
-interface RecommendedExample {
+interface ScriptExample {
   primary: string;
   secondary: string;
 }
@@ -54,7 +54,7 @@ interface RecommendedExample {
 //   }
   
 // ];
-const messageExamples: RecommendedExample[] = [
+const messageExamples: ScriptExample[] = [
   {
     primary: 'chronic',
     secondary: '만성적인'
@@ -79,7 +79,7 @@ const messageExamples: RecommendedExample[] = [
 ];
 
 // 랜덤으로 스크립트 추천
-function refreshMessages(): RecommendedExample[] {
+function refreshMessages(): ScriptExample[] {
   const shuffledExamples = [...messageExamples].sort(() => 0.5 - Math.random());
   return shuffledExamples.slice(0, 3);
 }

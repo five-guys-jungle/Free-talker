@@ -17,6 +17,7 @@ import {
 import { GAME_STATUS } from "../stores/gameSlice";
 import { RootState } from "../stores";
 import NPCDialog from "./NPCDialog";
+import UserDialog from "./UserDialog";
 import FreeDialog from "./FreeDialog";
 import Report from "./Report";  
 import ReportBook from "./Reportbook";  
@@ -24,13 +25,14 @@ import ReportBook from "./Reportbook";
 const Game = () => {
     // socket intialization, connection
 
-    const { START, AIRPORT, USA, NPCDIALOG, FREEDIALOG, REPORT } = GAME_STATUS;
+    const { START, AIRPORT, USA, NPCDIALOG, USERDIALOG, FREEDIALOG, REPORT } = GAME_STATUS;
     const { mode } = useSelector((state: RootState) => {
         return { ...state.mode };
     });
 
     return <BackgroundDiv>
         {mode === NPCDIALOG && <NPCDialog />}
+        {mode === USERDIALOG && <UserDialog />}
         {mode === FREEDIALOG && <FreeDialog />}
         {mode === REPORT && <Report/>}
         {mode === AIRPORT || mode === USA && <ReportBook/>}

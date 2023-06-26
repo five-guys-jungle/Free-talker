@@ -16,6 +16,7 @@ import { createCharacterAnims } from "../anims/CharacterAnims";
 import {
     openNPCDialog,
     openAirport,
+    openUserDialog,
     openFreedialog,
     openReport,
     GAME_STATUS,
@@ -315,10 +316,12 @@ export default class USAScene extends Phaser.Scene {
                             store.dispatch(
                                 setSocketNamespace({
                                     socketNamespace: `${serverUrl}/freedialog/${npcInfo.name}`,
+                                    // socketNamespace: `${serverUrl}/userdialog/${npcInfo.name}`,
                                 })
                             );
-                            // store.dispatch(appendSocketNamespace({ socketNamespace: `/freedialog` }));
+                            store.dispatch(appendSocketNamespace({ socketNamespace: `/freedialog` }));
                             store.dispatch(openFreedialog());
+                            // store.dispatch(openUserDialog());
                             this.cursors!.left.enabled = false;
                             this.cursors!.right.enabled = false;
                             this.cursors!.up.enabled = false;
