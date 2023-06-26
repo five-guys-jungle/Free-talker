@@ -29,8 +29,44 @@ import {
 
 export function interactSocketEventHandler(socket: Socket) {
     let chain: ConversationChain;
+    let npcSentence: string;
     let count = 0;
     console.log("Interaction socket connected, socketid: ", socket.id);
+
+    socket.on("dialogStart", async (npcName: string) => {
+        console.log("dialogStart");
+        // 소켓이 연결되면, 유저와 NPC 간의 Conversation Chain을 생성한다.
+        await createChain(npcName)
+            .then((res) => {
+                chain = res;
+                console.log("chain 생성 완료");
+            })
+            .catch((err) => {
+                console.log("chain 생성 실패");
+            });
+
+        const prompt = preDefinedPrompt[npcName].start;
+        await chain
+            .call({ input: prompt })
+            .then(async (res) => {
+                npcSentence = res.response;
+                await convertTexttoSpeech(prompt, npcSentence, npcName)
+                    .then((res) => {
+                        socket.emit("npcFirstResponse", res);
+                        console.log("NPC first response: ", res);
+                    })
+                    .catch((err) => {
+                        console.log("convert Text to Speech error: ", err);
+                    });
+            })
+            .catch((err) => {
+                socket.emit("npcFirstResponse", "chain call error");
+                console.log("chain call error: ", err);
+            });
+
+        // TODO : npcInfo 받고, npcInfo를 기반으로 유저에게 대화 전송
+    });
+
 
     socket.on(
         "audioSend",
