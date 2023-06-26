@@ -19,7 +19,7 @@ export interface Message {
     text: string;
 }
 
-export interface dialogState{
+export interface dialogState {
     dialogs: Dialog[];
 }
 
@@ -38,65 +38,56 @@ export interface correctionState {
 
 let DB_URL: string = process.env.REACT_APP_SERVER_URL!;
 
-
 export const saveDialog = async (state: Dialog) => {
-        
-        const body = {
-            userId: state.userId,
-            timestamp: state.timestamp,
-            nickname: state.nickname,
-            npc: state.npc,
-            userTexture: state.userTexture,
-            score: state.score,
-            corrections: state.corrections,
-            messages: state.messages,
-        };
-
-        try{
-            console.log("try");
-            const response = await axios.post(`${DB_URL}/save/saveDialog`, body);
-            store.dispatch(clearMessages());
-        }
-        catch(e){
-            console.log("!!! save error");
-        }
-
-}
-
-
-
-export const deleteDialog =async(state: Dialog)=> {
-        
-        const body = {
-            userId: state.userId,
-            timestamp: state.timestamp
-        };
-
-        try{
-            console.log("try");
-            const response = await axios.post(`${DB_URL}/save/deleteDialog`, body);
-            store.dispatch(clearMessages());
-        }
-        catch(e){
-            console.log("!!! delete error");
-        }
-}
-
-export const loadDialog =async(state: Dialog)=> {
-        
     const body = {
-        userId: state.userId
+        userId: state.userId,
+        timestamp: state.timestamp,
+        nickname: state.nickname,
+        npc: state.npc,
+        userTexture: state.userTexture,
+        score: state.score,
+        corrections: state.corrections,
+        messages: state.messages,
     };
 
-    try{
+    try {
+        console.log("try");
+        // console.log(body);
+
+        const response = await axios.post(`${DB_URL}/save/saveDialog`, body);
+        store.dispatch(clearMessages());
+    } catch (e) {
+        console.log("!!! save error");
+    }
+};
+
+export const deleteDialog = async (state: Dialog) => {
+    const body = {
+        userId: state.userId,
+        timestamp: state.timestamp,
+    };
+
+    try {
+        console.log("try");
+        const response = await axios.post(`${DB_URL}/save/deleteDialog`, body);
+        store.dispatch(clearMessages());
+    } catch (e) {
+        console.log("!!! delete error");
+    }
+};
+
+export const loadDialog = async (state: Dialog) => {
+    const body = {
+        userId: state.userId,
+    };
+
+    try {
         console.log("try");
         const response = await axios.post(`${DB_URL}/save/loadDialog`, body);
         // console.log(response.data.existingDialogs)
 
-        return (response.data.existingDialogs)
-    }
-    catch(e){
+        return response.data.existingDialogs;
+    } catch (e) {
         console.log("!!! delete error");
     }
-}
-
+};
