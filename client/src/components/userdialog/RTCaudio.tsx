@@ -85,6 +85,13 @@ const UserDialog = () => {
 			window.dispatchEvent(seatEvent);
 		}
 			)
+		socket.current!.on("Cashier", () => {
+			console.log("Cashier!!!!!!!!!!!!!!!!")
+		})
+
+		socket.current!.on("Customer", () => {
+			console.log("Customer!!!!!!!!!!!!!!!!")
+		})
 
 		console.log("socket is connected: ", socket.current!.id);
 		

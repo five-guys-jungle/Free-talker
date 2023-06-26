@@ -11,10 +11,21 @@ const Room_Num: {
 	coach_park: 0,
 	chairMart: 0,
 }
-
-const player_Role: {
-	[key: string]: string;
-
+class Player_Role {
+	Cashier: number;
+	Customer: number;
+  
+	constructor(cashier: number, customer: number) {
+	  this.Cashier = cashier;
+	  this.Customer = customer;
+	}
+  }
+  
+  const Role_Num: {
+	[key: string]: Player_Role;
+  } = {
+	chairMart: new Player_Role(0, 0)
+  };
 // freedialogsocketEventHandler 함수 수정
 export function dialogsocketEventHandler(socket: Socket) {
 	console.log(socket.id, "connection---------------------------------");
@@ -27,17 +38,27 @@ export function dialogsocketEventHandler(socket: Socket) {
 			Room_Num[place_name]++;
 			socket.emit("roomFull");
 			return;
-		
 		}
-
 		else {
-
 			Room_Num[place_name]++;
 			socket.emit("joined");
 			console.log("Room_Num: ", Room_Num[place_name]);
 			// socket.emit("joined",  Room_Num[place_name] );
 		}
+		if (place_name == "chairMart") {
+			if (Role_Num[place_name].Cashier == 0 && Role_Num[place_name].Customer == 0) {
+				socket.emit("Cashier");
+				Role_Num[place_name].Cashier++;
+			} else if (Role_Num[place_name].Cashier == 1 && Role_Num[place_name].Customer == 0) {
+				socket.emit("Customer");
+				Role_Num[place_name].Customer++;
+			} else if (Role_Num[place_name].Cashier == 0 && Role_Num[place_name].Customer == 1) {
+				socket.emit("Cashier");
+				Role_Num[place_name].Cashier++;
+			}
 
+
+		}
 
 		
 	});
