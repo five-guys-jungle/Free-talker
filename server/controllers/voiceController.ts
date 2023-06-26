@@ -12,8 +12,6 @@ const Room_Num: {
 	chairMart: 0,
 }
 
-const player_Role: {
-	[key: string]: string;
 
 // freedialogsocketEventHandler 함수 수정
 export function dialogsocketEventHandler(socket: Socket) {
@@ -76,6 +74,7 @@ export function dialogsocketEventHandler(socket: Socket) {
 	socket.on("callEnded", () => {
 	  socket.broadcast.emit("otherusercallended");
 	});
+
 }
 // 	socket.on("leaveCallEvent", () => {
 // 		socket.broadcast.emit("otheruserleave");
