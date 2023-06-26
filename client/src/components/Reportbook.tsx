@@ -314,7 +314,7 @@ const ReportBook = (data: any) => {
                                                                 ✔︎ 내 대화는?
                                                             </div>
                                                             <div className="results__list">
-                                                                {dialog.score ===
+                                                                {dialog.score ==
                                                                     100 && (
                                                                     <>
                                                                         <p>
