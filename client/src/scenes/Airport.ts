@@ -55,7 +55,7 @@ export default class AirportScene extends Phaser.Scene {
     initial_x: number = 1920;
     initial_y: number = 1440;
     allPlayers: PlayerDictionary = {};
-    
+
     recorder: MediaRecorder | null = null;
     socket: Socket | null = null;
 
@@ -73,13 +73,15 @@ export default class AirportScene extends Phaser.Scene {
     isNpcSocketConnected: boolean = false;
     npcList: npcInfo[] = [];
     alreadyRecommended: boolean = false;
-   
+
     speed: number = 200;
     dashSpeed: number = 600;
     tilemapLayerList: Phaser.Tilemaps.TilemapLayer[] = [];
     currNpcName: string = "";
     beforeSleepX: number = this.initial_x;
     beforeSleepY: number = this.initial_y;
+    interactionSprite: Phaser.Physics.Arcade.Sprite | null = null;
+    interactionSpriteE: Phaser.Physics.Arcade.Sprite | null = null;
 
     constructor() {
         super("AirportScene");
@@ -127,8 +129,8 @@ export default class AirportScene extends Phaser.Scene {
         console.log("Scene is now asleep!, scene: AirportScene");
         this.socket?.disconnect();
         this.socket = null;
-        this.beforeSleepX = this.player1 ? this.player1!.x: this.initial_x;
-        this.beforeSleepY = this.player1 ? this.player1!.y: this.initial_y;
+        this.beforeSleepX = this.player1 ? this.player1!.x : this.initial_x;
+        this.beforeSleepY = this.player1 ? this.player1!.y : this.initial_y;
         for (let socketId in this.allPlayers) {
             this.allPlayers[socketId].textObj?.destroy();
             this.allPlayers[socketId].sprite.destroy();
@@ -199,6 +201,15 @@ export default class AirportScene extends Phaser.Scene {
         }
         this.gameSocketEventHandler();
 
+        this.interactionSprite = this.physics.add.sprite(0, 0, "arrowDown");
+        this.interactionSprite.setVisible(false);
+        this.interactionSprite.setScale(1.3);
+        this.interactionSprite.setDepth(100);
+        this.interactionSpriteE = this.physics.add.sprite(0, 0, "E_keyboard");
+        this.interactionSpriteE.setVisible(false);
+        this.interactionSpriteE.setScale(0.5);
+        this.interactionSpriteE.setDepth(100);
+
         this.cursors = this.input.keyboard!.createCursorKeys();
         this.interactText = this.add.text(10, 10, "", {
             color: "black",
@@ -230,14 +241,8 @@ export default class AirportScene extends Phaser.Scene {
                 return;
             }
             for (let npcInfo of this.npcList) {
-                if (
-                    Phaser.Math.Distance.Between(
-                        this.player1!.x,
-                        this.player1!.y,
-                        npcInfo.x,
-                        npcInfo.y
-                    ) < 100
-                ) {
+                if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y,
+                    npcInfo.x, npcInfo.y) < 100) {
                     console.log("npcInfo: ", npcInfo);
                     if (npcInfo.role === "freeTalkingPlace") {
                         console.log("chair");
@@ -271,10 +276,10 @@ export default class AirportScene extends Phaser.Scene {
                                 this.player1!.setPosition(
                                     this.player1!.x,
                                     this.player1!.y,
-                                    
+
                                 );
-                                
-                            
+
+
 
 
                                 this.cursors!.left.isDown = false;
@@ -314,7 +319,7 @@ export default class AirportScene extends Phaser.Scene {
                             this.allPlayers[this.socket!.id].seat = false;
                             this.seatEvent = true;
                         }
-                    } else if (npcInfo.name.includes("Liberty")) {
+                    } else if (npcInfo.name === 'gate') {
                         let gate: Phaser.Physics.Arcade.Sprite = npcInfo.sprite!;
                         gate.on('animationcomplete', () => {
                             // 여기서 애니메이션이 완료된 후 수행할 로직을 작성합니다.
@@ -670,6 +675,22 @@ export default class AirportScene extends Phaser.Scene {
             }
         });
     }
+    playInteractionAnims() {
+        for (let npcInfo of this.npcList) {
+            if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y, npcInfo.x, npcInfo.y) < 100) {
+                this.interactionSprite?.setPosition(npcInfo.x, npcInfo.y - 50);
+                this.interactionSprite?.setVisible(true);
+                this.interactionSprite?.play('arrowDownAnim', true);
+
+                this.interactionSpriteE?.setPosition(npcInfo.x + 30, npcInfo.y - 50);
+                this.interactionSpriteE?.setVisible(true);
+                break;
+            } else {
+                this.interactionSprite?.setVisible(false);
+                this.interactionSpriteE?.setVisible(false);
+            }
+        }
+    }
     deleteNotVaildScoket() {
         for (let key in this.allPlayers) {
             // console.log(`allPlayer[${key}]: ${this.allPlayers[key]}, socket: ${this.socket}`);
@@ -683,7 +704,6 @@ export default class AirportScene extends Phaser.Scene {
     }
     update(time: number, delta: number) {
         this.deleteNotVaildScoket();
-
         let speed: number = this.cursors?.shift.isDown
             ? this.dashSpeed
             : this.speed;
@@ -691,6 +711,7 @@ export default class AirportScene extends Phaser.Scene {
         let velocityY = 0;
 
         if (this.player1 !== null && this.player1 !== undefined) {
+            this.playInteractionAnims();
             // console.log("userNickname : ", this.userNickname);
             this.userIdText!.setText(this.userNickname);
             this.userIdText!.setOrigin(0.5, 0);
@@ -786,7 +807,7 @@ export default class AirportScene extends Phaser.Scene {
             this.player1 !== null &&
             this.player1 !== undefined
         ) {
-            if (velocityX !== 0 || velocityY !== 0 ) {
+            if (velocityX !== 0 || velocityY !== 0) {
                 this.socket!.emit("playerMovement", {
                     socketId: this.socket!.id,
                     nickname: this.userNickname,
@@ -799,18 +820,18 @@ export default class AirportScene extends Phaser.Scene {
                 });
             }
             if (this.seatEvent === true) {
-                this.socket!.emit("seat", 
-                {
-                    socketId: this.socket!.id,
-                    nickname: this.allPlayers[this.socket!.id].nickname,
-                    playerTexture: this.allPlayers[this.socket!.id].playerTexture,
-                    x: this.allPlayers[this.socket!.id].x,
-                    y: this.allPlayers[this.socket!.id].y,
-                    scene: this.allPlayers[this.socket!.id].scene,
-                    dash: this.allPlayers[this.socket!.id].dash,
-                    seat: this.allPlayers[this.socket!.id].seat,
-                },
-                this.seatEvent = false
+                this.socket!.emit("seat",
+                    {
+                        socketId: this.socket!.id,
+                        nickname: this.allPlayers[this.socket!.id].nickname,
+                        playerTexture: this.allPlayers[this.socket!.id].playerTexture,
+                        x: this.allPlayers[this.socket!.id].x,
+                        y: this.allPlayers[this.socket!.id].y,
+                        scene: this.allPlayers[this.socket!.id].scene,
+                        dash: this.allPlayers[this.socket!.id].dash,
+                        seat: this.allPlayers[this.socket!.id].seat,
+                    },
+                    this.seatEvent = false
                 )
             }
 
@@ -818,7 +839,8 @@ export default class AirportScene extends Phaser.Scene {
                 if (playerInfo.scene == "AirportScene") {
                     this.allPlayers[playerInfo.socketId].seat = playerInfo.seat;
                     console.log("otherseat", playerInfo);
-                }});
+                }
+            });
 
 
             for (let key in this.allPlayers) {
@@ -901,35 +923,13 @@ export default class AirportScene extends Phaser.Scene {
         npc1.sprite = this.physics.add.sprite(npc1.x, npc1.y, npc1.texture);
         this.npcList.push(npc1);
 
-        // let chair: npcInfo = {
-        //     name: "airport_chair1",
-        //     x: 1400,
-        //     y: 1400,
-        //     texture: "airport_chair",
-        //     sprite: null,
-        //     role: "freeTalkingPlace",
-        // };
-        // chair.sprite = this.physics.add.sprite(chair.x, chair.y, chair.texture);
-        // this.npcList.push(chair);
-
-        // let npc2: npcInfo = {
-        //     name: "statueOfLiberty",
-        //     x: 2150,
-        //     y: 1430,
-        //     texture: "statueOfLiberty",
-        //     sprite: null,
-        //     role: "npc",
-        // };
-        // npc2.sprite = this.physics.add.sprite(npc2.x, npc2.y, npc2.texture);
-        // npc2.sprite.setScale(0.35);
-        // this.npcList.push(npc2);
         let gate: npcInfo = {
-            name: "statueOfLiberty",
+            name: "gate",
             x: 1695,
             y: 1100,
             texture: "gate",
             sprite: null,
-            role: "npc",
+            role: "gate",
         };
         gate.sprite = this.physics.add.sprite(gate.x, gate.y, gate.texture);
         gate.sprite.setScale(1.6);
