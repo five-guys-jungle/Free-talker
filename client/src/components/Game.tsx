@@ -38,7 +38,7 @@ const Game = () => {
         {mode === NPCDIALOG && <NPCDialog />}
         {mode === FREEDIALOG && <FreeDialog />}
         {mode === REPORT && <Report/>}
-        {mode === AIRPORT || mode === USA && <ReportBook/>}
+        {(mode === AIRPORT || mode === USA) && <ReportBook/>}
         <Keyguider/>
         </BackgroundDiv>;
 };
