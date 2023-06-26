@@ -8,84 +8,110 @@ import {
     DynamoDBClient,
 } from "@aws-sdk/client-dynamodb";
 
-const tableName = process.env.DYNAMODB_TABLE_NAME;
+import { Dialog, DialogDocument, Message, Correction } from "../models/Dialog";
+
+const { marshall, unmarshall } = require("@aws-sdk/util-dynamodb");
+
+const tableName = "dialogs";
 const client = new DynamoDBClient({ region: "ap-northeast-2" });
 // const userIdRegex = /^[a-zA-Z0-9]+$/; // Allows only letters and numbers
 // const userNicknameRegex = /^[ㄱ-ㅎ|가-힣|a-z|A-Z|0-9|]+$/; //hanguel, number, alphbet,  not allows special char and white space
 
-
 export const saveDialog = async (req: Request, res: Response) => {
     try {
-        const { userId, timestamp, nickname, npc,
-        userTexture, score, corrections, messages } = req.body;
+        const {
+            userId,
+            timestamp,
+            nickname,
+            npc,
+            userTexture,
+            score,
+            corrections,
+            messages,
+        } = req.body;
+        // console.log(`userId: ${userId}`);
+        // console.log(`timestamp: ${timestamp}`);
+        // console.log(`nickname: ${nickname}`);
+        // console.log(`npc: ${npc}`);
+        // console.log(`userTexture: ${userTexture}`);
+        // console.log(`score: ${score}`);
+        // console.log(`corrections: ${JSON.stringify(corrections)}`);
+        console.log(`messages: ${JSON.stringify(messages)}`);
 
-        const queryByUserId = {
-            TableName: tableName,
-            Key: {
-                userId: { S: userId },
-            },
+        const item = {
+            userId: { S: userId },
+            timestamp: { S: timestamp },
+            nickname: { S: nickname },
+            npc: { S: npc },
+            userTexture: { S: userTexture },
+            score: { S: score.toString() },
+
+            corrections:
+                corrections === undefined
+                    ? { L: [] }
+                    : {
+                          L: corrections.map(
+                              ({ original, correction }: Correction) => ({
+                                  M: {
+                                      original: { S: original },
+                                      correction: { S: correction },
+                                  },
+                              })
+                          ),
+                      },
+            messages:
+                messages === undefined
+                    ? { L: [] }
+                    : {
+                          L: messages.map(
+                              ({
+                                  playerId,
+                                  name,
+                                  img,
+                                  side,
+                                  text,
+                              }: Message) => ({
+                                  M: {
+                                      playerId: { S: playerId },
+                                      name: { S: name },
+                                      img: { S: img },
+                                      side: { S: side },
+                                      text: { S: text },
+                                  },
+                              })
+                          ),
+                      },
         };
-        const foundUserById = await client.send(
-            new GetItemCommand(queryByUserId)
-        );
-        
-        console.log("foundUserById : ", foundUserById);
 
+        // console.log(JSON.stringify(item, null, 2));
+        const putParams = {
+            TableName: tableName,
+            Item: item,
+        };
 
-        const item = foundUserById.Item;
+        const putItem = new PutItemCommand(putParams);
+        const data = await client.send(putItem);
 
-        if(item){
-            const existingDialogs = Object.keys(item).filter(key => key.startsWith('dialog'));
-            const newDialogKey = `dialog${existingDialogs.length + 1}`;
-
-            if (!existingDialogs.includes(newDialogKey)) {
-                const putParams = {
-                    TableName: tableName,
-                    Item: {
-                        userId: { S: userId },
-                        data: {
-                            ...item.data,
-                            [newDialogKey]: { S: JSON.stringify({
-                                timestamp,
-                                nickname,
-                                npc,
-                                userTexture,
-                                score,
-                                corrections,
-                                messages
-                            })}
-                        }
-                    }
-                };
-
-                const putItem = new PutItemCommand(putParams);
-
-                const data = await client.send(putItem);
-
-                if (data !== undefined) {
-                    console.log("Successfully create save report");
-                    return res.json({
-                        success: true,
-                        message: "Successfully create save report",
-                        status: 200, // 200: 성공
-                    });
-                }
-            }
-        } 
-        else {
-            console.log("User not found");
+        // console.log("saveDialog: code here");
+        if (data !== undefined) {
+            console.log("Successfully create save report");
+            return res.json({
+                success: true,
+                message: "Successfully create save report",
+                status: 200, // 200: 성공
+            });
+        } else {
+            console.log("Dialogs not found");
             return res.json({
                 success: false,
-                message: "User not found",
+                message: "Dialogs not found",
                 status: 404, // 404: 찾을 수 없음
             });
         }
-
     } catch (err) {
         console.log(err);
     }
 };
-
 
 export const deleteDialog = async (req: Request, res: Response) => {
     try {
@@ -95,50 +121,56 @@ export const deleteDialog = async (req: Request, res: Response) => {
             TableName: tableName,
             Key: {
                 userId: { S: userId },
+                timestamp: { S: timestamp },
             },
-            ConditionExpression: `attribute_exists(data.dialog${timestamp})`,
         };
 
         const deleteItem = new DeleteItemCommand(deleteParams);
-        const data = await client.send(deleteItem);
+        await client.send(deleteItem);
 
-        if (data !== undefined) {
-            console.log("Successfully deleted dialog");
-            return res.json({
-                success: true,
-                message: "Successfully deleted dialog",
-                status: 200, // 200: 성공
-            });
-        }
+        console.log("Successfully deleted dialog");
+        return res.json({
+            success: true,
+            message: "Successfully deleted saved report",
+            status: 200, // 200: 성공
+        });
     } catch (err) {
-        console.log(err);
+        console.log("Error deleting item ", err);
+        return res.json({
+            success: false,
+            message: "Error deleting saved report",
+            status: 500, // 500: 서버 오류
+        });
     }
 };
-
 export const loadDialog = async (req: Request, res: Response) => {
     try {
-        const { userId, timestamp } = req.body;
+        const userId = req.body.userId;
 
-        const deleteParams = {
+        const queryByUserId = {
             TableName: tableName,
-            Key: {
-                userId: { S: userId },
+            KeyConditionExpression: "userId = :userId",
+            ExpressionAttributeValues: {
+                ":userId": { S: userId },
             },
-            ConditionExpression: `attribute_exists(data.dialog${timestamp})`,
         };
 
-        const deleteItem = new DeleteItemCommand(deleteParams);
-        const data = await client.send(deleteItem);
+        const queryCommand = new QueryCommand(queryByUserId);
+        const queryResult = await client.send(queryCommand);
 
-        if (data !== undefined) {
-            console.log("Successfully deleted dialog");
-            return res.json({
-                success: true,
-                message: "Successfully deleted dialog",
-                status: 200, // 200: 성공
-            });
+        if (queryResult.Items) {
+            const existingDialogs = queryResult.Items.map((item) =>
+                unmarshall(item)
+            );
+            console.log(existingDialogs);
+            return res.json({ existingDialogs });
+        } else {
+            const emptyArray: any = [];
+            console.log("No dialogs found, Array: ", emptyArray);
+            return res.json({ emptyArray });
         }
     } catch (err) {
         console.log(err);
+        return res.status(500).json({ error: "An error occurred" });
     }
 };

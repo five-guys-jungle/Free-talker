@@ -58,6 +58,7 @@ const Report = (data:any) => {
     const currentTime = currentDate.toLocaleTimeString();
     
     const handleSave = () => {
+        // console.log(messages);
         saveDialog({
             userId: playerId,
             timestamp: `${month[date.getMonth() + 1]} ${date.getDate()} ${currentTime}`,
