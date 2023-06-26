@@ -9,7 +9,11 @@ const Room_Num: {
 } = {
 	airport_chair1: 0,
 	coach_park: 0,
+	chairMart: 0,
 }
+
+const player_Role: {
+	[key: string]: string;
 
 // freedialogsocketEventHandler 함수 수정
 export function dialogsocketEventHandler(socket: Socket) {
