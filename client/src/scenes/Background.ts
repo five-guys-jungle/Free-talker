@@ -63,7 +63,7 @@ export default class Background extends Phaser.Scene {
             "assets/characters/ClothingShopStaff.png",
             {
                 frameWidth: 32,
-                frameHeight: 48,
+                frameHeight: 40,
             }
         );
 
@@ -79,7 +79,7 @@ export default class Background extends Phaser.Scene {
 
         this.load.spritesheet("Barista", "assets/characters/Barista.png", {
             frameWidth: 32,
-            frameHeight: 48,
+            frameHeight: 40,
         });
 
         // this.load.image("background", "assets/backgrounds/space.png");
@@ -108,10 +108,14 @@ export default class Background extends Phaser.Scene {
             frameWidth: 32,
             frameHeight: 48,
         });
-        this.load.spritesheet("doyoungboy", "assets/characters/doyoungboy.png", {
+        this.load.spritesheet(
+            "doyoungboy",
+            "assets/characters/doyoungboy.png",
+            {
                 frameWidth: 32,
                 frameHeight: 48,
-        });
+            }
+        );
         this.load.spritesheet("minsook", "assets/characters/minsook.png", {
             frameWidth: 32,
             frameHeight: 48,
@@ -121,10 +125,10 @@ export default class Background extends Phaser.Scene {
             frameHeight: 48,
         });
 
-        this.load.spritesheet('gate', 'assets/gate.png', {
-             frameWidth: 64, 
-             frameHeight: 64 
-            });
+        this.load.spritesheet("gate", "assets/gate.png", {
+            frameWidth: 64,
+            frameHeight: 64,
+        });
 
         this.load.image(
             "exterior",
@@ -165,17 +169,32 @@ export default class Background extends Phaser.Scene {
         for (let scene of phaserGame.scene.getScenes()) {
             const sceneKey = scene.scene.key;
             if (phaserGame.scene.isActive(sceneKey)) {
-                const resumedScene: Phaser.Scene = phaserGame.scene.getScene(sceneKey);
-                switch(sceneKey){
+                const resumedScene: Phaser.Scene =
+                    phaserGame.scene.getScene(sceneKey);
+                switch (sceneKey) {
                     case "AirportScene":
-                        const beforePauseXAirport:number = (resumedScene as AirportScene).player1!.x;
-                        const beforePauseYAirport:number = (resumedScene as AirportScene).player1!.y;
-                        (resumedScene as AirportScene).gamePause(beforePauseXAirport, beforePauseYAirport);
+                        const beforePauseXAirport: number = (
+                            resumedScene as AirportScene
+                        ).player1!.x;
+                        const beforePauseYAirport: number = (
+                            resumedScene as AirportScene
+                        ).player1!.y;
+                        (resumedScene as AirportScene).gamePause(
+                            beforePauseXAirport,
+                            beforePauseYAirport
+                        );
                         break;
                     case "USAScene":
-                        const beforePauseXUSA:number = (resumedScene as USAScene).player1!.x;
-                        const beforePauseYUSA:number = (resumedScene as USAScene).player1!.y;
-                        (resumedScene as USAScene).gamePause(beforePauseXUSA, beforePauseYUSA);
+                        const beforePauseXUSA: number = (
+                            resumedScene as USAScene
+                        ).player1!.x;
+                        const beforePauseYUSA: number = (
+                            resumedScene as USAScene
+                        ).player1!.y;
+                        (resumedScene as USAScene).gamePause(
+                            beforePauseXUSA,
+                            beforePauseYUSA
+                        );
                 }
             }
         }
@@ -186,17 +205,32 @@ export default class Background extends Phaser.Scene {
         for (let scene of phaserGame.scene.getScenes()) {
             const sceneKey = scene.scene.key;
             if (phaserGame.scene.isActive(sceneKey)) {
-                const resumedScene: Phaser.Scene = phaserGame.scene.getScene(sceneKey);
-                switch(sceneKey){
+                const resumedScene: Phaser.Scene =
+                    phaserGame.scene.getScene(sceneKey);
+                switch (sceneKey) {
                     case "AirportScene":
-                        const beforePauseXAirport:number = (resumedScene as AirportScene).player1!.x;
-                        const beforePauseYAirport:number = (resumedScene as AirportScene).player1!.y;
-                        (resumedScene as AirportScene).gameResume(beforePauseXAirport, beforePauseYAirport);
+                        const beforePauseXAirport: number = (
+                            resumedScene as AirportScene
+                        ).player1!.x;
+                        const beforePauseYAirport: number = (
+                            resumedScene as AirportScene
+                        ).player1!.y;
+                        (resumedScene as AirportScene).gameResume(
+                            beforePauseXAirport,
+                            beforePauseYAirport
+                        );
                         break;
                     case "USAScene":
-                        const beforePauseXUSA:number = (resumedScene as USAScene).player1!.x;
-                        const beforePauseYUSA:number = (resumedScene as USAScene).player1!.y;
-                        (resumedScene as USAScene).gameResume(beforePauseXUSA, beforePauseYUSA);
+                        const beforePauseXUSA: number = (
+                            resumedScene as USAScene
+                        ).player1!.x;
+                        const beforePauseYUSA: number = (
+                            resumedScene as USAScene
+                        ).player1!.y;
+                        (resumedScene as USAScene).gameResume(
+                            beforePauseXUSA,
+                            beforePauseYUSA
+                        );
                 }
             }
         }
@@ -207,7 +241,7 @@ export default class Background extends Phaser.Scene {
         // this.game.events.on('pause', this.gamePause.bind(this));
 
         // 'resume' 이벤트를 처리하는 리스너 추가
-        this.game.events.on('resume', this.gameResume);
+        this.game.events.on("resume", this.gameResume);
 
         this.background = this.add
             .image(0, 0, "background")
