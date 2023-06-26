@@ -155,7 +155,7 @@ const ReportBook = (data: any) => {
     };
 
     return (
-        <div style={{ width: "100%", height: "100%" }}>
+        <div style={{ width: "100%", height: "100%" , position: "absolute"}}>
             <div
                 style={{
                     textAlign: "right",
@@ -184,7 +184,7 @@ const ReportBook = (data: any) => {
             {openbook == true && (
                 <>
                     <Swiper
-                        style={{ width: "970px" }}
+                        style={{ width: "970px" , marginTop:"72px"}}
                         modules={[Navigation]}
                         navigation={true}
                     >
