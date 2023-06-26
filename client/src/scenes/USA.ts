@@ -445,6 +445,10 @@ export default class USAScene extends Phaser.Scene {
                                     );
 
                                     this.interacting = true;
+                                    // this.socket2!.emit(
+                                    //     "dialogStart",
+                                    //     npcInfo.name
+                                    // );
                                     console.log(
                                         "connect, interaction socket.id: ",
                                         this.socket2!.id
