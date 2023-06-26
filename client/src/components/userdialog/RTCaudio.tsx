@@ -14,8 +14,10 @@ import { current } from "@reduxjs/toolkit"
 import { TalkBoxState } from "../../stores/talkBoxSlice";
 import store, { RootState, useAppDispatch } from "../../stores";
 import {setUserCharacter, clearcharacters} from "../../stores/userboxslice";
+import axios from "axios";
 
-const UserDialog = () => {
+let DB_URL: string = process.env.REACT_APP_SERVER_URL!;
+const RTCaudio = () => {
     const [ me, setMe ] = useState("")
 	const [ stream, setStream ] = React.useState<MediaStream | undefined>(undefined)
 	const [ receivingCall, setReceivingCall ] = useState(false)
@@ -42,7 +44,7 @@ const UserDialog = () => {
 
 	
 	const {playerNickname, playerTexture} = useSelector((state: RootState) => {return {...state.user}});
-
+	const place_name = socketNamespace.substring(socketNamespace.lastIndexOf("/") + 1);
 	useEffect(() => {
 		socket.current = io(socketNamespace);
 		navigator.mediaDevices
@@ -55,7 +57,7 @@ const UserDialog = () => {
 			}
 		  });
 		
-		const place_name = socketNamespace.substring(socketNamespace.lastIndexOf("/") + 1);
+		// const place_name = socketNamespace.substring(socketNamespace.lastIndexOf("/") + 1);
 		console.log("place_name:::", place_name);
 		// socket.current!.emit("join", { place_name });
 
@@ -85,6 +87,13 @@ const UserDialog = () => {
 			window.dispatchEvent(seatEvent);
 		}
 			)
+		socket.current!.on("Cashier", () => {
+			console.log("Cashier!!!!!!!!!!!!!!!!")
+		})
+
+		socket.current!.on("Customer", () => {
+			console.log("Customer!!!!!!!!!!!!!!!!")
+		})
 
 		console.log("socket is connected: ", socket.current!.id);
 		
@@ -148,7 +157,7 @@ const UserDialog = () => {
 
        
 
-    const callUser = (id: string) => {
+    const callUser = async(id: string) => {
 		console.log("id:", id)
 		const peer = new Peer({
 			initiator: true,
@@ -177,12 +186,34 @@ const UserDialog = () => {
 		socket.current!.on("callAccepted", (signal) => {
 			setCallAccepted(true)
 			peer.signal(signal)
-		})
-
+			fetchData();
+		});
+		// try {
+		// 	const response = await axios.get(`${DB_URL}/userdialog/place`, {
+		// 		params: {
+		// 			place_name: place_name // place_name you want to send
+		// 		}
+		// 	});
+		// 	console.log(response.data);
+		// } catch (error) {
+		// 	console.error(`Error in sending place_name: ${error}`);
+		// }
 		connectionRef.current = peer
 	}
 
-	const answerCall =() =>  {
+	const fetchData = async () => {
+		try {
+			const response = await axios.get(`${DB_URL}/userdialog/place`, {
+				params: {
+					place_name: place_name // place_name you want to send
+				}
+			});
+			console.log(response.data);
+		} catch (error) {
+			console.error(`Error in sending place_name: ${error}`);
+		}
+	};
+	const answerCall = async () =>  {
 		setCallAccepted(true)
 		const peer = new Peer({
 			initiator: false,
@@ -203,8 +234,21 @@ const UserDialog = () => {
 		  });
 
 		peer.signal(callerSignal)
+
 		connectionRef.current = peer
-	}
+		fetchData();
+		// Send place_name using GET request
+		// try {
+		// 	const response = await axios.get(`${DB_URL}/userdialog/place`, {
+		// 		params: {
+		// 			place_name: place_name // place_name you want to send
+		// 		}
+		// 	});
+		// 	console.log(response.data);
+		// } catch (error) {
+		// 	console.error(`Error in sending place_name: ${error}`);
+		// }
+	};
 
 	const leaveCall = () => {
 		setCallEnded(true);
@@ -355,4 +399,4 @@ const UserDialog = () => {
 	  );
 	};
 	
-	export default UserDialog;
+	export default RTCaudio;
