@@ -19,15 +19,15 @@ import {
     convertSpeechToText,
     textCompletion,
     convertTexttoSpeech,
-    grammerCorrection,
+    grammarCorrection,
+    checkIfSoundsGood,
+    compareWithCorrectedText,
     recommendNextResponses,
     recommendExpressions,
     createChain,
 } from "./interaction";
 
 export function interactSocketEventHandler(socket: Socket) {
-    let conversation: string[] = [];
-    const MAX_CONVERSATION_LENGTH = 100;
     let chain: ConversationChain;
     let count = 0;
     console.log("Interaction socket connected, socketid: ", socket.id);
@@ -40,41 +40,21 @@ export function interactSocketEventHandler(socket: Socket) {
             audioDataBuffer: ArrayBuffer;
         }) => {
             /* ---------------------------------------------------------------------------------------  */
-
+            // 소켓이 연결되고 처음으로 유저가 오디오를 입력하면, 유저와 NPC 간의 Conversation Chain을 생성한다.
             if (count++ == 0) {
-                const chat = new ChatOpenAI({
-                    modelName: "gpt-3.5-turbo",
-                    temperature: 0,
-                });
-                const chatPrompt = ChatPromptTemplate.fromPromptMessages([
-                    SystemMessagePromptTemplate.fromTemplate(
-                        preDefinedPrompt[data.npcName].message
-                    ),
-                    new MessagesPlaceholder("history"),
-                    HumanMessagePromptTemplate.fromTemplate("{input}"),
-                ]);
-
-                const memory = new BufferMemory({
-                    returnMessages: true,
-                    // memoryKey: "history",
-                    chatHistory: new RedisChatMessageHistory({
-                        sessionId: new Date().toISOString(),
-                        sessionTTL: 300,
-                        config: {
-                            url: "redis://localhost:6379",
-                        },
-                    }),
-                });
-                chain = new ConversationChain({
-                    memory: memory,
-                    prompt: chatPrompt,
-                    llm: chat,
-                });
-                console.log("chain created.");
+                createChain(data.npcName) //
+                    .then((res) => {
+                        chain = res;
+                        console.log("chain 생성 완료");
+                    })
+                    .catch((err) => {
+                        console.log("chain 생성 실패");
+                    });
             }
             /* ---------------------------------------------------------------------------------------  */
             // const chain: ConversationChain = await createChain(data.npcName);
             // console.log("audioSend, data: ", data);
+
             const buffer = Buffer.from(data.audioDataBuffer);
             const filePath = path.join(
                 __dirname,
@@ -83,59 +63,110 @@ export function interactSocketEventHandler(socket: Socket) {
                 }_${uuidv4()}.wav`
             );
             fs.writeFileSync(filePath, buffer); // 동기적으로 실행
-            // console.log("User audio file saved at: ", filePath);
 
             let inputText: string;
             let outputText: string;
-            // let chainOutput: Promise<ChainValues>;
             let correctedText: string;
             let recommendedText: string;
             let response: any;
 
-            inputText = await convertSpeechToText(filePath).then(
-                async (res) => {
-                    conversation.push(res);
+            // 입력 음성 " "이면 -> "다시 말씀해주세요" 출력
+            // NPC 대답 돌아올 때까지 R, E block 되어 있으므로 풀어줘야 함
 
-                    // if (conversation.length > MAX_CONVERSATION_LENGTH) { // 대화 길어질 경우 가장 오래된 메시지 삭제
-                    //     conversation.shift();
-                    // }
-
+            await convertSpeechToText(filePath) //
+                .then(async (res) => {
+                    inputText = res;
                     socket.emit("speechToText", res);
+                    if (inputText !== "") {
+                        console.log("chain 호출 시작");
+                        var startTime: any = new Date();
+
+                        const chainOutput = await chain
+                            .call({ input: inputText })
+                            .then(async (res) => {
+                                var endTime: any = new Date();
+                                var elapsedTime: any = endTime - startTime; // 밀리초 단위
+
+                                console.log(`실행 시간: ${elapsedTime}ms`);
+                                outputText = res.response;
+                                socket.emit("npcResponse", outputText);
+
+                                response = await convertTexttoSpeech(
+                                    inputText,
+                                    outputText,
+                                    data.npcName,
+                                )
+                                    .then((res) => {
+                                        socket.emit("totalResponse", res);
+                                        console.log("Total response: ", res);
+                                    })
+                                    .catch((err) => {
+                                        console.log(
+                                            "convert Text to Speech error: ",
+                                            err
+                                        );
+                                    });
+                                grammarCorrection(inputText).then(
+                                    async (res) => {
+                                        if (
+                                            !checkIfSoundsGood(res) &&
+                                            !compareWithCorrectedText(
+                                                inputText,
+                                                res
+                                            )
+                                        ) {
+                                            socket.emit("grammarCorrection", {
+                                                userText: inputText,
+                                                correctedText: res,
+                                            });
+                                            console.log(
+                                                "socket emitted grammarCorrection."
+                                            );
+                                            return res;
+                                        }
+                                    }
+                                );
+                            })
+                            .catch((err) => {
+                                socket.emit("speechToText", "chain call error");
+                                console.log("chain call error: ", err);
+                            });
+                    }
+
                     return res;
-                }
-            );
-            console.log("User: ", inputText);
-
-            const fullConversation = conversation.join(" ");
-            console.log("Full conversation: ", fullConversation);
-
-            const chainOutput = await chain.call({ input: inputText });
-            outputText = chainOutput.response;
-            socket.emit("npcResponse", outputText);
-            // console.log("LangChain OutputText: ", outputText);
-            // outputText = await textCompletion(inputText, chain).then(
-            //     async (res) => {
-            //         socket.emit("npcResponse", res);
-            //         return res;
-            //     }
-            // );
-            response = await convertTexttoSpeech(inputText, outputText).then(
-                (res) => {
-                    socket.emit("totalResponse", res);
-                    console.log("Total response: ", res);
-                }
-            );
-
-            await recommendNextResponses(outputText, "airport")
-                .then((res) => {
-                    socket.emit("recommendedResponses", res);
-                    console.log("recommended Responses: ", res);
-                    return res;
-                })
+                }) //
                 .catch((err) => {
-                    console.log("Recommend Responses Error: ", err);
-                    recommendedText = "";
+                    socket.emit("speechToText", "convertSpeechToText Error");
+                    console.log("convert Speech to Text error: ", err);
                 });
+        }
+    );
+    socket.on(
+        "getRecommendedResponses",
+        async (
+            npcName: string,
+            alreadyRecommended: boolean,
+            outputText: string
+        ) => {
+            if (!alreadyRecommended) {
+                console.log("getRecommendedResponses start");
+                await recommendNextResponses(outputText, npcName)
+                    .then((res) => {
+                        if (res === "ChatGPT API Error.") {
+                            socket.emit("recommendedResponses", [outputText]);
+                        } else {
+                            socket.emit("recommendedResponses", res);
+                        }
+                        console.log("recommended Responses: ", res);
+                        return res;
+                    })
+                    .catch((err) => {
+                        console.log("Recommend Responses Error: ", err);
+                        // recommendedText = "";
+                    });
+
+                // TODO : res 받아서, correct -> 안보냄, incorrect -> 비율 계산해서, 틀렸으면
+            }
         }
     );
 

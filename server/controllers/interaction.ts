@@ -19,6 +19,7 @@ import {
 } from "langchain/prompts";
 import { BufferMemory } from "langchain/memory";
 import { RedisChatMessageHistory } from "langchain/stores/message/redis";
+import { preDefinedVoiceType } from "../models/voiceType";
 
 dotenv.config();
 const configuration = new Configuration({
@@ -64,7 +65,7 @@ export async function interact(req: Request, res: Response): Promise<void> {
         let outputText: string;
 
         inputText = await convertSpeechToText(audioFilePath);
-        const correctedText = await grammerCorrection(inputText);
+        const correctedText = await grammarCorrection(inputText);
 
         console.log(`correctedText: ${correctedText}, inputText: ${inputText}`);
 
@@ -117,7 +118,12 @@ export async function convertSpeechToText(
 }
 
 export async function createChain(npcName: string): Promise<ConversationChain> {
-    const chat = new ChatOpenAI({ modelName: "gpt-3.5-turbo", temperature: 0 });
+    const chat = new ChatOpenAI({
+        modelName: "gpt-3.5-turbo",
+        temperature: 0,
+        timeout: 11000,
+        maxTokens: 100,
+    });
 
     try {
         if (!preDefinedPrompt[npcName]) {
@@ -133,7 +139,7 @@ export async function createChain(npcName: string): Promise<ConversationChain> {
 
         const memory = new BufferMemory({
             returnMessages: true,
-            memoryKey: "history",
+            // memoryKey: "history",
             chatHistory: new RedisChatMessageHistory({
                 sessionId: new Date().toISOString(),
                 sessionTTL: 300,
@@ -156,7 +162,6 @@ export async function createChain(npcName: string): Promise<ConversationChain> {
             llm: chat,
         });
     } catch (error) {
-        console.log(error);
         throw error;
     }
 }
@@ -171,10 +176,6 @@ export async function textCompletion(
     let role_answer: string;
 
     try {
-        // const chain: ConversationChain = await createChain(
-        //     preDefinedPrompt[npcName].message
-        // );
-
         const response = await chain.call({
             input: inputText,
         });
@@ -203,12 +204,13 @@ export async function textCompletion(
 
 export async function convertTexttoSpeech(
     inputText: string,
-    outputText: string
+    outputText: string,
+    npcName: string = "ImmigrationOfficer",
 ): Promise<Object> {
     try {
         const request: any = {
             input: { text: outputText },
-            voice: { languageCode: "en-US", ssmlGender: "NEUTRAL" },
+            voice: { languageCode: "en-US", name: preDefinedVoiceType[npcName].voiceType },
             audioConfig: { audioEncoding: "MP3" },
         };
         const [response_audio]: any = await client.synthesizeSpeech(request);
@@ -235,24 +237,29 @@ export async function convertTexttoSpeech(
     }
 }
 
-export async function grammerCorrection(inputText: string): Promise<string> {
+export async function grammarCorrection(inputText: string): Promise<string> {
     let response: any;
     let correction: string;
     try {
         // ChatGPT API에 요청 보내기
+        // "You are a grammar checker that looks for mistakes and makes sentence’s more fluent. You take all the input and auto correct it. Just reply to user input with the correct grammar, DO NOT reply the context of the question of the user input. If the user input is grammatically correct, just reply “sounds good”:\n\n${inputText}"
+        // Make it correct in grammar and Do not give the reason for this change If it doesn't have grammatical issues, do not give a correction.
+        // If it doesn't have grammatical issues, do not give a correction.
+        // check the following text for spelling and grammar errors
         response = await openai.createCompletion({
             model: "text-davinci-003",
-            prompt: `"Correct this to standard English:\n\n${inputText}"`,
-            temperature: 0.5,
+            prompt: `"You are a grammar checker that check the following text for spelling and grammar errors. If the text is grammatically correct then reply just “sounds good”. else correct this without any explanation. :\n\n${inputText}"`,
+            temperature: 0,
             max_tokens: 60,
             top_p: 1.0,
             frequency_penalty: 0.0,
             presence_penalty: 0.0,
         });
         // ChatGPT API의 결과 받기
-        // console.log(response.data);
         correction = response.data.choices[0].text.trimStart();
-        // return correction;
+        console.log(
+            `corrected text: ${correction}\n original text: ${inputText}`
+        );
         return correction;
     } catch (error) {
         console.log(error);
@@ -283,7 +290,7 @@ export async function recommendExpressions(place: string) {
 
 export async function recommendNextResponses(
     previous: string,
-    place: string = "airport immigration office"
+    npcName: string = "airport immigration officer"
 ) {
     let response: any;
     let recommendations: string;
@@ -294,16 +301,20 @@ export async function recommendNextResponses(
             messages: [
                 {
                     role: "system",
-                    content: `I'm currently in immigration at the ${place}, Recommend me three expressions I can reply to the ${previous} without any explanations`,
+                    content: `I'm currently talking with the ${npcName}, Recommend me three expressions I can reply to the sentence that ${previous} without any explanations`,
                 },
                 {
                     role: "user",
-                    content: `I'm currently in immigration at the ${place}, Recommend me three expressions I can reply to the ${previous} without any explanations`,
+                    content: `I'm currently talking with the ${npcName}, Recommend me three expressions I can reply to the sentence that ${previous} without any explanations`,
+                },
+                {
+                    role: "user",
+                    content: "reply three sentences in maximum",
                 },
             ],
             // messages: {`I'm currently at the ${place}, Recommend me three expressions I can reply to the ${previous} without any explanations`,}
             temperature: 0.2,
-            max_tokens: 60,
+            max_tokens: 100,
             top_p: 1.0,
             frequency_penalty: 0.0,
             presence_penalty: 0.0,
@@ -317,4 +328,35 @@ export async function recommendNextResponses(
         console.log(error);
         return "ChatGPT API Error.";
     }
+}
+
+function preprocessSentence(sentence: string): string {
+    if (!sentence) {
+        console.error("Invalid sentence:", sentence);
+        return "";
+    }
+    const punctuationRegex = /[.,\/#!$%\^&\*;:{}=\-_`~()]/g;
+    const lowercaseSentence = sentence
+        .replace(punctuationRegex, "")
+        .toLowerCase();
+    return lowercaseSentence;
+}
+
+export function checkIfSoundsGood(sentence: string): boolean {
+    const targetPhrase = "sounds good";
+    const lowercaseSentence = preprocessSentence(sentence);
+    if (lowercaseSentence.trim() === "") {
+        return true;
+    }
+    return lowercaseSentence.includes(targetPhrase);
+}
+
+export function compareWithCorrectedText(
+    inputText: string,
+    correctedText: string
+): boolean {
+    if (inputText === "you") return true;
+    const lowercaseInputText = preprocessSentence(inputText);
+    const lowercaseCorrectedText = preprocessSentence(correctedText);
+    return lowercaseInputText === lowercaseCorrectedText;
 }

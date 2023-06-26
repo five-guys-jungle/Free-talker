@@ -11,8 +11,11 @@ import { GAME_STATUS } from "./stores/gameSlice";
 import Start from "./components/StartPage";
 // import { selectGameScene } from "./redux/gameSlice"; // Redux에서 gameScene 상태를 선택하는 selector를 불러옵니다.
 import NPCDialog from "./components/NPCDialog";
+import UserDialog from "./components/UserDialog";
 import { Dialog } from "@mui/material";
-
+import TalkBox from "./components/npcdialog/TalkBox";
+import FreeDialog from "./components/FreeDialog";
+import RTC from "./components/freedialog/RTC";
 function App() {
     const { START, AIRPORT, USA, NPCDIALOG, USERDIALOG, LOGIN, FREEDIALOG, REPORT } = GAME_STATUS;
     const { userLoginId, playerId, mode } = useSelector((state: RootState) => {
@@ -42,6 +45,9 @@ function App() {
             ) : (
                 <></>
             )}
+            {/* <NPCDialog/> */}
+            {/* <UserDialog /> */}
+            {/* <FreeDialog /> */}
         </HoverDiv>
     );
 }

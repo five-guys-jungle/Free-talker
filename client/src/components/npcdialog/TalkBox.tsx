@@ -1,27 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
-import { appendMessage, TalkBoxState } from "../../stores/talkBoxSlice";
-
-interface Message {
-    name: string;
-    img: string;
-    side: string;
-    text: string;
-}
-
-const BOT_MSGS = [
-    "Hi, how are you?",
-    "Ohh... I can't understand what you're trying to say. Sorry!",
-    "I like to play games... But I don't know how to play!",
-    "Sorry if my answers are not relevant. :))",
-    "I feel sleepy! :(",
-];
-
-const BOT_IMG = "https://image.flaticon.com/icons/svg/327/327779.svg";
-const PERSON_IMG = "https://image.flaticon.com/icons/svg/145/145867.svg";
-const BOT_NAME = "BOT";
-const PERSON_NAME = "Sajad";
+import {
+    Message,
+    appendMessage,
+    TalkBoxState,
+} from "../../stores/talkBoxSlice";
 
 const TalkBox: React.FC = () => {
     // const [messages, setMessages] = useState<Message[]>([]);
@@ -40,36 +24,15 @@ const TalkBox: React.FC = () => {
         }
     }, [messages]);
 
-    // const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    //   event.preventDefault();
-
-    //   const msgText = msgerInputRef.current?.value;
-    //   if (!msgText) return;
-
-    //   appendMessageToState(PERSON_NAME, PERSON_IMG, "right", msgText);
-    //   msgerInputRef.current!.value = "";
-
-    //   botResponse();
-    // };
-
-    const appendMessageToState = (
-        name: string,
-        img: string,
-        side: string,
-        text: string
-    ) => {
-        const newMessage: Message = { name, img, side, text };
-        dispatch(appendMessage(newMessage)); // Redux action
-    };
-
-    // const botResponse = () => {
-    //   const r = random(0, BOT_MSGS.length - 1);
-    //   const msgText = BOT_MSGS[r];
-    //   const delay = msgText.split(" ").length * 100;
-
-    //   setTimeout(() => {
-    //     appendMessageToState(BOT_NAME, BOT_IMG, "left", msgText);
-    //   }, delay);
+    // const appendMessageToState = (
+    //     playerId: string,
+    //     name: string,
+    //     img: string,
+    //     side: string,
+    //     text: string
+    // ) => {
+    //     const newMessage: Message = { playerId, name, img, side, text };
+    //     dispatch(appendMessage(newMessage)); // Redux action
     // };
 
     const formatDate = (date: Date) => {
@@ -78,10 +41,6 @@ const TalkBox: React.FC = () => {
 
         return `${h.slice(-2)}:${m.slice(-2)}`;
     };
-
-    // const random = (min: number, max: number) => {
-    //   return Math.floor(Math.random() * (max - min) + min);
-    // };
 
     return (
         <TalkDiv>
@@ -96,25 +55,34 @@ const TalkBox: React.FC = () => {
                     </span>
                 </div>
             </header> */}
-
                 <main className="msger-chat" ref={msgerChatRef}>
                     {messages.map((message, index) => (
                         <div className={`msg ${message.side}-msg`} key={index}>
                             <div
                                 className="msg-img"
                                 style={{
-                                    backgroundImage: `url(${message.img})`,
+                                    backgroundImage: `url(${
+                                        message.side === "left"
+                                            ? `./assets/characters/single/${message.img}.png`
+                                            : `./assets/characters/single/${message.img}.png`
+                                    })`,
                                 }}
                             ></div>
 
                             <div className="msg-bubble">
                                 <div className="msg-info">
-                                    <div className="msg-info-name">
-                                        {message.name}
+                                    <div
+                                        className={`msg-info-name ${
+                                            message.side === "left"
+                                                ? "bot-name"
+                                                : ""
+                                        }`}
+                                    >
+                                        {message.side === "left"
+                                            ? message.name
+                                            : message.name}
                                     </div>
-                                    {/* <div className="msg-info-time">
-                                        {formatDate(new Date())}
-                                    </div> */}
+                                    {/* <div className="msg-info-time">{formatDate(new Date())}</div> */}
                                 </div>
 
                                 <div className="msg-text">{message.text}</div>
@@ -122,17 +90,8 @@ const TalkBox: React.FC = () => {
                         </div>
                     ))}
                 </main>
-                {/* <form className="msger-inputarea" onSubmit={handleSubmit}>
-          <input
-            type="text"
-            className="msger-input"
-            placeholder="Enter your message..."
-            ref={msgerInputRef}
-          />
-          <button type="submit" className="msger-send-btn">
-            Send
-          </button>
-        </form> */}
+                {/* { */}
+                {/* // </form>} */}
             </section>
         </TalkDiv>
     );

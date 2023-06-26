@@ -4,7 +4,12 @@ import userSlice from "./userSlice";
 import talkBoxSlice from "./talkBoxSlice";
 import recordSlice from "./recordSlice";
 import sentenceBoxSlice from "./sentenceBoxSlice";
+import correctionSlice from "./reportSlice";
+import scoreSlice  from "./scoreSlice";
+import rtcSlice from "./socketSlice";
 import { useDispatch } from "react-redux";
+import userboxSlice from "./userboxslice";
+import reportOnoffSlice from "./reportOnoffSlice";
 
 export const store = configureStore({
     reducer: {
@@ -13,6 +18,11 @@ export const store = configureStore({
         talkBox: talkBoxSlice,
         record: recordSlice,
         sentenceBox: sentenceBoxSlice,
+        correction: correctionSlice,
+        score: scoreSlice,
+        rtc: rtcSlice,
+        userbox: userboxSlice,
+        reportonoff: reportOnoffSlice
     },
 });
 

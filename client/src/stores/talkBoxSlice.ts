@@ -1,11 +1,12 @@
 // talkBoxSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface Message {
-  name: string;
-  img: string;
-  side: string;
-  text: string;
+export interface Message {
+    playerId: string;
+    name: string;
+    img: string;
+    side: string;
+    text: string;
 }
 
 export interface TalkBoxState {
@@ -25,7 +26,7 @@ export const talkBoxSlice = createSlice({
         },
         clearMessages: (state) => {
             state.messages = [];
-        }
+        },
     },
 });
 

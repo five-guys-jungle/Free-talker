@@ -4,7 +4,6 @@ import cors from "cors";
 import axios from "axios";
 import path from "path";
 import { Router } from "express";
-import { upload, interact, grammerCorrection } from "./controllers/interaction";
 import { socketEventHandler } from "./controllers/gameSocket";
 import { interactSocketEventHandler } from "./controllers/interactSocket";
 import { freedialogsocketEventHandler } from "./controllers/voiceController";   
@@ -13,9 +12,11 @@ import { Server as SocketIOServer, Socket } from "socket.io";
 import { connectDB } from "./database/db";
 import { connectDBLocal } from "./database/dbLocal";
 import authRouter from "./routes/authRouter";
+import saveRouter from "./routes/saveDialogRouter";
 
 import { signup, login } from "./controllers/userController";
 import dotenv from "dotenv";
+import {createNamespace} from "./controllers/freeDialogSocket";
 // // import router from "./routes/basicRouter";
 // // import http from 'http'; // Load in http module
 
@@ -37,23 +38,20 @@ const app = express();
 
 const server = http.createServer(app);
 const io = new SocketIOServer(server);
-export const IO = require("socket.io")(server, {
-	cors: {
-		origin: "http://localhost:3000",
-		methods: [ "GET", "POST" ]
-	}
-})
 
 io.on("connection", socketEventHandler);
-const interactionSocket = io.of(`/interaction`);
-const freedialogSocket = IO.of(`/freedialog`);
 
-const allowedOrigins = [
-    "http://127.0.0.1:3000",
-    "http://127.0.0.1:5000",
-    "http://localhost:3000",
-    "http://localhost:5000",
-];
+const interactionSocket = io.of(`/interaction`);
+interactionSocket.on("connection", interactSocketEventHandler);
+createNamespace(io, "/freedialog");
+// const freedialogSocket = io.of(`/freedialog`);
+
+// const allowedOrigins = [
+//     "http://127.0.0.1:3000",
+//     "http://127.0.0.1:5000",
+//     "http://localhost:3000",
+//     "http://localhost:5000",
+// ];
 
 app.use(cors());
 app.use(express.json());
@@ -70,12 +68,12 @@ app.get("/audio/npc_audio/*", function (req: Request, res: Response) {
     res.sendFile(path.join(__dirname, "audio/npc_audio", req.params[0]));
 });
 
-interactionSocket.on("connection", interactSocketEventHandler);
-freedialogSocket.on("connection", freedialogsocketEventHandler);
+// freedialogSocket.on("connection", freedialogsocketEventHandler);
 // app.post("/interact", upload.single("audio"), interact);
 // app.use(Router);
 app.use("/auth", authRouter);
 
+app.use("/save", saveRouter);
 // app.post("/signup", signup);
 // app.post("/login", login);
 
