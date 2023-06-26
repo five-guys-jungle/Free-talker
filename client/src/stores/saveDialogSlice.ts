@@ -82,11 +82,25 @@ export const loadDialog = async (state: Dialog) => {
     };
 
     try {
-        console.log("try");
+        console.log("loading Dialog....");
         const response = await axios.post(`${DB_URL}/save/loadDialog`, body);
-        // console.log(response.data.existingDialogs)
 
-        return response.data.existingDialogs;
+        let existingDialogs = response.data.existingDialogs;
+        existingDialogs.sort((dialogA: any, dialogB: any) => {
+            const timestampA = Date.parse(dialogA.timestamp);
+            const timestampB = Date.parse(dialogB.timestamp);
+
+            if (timestampA > timestampB) {
+                return -1;
+            } else if (timestampA < timestampB) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+
+        // console.log(existingDialogs)
+        return existingDialogs;
     } catch (e) {
         console.log("!!! delete error");
     }

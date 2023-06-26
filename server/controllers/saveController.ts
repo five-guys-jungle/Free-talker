@@ -29,13 +29,6 @@ export const saveDialog = async (req: Request, res: Response) => {
             corrections,
             messages,
         } = req.body;
-        // console.log(`userId: ${userId}`);
-        // console.log(`timestamp: ${timestamp}`);
-        // console.log(`nickname: ${nickname}`);
-        // console.log(`npc: ${npc}`);
-        // console.log(`userTexture: ${userTexture}`);
-        // console.log(`score: ${score}`);
-        // console.log(`corrections: ${JSON.stringify(corrections)}`);
         console.log(`messages: ${JSON.stringify(messages)}`);
 
         const item = {
