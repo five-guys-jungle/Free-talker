@@ -1046,7 +1046,7 @@ export default class USAScene extends Phaser.Scene {
         npc8.sprite = this.physics.add.sprite(npc8.x, npc8.y, npc8.texture);
         this.npcList.push(npc8);
 
-        let interact_sprite: npcInfo = {
+        let interact_sprite1: npcInfo = {
             name: "coach_park",
             x: 1485,
             y: 1157,
@@ -1054,8 +1054,19 @@ export default class USAScene extends Phaser.Scene {
             sprite: null,
             role: "freeTalkingPlace",
         };
-        interact_sprite.sprite = this.physics.add.sprite(interact_sprite.x, interact_sprite.y, interact_sprite.texture);
-        this.npcList.push(interact_sprite);
+        interact_sprite1.sprite = this.physics.add.sprite(interact_sprite1.x, interact_sprite1.y, interact_sprite1.texture);
+        this.npcList.push(interact_sprite1);
+
+        let interact_sprite2: npcInfo = {
+            name: "chairMart",
+            x: 2603,
+            y: 1362,
+            texture: "chairMart",
+            sprite: null,
+            role: "rolePlayingPlace",
+        };
+        interact_sprite2.sprite = this.physics.add.sprite(interact_sprite2.x, interact_sprite2.y, interact_sprite2.texture);
+        this.npcList.push(interact_sprite2);
     }
     gameSocketEventHandler(initial: boolean = true) {
         this.socket = io(serverUrl);
