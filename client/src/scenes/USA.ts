@@ -654,12 +654,13 @@ export default class USAScene extends Phaser.Scene {
                             }
                         } else {
                             countUserSpeech = 0;
+                            valve_E = true;
                             store.dispatch(setScore({ score: 0 }));
                             store.dispatch(clearCorrections());
                             store.dispatch(clearMessages());
                             store.dispatch(clearSentences());
                             store.dispatch(openUSA());
-                            valve_E = true;
+                            
                         }
                     }
                     break;

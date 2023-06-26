@@ -72,9 +72,9 @@ export function dialogsocketEventHandler(socket: Socket) {
 	socket.on("callEnded", () => {
 	  socket.broadcast.emit("otherusercallended");
 	});
-
-	socket.on("leaveCallEvent", () => {
-		socket.broadcast.emit("otheruserleave");
-	  });
-  }
+}
+// 	socket.on("leaveCallEvent", () => {
+// 		socket.broadcast.emit("otheruserleave");
+// 	  });
+//   }
   
