@@ -5,7 +5,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import styled from "styled-components";
 
-const RecommendBox: React.FC = () => {
+const SituationBox: React.FC = () => {
   const [value, setValue] = React.useState(0);
   const ref = React.useRef<HTMLDivElement>(null);
   const [messages, setMessages] = React.useState(() => refreshMessages());
@@ -18,7 +18,7 @@ const RecommendBox: React.FC = () => {
   return (
     
     <Box sx={{ width: '70%', height: '70%', pb: 20 }}>
-      <Title>Free talker recommend the expression in Cafe</Title>
+      <Title>상황 추천</Title>
       <Box sx={{ overflow: 'auto', height: '100%',backgroundColor: '#e3f2fd' }} ref={ref}>
         <List>
           {messages.map(({ primary, secondary }, index) => (
@@ -32,14 +32,14 @@ const RecommendBox: React.FC = () => {
   );
 };
 
-export default RecommendBox;
+export default SituationBox;
 
-interface RecommendedExample {
+interface SituationExample {
   primary: string;
   secondary: string;
 }
 
-const messageExamples: RecommendedExample[] = [
+const messageExamples: SituationExample[] = [
   {
     primary: 'What do you recommend from the menu?',
     secondary: '어떤 메뉴를 추천해주시겠어요?',
@@ -71,7 +71,7 @@ const messageExamples: RecommendedExample[] = [
 ];
 
 // 랜덤으로 스크립트 추천
-function refreshMessages(): RecommendedExample[] {
+function refreshMessages(): SituationExample[] {
   const shuffledExamples = [...messageExamples].sort(() => 0.5 - Math.random());
   return shuffledExamples.slice(0, 3);
 }

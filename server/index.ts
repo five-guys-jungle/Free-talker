@@ -6,7 +6,7 @@ import path from "path";
 import { Router } from "express";
 import { socketEventHandler } from "./controllers/gameSocket";
 import { interactSocketEventHandler } from "./controllers/interactSocket";
-import { freedialogsocketEventHandler } from "./controllers/voiceController";   
+import { dialogsocketEventHandler } from "./controllers/voiceController";   
 import { Server as SocketIOServer, Socket } from "socket.io";
 
 import { connectDB } from "./database/db";
@@ -16,7 +16,7 @@ import saveRouter from "./routes/saveDialogRouter";
 
 import { signup, login } from "./controllers/userController";
 import dotenv from "dotenv";
-import {createNamespace} from "./controllers/freeDialogSocket";
+import {createNamespace} from "./controllers/DialogSocket";
 // // import router from "./routes/basicRouter";
 // // import http from 'http'; // Load in http module
 
@@ -44,6 +44,7 @@ io.on("connection", socketEventHandler);
 const interactionSocket = io.of(`/interaction`);
 interactionSocket.on("connection", interactSocketEventHandler);
 createNamespace(io, "/freedialog");
+createNamespace(io, "/userdialog");
 // const freedialogSocket = io.of(`/freedialog`);
 
 // const allowedOrigins = [
