@@ -39,7 +39,6 @@ const Game = () => {
         {mode === FREEDIALOG && <FreeDialog />}
         {mode === REPORT && <Report/>}
         {mode === AIRPORT || mode === USA && <ReportBook/>}
-        <ReportBook/>
         <Keyguider/>
         </BackgroundDiv>;
 };
