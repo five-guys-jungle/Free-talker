@@ -117,23 +117,23 @@ const ReportBook = (data: any) => {
         });
 
         if (data === undefined) {
-            console.log(`data : ${data}`);
+            // console.log(`data : ${data}`);
 
-            console.log(openbook);
+            // console.log(openbook);
             setOpenbook(!openbook);
 
             dialogsArr.dialogs = [];
-            console.log(dialogsArr.dialogs);
+            // console.log(dialogsArr.dialogs);
 
-            dialogsArr.dialogs.map((dialog) => console.log(dialog.timestamp));
+            // dialogsArr.dialogs.map((dialog) => console.log(dialog.timestamp));
         } else {
             dialogsArr.dialogs = data;
-            console.log(openbook);
+            // console.log(openbook);
             setOpenbook(!openbook);
 
-            console.log(dialogsArr.dialogs);
+            // console.log(dialogsArr.dialogs);
 
-            dialogsArr.dialogs.map((dialog) => console.log(dialog.timestamp));
+            // dialogsArr.dialogs.map((dialog) => console.log(dialog.timestamp));
         }
         // store.dispatch(openReportBook());
     };
