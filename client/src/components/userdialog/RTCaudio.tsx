@@ -249,19 +249,31 @@ const UserDialog = () => {
 				  >
 					<PhoneIcon fontSize="large" />
 				  </IconButton>
-				  <h4>통화를 종료하면 맵으로 돌아갑니다.</h4>
+				  <h4>(카페 직원)이 되어 대화를 시작해 보세요</h4>
 				</div>
 			  ) : (
+				<div
+				  className="caller"
+				  style={{
+					display: "inline-flex",
+					alignItems: "center",
+					bottom: "5px",
+				  }}
+				>
+					
 				<IconButton
 				  className="call-btn"
 				  color="primary"
 				  aria-label="call"
 				  onClick={() => callUser(idToCall)}
 				>
+					
 				  <PhoneIcon fontSize="large" />
 				</IconButton>
+				<h4>통화를 걸어 다른 유저와 상황극을 시작해 보세요</h4>
+				</div>
 			  )}
-	
+			  
 			  {receivingCall && !callAccepted && (
 				<div
 				  className="caller"

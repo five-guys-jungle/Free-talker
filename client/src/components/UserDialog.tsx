@@ -16,7 +16,6 @@ const Container = styled.div`
 const LeftSection = styled.section`
   flex: 1;
   height: 100%;
-  overflow: auto;
 `;
 
 const UpperSection = styled.div`
@@ -70,8 +69,8 @@ const UserDialog: React.FC = () => {
   return (
     <Container>
       <LeftSection>
-        <UserBox />
         <RTCaudio />
+        <UserBox />
       </LeftSection>
       <RightSection>
         <UpperSection>

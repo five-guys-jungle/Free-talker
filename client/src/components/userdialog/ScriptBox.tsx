@@ -16,7 +16,7 @@ const ScriptBox: React.FC = () => {
   }, [value, setMessages]);
 
   return (
-    <Box sx={{ width: '50%', height: '70%', pb: 20 }}>
+    <Box sx={{ width: '70%', height: '70%', pb: 20 }}>
       <Title>많이 사용하는 문장</Title>
       <Box sx={{ overflow: 'auto', height: '100%', backgroundColor: '#e3f2fd' }} ref={ref}>
         <List>
