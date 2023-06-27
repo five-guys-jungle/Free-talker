@@ -19,6 +19,8 @@ import { IconButton } from "@material-ui/core";
 import { scoreState } from "../stores/scoreSlice";
 import { Pagination, Navigation } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
+import 'swiper/css';
+import 'swiper/css/pagination';
 import { RIGHT } from "phaser";
 
 // interface NPCDialogProps {
@@ -459,6 +461,12 @@ const ReportBook = (data: any) => {
                   } */}
                                                     <div className="corrections">
                                                         <span>Corrections</span>
+
+                                                        <Swiper
+                                                        style={{ width: "440px" , height:"100px", marginTop:"35px", textAlign:"center"}}
+                                                        modules={[Pagination]}
+                                                        pagination={true}
+                                                        >
                                                         <div className="corrections-list">
                                                             {dialog.corrections
                                                                 .length !== 0 &&
@@ -467,6 +475,8 @@ const ReportBook = (data: any) => {
                                                                         correction,
                                                                         index
                                                                     ) => (
+                                                                        <SwiperSlide key={index}>
+                                                                        {
                                                                         <div
                                                                             className="correction-div"
                                                                             key={
@@ -489,10 +499,14 @@ const ReportBook = (data: any) => {
                                                                                 }
                                                                             </p>
                                                                         </div>
+                                                                    }
+                                                                    </SwiperSlide>
                                                                     )
                                                                 )}
                                                         </div>
+                                                        </Swiper>
                                                     </div>
+
                                                     <div className="talks">
                                                         {dialog.messages
                                                             .length !== 0 &&

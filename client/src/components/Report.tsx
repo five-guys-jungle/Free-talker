@@ -21,6 +21,10 @@ import {
   setCanRequestRecommend,
 } from "../stores/sentenceBoxSlice";
 import { reportOn, reportOff } from "../stores/reportOnoffSlice"
+import { Pagination, Navigation } from "swiper";
+import { Swiper, SwiperSlide } from "swiper/react";
+import 'swiper/css';
+import 'swiper/css/pagination';
 
 // interface NPCDialogProps {
 //     initialDialog?: string;
@@ -205,17 +209,30 @@ const Report = (data:any) => {
                             </>)
                         } */}
                         <div className="corrections"><span>Corrections</span>
+                        <Swiper
+                        style={{ width: "440px" , height:"100px", marginTop:"35px", textAlign:"center"}}
+                        modules={[Navigation]}
+                        navigation={true}
+                        >
+                        
                             <div className="corrections-list">
                                 {corrections.length!==0 && 
                                 corrections.map((correction, index) => (
-                                  <div className="correction-div" key={index}>
+                                  <SwiperSlide key={index}>
+                                  {
+                                  <div className="correction-div">
                                     <p>User Sentence : {correction.original}</p>
                                     <p>Corrected Sentence: {correction.correction}</p>
                                   </div>
+                                  }
+                                  </SwiperSlide>
                                 ))
                                 }
                             </div>
+                        
+                        </Swiper>
                         </div>
+
                         <div className="talks">
                             {messages.length!==0 &&
                                 messages.map((message, index) => (
