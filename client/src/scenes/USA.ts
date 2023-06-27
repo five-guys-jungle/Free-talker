@@ -464,6 +464,44 @@ export default class USAScene extends Phaser.Scene {
                                     );
 
                                     this.interacting = true;
+                                    this.socket2!.emit("dialogStart", npcInfo.name);
+                                this.isAudioPlaying = true;
+                                // TODO : npcFirstResponse 받고, audio 재생하는 동안 E, R키 비활성화 및 '응답중입니다. 잠시만 기다려주세요' 출력
+                                this.socket2!.on("npcFirstResponse", (response:any) => {
+                                    console.log("npcFirstResponse event");
+                                    store.dispatch(
+                                        setMessage(
+                                            "응답중입니다. 잠시만 기다려주세요"
+                                        )
+                                    );
+                                    store.dispatch(setCanRequestRecommend(false));
+                                    store.dispatch(
+                                        appendMessage({
+                                            playerId: this.playerId,
+                                            name: npcInfo.name,
+                                            img: npcInfo.texture,
+                                            // img: "",
+                                            side: "left",
+                                            text: response.assistant,
+                                        })
+                                    );
+                                    const audio = new Audio(
+                                        response.audioUrl
+                                    );
+                                    audio.onended = () => {
+                                        console.log("audio.onended");
+                                        this.isAudioPlaying = false;
+                                        store.dispatch(
+                                            setMessage(
+                                                "R키를 눌러 녹음을 시작하세요"
+                                            )
+                                        );
+                                        store.dispatch(
+                                            setCanRequestRecommend(true)
+                                        );
+                                    };
+                                    audio.play();
+                                })
                                     console.log(
                                         "connect, interaction socket.id: ",
                                         this.socket2!.id

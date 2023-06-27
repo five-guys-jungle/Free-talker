@@ -20,7 +20,7 @@ import NPCDialog from "./NPCDialog";
 import FreeDialog from "./FreeDialog";
 import Report from "./Report";  
 import ReportBook from "./Reportbook";  
-import Keyguider from "./KeyGuid";
+import Keyguider from "./KeyGuide";
 
 const Game = () => {
     // socket intialization, connection
