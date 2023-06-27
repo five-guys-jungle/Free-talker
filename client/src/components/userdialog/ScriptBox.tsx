@@ -25,7 +25,8 @@ const ScriptBox: React.FC = () => {
         <List>
           {recommendations.map((recommendation: Recommendation) => (
             <ListItem key={recommendation._id}>
-              <ListItemText primary={recommendation.recommendation} />
+              <ListItemText primary={recommendation.recommendation} 
+              style={{ fontFamily: "Arial", fontWeight: "bold", wordBreak: "break-word" }}/>
             </ListItem>
           ))}
         </List>
