@@ -22,6 +22,7 @@ import FreeDialog from "./FreeDialog";
 import Report from "./Report";  
 import ReportBook from "./Reportbook";  
 import Keyguider from "./KeyGuide";
+import Guider from "./Guide";
 
 const Game = () => {
     // socket intialization, connection
@@ -42,6 +43,7 @@ const Game = () => {
         {mode === FREEDIALOG && <FreeDialog />}
         {mode === REPORT && <Report/>}
         {(mode === AIRPORT || mode === USA) && <ReportBook/>}
+        <Guider/>
         <Keyguider/>
         </BackgroundDiv>;
 };

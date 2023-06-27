@@ -82,6 +82,7 @@ export default class USAScene extends Phaser.Scene {
     beforeSleepY: number = this.initial_y;
     interactionSprite: Phaser.Physics.Arcade.Sprite | null = null;
     interactionSpriteE: Phaser.Physics.Arcade.Sprite | null = null;
+    audio: HTMLAudioElement | null = null;
 
     constructor() {
         super("USAScene");
@@ -537,7 +538,7 @@ export default class USAScene extends Phaser.Scene {
                                     this.interacting = true;
                                     this.socket2!.emit("dialogStart", npcInfo.name);
                                 this.isAudioPlaying = true;
-                                // TODO : npcFirstResponse 받고, audio 재생하는 동안 E, R키 비활성화 및 '응답중입니다. 잠시만 기다려주세요' 출력
+                                // TODO : npcFirstResponse 받고, audio 재생하는 동안 E, D키 비활성화 및 '응답중입니다. 잠시만 기다려주세요' 출력
                                 this.socket2!.on("npcFirstResponse", (response:any) => {
                                     console.log("npcFirstResponse event");
                                     store.dispatch(
@@ -556,22 +557,22 @@ export default class USAScene extends Phaser.Scene {
                                             text: response.assistant,
                                         })
                                     );
-                                    const audio = new Audio(
+                                    this.audio = new Audio(
                                         response.audioUrl
                                     );
-                                    audio.onended = () => {
+                                    this.audio.onended = () => {
                                         console.log("audio.onended");
                                         this.isAudioPlaying = false;
                                         store.dispatch(
                                             setMessage(
-                                                "R키를 눌러 녹음을 시작하세요"
+                                                "D키를 눌러 녹음을 시작하세요"
                                             )
                                         );
                                         store.dispatch(
                                             setCanRequestRecommend(true)
                                         );
                                     };
-                                    audio.play();
+                                    this.audio.play();
                                 })
                                     console.log(
                                         "connect, interaction socket.id: ",
@@ -597,7 +598,7 @@ export default class USAScene extends Phaser.Scene {
                                                 setTimeout(() => {
                                                     store.dispatch(
                                                         setMessage(
-                                                            "R키를 눌러 녹음을 시작하세요"
+                                                            "D키를 눌러 녹음을 시작하세요"
                                                         )
                                                     );
                                                     store.dispatch(
@@ -657,22 +658,22 @@ export default class USAScene extends Phaser.Scene {
                                                 response
                                             );
                                             // this.isAudioPlaying = true;
-                                            const audio = new Audio(
+                                            this.audio = new Audio(
                                                 response.audioUrl
                                             );
-                                            audio.onended = () => {
+                                            this.audio.onended = () => {
                                                 console.log("audio.onended");
                                                 this.isAudioPlaying = false;
                                                 store.dispatch(
                                                     setMessage(
-                                                        "R키를 눌러 녹음을 시작하세요"
+                                                        "D키를 눌러 녹음을 시작하세요"
                                                     )
                                                 );
                                                 store.dispatch(
                                                     setCanRequestRecommend(true)
                                                 );
                                             };
-                                            audio.play();
+                                            this.audio.play();
                                         }
                                     );
 
@@ -783,7 +784,7 @@ export default class USAScene extends Phaser.Scene {
             }
         });
         // 녹음 데이터를 보내고 응답을 받는 키 설정
-        this.input.keyboard!.on("keydown-R", async () => {
+        this.input.keyboard!.on("keydown-D", async () => {
             if (!this.isNpcSocketConnected) {
                 console.log("NPC와 연결되지 않았습니다.");
                 return;
@@ -816,7 +817,7 @@ export default class USAScene extends Phaser.Scene {
                         if (this.recorder2.state === "recording") {
                             store.dispatch(setRecord(true));
                             store.dispatch(
-                                setMessage("R키를 눌러 녹음을 시작하세요")
+                                setMessage("D키를 눌러 녹음을 시작하세요")
                             );
                             this.isAudioPlaying = true;
                             this.recorder2!.stop();
@@ -825,7 +826,7 @@ export default class USAScene extends Phaser.Scene {
                             store.dispatch(setRecord(false));
                             store.dispatch(
                                 setMessage(
-                                    "녹음 중입니다. R키를 눌러 녹음을 종료하세요"
+                                    "녹음 중입니다. D키를 눌러 녹음을 종료하세요"
                                 )
                             );
                             this.recorder2!.start();
@@ -834,6 +835,18 @@ export default class USAScene extends Phaser.Scene {
 
                     break;
                 }
+            }
+        });
+        // NPC의 음성 재생을 스킵하는 기능
+        this.input.keyboard!.on("keydown-S", async () => {
+            console.log("S key pressed, isAudioPlaying: ", this.isAudioPlaying);
+            if (this.isAudioPlaying) {
+                this.audio?.pause();
+                this.isAudioPlaying = false;
+                store.dispatch(setMessage("D키를 눌러 녹음을 시작하세요"));
+                store.dispatch(setCanRequestRecommend(true));
+                this.audio = new Audio();
+                this.audio = null
             }
         });
     }
