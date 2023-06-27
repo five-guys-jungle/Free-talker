@@ -298,8 +298,8 @@ const RecDiv = styled.div`
     }
 
     svg {
-        width: 70%;
-        height: 100%;
+        width: 65vh;
+        margin-top:-10vh;
         // visibility: hidden;
         object-fit: contain;
         // cursor: pointer;

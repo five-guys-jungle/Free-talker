@@ -84,7 +84,7 @@ const SentenceList: React.FC = () => {
         <div className="container" style={{ height: "80%" }}>
             <DialogTitle>You can say something like this</DialogTitle>
             {canRequestRecommend && (
-                <Button onClick={handleClick} isOpen={isOuterDivVisible} longPress={isLongPress}>
+                <Button onClick={handleClick} isOpen={isOuterDivVisible} longPress={isLongPress} style={{position:"absolute"}}>
                     추천 문장 보기
                 </Button>)}
             {isOuterDivVisible && (
@@ -137,16 +137,16 @@ const SentenceOuterDiv = styled.div`
     display: flex; // Add this
     background-color: #c1bdbd;
     flex: 1;
-    width: 30vw;
-    height: 100%;
-    margin: 0 auto;
+    width: 40vw;
+    height: 50vh;
+    margin: 60px auto 0px;
     flex-direction: column; // Add this
-    padding: 0 10%; /* 화면 양쪽에 10% 공간을 추가 */
+    padding: 0 0%; /* 화면 양쪽에 10% 공간을 추가 */
     justify-content: center;
     // align-items: center;
     // padding-bottom: 10%;
     // @media (min-width: 600px) {
-    // padding: 0 10%; /* 화면 너비가 600px 이상일 때 양쪽에 10% 공간을 추가 */
+    // padding: 0 0%; /* 화면 너비가 600px 이상일 때 양쪽에 10% 공간을 추가 */
     // }
 
     // @media (min-width: 1200px) {
@@ -181,14 +181,16 @@ const SentenceDiv = styled.div`
         // width: fit-content; // Adjust this
         opacity: 1.0;
         // width: 600px;
-        height: 45px;
-        margin: 20px auto;
+        height: 7vh;
+        width: 32vw;
+        margin: 2vh auto;
         // margin: 0 auto; // Adjust this
         border-top: solid 2px #fff;
         border-radius: 8px;
         padding: 20px;
         box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
             0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        overflow: auto;
     }
 
     .field {
@@ -213,7 +215,7 @@ const SentenceDiv = styled.div`
 
     .value {
         color: #4a5568;
-        font-size: 1.2rem;
+        font-size: 2.5vh;
     }
 
     .text .value {

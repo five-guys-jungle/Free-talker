@@ -178,6 +178,7 @@ const TalkDiv = styled.div`
     // }
 
     .msger-chat {
+        font-size: 3vh;
         flex: 1;
         overflow-y: auto;
         padding: 10px;
@@ -230,7 +231,7 @@ const TalkDiv = styled.div`
     }
 
     .msg-bubble {
-        max-width: 450px;
+        max-width: 30vw;
         padding: 15px;
         border-radius: 15px;
         background: #ececec;

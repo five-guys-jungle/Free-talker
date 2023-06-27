@@ -30,7 +30,7 @@ import {
     setCanRequestRecommend,
 } from "../stores/sentenceBoxSlice";
 import { setRecord, setMessage, setMessageColor } from "../stores/recordSlice";
-import { reportOn, reportOff } from "../stores/reportOnoffSlice";
+import { reportOn, reportOff} from "../stores/reportOnoffSlice";
 import { handleScene } from "./common/handleScene";
 import { RootState } from "../stores/index";
 
