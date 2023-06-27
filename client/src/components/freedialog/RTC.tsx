@@ -278,7 +278,7 @@ const FreeDialog = () => {
 						}}>
 							{stream && <video playsInline muted ref={myVideo} autoPlay style={videoStyle} />}
 						</div>
-						<div className="video" style={{ 
+						{/* <div className="video" style={{ 
 							display: "flex", 
 							justifyContent: "center", 
 							alignItems: "center",
@@ -289,8 +289,8 @@ const FreeDialog = () => {
 								<video playsInline ref={userVideo} autoPlay style={{width: "50%", margin: "auto"  }} /> :
 								(stream && <video playsInline muted ref={myVideo} autoPlay style={videoStyle} />)
 							}
-						</div>
-						{/* <div className="video" style={{ 
+						</div> */}
+						<div className="video" style={{ 
 							display: "flex", 
 							justifyContent: "center", 
 							alignItems: "center",
@@ -300,7 +300,7 @@ const FreeDialog = () => {
 							{callAccepted && !callEnded ?
 								<video playsInline ref={userVideo} autoPlay style={videoStyle} /> :
 								null}
-						</div> */}
+						</div>
 
 
 					</div>
@@ -318,6 +318,6 @@ export default FreeDialog;
 const videoStyle = {
 	width: '50%',
 	margin: 'auto',
-	border: '5px solid #0D92C8', // 테두리 스타일 및 색상 설정
+	border: '10px solid #0D92C8', // 테두리 스타일 및 색상 설정
 	borderRadius: '50px', // 모서리를 10px로 둥글게 설정
   };

@@ -171,6 +171,11 @@ const RTCaudio = () => {
 			setCallEnded(true);
 			if (connectionRef.current) {
 				connectionRef.current.destroy();
+				const clickEvent = new CustomEvent('exitcall', {
+							detail: { message: "exitcall"}
+						});
+						window.dispatchEvent(clickEvent);
+						socket.current!.disconnect();
 			}
 		});
 		return () => {
