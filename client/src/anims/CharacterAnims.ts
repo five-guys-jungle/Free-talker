@@ -122,4 +122,10 @@ export const createCharacterAnims = (
         frameRate: 7,
         repeat: 0
     });
+    anims.create({
+        key: 'arrowDownAnim',
+        frames: anims.generateFrameNumbers('arrowDown', { start: 0, end: 5 }),
+        frameRate: 5,
+        repeat: -1
+    });
 };

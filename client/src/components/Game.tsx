@@ -20,6 +20,7 @@ import NPCDialog from "./NPCDialog";
 import FreeDialog from "./FreeDialog";
 import Report from "./Report";  
 import ReportBook from "./Reportbook";  
+import Keyguider from "./KeyGuid";
 
 const Game = () => {
     // socket intialization, connection
@@ -36,9 +37,9 @@ const Game = () => {
     return <BackgroundDiv>
         {(mode === NPCDIALOG && reportonoff === false) && <NPCDialog />}
         {mode === FREEDIALOG && <FreeDialog />}
+        {mode === REPORT && <Report/>}
         {(mode === AIRPORT || mode === USA) && <ReportBook/>}
-        {(mode === REPORT && reportonoff === true) && <Report/>}
-        
+        <Keyguider/>
         </BackgroundDiv>;
 };
 
