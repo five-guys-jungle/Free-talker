@@ -325,7 +325,6 @@ const RTCaudio = () => {
 				  >
 					<PhoneIcon fontSize="large" />
 				  </IconButton>
-				  <h4>({playerRole})이 되어 대화를 시작해 보세요1</h4>
 				</div>
 				
 			  ) : (
