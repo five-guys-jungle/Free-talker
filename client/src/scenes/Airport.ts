@@ -30,7 +30,7 @@ import {
     setCanRequestRecommend,
 } from "../stores/sentenceBoxSlice";
 import { setRecord, setMessage, setMessageColor } from "../stores/recordSlice";
-import { reportOn, reportOff} from "../stores/reportOnoffSlice";
+import { reportOn, reportOff } from "../stores/reportOnoffSlice";
 import { handleScene } from "./common/handleScene";
 import { RootState } from "../stores/index";
 
@@ -84,6 +84,7 @@ export default class AirportScene extends Phaser.Scene {
     interactionSprite: Phaser.Physics.Arcade.Sprite | null = null;
     interactionSpriteE: Phaser.Physics.Arcade.Sprite | null = null;
     audio: HTMLAudioElement | null = null;
+    isReportOn: boolean = false;
 
     constructor() {
         super("AirportScene");
@@ -237,10 +238,15 @@ export default class AirportScene extends Phaser.Scene {
             console.log("grammarCorrection event data: ", data);
             grammarCorrections.push(data);
         };
+        window.addEventListener('reportClose', () => {
+            console.log("reportClose event listener");
+            this.isReportOn = false;
+        });
         this.input.keyboard!.on("keydown-E", async () => {
             if (this.player1 === null || this.player1 === undefined) {
                 return;
             }
+
             for (let npcInfo of this.npcList) {
                 if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y,
                     npcInfo.x, npcInfo.y) < 100) {
@@ -344,6 +350,10 @@ export default class AirportScene extends Phaser.Scene {
                             return;
                         }
 
+                        if (this.isReportOn) {
+                            return;
+                        }
+
                         this.player1!.setVelocity(0, 0);
                         this.player1!.anims.play(
                             `${this.player1!.texture.key}_idle_down`,
@@ -379,7 +389,7 @@ export default class AirportScene extends Phaser.Scene {
                                 this.socket2!.emit("dialogStart", npcInfo.name);
                                 this.isAudioPlaying = true;
                                 // TODO : npcFirstResponse 받고, audio 재생하는 동안 E, D키 비활성화 및 '응답중입니다. 잠시만 기다려주세요' 출력
-                                this.socket2!.on("npcFirstResponse", (response:any) => {
+                                this.socket2!.on("npcFirstResponse", (response: any) => {
                                     console.log("npcFirstResponse event");
                                     store.dispatch(
                                         setMessage(
@@ -414,8 +424,8 @@ export default class AirportScene extends Phaser.Scene {
                                     };
                                     this.audio.play();
                                 })
-                                
-                                
+
+
 
 
 
@@ -455,7 +465,7 @@ export default class AirportScene extends Phaser.Scene {
                                         if (
                                             response === "" ||
                                             response ===
-                                                "convertSpeechToText Error" ||
+                                            "convertSpeechToText Error" ||
                                             response === "chain call error"
                                         ) {
                                             store.dispatch(
@@ -625,7 +635,7 @@ export default class AirportScene extends Phaser.Scene {
                                 score = ((countUserSpeech - grammarCorrections.length) /
                                     countUserSpeech) * 100;
                             }
-                            
+
                             store.dispatch(setScore({ score: score }));
                             grammarCorrections.forEach((data, index) => {
                                 console.log("grammarCorrection data: ", data);
@@ -636,7 +646,7 @@ export default class AirportScene extends Phaser.Scene {
                                     })
                                 );
                             });
-
+                            this.isReportOn = true;
                             store.dispatch(openReport());
                             store.dispatch(reportOn());
                             grammarCorrections = [];
