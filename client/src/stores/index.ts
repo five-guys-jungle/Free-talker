@@ -10,6 +10,7 @@ import rtcSlice from "./socketSlice";
 import { useDispatch } from "react-redux";
 import userboxSlice from "./userboxslice";
 import reportOnoffSlice from "./reportOnoffSlice";
+import userDialogSlice from './userDialogSlice';
 
 export const store = configureStore({
     reducer: {
@@ -22,7 +23,8 @@ export const store = configureStore({
         score: scoreSlice,
         rtc: rtcSlice,
         userbox: userboxSlice,
-        reportonoff: reportOnoffSlice
+        reportonoff: reportOnoffSlice,
+        userDialog: userDialogSlice,
     },
 });
 
