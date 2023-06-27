@@ -33,7 +33,7 @@ function App() {
 
     return (
         <HoverDiv>
-            {mode === START || mode === LOGIN ? (
+            {/* {mode === START || mode === LOGIN ? (
                 !logined && <Start />
             ) : mode === AIRPORT ||
               mode === USA ||
@@ -44,10 +44,10 @@ function App() {
                 <Game />
             ) : (
                 <></>
-            )}
+            )} */}
             {/* <NPCDialog/> */}
             {/* <UserDialog /> */}
-            {/* <FreeDialog /> */}
+            <FreeDialog />
         </HoverDiv>
     );
 }

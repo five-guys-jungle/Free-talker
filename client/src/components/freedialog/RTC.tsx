@@ -230,26 +230,26 @@ const FreeDialog = () => {
 							<IconButton color="secondary" aria-label="endcall" onClick={leaveCall}>
 								<PhoneIcon fontSize="large" /> 
 							</IconButton>
-							<h4>통화를 종료하면 맵으로 돌아갑니다.</h4>
+							<h4>통화가 종료되면 맵으로 돌아갑니다.</h4>
 							</div>
 						) : (
-							
+							<div className="caller" style={{ display: 'inline-flex', alignItems: 'center', bottom : '5px' }}>
 						  	<IconButton className="call-btn" color="primary" aria-label="call" onClick={() => callUser(idToCall)}>
 						  		<PhoneIcon fontSize="large" />
 						  	</IconButton>
-							
+							<h2>전화를 걸면 화상 통화가 시작됩니다</h2>
+							</div>
 						  )} 
 						  
 						{receivingCall && !callAccepted && (
 							<div className="caller" style={{ display: 'inline-flex', alignItems: 'center', bottom : '5px' }}>
-								<h1> {name} is calling... </h1>
-								<Button variant="contained" color="primary" onClick={answerCall}>
+								<h2> 전화를 받아주세요 ... </h2>
+								<Button color="primary" onClick={answerCall} style={{marginLeft: '10px'}}>
 									Answer
 								</Button>
 								
 							</div>
 						)}
-						{idToCall}  
 						</div>
 
 				</div>
@@ -276,7 +276,19 @@ const FreeDialog = () => {
 							height: "100%",
 							marginBottom: "30px",
 						}}>
-							{stream && <video playsInline muted ref={myVideo} autoPlay style={{ width: "50%",  margin: "auto"}} />}
+							{stream && <video playsInline muted ref={myVideo} autoPlay style={videoStyle} />}
+						</div>
+						<div className="video" style={{ 
+							display: "flex", 
+							justifyContent: "center", 
+							alignItems: "center",
+							width: "100%",
+							height: "100%",
+						}}>
+							{callAccepted && !callEnded ?
+								<video playsInline ref={userVideo} autoPlay style={{width: "50%", margin: "auto"  }} /> :
+								(stream && <video playsInline muted ref={myVideo} autoPlay style={videoStyle} />)
+							}
 						</div>
 						{/* <div className="video" style={{ 
 							display: "flex", 
@@ -286,21 +298,9 @@ const FreeDialog = () => {
 							height: "100%",
 						}}>
 							{callAccepted && !callEnded ?
-								<video playsInline ref={userVideo} autoPlay style={{width: "50%", margin: "auto"  }} /> :
-								(stream && <video playsInline muted ref={myVideo} autoPlay style={{ width: "50%",  margin: "auto" }} />)
-							}
-						</div> */}
-						<div className="video" style={{ 
-							display: "flex", 
-							justifyContent: "center", 
-							alignItems: "center",
-							width: "100%",
-							height: "100%",
-						}}>
-							{callAccepted && !callEnded ?
-								<video playsInline ref={userVideo} autoPlay style={{ width: "50%", margin: "auto" }} /> :
+								<video playsInline ref={userVideo} autoPlay style={videoStyle} /> :
 								null}
-						</div>
+						</div> */}
 
 
 					</div>
@@ -314,3 +314,10 @@ const FreeDialog = () => {
 
 				  }
 export default FreeDialog;
+
+const videoStyle = {
+	width: '50%',
+	margin: 'auto',
+	border: '5px solid #0D92C8', // 테두리 스타일 및 색상 설정
+	borderRadius: '50px', // 모서리를 10px로 둥글게 설정
+  };
