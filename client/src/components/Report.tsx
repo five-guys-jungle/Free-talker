@@ -94,7 +94,7 @@ const Report = (data:any) => {
             userId: playerId,
             timestamp: `${month[date.getMonth() + 1]} ${date.getDate()} ${currentTime}`,
             nickname: playerNickname,
-            npc: messages[1].name,
+            npc: messages[0].name,
             userTexture:playerTexture,
             score:score,
             corrections:corrections,

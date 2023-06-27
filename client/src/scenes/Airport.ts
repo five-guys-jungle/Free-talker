@@ -617,11 +617,12 @@ export default class AirportScene extends Phaser.Scene {
                             this.socket2 = null;
                             // store.dispatch(clearMessages());
                             // store.dispatch(openAirport());
-                            let score =
-                                ((countUserSpeech - grammarCorrections.length) /
-                                    countUserSpeech) *
-                                100;
-                            // console.log("score : ", score);
+                            let score = 0;
+                            if (countUserSpeech !== 0) {
+                                score = ((countUserSpeech - grammarCorrections.length) /
+                                    countUserSpeech) * 100;
+                            }
+                            
                             store.dispatch(setScore({ score: score }));
                             grammarCorrections.forEach((data, index) => {
                                 console.log("grammarCorrection data: ", data);
