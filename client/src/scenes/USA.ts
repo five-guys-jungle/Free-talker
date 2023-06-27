@@ -31,6 +31,7 @@ import {
     setCanRequestRecommend,
 } from "../stores/sentenceBoxSlice";
 import { setRecord, setMessage, setMessageColor } from "../stores/recordSlice";
+import { reportOn, reportOff} from "../stores/reportOnoffSlice";
 import { handleScene } from "./common/handleScene";
 import { RootState } from "../stores/index";
 
@@ -382,7 +383,7 @@ export default class USAScene extends Phaser.Scene {
                         console.log("liberty");
                         handleScene(GAME_STATUS.AIRPORT, {});
                     } else {
-                        if (valve_E === true) {
+                        
                             if (this.isAudioPlaying) {
                                 return;
                             }
@@ -402,6 +403,11 @@ export default class USAScene extends Phaser.Scene {
                                 this.socket2 === null ||
                                 this.socket2 === undefined
                             ) {
+                                store.dispatch(reportOff());
+                                store.dispatch(setScore({ score: 0 }));
+                                store.dispatch(clearCorrections());
+                                store.dispatch(clearMessages());
+                                store.dispatch(clearSentences());
                                 this.socket2 = io(`${serverUrl}/interaction`);
                                 this.socket2.on("connect", () => {
                                     this.currNpcName = npcInfo.name;
@@ -643,18 +649,12 @@ export default class USAScene extends Phaser.Scene {
                                 });
 
                                 store.dispatch(openReport());
+                                store.dispatch(reportOn());
                                 grammarCorrections = [];
-                                valve_E = false;
                             }
-                        } else {
+                        
                             countUserSpeech = 0;
-                            valve_E = true;
-                            store.dispatch(setScore({ score: 0 }));
-                            store.dispatch(clearCorrections());
-                            store.dispatch(clearMessages());
-                            store.dispatch(clearSentences());
-                            store.dispatch(openUSA());
-                        }
+                        
                     }
                     break;
                 }

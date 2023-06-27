@@ -30,7 +30,7 @@ import {
     setCanRequestRecommend,
 } from "../stores/sentenceBoxSlice";
 import { setRecord, setMessage, setMessageColor } from "../stores/recordSlice";
-import { reportOn, reportOff } from "../stores/reportOnoffSlice";
+import { reportOn, reportOff} from "../stores/reportOnoffSlice";
 import { handleScene } from "./common/handleScene";
 import { RootState } from "../stores/index";
 
@@ -610,6 +610,7 @@ export default class AirportScene extends Phaser.Scene {
                                 grammarCorrections = [];
                             }
                             countUserSpeech = 0;
+                        
                     }
                     break;
                 }
