@@ -116,13 +116,13 @@ const UserBox: React.FC = () => {
   return (
     <UserBoxWrapper>
       <UserBoxContainer>
-        <Typography variant="h3">화상을 통해 <div></div> 자유롭게 대화를 나누어 보세요</Typography>
+        <Typography variant="h3" style={{ fontFamily: "Arial", fontWeight: "bold" }}>화상을 통해 <div></div> 자유롭게 대화를 나누어 보세요</Typography>
       </UserBoxContainer>
 
       <Box display="flex" flexDirection="row" >
         <AvatarContainer>
           <Image src={`../assets/characters/single/${playerTexture}.png`} alt={fix_playerTexture} />
-          <Typography variant="body1" align="center">{playerNickname}</Typography>
+          <Typography variant="h4" align="center">{playerNickname}</Typography>
         </AvatarContainer>
         <AvatarContainer>
           {/* <Image src={`../assets/characters/single/${otherTexture}.png`} alt="User Avatar" /> */}

@@ -49,7 +49,13 @@ const UserBox: React.FC = () => {
 	const socketNamespace = useSelector(
 		(state: { rtc: { socketNamespace: string } }) => state.rtc.socketNamespace
 	);
-  const placeName = socketNamespace.substring(socketNamespace.lastIndexOf("/") + 1);
+  let placeName = socketNamespace.substring(socketNamespace.lastIndexOf("/") + 1);
+  switch (placeName) {
+    case "chairMart":
+      placeName = "MART";
+      break;
+    // Add more cases if needed
+  }
   // useEffect(() => {
   //     console.log(playerId)
   //     console.log(playerNickname)
@@ -115,13 +121,13 @@ const UserBox: React.FC = () => {
   return (
     <UserBoxWrapper>
       <UserBoxContainer>
-        <Typography variant="h4">({placeName})에서 대화를 시작해 보세요</Typography>
+        <Typography variant="h4"><span style={{ color: "#C70039" }}>{placeName}</span>에서 대화를 시작해 보세요</Typography>
       </UserBoxContainer>
 
       <Box display="flex" flexDirection="row" >
         <AvatarContainer>
           <Image src={`../assets/characters/single/${playerTexture}.png`} alt={fix_playerTexture} />
-          <Typography variant="body1" align="center">{playerNickname}</Typography>
+          <Typography variant="h4" align="center">{playerNickname}</Typography>
         </AvatarContainer>
         <AvatarContainer>
           {/* <Image src={`../assets/characters/single/${otherTexture}.png`} alt="User Avatar" /> */}
