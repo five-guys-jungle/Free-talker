@@ -170,8 +170,8 @@ export default class AirportScene extends Phaser.Scene {
             "fiveguys_Room_Builder"
         )!;
         const tileset_immigration = map.addTilesetImage(
-            "fiveguys_Immigration",
-            "fiveguys_Immigration"
+            "fiveguys_Immigrations",
+            "fiveguys_Immigrations"
         )!;
 
 

@@ -152,8 +152,8 @@ export default class Background extends Phaser.Scene {
             "assets/tilesets/fiveguys_Interiors_4.png"
         );
         this.load.image(
-            "fiveguys_Immigration",
-            "assets/tilesets/usaImmigrations.png"
+            "fiveguys_Immigrations",
+            "assets/tilesets/fiveguys_Immigrations.png"
         );
 
         this.load.image(
