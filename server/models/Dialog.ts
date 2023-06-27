@@ -40,7 +40,7 @@ export interface Dialog {
 }
 
 export interface Message {
-    userId: string;
+    playerId: string;
     name: string;
     img: string;
     side: string;
@@ -51,3 +51,4 @@ export interface Correction {
     original: string;
     correction: string;
 }
+

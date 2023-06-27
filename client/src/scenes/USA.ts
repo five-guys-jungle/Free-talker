@@ -32,6 +32,7 @@ import {
     setCanRequestRecommend,
 } from "../stores/sentenceBoxSlice";
 import { setRecord, setMessage, setMessageColor } from "../stores/recordSlice";
+import { reportOn, reportOff} from "../stores/reportOnoffSlice";
 import { handleScene } from "./common/handleScene";
 import { RootState } from "../stores/index";
 
@@ -79,6 +80,8 @@ export default class USAScene extends Phaser.Scene {
     currNpcName: string = "";
     beforeSleepX: number = this.initial_x;
     beforeSleepY: number = this.initial_y;
+    interactionSprite: Phaser.Physics.Arcade.Sprite | null = null;
+    interactionSpriteE: Phaser.Physics.Arcade.Sprite | null = null;
 
     constructor() {
         super("USAScene");
@@ -94,13 +97,13 @@ export default class USAScene extends Phaser.Scene {
         this.playerTexture = data.playerTexture;
         console.log("data: ", data);
     }
-    
+
+
     gamePause(pausedX: number, pausedY: number) {
         console.log("Scene is Paused: USA");
         // this.intervalId = setInterval(() => {
         //     this.socket!.emit('heartbeat');
         // }, 5000);
-
     }
     gameResume(pausedX: number, pausedY: number) {
         console.log("Scene is Resumed: USA");
@@ -127,8 +130,8 @@ export default class USAScene extends Phaser.Scene {
         console.log("Scene is now asleep!, scene: USA");
         this.socket?.disconnect();
         this.socket = null;
-        this.beforeSleepX = this.player1 ? this.player1!.x: this.initial_x;
-        this.beforeSleepY = this.player1 ? this.player1!.y: this.initial_y;
+        this.beforeSleepX = this.player1 ? this.player1!.x : this.initial_x;
+        this.beforeSleepY = this.player1 ? this.player1!.y : this.initial_y;
         for (let socketId in this.allPlayers) {
             this.allPlayers[socketId].textObj?.destroy();
             this.allPlayers[socketId].sprite.destroy();
@@ -268,6 +271,15 @@ export default class USAScene extends Phaser.Scene {
             this.socket.disconnect();
         }
         this.gameSocketEventHandler();
+        this.interactionSprite = this.physics.add.sprite(0, 0, "arrowDown");
+        this.interactionSprite.setVisible(false);
+        this.interactionSprite.setScale(1.3);
+        this.interactionSprite.setDepth(100);
+
+        this.interactionSpriteE = this.physics.add.sprite(0, 0, "E_keyboard");
+        this.interactionSpriteE.setVisible(false);
+        this.interactionSpriteE.setScale(0.5);
+        this.interactionSpriteE.setDepth(100);
 
         this.cursors = this.input.keyboard!.createCursorKeys();
         this.interactText = this.add.text(10, 10, "", {
@@ -355,7 +367,7 @@ export default class USAScene extends Phaser.Scene {
                                 this.cursors!.up.enabled = true;
                                 this.cursors!.down.enabled = true;
 
-                                
+
                                 valve_E = true;
                                 this.allPlayers[this.socket!.id].seat = false;
                                 this.seatEvent = true;
@@ -378,7 +390,7 @@ export default class USAScene extends Phaser.Scene {
                             this.cursors!.up.enabled = true;
                             this.cursors!.down.enabled = true;
 
-                            
+
                             valve_E = true;
                             this.allPlayers[this.socket!.id].seat = false;
                             this.seatEvent = true;
@@ -455,7 +467,7 @@ export default class USAScene extends Phaser.Scene {
                         console.log("liberty");
                         handleScene(GAME_STATUS.AIRPORT, {});
                     } else {
-                        if (valve_E === true) {
+                        
                             if (this.isAudioPlaying) {
                                 return;
                             }
@@ -475,6 +487,11 @@ export default class USAScene extends Phaser.Scene {
                                 this.socket2 === null ||
                                 this.socket2 === undefined
                             ) {
+                                store.dispatch(reportOff());
+                                store.dispatch(setScore({ score: 0 }));
+                                store.dispatch(clearCorrections());
+                                store.dispatch(clearMessages());
+                                store.dispatch(clearSentences());
                                 this.socket2 = io(`${serverUrl}/interaction`);
                                 this.socket2.on("connect", () => {
                                     this.currNpcName = npcInfo.name;
@@ -518,6 +535,44 @@ export default class USAScene extends Phaser.Scene {
                                     );
 
                                     this.interacting = true;
+                                    this.socket2!.emit("dialogStart", npcInfo.name);
+                                this.isAudioPlaying = true;
+                                // TODO : npcFirstResponse 받고, audio 재생하는 동안 E, R키 비활성화 및 '응답중입니다. 잠시만 기다려주세요' 출력
+                                this.socket2!.on("npcFirstResponse", (response:any) => {
+                                    console.log("npcFirstResponse event");
+                                    store.dispatch(
+                                        setMessage(
+                                            "응답중입니다. 잠시만 기다려주세요"
+                                        )
+                                    );
+                                    store.dispatch(setCanRequestRecommend(false));
+                                    store.dispatch(
+                                        appendMessage({
+                                            playerId: this.playerId,
+                                            name: npcInfo.name,
+                                            img: npcInfo.texture,
+                                            // img: "",
+                                            side: "left",
+                                            text: response.assistant,
+                                        })
+                                    );
+                                    const audio = new Audio(
+                                        response.audioUrl
+                                    );
+                                    audio.onended = () => {
+                                        console.log("audio.onended");
+                                        this.isAudioPlaying = false;
+                                        store.dispatch(
+                                            setMessage(
+                                                "R키를 눌러 녹음을 시작하세요"
+                                            )
+                                        );
+                                        store.dispatch(
+                                            setCanRequestRecommend(true)
+                                        );
+                                    };
+                                    audio.play();
+                                })
                                     console.log(
                                         "connect, interaction socket.id: ",
                                         this.socket2!.id
@@ -528,7 +583,7 @@ export default class USAScene extends Phaser.Scene {
                                             if (
                                                 response === "" ||
                                                 response ===
-                                                "convertSpeechToText Error" ||
+                                                    "convertSpeechToText Error" ||
                                                 response === "chain call error"
                                             ) {
                                                 store.dispatch(
@@ -716,19 +771,12 @@ export default class USAScene extends Phaser.Scene {
                                 });
 
                                 store.dispatch(openReport());
+                                store.dispatch(reportOn());
                                 grammarCorrections = [];
-                                valve_E = false;
                             }
-                        } else {
+                        
                             countUserSpeech = 0;
-                            valve_E = true;
-                            store.dispatch(setScore({ score: 0 }));
-                            store.dispatch(clearCorrections());
-                            store.dispatch(clearMessages());
-                            store.dispatch(clearSentences());
-                            store.dispatch(openUSA());
-                            
-                        }
+                        
                     }
                     break;
                 }
@@ -789,10 +837,26 @@ export default class USAScene extends Phaser.Scene {
             }
         });
     }
-    deleteNotVaildScoket(){
-        for(let key in this.allPlayers){
+    playInteractionAnims() {
+        for (let npcInfo of this.npcList) {
+            if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y, npcInfo.x, npcInfo.y) < 100) {
+                this.interactionSprite?.setPosition(npcInfo.x, npcInfo.y - 50);
+                this.interactionSprite?.setVisible(true);
+                this.interactionSprite?.play('arrowDownAnim', true);
+                
+                this.interactionSpriteE?.setPosition(npcInfo.x + 30, npcInfo.y - 50);
+                this.interactionSpriteE?.setVisible(true);
+                break;
+            } else {
+                this.interactionSprite?.setVisible(false);
+                this.interactionSpriteE?.setVisible(false);
+            }
+        }
+    }
+    deleteNotVaildScoket() {
+        for (let key in this.allPlayers) {
             // console.log(`allPlayer[${key}]: ${this.allPlayers[key]}, socket: ${this.socket}`);
-            if(this.socket!.id !== key && this.userNickname === this.allPlayers[key].nickname){
+            if (this.socket!.id !== key && this.userNickname === this.allPlayers[key].nickname) {
                 console.log(`allPlayer[${key}]: ${this.allPlayers[key]}, socket: ${this.socket}`);
                 this.allPlayers[key].textObj?.destroy();
                 this.allPlayers[key].sprite.destroy();
@@ -809,6 +873,7 @@ export default class USAScene extends Phaser.Scene {
         let velocityY = 0;
 
         if (this.player1 !== null && this.player1 !== undefined) {
+            this.playInteractionAnims();
             // console.log("userNickname : ", this.userNickname);
             this.userIdText!.setText(this.userNickname);
             this.userIdText!.setOrigin(0.5, 0);
@@ -892,8 +957,9 @@ export default class USAScene extends Phaser.Scene {
 
             if (velocityX === 0 && velocityY === 0) {
                 if (this.player1.anims.isPlaying) {
-                    let idle_anims: string = this.player1!.anims.currentAnim!.key;
-                    idle_anims = idle_anims.replace('run', 'idle');
+                    let idle_anims: string =
+                        this.player1!.anims.currentAnim!.key;
+                    idle_anims = idle_anims.replace("run", "idle");
                     this.player1!.anims.play(idle_anims, true);
                 }
             }
@@ -919,18 +985,18 @@ export default class USAScene extends Phaser.Scene {
             }
 
             if (this.seatEvent === true) {
-                this.socket!.emit("seat", 
-                {
-                    socketId: this.socket!.id,
-                    nickname: this.allPlayers[this.socket!.id].nickname,
-                    playerTexture: this.allPlayers[this.socket!.id].playerTexture,
-                    x: this.allPlayers[this.socket!.id].x,
-                    y: this.allPlayers[this.socket!.id].y,
-                    scene: this.allPlayers[this.socket!.id].scene,
-                    dash: this.allPlayers[this.socket!.id].dash,
-                    seat: this.allPlayers[this.socket!.id].seat,
-                },
-                this.seatEvent = false
+                this.socket!.emit("seat",
+                    {
+                        socketId: this.socket!.id,
+                        nickname: this.allPlayers[this.socket!.id].nickname,
+                        playerTexture: this.allPlayers[this.socket!.id].playerTexture,
+                        x: this.allPlayers[this.socket!.id].x,
+                        y: this.allPlayers[this.socket!.id].y,
+                        scene: this.allPlayers[this.socket!.id].scene,
+                        dash: this.allPlayers[this.socket!.id].dash,
+                        seat: this.allPlayers[this.socket!.id].seat,
+                    },
+                    this.seatEvent = false
                 )
             }
 
@@ -938,7 +1004,8 @@ export default class USAScene extends Phaser.Scene {
                 if (playerInfo.scene == "USAScene") {
                     this.allPlayers[playerInfo.socketId].seat = playerInfo.seat;
                     console.log("otherseat", playerInfo);
-                }});
+                }
+            });
 
             for (let key in this.allPlayers) {
                 if (key !== this.socket.id) {
@@ -946,12 +1013,6 @@ export default class USAScene extends Phaser.Scene {
                     let otherPlayer: Player = this.allPlayers[key];
                     otherPlayer.move(deltaInSecond);
                     this.allPlayers[key].moveText(this);
-                    if (otherPlayer.seat == true) {
-                        otherPlayer.sprite.anims.play(
-                            `${otherPlayer.sprite.texture.key}_sit_left`,
-                            true
-                        );
-                    }
                 }
             }
         }
@@ -960,11 +1021,9 @@ export default class USAScene extends Phaser.Scene {
     createPlayer(playerInfo: PlayerInfo): Phaser.Physics.Arcade.Sprite {
         // Create a sprite for the player
         // Assuming you have an image asset called 'player'
-        let playerSprite = this.physics.add.sprite(
-            playerInfo.x,
-            playerInfo.y,
-            playerInfo.playerTexture
-        ).setDepth(2);
+        let playerSprite = this.physics.add
+            .sprite(playerInfo.x, playerInfo.y, playerInfo.playerTexture)
+            .setDepth(2);
 
         // Create a new player instance
         const newPlayer = new Player(
@@ -1015,10 +1074,10 @@ export default class USAScene extends Phaser.Scene {
     }
     createUSANpc() {
         let gate: npcInfo = {
-            name: "statueOfLiberty",
+            name: "gate",
             x: this.initial_x,
-            y: this.initial_y,
-            texture: "statueOfLiberty",
+            y: this.initial_y + 50,
+            texture: "gate",
             sprite: null,
             role: "npc",
         };
@@ -1043,7 +1102,7 @@ export default class USAScene extends Phaser.Scene {
         let npc2: npcInfo = {
             name: "Barista",
             x: 1810,
-            y: 428,
+            y: 426,
             texture: "Barista",
             sprite: null,
             role: "npc",
@@ -1070,7 +1129,9 @@ export default class USAScene extends Phaser.Scene {
             sprite: null,
             role: "npc",
         };
-        npc4.sprite = this.physics.add.sprite(npc4.x, npc4.y, npc4.texture).setDepth(1);
+        npc4.sprite = this.physics.add
+            .sprite(npc4.x, npc4.y, npc4.texture)
+            .setDepth(1);
         this.npcList.push(npc4);
 
         let npc5: npcInfo = {
@@ -1151,9 +1212,9 @@ export default class USAScene extends Phaser.Scene {
                 y: this.initial_y,
                 scene: "USAScene",
                 dash: false,
-                seat: false
+                seat: false,
             });
-            this.player1!.x = this.beforeSleepX
+            this.player1!.x = this.beforeSleepX;
             this.player1!.y = this.beforeSleepY;
 
             this.cameras.main.startFollow(this.player1);

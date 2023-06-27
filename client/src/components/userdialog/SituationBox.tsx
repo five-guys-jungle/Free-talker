@@ -4,29 +4,35 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import styled from "styled-components";
+import { useSelector, useDispatch } from "react-redux";
+import { UserDialogState, Situation, setSituation, clearSituation } from "../../stores/userDialogSlice";
 
 const SituationBox: React.FC = () => {
-  const [value, setValue] = React.useState(0);
-  const ref = React.useRef<HTMLDivElement>(null);
-  const [messages, setMessages] = React.useState(() => refreshMessages());
 
+  const ref = React.useRef<HTMLDivElement>(null);
+  const situation = useSelector(
+        (state: { userDialog: UserDialogState }) =>
+            state.userDialog.situation
+    );
+  
   React.useEffect(() => {
     (ref.current as HTMLDivElement).ownerDocument.body.scrollTop = 0;
-    setMessages(refreshMessages());
-  }, [value, setMessages]);
+  }, []);
+
 
   return (
     
     <Box sx={{ width: '70%', height: '70%', pb: 20 }}>
       <Title>상황 추천</Title>
       <Box sx={{ overflow: 'auto', height: '100%',backgroundColor: '#e3f2fd' }} ref={ref}>
-        <List>
+        <h2 className="Situation">{situation}</h2>
+        {/* <List>
           {messages.map(({ primary, secondary }, index) => (
             <ListItem key={index}>
               <ListItemText primary={primary} secondary={secondary} />
             </ListItem>
           ))}
-        </List>
+        </List> */}
       </Box>
     </Box>
   );

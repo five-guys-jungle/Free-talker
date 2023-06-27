@@ -102,7 +102,7 @@ export const createCharacterAnims = (
                 start: 48,
                 end: 48,
             }),
-            repeat: 0,
+            repeat: -1,
             frameRate: animsFrameRate,
         });
     
@@ -112,7 +112,7 @@ export const createCharacterAnims = (
                 start: 49,
                 end: 49,
             }),
-            repeat: 0,
+            repeat: -1,
             frameRate: animsFrameRate,
         });
     }
@@ -121,5 +121,11 @@ export const createCharacterAnims = (
         frames: anims.generateFrameNumbers('gate', { start: 0, end: 5 }),
         frameRate: 7,
         repeat: 0
+    });
+    anims.create({
+        key: 'arrowDownAnim',
+        frames: anims.generateFrameNumbers('arrowDown', { start: 0, end: 5 }),
+        frameRate: 5,
+        repeat: -1
     });
 };
