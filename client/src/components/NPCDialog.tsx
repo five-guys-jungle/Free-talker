@@ -35,7 +35,7 @@ const LeftSection = styled.section`
 `;
 
 const UpperSection = styled.div`
-    flex: 7;
+    flex: 6;
     height:100%;
     
     // padding: 0 5%; /* 화면 양쪽에 5% 공간을 추가 */
@@ -57,7 +57,7 @@ const UpperSection = styled.div`
 `;
 
 const LowerSection = styled.div`
-    flex: 3;
+    flex: 4;
     
     rgba(
         255,
