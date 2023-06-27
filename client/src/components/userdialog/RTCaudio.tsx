@@ -1,5 +1,6 @@
 import Button from "@material-ui/core/Button"
 import IconButton from "@material-ui/core/IconButton"
+import Typography from '@mui/material/Typography';
 import TextField from "@material-ui/core/TextField"
 import AssignmentIcon from "@material-ui/icons/Assignment"
 import PhoneIcon from "@material-ui/icons/Phone"
@@ -308,8 +309,7 @@ const RTCaudio = () => {
 		  >
 			<div
 			  className="call-button"
-			  style={{ position: "fixed", textAlign: "center", top: "5px" }}
-			>
+			  style={{ position: "fixed", textAlign: "center", top: "5px" }}>
 			  {callAccepted && !callEnded ? (
 				<div
 				  className="caller"
@@ -317,58 +317,50 @@ const RTCaudio = () => {
 					display: "inline-flex",
 					alignItems: "center",
 					bottom: "5px",
-				  }}
-				>
-				  <IconButton
+				  }}>
+
+				<IconButton
 					color="secondary"
 					aria-label="endcall"
-					onClick={leaveCall}
-				  >
-					<PhoneIcon fontSize="large" />
-				  </IconButton>
-				  <h4>({playerRole})이 되어 대화를 시작해 보세요1</h4>
+					onClick={leaveCall}>
+					<PhoneIcon style={{ fontSize: "3em" }} />
+				</IconButton>
+				<Typography variant="h5" align="center" style={{ fontFamily: "Arial", fontWeight: "bold" }}>통화가 종료되면 맵으로 돌아갑니다.</Typography>
+				</div>
+			) : receivingCall && !callAccepted ? null : (
+				<div
+					className="caller"
+					style={{ 
+						display: "inline-flex",
+					alignItems: "center", 
+					bottom: "5px" 
+					}}>
+					<IconButton
+						className="call-btn"
+						color="primary"
+						aria-label="call"
+						onClick={() => callUser(idToCall)}>
+						<PhoneIcon style={{ fontSize: "3em" }} />
+					</IconButton>
+					<Typography variant="h5" align="center" style={{ fontFamily: "Arial", fontWeight: "bold" }}>통화를 걸어 다른 유저와 상황극을 시작해 보세요</Typography>;
+				</div>
+			  )}
+				
+				{receivingCall && !callAccepted && (
+					<div className="caller" style={{ display: 'inline-flex', alignItems: 'center', bottom : '5px' }}>
+						<Typography variant="h5" align="center" style={{ fontFamily: "Arial", fontWeight: "bold" }}> 전화를 받아주세요 ... </Typography>;
+						<Button variant="contained" color="primary" onClick={answerCall} style={{marginLeft: '10px'}}>
+							Answer
+						</Button>
+					</div>
+					)}
+				<Typography variant="h3" align="center">
+					당신의 역할은
+					<div></div>
+					<span style={{ color: "#C70039" }}>{playerRole}</span>입니다 
+				</Typography>;
 				</div>
 				
-			  ) : (
-				<div
-				  className="caller"
-				  style={{
-					display: "inline-flex",
-					alignItems: "center",
-					bottom: "5px",
-				  }}
-				>
-					
-				<IconButton
-				  className="call-btn"
-				  color="primary"
-				  aria-label="call"
-				  onClick={() => callUser(idToCall)}
-				>
-					
-				  <PhoneIcon fontSize="large" />
-				</IconButton>
-				<h4>통화를 걸어 다른 유저와 상황극을 시작해 보세요</h4>
-				</div>
-			  )}
-			  <h4>({playerRole})이 되어 대화를 시작해 보세요3</h4>
-			  {receivingCall && !callAccepted && (
-				<div
-				  className="caller"
-				  style={{
-					display: "inline-flex",
-					alignItems: "center",
-					bottom: "5px",
-				  }}
-				>
-				  <h1> calling... </h1>
-				  <Button variant="contained" color="primary" onClick={answerCall}>
-					Answer
-				  </Button>
-				</div>
-			  )}
-			  {idToCall}
-			</div>
 		  </div>
 		  <div
 			className="container"

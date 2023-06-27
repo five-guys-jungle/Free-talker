@@ -1,5 +1,6 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
@@ -25,7 +26,12 @@ const SituationBox: React.FC = () => {
     <Box sx={{ width: '70%', height: '70%', pb: 20 }}>
       <Title>상황 추천</Title>
       <Box sx={{ overflow: 'auto', height: '100%',backgroundColor: '#e3f2fd' }} ref={ref}>
-        <h2 className="Situation">{situation}</h2>
+        <Typography 
+          className="Situation" 
+          variant="h5" 
+          style={{ fontFamily: "Arial", fontWeight: "bold", wordBreak: "break-word", paddingTop: "10px", paddingLeft: "10px", paddingRight: "10px"  }}>
+            {situation}
+        </Typography>
         {/* <List>
           {messages.map(({ primary, secondary }, index) => (
             <ListItem key={index}>
