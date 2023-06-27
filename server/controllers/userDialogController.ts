@@ -4,6 +4,8 @@ const app = express()
 const server = http.createServer(app)
 import { Socket } from "socket.io"	
 import { preDefinedRole } from "../models/Role";
+
+import { io } from "../index";
 const maxConnections = 2;
 const roomNum: {
 	[key: string]: number;
@@ -12,7 +14,7 @@ const roomNum: {
 	coach_park: 0,
 	chairMart: 0,
 }
-
+let socketIdList:string[] = [];
 // freedialogsocketEventHandler 함수 수정
 export function userDialogSocketEventHandler(socket: Socket) {
 	console.log(socket.id, "connection---------------------------------");
@@ -29,34 +31,42 @@ export function userDialogSocketEventHandler(socket: Socket) {
 		else {
 			roomNum[placeName]++;
 			socket.emit("joined");
+			socketIdList.push(socket.id);
+			// console.log("socketIdList: ", socketIdList);
 			console.log("roomNum: ", roomNum[placeName]);
 		}
 		
-		console.log(`place Name : ${placeName}`);
-		if (roomNum[placeName] == 1) {
-			console.log("preDefinedRole: ", preDefinedRole);
-			console.log(`role1: ${preDefinedRole[placeName].role[0]}`);
-			console.log(`recommendations: ${preDefinedRole[placeName].recommendations[0]}`);
-			console.log(`situation: ${preDefinedRole[placeName].situation}`);
-			socket.emit("role1", { situation: preDefinedRole[placeName].situation, role : preDefinedRole[placeName].role[0], recommendations: preDefinedRole[placeName].recommendations[0] });
-		} else {
-			console.log("preDefinedRole: ", preDefinedRole);
+		// console.log(`place Name : ${placeName}`);
+		// if (roomNum[placeName] == 1) {
+			
 
-			console.log(`role2: ${preDefinedRole[placeName].role[1]}`);
+		// 	console.log("preDefinedRole: ", preDefinedRole);
+		// 	console.log(`role1: ${preDefinedRole[placeName].role[0]}`);
+		// 	console.log(`recommendations: ${preDefinedRole[placeName].recommendations[0]}`);
+		// 	console.log(`situation: ${preDefinedRole[placeName].situation}`);
+		// 	socket.emit("role1", { situation: preDefinedRole[placeName].situation, role : preDefinedRole[placeName].role[0], recommendations: preDefinedRole[placeName].recommendations[0] });
+		// } else {
+		// 	console.log("preDefinedRole: ", preDefinedRole);
 
-			console.log(`recommendations: ${preDefinedRole[placeName].recommendations[1]}`);
-			console.log(`situation: ${preDefinedRole[placeName].situation}`);
-			socket.emit("role2", { situation: preDefinedRole[placeName].situation, role : preDefinedRole[placeName].role[1], recommendations: preDefinedRole[placeName].recommendations[1] });
-		}
+		// 	console.log(`role2: ${preDefinedRole[placeName].role[1]}`);
+
+		// 	console.log(`recommendations: ${preDefinedRole[placeName].recommendations[1]}`);
+		// 	console.log(`situation: ${preDefinedRole[placeName].situation}`);
+		// 	socket.emit("role2", { situation: preDefinedRole[placeName].situation, role : preDefinedRole[placeName].role[1], recommendations: preDefinedRole[placeName].recommendations[1] });
+		// }
 
 	});
+
+	socket.on("userExit", (id:string) => {
+		socketIdList = socketIdList.filter(item => item !== id);
+	})
 
 
 	socket.on("disconnect", () => {
 		//   socket.broadcast.emit("callEnded");
 		  console.log("disconnected~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 		  roomNum[placeName]--;
-		  console.log("roomNum: ", roomNum[placeName]);
+		  // console.log("roomNum: ", roomNum[placeName]);
 		  socket.broadcast.emit("outcharacter");
 		//   socket.broadcast.emit("disconnected", roomNum[placeName]);
 		});
@@ -76,11 +86,22 @@ export function userDialogSocketEventHandler(socket: Socket) {
   
 	socket.on("callUser", (data: { userToCall: any; signalData: any; from: any; name: any }) => {
 	  console.log("callUser: 서버에서 데이터를 받았음");
+		socketIdList.push(socket.id);
+
+		socket.emit("role", { situation: preDefinedRole[placeName].situation, role : preDefinedRole[placeName].role[0], recommendations: preDefinedRole[placeName].recommendations[0] });
 	  socket.broadcast.emit("callUser", { signal: data.signalData, from: data.from, name: data.name });
 	});
   
 	socket.on("answerCall", (data: { to: any; signal: any }) => {
 	  console.log("answerCall: ", data);
+		socketIdList.push(socket.id);
+		socket.emit("role", { situation: preDefinedRole[placeName].situation, role : preDefinedRole[placeName].role[1], recommendations: preDefinedRole[placeName].recommendations[1] });
+
+		console.log(`socketIdList[1] : ${socketIdList[1]}`)
+		
+		
+		
+
 	  socket.broadcast.emit("callAccepted", data.signal);
 	});
   
