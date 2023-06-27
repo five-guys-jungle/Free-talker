@@ -2,64 +2,48 @@ const express = require("express")
 const http = require("http")
 const app = express()
 const server = http.createServer(app)
-import { Socket } from "socket.io"	
-import { preDefinedRole } from "../models/Role";
+import {  Socket } from "socket.io"	
 const maxConnections = 2;
-const roomNum: {
+const freeRoom_Num: {
 	[key: string]: number;
 } = {
 	airport_chair1: 0,
 	coach_park: 0,
-	chairMart: 0,
 }
 
 // freedialogsocketEventHandler 함수 수정
-export function dialogsocketEventHandler(socket: Socket) {
+export function freeDialogSocketEventHandler(socket: Socket) {
 	console.log(socket.id, "connection---------------------------------");
-	let placeName: string = "";
-	socket.on("join", (data: string) => {
-		placeName = data;
-  		console.log("join: ", placeName);
-
-		if (roomNum[placeName] == maxConnections) {
-			// roomNum[placeName]++;
+	let temp: string = "";
+	socket.on("join", (data: { place_name: string }) => {
+		const { place_name } = data;
+  		console.log("join: ", place_name);
+		temp = place_name;
+		if (freeRoom_Num[place_name] == maxConnections) {
+			freeRoom_Num[place_name]++;
 			socket.emit("roomFull");
 			return;
+		
 		}
+
 		else {
-			roomNum[placeName]++;
+
+			freeRoom_Num[place_name]++;
 			socket.emit("joined");
-			console.log("roomNum: ", roomNum[placeName]);
-		}
-		// TODO : Role에 따라 다른 소켓 이벤트 emit 하기 
-		// if (Role_Num)
-		console.log(`place Name : ${placeName}`);
-		if (roomNum[placeName] == 1) {
-			console.log("preDefinedRole: ", preDefinedRole);
-			console.log(`role2: ${preDefinedRole[placeName].role[0]}`);
-			console.log(`recommendations: ${preDefinedRole[placeName].recommendations[0]}`);
-			console.log(`situation: ${preDefinedRole[placeName].situation}`);
-			socket.emit("role1", { situation: preDefinedRole[placeName].situation, role : preDefinedRole[placeName].role[0], recommendations: preDefinedRole[placeName].recommendations[0] });
-		} else {
-			console.log("preDefinedRole: ", preDefinedRole);
-
-			console.log(`role2: ${preDefinedRole[placeName].role[1]}`);
-
-			console.log(`recommendations: ${preDefinedRole[placeName].recommendations[1]}`);
-			console.log(`situation: ${preDefinedRole[placeName].situation}`);
-			socket.emit("role2", { situation: preDefinedRole[placeName].situation, role : preDefinedRole[placeName].role[1], recommendations: preDefinedRole[placeName].recommendations[1] });
+			console.log("freeRoom_Num: ", freeRoom_Num[place_name]);
+			// socket.emit("joined",  freeRoom_Num[place_name] );
 		}
 
+
+		
 	});
-
-
 	socket.on("disconnect", () => {
 		//   socket.broadcast.emit("callEnded");
 		  console.log("disconnected~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-		  roomNum[placeName]--;
-		  console.log("roomNum: ", roomNum[placeName]);
+		  freeRoom_Num[temp]--;
+		  console.log("freeRoom_Num: ", freeRoom_Num[temp]);
 		  socket.broadcast.emit("outcharacter");
-		//   socket.broadcast.emit("disconnected", roomNum[placeName]);
+		//   socket.broadcast.emit("disconnected", freeRoom_Num[place_name]);
 		});
 	socket.broadcast.emit("userconnected");
 	
@@ -88,10 +72,4 @@ export function dialogsocketEventHandler(socket: Socket) {
 	socket.on("callEnded", () => {
 	  socket.broadcast.emit("otherusercallended");
 	});
-
 }
-// 	socket.on("leaveCallEvent", () => {
-// 		socket.broadcast.emit("otheruserleave");
-// 	  });
-//   }
-  

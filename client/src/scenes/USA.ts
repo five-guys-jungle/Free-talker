@@ -463,7 +463,7 @@ export default class USAScene extends Phaser.Scene {
 
                                 store.dispatch(openUSA());
                             }
-                    } else if (npcInfo.name.includes("Liberty")) {
+                    } else if (npcInfo.name.includes("gate")) {
                         console.log("liberty");
                         handleScene(GAME_STATUS.AIRPORT, {});
                     } else {

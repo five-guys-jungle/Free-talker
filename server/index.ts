@@ -6,7 +6,6 @@ import path from "path";
 import { Router } from "express";
 import { socketEventHandler } from "./controllers/gameSocket";
 import { interactSocketEventHandler } from "./controllers/interactSocket";
-import { dialogsocketEventHandler } from "./controllers/voiceController";   
 import { Server as SocketIOServer, Socket } from "socket.io";
 
 import { connectDB } from "./database/db";
