@@ -83,6 +83,7 @@ export default class USAScene extends Phaser.Scene {
     interactionSprite: Phaser.Physics.Arcade.Sprite | null = null;
     interactionSpriteE: Phaser.Physics.Arcade.Sprite | null = null;
     audio: HTMLAudioElement | null = null;
+    isReportOn: boolean = false;
 
     constructor() {
         super("USAScene");
@@ -308,6 +309,10 @@ export default class USAScene extends Phaser.Scene {
             console.log("grammarCorrection event data: ", data);
             grammarCorrections.push(data);
         };
+        window.addEventListener('reportClose', () => {
+            console.log("reportClose event listener");
+            this.isReportOn = false;
+        });
         this.input.keyboard!.on("keydown-E", async () => {
             if (this.player1 === null || this.player1 === undefined) {
                 return;
@@ -472,6 +477,10 @@ export default class USAScene extends Phaser.Scene {
                             if (this.isAudioPlaying) {
                                 return;
                             }
+                            if (this.isReportOn) {
+                                return;
+                            }
+
                             this.player1!.setVelocity(0, 0);
                             this.player1!.anims.play(
                                 `${this.player1!.texture.key}_idle_down`,
@@ -770,7 +779,8 @@ export default class USAScene extends Phaser.Scene {
                                         })
                                     );
                                 });
-
+                                
+                                this.isReportOn = true;
                                 store.dispatch(openReport());
                                 store.dispatch(reportOn());
                                 grammarCorrections = [];

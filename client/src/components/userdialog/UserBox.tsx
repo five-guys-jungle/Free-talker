@@ -10,7 +10,7 @@ import {clearcharacters} from "../../stores/userboxslice"
 
 const blankchar = '../assets/characters/blankchar2.png';
 const Image = styled('img')`
-  width: 150%;
+  width: 180px;
   height: auto;
 `;
 
@@ -49,7 +49,13 @@ const UserBox: React.FC = () => {
 	const socketNamespace = useSelector(
 		(state: { rtc: { socketNamespace: string } }) => state.rtc.socketNamespace
 	);
-
+  let placeName = socketNamespace.substring(socketNamespace.lastIndexOf("/") + 1);
+  switch (placeName) {
+    case "chairMart":
+      placeName = "MART";
+      break;
+    // Add more cases if needed
+  }
   // useEffect(() => {
   //     console.log(playerId)
   //     console.log(playerNickname)
@@ -106,22 +112,22 @@ const UserBox: React.FC = () => {
 
   const renderOtherNickname = () => {
     if (otherNickname) {
-      return <Typography variant="body1" align="center">{otherNickname}</Typography>;
+      return <Typography variant="h4" align="center">{otherNickname}</Typography>;
     } else {
-      return <Typography variant="body1" align="center">대화 상대를 기다려 주세요</Typography>;
+      return <Typography variant="h5" align="center">대화 상대를 <div></div> 기다려 주세요</Typography>;
     }
   };
 
   return (
     <UserBoxWrapper>
       <UserBoxContainer>
-        <Typography variant="h4">대화를 시작해 보세요</Typography>
+        <Typography variant="h4"><span style={{ color: "#C70039" }}>{placeName}</span>에서 대화를 시작해 보세요</Typography>
       </UserBoxContainer>
 
       <Box display="flex" flexDirection="row" >
         <AvatarContainer>
           <Image src={`../assets/characters/single/${playerTexture}.png`} alt={fix_playerTexture} />
-          <Typography variant="body1" align="center">{playerNickname}</Typography>
+          <Typography variant="h4" align="center">{playerNickname}</Typography>
         </AvatarContainer>
         <AvatarContainer>
           {/* <Image src={`../assets/characters/single/${otherTexture}.png`} alt="User Avatar" /> */}
