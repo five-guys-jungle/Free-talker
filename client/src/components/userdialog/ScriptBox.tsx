@@ -4,30 +4,28 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import styled from "styled-components";
+import { useSelector, useDispatch } from "react-redux";
+import { Recommendation, UserDialogState } from "../../stores/userDialogSlice";
 
 const ScriptBox: React.FC = () => {
-  const [value, setValue] = React.useState(0);
   const ref = React.useRef<HTMLDivElement>(null);
-  const [messages, setMessages] = React.useState(() => refreshMessages());
+  const recommendations = useSelector(
+        (state: { userDialog: UserDialogState }) =>
+            state.userDialog.recommendations
+    );
 
   React.useEffect(() => {
     (ref.current as HTMLDivElement).ownerDocument.body.scrollTop = 0;
-    setMessages(refreshMessages());
-  }, [value, setMessages]);
+  }, []);
 
   return (
     <Box sx={{ width: '70%', height: '70%', pb: 20 }}>
       <Title>많이 사용하는 문장</Title>
       <Box sx={{ overflow: 'auto', height: '100%', backgroundColor: '#e3f2fd' }} ref={ref}>
         <List>
-          {messages.map(({ primary, secondary }, index) => (
-            <ListItem key={index}>
-              <ListItemText primary={primary} secondary={secondary.split('\n').map((text, i) => (
-                <React.Fragment key={i}>
-                  {text}
-                  <br />
-                </React.Fragment>
-              ))} />
+          {recommendations.map((recommendation: Recommendation) => (
+            <ListItem key={recommendation._id}>
+              <ListItemText primary={recommendation.recommendation} />
             </ListItem>
           ))}
         </List>
@@ -54,6 +52,7 @@ interface ScriptExample {
 //   }
   
 // ];
+
 const messageExamples: ScriptExample[] = [
   {
     primary: 'chronic',

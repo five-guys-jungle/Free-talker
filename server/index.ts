@@ -77,10 +77,11 @@ app.use("/auth", authRouter);
 app.use("/save", saveRouter);
 // app.post("/signup", signup);
 // app.post("/login", login);
-app.get("/userdialog/place", async (req: Request, res: Response) => {
-    console.log(req)
-    res.send("Hello World!~~~~~~~~~~~~~~~~~~~");
-});
+// app.get("/userdialog/place", async (req: Request, res: Response) => {
+//     console.log(req)
+//     res.send("Hello World!~~~~~~~~~~~~~~~~~~~");
+// });
+
 if (process.env.NODE_ENV === "production") {
     console.log("Production Mode");
     connectDB()

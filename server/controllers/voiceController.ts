@@ -2,90 +2,64 @@ const express = require("express")
 const http = require("http")
 const app = express()
 const server = http.createServer(app)
-import {  Socket } from "socket.io"	
+import { Socket } from "socket.io"	
+import { preDefinedRole } from "../models/Role";
 const maxConnections = 2;
-const Room_Num: {
+const roomNum: {
 	[key: string]: number;
 } = {
 	airport_chair1: 0,
 	coach_park: 0,
 	chairMart: 0,
 }
-class Player_Role {
-	Cashier: number;
-	Customer: number;
-  
-	constructor(cashier: number, customer: number) {
-	  this.Cashier = cashier;
-	  this.Customer = customer;
-	}
-  }
-  
-  const Role_Num: {
-	[key: string]: Player_Role;
-  } = {
-	chairMart: new Player_Role(0, 0)
-  };
+
 // freedialogsocketEventHandler 함수 수정
 export function dialogsocketEventHandler(socket: Socket) {
 	console.log(socket.id, "connection---------------------------------");
-	let temp: string = "";
-	socket.on("join", (data: { place_name: string }) => {
-		const { place_name } = data;
-  		console.log("join: ", place_name);
-		temp = place_name;
-		if (Room_Num[place_name] == maxConnections) {
-			Room_Num[place_name]++;
+	let placeName: string = "";
+	socket.on("join", (data: string) => {
+		placeName = data;
+  		console.log("join: ", placeName);
+
+		if (roomNum[placeName] == maxConnections) {
+			// roomNum[placeName]++;
 			socket.emit("roomFull");
 			return;
 		}
 		else {
-			Room_Num[place_name]++;
+			roomNum[placeName]++;
 			socket.emit("joined");
-			console.log("Room_Num: ", Room_Num[place_name]);
-			// socket.emit("joined",  Room_Num[place_name] );
+			console.log("roomNum: ", roomNum[placeName]);
 		}
-		if (place_name == "chairMart") {
-			if (Role_Num[place_name].Cashier == 0 && Role_Num[place_name].Customer == 0) {
-				socket.emit("Cashier");
-				Role_Num[place_name].Cashier++;
-			} else if (Role_Num[place_name].Cashier == 1 && Role_Num[place_name].Customer == 0) {
-				socket.emit("Customer");
-				Role_Num[place_name].Customer++;
-			} else if (Role_Num[place_name].Cashier == 0 && Role_Num[place_name].Customer == 1) {
-				socket.emit("Cashier");
-				Role_Num[place_name].Cashier++;
-			}
+		// TODO : Role에 따라 다른 소켓 이벤트 emit 하기 
+		// if (Role_Num)
+		console.log(`place Name : ${placeName}`);
+		if (roomNum[placeName] == 1) {
+			console.log("preDefinedRole: ", preDefinedRole);
+			console.log(`role2: ${preDefinedRole[placeName].role[0]}`);
+			console.log(`recommendations: ${preDefinedRole[placeName].recommendations[0]}`);
+			console.log(`situation: ${preDefinedRole[placeName].situation}`);
+			socket.emit("role1", { situation: preDefinedRole[placeName].situation, role : preDefinedRole[placeName].role[0], recommendations: preDefinedRole[placeName].recommendations[0] });
+		} else {
+			console.log("preDefinedRole: ", preDefinedRole);
+
+			console.log(`role2: ${preDefinedRole[placeName].role[1]}`);
+
+			console.log(`recommendations: ${preDefinedRole[placeName].recommendations[1]}`);
+			console.log(`situation: ${preDefinedRole[placeName].situation}`);
+			socket.emit("role2", { situation: preDefinedRole[placeName].situation, role : preDefinedRole[placeName].role[1], recommendations: preDefinedRole[placeName].recommendations[1] });
 		}
 
-		
 	});
-	socket.on("out_Role" , ({ player_Role: player_Role, place_name: place_name }) => {
-		if (player_Role == "Cashier") {
-		  Role_Num[place_name].Cashier--;
-		} else if (player_Role == "Customer") {
-		  Role_Num[place_name].Customer--;
-		}
-		console.log("Role_Num: ", Role_Num[place_name]);
-	  });
-	
-	  socket.on("out_Role2" , ({ player_Role: player_Role}) => {
-		if (player_Role == "Cashier") {
-		  Role_Num[temp].Cashier--;
-		} else if (player_Role == "Customer") {
-		  Role_Num[temp].Customer--;
-		}
-		console.log("Role_Num: ", Role_Num[temp]);
-	  });
-		
+
 
 	socket.on("disconnect", () => {
 		//   socket.broadcast.emit("callEnded");
 		  console.log("disconnected~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-		  Room_Num[temp]--;
-		  console.log("Room_Num: ", Room_Num[temp]);
+		  roomNum[placeName]--;
+		  console.log("roomNum: ", roomNum[placeName]);
 		  socket.broadcast.emit("outcharacter");
-		//   socket.broadcast.emit("disconnected", Room_Num[place_name]);
+		//   socket.broadcast.emit("disconnected", roomNum[placeName]);
 		});
 	socket.broadcast.emit("userconnected");
 	

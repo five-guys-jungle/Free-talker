@@ -14,10 +14,11 @@ import { current } from "@reduxjs/toolkit"
 import { TalkBoxState } from "../../stores/talkBoxSlice";
 import store, { RootState, useAppDispatch } from "../../stores";
 import {setUserCharacter, clearcharacters} from "../../stores/userboxslice";
+import { UserDialogState, setSituation, clearSituation, setRole, clearRole, appendRecommendation, clearRecommendations } from "../../stores/userDialogSlice";
 import axios from "axios";
 
 let DB_URL: string = process.env.REACT_APP_SERVER_URL!;
-let player_Role: string = ""
+
 const RTCaudio = () => {
     const [ me, setMe ] = useState("")
 	const [ stream, setStream ] = React.useState<MediaStream | undefined>(undefined)
@@ -29,6 +30,11 @@ const RTCaudio = () => {
 	const [ callEnded, setCallEnded] = useState(false)
 	const [ name, setName ] = useState("")
 	
+
+	const playerRole = useSelector(
+		(state: { userDialog: UserDialogState }) =>
+				state.userDialog.role
+	)
 
 
 	const dispatch = useAppDispatch();
@@ -45,7 +51,8 @@ const RTCaudio = () => {
 
 	
 	const {playerNickname, playerTexture} = useSelector((state: RootState) => {return {...state.user}});
-	const place_name = socketNamespace.substring(socketNamespace.lastIndexOf("/") + 1);
+
+	const placeName = socketNamespace.substring(socketNamespace.lastIndexOf("/") + 1);
 	useEffect(() => {
 		socket.current = io(socketNamespace);
 		navigator.mediaDevices
@@ -58,20 +65,15 @@ const RTCaudio = () => {
 			}
 		  });
 		
-		// const place_name = socketNamespace.substring(socketNamespace.lastIndexOf("/") + 1);
-		console.log("place_name:::", place_name);
-		// socket.current!.emit("join", { place_name });
+		// const placeName = socketNamespace.substring(socketNamespace.lastIndexOf("/") + 1);
+		console.log("placeName:::", placeName);
+		// socket.current!.emit("join", { placeName });
 
-		socket.current!.emit("join", { place_name });
+		socket.current!.emit("join", placeName);
 		socket.current!.on("connect", () => {
-			
-			// socket.current!.on("joined", (current) => {
-			// 	console.log("current:::", current);
-			// 	num_User = current
-			// })
-
-			
+			console.log("connect!!!!!");
 			})
+
 		socket.current!.on("roomFull", () => {
 			socket.current!.disconnect();
 			const clickEvent = new CustomEvent('exitcall', {
@@ -88,15 +90,36 @@ const RTCaudio = () => {
 			window.dispatchEvent(seatEvent);
 		}
 			)
-		socket.current!.on("Cashier", () => {
-			console.log("Cashier!!!!!!!!!!!!!!!!")
-			player_Role = "Cashier"
+		socket.current!.on("role1", (data: any) => {
+			console.log("role 1: ", data);
+			// let recommendations: string[] = [];
+			dispatch(setSituation({ situation: data.situation }));
+			dispatch(setRole({ role: data.role}));
+			data.recommendations.forEach((recommendation:string, index:number) => {
+				store.dispatch(
+						appendRecommendation({
+								_id: index.toString(),
+								recommendation: recommendation,
+						})
+				);
+		});
+			
 		})
 
-		socket.current!.on("Customer", () => {
-			console.log("Customer!!!!!!!!!!!!!!!!")
-			player_Role = "Customer"
+		socket.current!.on("role2", (data: any) => {
+			console.log("role 2: ", data);
+			dispatch(setSituation({ situation: data.situation }));
+			dispatch(setRole({ role: data.role}));
+			data.recommendations.forEach((recommendation:string, index:number) => {
+				store.dispatch(
+						appendRecommendation({
+								_id: index.toString(),
+								recommendation: recommendation,
+						})
+				);
+		});
 		})
+
 
 		console.log("socket is connected: ", socket.current!.id);
 		
@@ -136,7 +159,7 @@ const RTCaudio = () => {
 			console.log("id:::", id)
 		});
 
-        socket.current!.on("callUser", (data) => {
+    socket.current!.on("callUser", (data) => {
 			setReceivingCall(true);
 			setCaller(data.from);
 			setName(data.name);
@@ -151,7 +174,7 @@ const RTCaudio = () => {
 			}
 		});
 		return () => {
-			socket.current!.emit("out_Role" , {player_Role: player_Role, place_name: place_name});
+			// socket.current!.emit("out_Role" , {playerRole: playerRole, placeName: placeName});
 			socket.current!.disconnect();
 		}
 	  
@@ -190,33 +213,34 @@ const RTCaudio = () => {
 		socket.current!.on("callAccepted", (signal) => {
 			setCallAccepted(true)
 			peer.signal(signal)
-			fetchData();
+			// fetchData();
 		});
 		// try {
 		// 	const response = await axios.get(`${DB_URL}/userdialog/place`, {
 		// 		params: {
-		// 			place_name: place_name // place_name you want to send
+		// 			placeName: placeName // placeName you want to send
 		// 		}
 		// 	});
 		// 	console.log(response.data);
 		// } catch (error) {
-		// 	console.error(`Error in sending place_name: ${error}`);
+		// 	console.error(`Error in sending placeName: ${error}`);
 		// }
 		connectionRef.current = peer
 	}
 
-	const fetchData = async () => {
-		try {
-			const response = await axios.get(`${DB_URL}/userdialog/place`, {
-				params: {
-					place_name: place_name // place_name you want to send
-				}
-			});
-			console.log(response.data);
-		} catch (error) {
-			console.error(`Error in sending place_name: ${error}`);
-		}
-	};
+	// const fetchData = async () => {
+	// 	try {
+	// 		const response = await axios.get(`${DB_URL}/userdialog/place`, {
+	// 			params: {
+	// 				placeName: placeName // placeName you want to send
+	// 			}
+	// 		});
+	// 		console.log(response.data); // martChair -> 
+	// 	} catch (error) {
+	// 		console.error(`Error in sending placeName: ${error}`);
+	// 	}
+	// };
+
 	const answerCall = async () =>  {
 		setCallAccepted(true)
 		const peer = new Peer({
@@ -237,20 +261,20 @@ const RTCaudio = () => {
 			// userAudio.current!.srcObject = stream;
 		  });
 
-		peer.signal(callerSignal)
+		peer.signal(callerSignal);
 
-		connectionRef.current = peer
-		fetchData();
-		// Send place_name using GET request
+		connectionRef.current = peer;
+		// fetchData();
+		// Send placeName using GET request
 		// try {
 		// 	const response = await axios.get(`${DB_URL}/userdialog/place`, {
 		// 		params: {
-		// 			place_name: place_name // place_name you want to send
+		// 			placeName: placeName // placeName you want to send
 		// 		}
 		// 	});
 		// 	console.log(response.data);
 		// } catch (error) {
-		// 	console.error(`Error in sending place_name: ${error}`);
+		// 	console.error(`Error in sending placeName: ${error}`);
 		// }
 	};
 
@@ -259,7 +283,7 @@ const RTCaudio = () => {
 		if (connectionRef.current) {
 			connectionRef.current.destroy();
 			socket.current!.emit("callEnded"); // 서버로 callEnded 이벤트 전송
-			socket.current!.emit("out_Role2" , {player_Role: player_Role});
+			// socket.current!.emit("out_Role2" , {playerRole: playerRole});
 			socket.current!.emit("leaveCallEvent", { to: caller });
 			// Airport 씬으로 이벤트 전달
 			window.dispatchEvent(new Event("exitcall"));
@@ -296,7 +320,7 @@ const RTCaudio = () => {
 				  >
 					<PhoneIcon fontSize="large" />
 				  </IconButton>
-				  <h4>({player_Role})이 되어 대화를 시작해 보세요1</h4>
+				  <h4>({playerRole})이 되어 대화를 시작해 보세요1</h4>
 				</div>
 				
 			  ) : (
@@ -321,7 +345,7 @@ const RTCaudio = () => {
 				<h4>통화를 걸어 다른 유저와 상황극을 시작해 보세요</h4>
 				</div>
 			  )}
-			  <h4>({player_Role})이 되어 대화를 시작해 보세요3</h4>
+			  <h4>({playerRole})이 되어 대화를 시작해 보세요3</h4>
 			  {receivingCall && !callAccepted && (
 				<div
 				  className="caller"
