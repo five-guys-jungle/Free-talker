@@ -145,52 +145,63 @@ export default class AirportScene extends Phaser.Scene {
         // 배경 설정
         this.cursors = this.input.keyboard!.createCursorKeys();
         const map = this.make.tilemap({ key: "map" });
-        const tileset_generic = map.addTilesetImage("Generic", "generic")!;
-        const tileset_basement = map.addTilesetImage("Basement", "basement")!;
-        const tileset_interior = map.addTilesetImage("Interiors", "interior")!;
-        const tileset_classroom = map.addTilesetImage(
-            "Classroom_and_library",
-            "classroom"
+        const tileset_exteriors = map.addTilesetImage(
+            "fiveguys_Exteriors",
+            "fiveguys_Exteriors"
         )!;
-        const tileset_floor = map.addTilesetImage("FloorAndGround", "floor")!;
-        const tileset_pixel = map.addTilesetImage(
-            "pixel-cyberpunk-interior",
-            "pixel"
+        const tileset_interiors_1 = map.addTilesetImage(
+            "fiveguys_Interiors_1",
+            "fiveguys_Interiors_1"
+        )!;
+        const tileset_interiors_2 = map.addTilesetImage(
+            "fiveguys_Interiors_2",
+            "fiveguys_Interiors_2"
+        )!;
+        const tileset_interiors_3 = map.addTilesetImage(
+            "fiveguys_Interiors_3",
+            "fiveguys_Interiors_3"
+        )!;
+        const tileset_interiors_4 = map.addTilesetImage(
+            "fiveguys_Interiors_4",
+            "fiveguys_Interiors_4"
+        )!;
+        const tileset_roombuilder = map.addTilesetImage(
+            "fiveguys_Room_Builder",
+            "fiveguys_Room_Builder"
+        )!;
+        const tileset_immigration = map.addTilesetImage(
+            "fiveguys_Immigration",
+            "fiveguys_Immigration"
         )!;
 
-        map.createLayer("floor/Floor", tileset_floor);
-        const platform2 = map.createLayer("wall/Generic", tileset_generic)!;
-        const platform3 = map.createLayer(
-            "chair_door/Generic",
-            tileset_generic
-        )!;
-        const platform4 = map.createLayer(
-            "chair_table/Basement",
-            tileset_basement
-        )!;
-        const platform5 = map.createLayer(
-            "office/Classroom",
-            tileset_classroom
-        )!;
-        const platform6 = map.createLayer(
-            "interiors/Interiors",
-            tileset_interior
-        )!;
-        const platform7 = map.createLayer("line/pixel", tileset_pixel)!;
 
-        platform2.setCollisionByProperty({ collides: true });
-        platform3.setCollisionByProperty({ collides: true });
-        platform4.setCollisionByProperty({ collides: true });
-        platform5.setCollisionByProperty({ collides: true });
-        platform6.setCollisionByProperty({ collides: true });
-        platform7.setCollisionByProperty({ collides: true });
+        const roombuilder_1 = map.createLayer("layer1/Roombuilder", tileset_roombuilder)!;
+        const roombuilder_2 = map.createLayer("layer2/Roombuilder", tileset_roombuilder)!;
+        const exteriors = map.createLayer("layer1/Exteriors", tileset_exteriors)!;
+        const interiors_1 = map.createLayer("layer1/Interiors1", tileset_interiors_1)!;
+        const interiors_2 = map.createLayer("layer1/Interiors2", tileset_interiors_2)!;
+        const interiors_3 = map.createLayer("layer1/Interiors3", tileset_interiors_3)!;
+        const interiors_4 = map.createLayer("layer1/Interiors4", tileset_interiors_4)!;
+        const immigration = map.createLayer("layer1/Immigration", tileset_immigration)!;
 
-        this.tilemapLayerList.push(platform2);
-        this.tilemapLayerList.push(platform3);
-        this.tilemapLayerList.push(platform4);
-        this.tilemapLayerList.push(platform5);
-        this.tilemapLayerList.push(platform6);
-        this.tilemapLayerList.push(platform7);
+        roombuilder_1.setCollisionByProperty({ collides: true });
+        roombuilder_2.setCollisionByProperty({ collides: true });
+        exteriors.setCollisionByProperty({ collides: true });
+        interiors_1.setCollisionByProperty({ collides: true });
+        interiors_2.setCollisionByProperty({ collides: true });
+        interiors_3.setCollisionByProperty({ collides: true });
+        interiors_4.setCollisionByProperty({ collides: true });
+        immigration.setCollisionByProperty({ collides: true });
+
+        this.tilemapLayerList.push(roombuilder_1);
+        this.tilemapLayerList.push(roombuilder_2);
+        this.tilemapLayerList.push(exteriors);
+        this.tilemapLayerList.push(interiors_1);
+        this.tilemapLayerList.push(interiors_2);
+        this.tilemapLayerList.push(interiors_3);
+        this.tilemapLayerList.push(interiors_4);
+        this.tilemapLayerList.push(immigration)
+
 
         createCharacterAnims(this.anims);
         if (this.socket) {

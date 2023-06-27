@@ -79,7 +79,8 @@ app.use("/save", saveRouter);
 // app.post("/login", login);
 app.get("/userdialog/place", async (req: Request, res: Response) => {
     console.log(req)
-    res.send("Hello World!~~~~~~~~~~~~~~~~~~~");
+    const result = { message: "Hello World!~~~~~~~~~~~~~~~~~~~" };
+    res.json(result);
 });
 if (process.env.NODE_ENV === "production") {
     console.log("Production Mode");
