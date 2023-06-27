@@ -27,7 +27,7 @@ const RTCaudio = () => {
 	const [ idToCall, setIdToCall ] = useState("")
 	const [ callEnded, setCallEnded] = useState(false)
 	const [ name, setName ] = useState("")
-	
+	let player_Role: string = ""
 
 
 	const dispatch = useAppDispatch();
@@ -89,10 +89,12 @@ const RTCaudio = () => {
 			)
 		socket.current!.on("Cashier", () => {
 			console.log("Cashier!!!!!!!!!!!!!!!!")
+			player_Role = "Cashier"
 		})
 
 		socket.current!.on("Customer", () => {
 			console.log("Customer!!!!!!!!!!!!!!!!")
+			player_Role = "Customer"
 		})
 
 		console.log("socket is connected: ", socket.current!.id);
@@ -148,6 +150,7 @@ const RTCaudio = () => {
 			}
 		});
 		return () => {
+			socket.current!.emit("out_Role" , {player_Role: player_Role, place_name: place_name});
 			socket.current!.disconnect();
 		}
 	  
@@ -255,6 +258,7 @@ const RTCaudio = () => {
 		if (connectionRef.current) {
 			connectionRef.current.destroy();
 			socket.current!.emit("callEnded"); // 서버로 callEnded 이벤트 전송
+			socket.current!.emit("out_Role2" , {player_Role: player_Role});
 			socket.current!.emit("leaveCallEvent", { to: caller });
 			// Airport 씬으로 이벤트 전달
 			window.dispatchEvent(new Event("exitcall"));
@@ -291,8 +295,9 @@ const RTCaudio = () => {
 				  >
 					<PhoneIcon fontSize="large" />
 				  </IconButton>
-				  <h4>(카페 직원)이 되어 대화를 시작해 보세요</h4>
+				  <h4>{player_Role}이 되어 대화를 시작해 보세요</h4>
 				</div>
+				
 			  ) : (
 				<div
 				  className="caller"
@@ -325,7 +330,7 @@ const RTCaudio = () => {
 					bottom: "5px",
 				  }}
 				>
-				  <h1> {name} is calling... </h1>
+				  <h1> calling... </h1>
 				  <Button variant="contained" color="primary" onClick={answerCall}>
 					Answer
 				  </Button>
