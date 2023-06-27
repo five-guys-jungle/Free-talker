@@ -285,6 +285,7 @@ const RTCaudio = () => {
 
 	const leaveCall = () => {
 		setCallEnded(true);
+		store.dispatch(clearRecommendations());
 		if (connectionRef.current) {
 			connectionRef.current.destroy();
 			socket.current!.emit("callEnded"); // 서버로 callEnded 이벤트 전송

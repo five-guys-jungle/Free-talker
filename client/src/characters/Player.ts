@@ -42,7 +42,7 @@ export class Player {
 
         // console.log('Other player seat: ', this.seat);
         if (this.seat) {
-            console.log(`${this.playerTexture}_sit_left`);
+            // console.log(`${this.playerTexture}_sit_left`);
             this.sprite.anims.play(`${this.playerTexture}_sit_left`, true);
         } else {
             if (
