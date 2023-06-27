@@ -4,46 +4,88 @@ const app = express()
 const server = http.createServer(app)
 import {  Socket } from "socket.io"	
 const maxConnections = 2;
-const freeRoom_Num: {
+const Room_Num: {
 	[key: string]: number;
 } = {
 	airport_chair1: 0,
 	coach_park: 0,
+	chairMart: 0,
 }
-
+class Player_Role {
+	Cashier: number;
+	Customer: number;
+  
+	constructor(cashier: number, customer: number) {
+	  this.Cashier = cashier;
+	  this.Customer = customer;
+	}
+  }
+  
+  const Role_Num: {
+	[key: string]: Player_Role;
+  } = {
+	chairMart: new Player_Role(0, 0)
+  };
 // freedialogsocketEventHandler 함수 수정
-export function freedialogsocketEventHandler(socket: Socket) {
+export function dialogsocketEventHandler(socket: Socket) {
 	console.log(socket.id, "connection---------------------------------");
 	let temp: string = "";
 	socket.on("join", (data: { place_name: string }) => {
 		const { place_name } = data;
   		console.log("join: ", place_name);
 		temp = place_name;
-		if (freeRoom_Num[place_name] == maxConnections) {
-			freeRoom_Num[place_name]++;
+		if (Room_Num[place_name] == maxConnections) {
+			Room_Num[place_name]++;
 			socket.emit("roomFull");
 			return;
-		
 		}
-
 		else {
-
-			freeRoom_Num[place_name]++;
+			Room_Num[place_name]++;
 			socket.emit("joined");
-			console.log("freeRoom_Num: ", freeRoom_Num[place_name]);
-			// socket.emit("joined",  freeRoom_Num[place_name] );
+			console.log("Room_Num: ", Room_Num[place_name]);
+			// socket.emit("joined",  Room_Num[place_name] );
 		}
-
+		if (place_name == "chairMart") {
+			if (Role_Num[place_name].Cashier == 0 && Role_Num[place_name].Customer == 0) {
+				socket.emit("Cashier");
+				Role_Num[place_name].Cashier++;
+			} else if (Role_Num[place_name].Cashier == 1 && Role_Num[place_name].Customer == 0) {
+				socket.emit("Customer");
+				Role_Num[place_name].Customer++;
+			} else if (Role_Num[place_name].Cashier == 0 && Role_Num[place_name].Customer == 1) {
+				socket.emit("Cashier");
+				Role_Num[place_name].Cashier++;
+			}
+		}
 
 		
 	});
+	socket.on("out_Role" , ({ player_Role: player_Role, place_name: place_name }) => {
+		if (player_Role == "Cashier") {
+		  Role_Num[place_name].Cashier--;
+		} else if (player_Role == "Customer") {
+		  Role_Num[place_name].Customer--;
+		}
+		console.log("Role_Num: ", Role_Num[place_name]);
+	  });
+	
+	  socket.on("out_Role2" , ({ player_Role: player_Role}) => {
+		if (player_Role == "Cashier") {
+		  Role_Num[temp].Cashier--;
+		} else if (player_Role == "Customer") {
+		  Role_Num[temp].Customer--;
+		}
+		console.log("Role_Num: ", Role_Num[temp]);
+	  });
+		
+
 	socket.on("disconnect", () => {
 		//   socket.broadcast.emit("callEnded");
 		  console.log("disconnected~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-		  freeRoom_Num[temp]--;
-		  console.log("freeRoom_Num: ", freeRoom_Num[temp]);
+		  Room_Num[temp]--;
+		  console.log("Room_Num: ", Room_Num[temp]);
 		  socket.broadcast.emit("outcharacter");
-		//   socket.broadcast.emit("disconnected", freeRoom_Num[place_name]);
+		//   socket.broadcast.emit("disconnected", Room_Num[place_name]);
 		});
 	socket.broadcast.emit("userconnected");
 	
@@ -72,6 +114,7 @@ export function freedialogsocketEventHandler(socket: Socket) {
 	socket.on("callEnded", () => {
 	  socket.broadcast.emit("otherusercallended");
 	});
+
 }
 // 	socket.on("leaveCallEvent", () => {
 // 		socket.broadcast.emit("otheruserleave");

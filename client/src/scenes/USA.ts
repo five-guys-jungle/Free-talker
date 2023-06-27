@@ -16,6 +16,7 @@ import { createCharacterAnims } from "../anims/CharacterAnims";
 import {
     openNPCDialog,
     openAirport,
+    openUserDialog,
     openFreedialog,
     openReport,
     GAME_STATUS,
@@ -327,10 +328,12 @@ export default class USAScene extends Phaser.Scene {
                             store.dispatch(
                                 setSocketNamespace({
                                     socketNamespace: `${serverUrl}/freedialog/${npcInfo.name}`,
+                                    // socketNamespace: `${serverUrl}/userdialog/${npcInfo.name}`,
                                 })
                             );
                             // store.dispatch(appendSocketNamespace({ socketNamespace: `/freedialog` }));
                             store.dispatch(openFreedialog());
+                            // store.dispatch(openUserDialog());
                             this.cursors!.left.enabled = false;
                             this.cursors!.right.enabled = false;
                             this.cursors!.up.enabled = false;
@@ -392,8 +395,76 @@ export default class USAScene extends Phaser.Scene {
                             this.allPlayers[this.socket!.id].seat = false;
                             this.seatEvent = true;
                             store.dispatch(openUSA());
-                        }
-                    } else if (npcInfo.name === "gate") {
+                        }}
+                    
+                    else if (npcInfo.role === "rolePlayingPlace") {
+                            console.log("chair");
+    
+                            if (valve_E === true) {
+                                store.dispatch(
+                                    setSocketNamespace({
+                                        
+                                        socketNamespace: `${serverUrl}/userdialog/${npcInfo.name}`
+                                    })
+                                );
+                                // store.dispatch(appendSocketNamespace({ socketNamespace: `/freedialog` }));
+                                
+                                store.dispatch(openUserDialog());
+                                this.cursors!.left.enabled = false;
+                                this.cursors!.right.enabled = false;
+                                this.cursors!.up.enabled = false;
+                                this.cursors!.down.enabled = false;
+                                valve_E = false;
+                               
+    
+                                window.addEventListener("exitcall", (e: Event) => {
+                                    console.log("exitcall event listener");
+                                    this.player1!.setVelocity(0, 0);
+                                    this.player1!.setPosition(
+                                        this.player1!.x,
+                                        this.player1!.y
+                                    );
+    
+                                    this.cursors!.left.isDown = false;
+                                    this.cursors!.right.isDown = false;
+                                    this.cursors!.up.isDown = false;
+                                    this.cursors!.down.isDown = false;
+    
+                                    this.cursors!.left.enabled = true;
+                                    this.cursors!.right.enabled = true;
+                                    this.cursors!.up.enabled = true;
+                                    this.cursors!.down.enabled = true;
+    
+                                    
+                                    valve_E = true;
+                                    this.allPlayers[this.socket!.id].seat = false;
+                                    this.seatEvent = true;
+                                    store.dispatch(openUSA());
+                                });
+                            } else {
+                                this.player1!.setVelocity(0, 0);
+                                this.player1!.setPosition(
+                                    this.player1!.x,
+                                    this.player1!.y
+                                );
+    
+                                this.cursors!.left.isDown = false;
+                                this.cursors!.right.isDown = false;
+                                this.cursors!.up.isDown = false;
+                                this.cursors!.down.isDown = false;
+    
+                                this.cursors!.left.enabled = true;
+                                this.cursors!.right.enabled = true;
+                                this.cursors!.up.enabled = true;
+                                this.cursors!.down.enabled = true;
+    
+                                
+                                valve_E = true;
+
+                                store.dispatch(openUSA());
+                            }
+                    } else if (npcInfo.name.includes("Liberty")) {
+                        console.log("liberty");
                         handleScene(GAME_STATUS.AIRPORT, {});
                     } else {
                         
@@ -1106,7 +1177,7 @@ export default class USAScene extends Phaser.Scene {
         npc8.sprite = this.physics.add.sprite(npc8.x, npc8.y, npc8.texture);
         this.npcList.push(npc8);
 
-        let interact_sprite: npcInfo = {
+        let interact_sprite1: npcInfo = {
             name: "coach_park",
             x: 1485,
             y: 1157,
@@ -1114,12 +1185,19 @@ export default class USAScene extends Phaser.Scene {
             sprite: null,
             role: "freeTalkingPlace",
         };
-        interact_sprite.sprite = this.physics.add.sprite(
-            interact_sprite.x,
-            interact_sprite.y,
-            interact_sprite.texture
-        );
-        this.npcList.push(interact_sprite);
+        interact_sprite1.sprite = this.physics.add.sprite(interact_sprite1.x, interact_sprite1.y, interact_sprite1.texture);
+        this.npcList.push(interact_sprite1);
+
+        let interact_sprite2: npcInfo = {
+            name: "chairMart",
+            x: 2603,
+            y: 1362,
+            texture: "chairMart",
+            sprite: null,
+            role: "rolePlayingPlace",
+        };
+        interact_sprite2.sprite = this.physics.add.sprite(interact_sprite2.x, interact_sprite2.y, interact_sprite2.texture);
+        this.npcList.push(interact_sprite2);
     }
     gameSocketEventHandler(initial: boolean = true) {
         this.socket = io(serverUrl);

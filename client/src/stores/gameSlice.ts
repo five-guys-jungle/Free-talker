@@ -39,6 +39,9 @@ export const GameModeSlice = createSlice({
         openNPCDialog: (state) => {
             state.mode = GAME_STATUS.NPCDIALOG;
         },
+        openUserDialog: (state) => {
+            state.mode = GAME_STATUS.USERDIALOG;
+        },
         openFreedialog: (state) => {
             state.mode = GAME_STATUS.FREEDIALOG;
         },
@@ -50,7 +53,7 @@ export const GameModeSlice = createSlice({
         }
     },
 });
-export const { openAirport, openUSA, openNPCDialog, openStart, openLogin, openFreedialog, openReport,openReportBook } =
+export const { openAirport, openUSA, openNPCDialog, openStart, openLogin, openUserDialog, openFreedialog, openReport,openReportBook } =
     GameModeSlice.actions;
 
 export default GameModeSlice.reducer;

@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { TextField, Button } from "@mui/material";
 import Box from "@mui/material/Box";
-import RecommendBox from "./userdialog/RecommendBox";
-import VocaBox from "./userdialog/VocaBox";
+import SituationBox from "./userdialog/SituationBox";
+import ScriptBox from "./userdialog/ScriptBox";
 import UserBox from "./userdialog/UserBox";
+import RTCaudio from "./userdialog/RTCaudio";
 
 const Container = styled.div`
   display: flex;
@@ -15,7 +16,6 @@ const Container = styled.div`
 const LeftSection = styled.section`
   flex: 1;
   height: 100%;
-  overflow: auto;
 `;
 
 const UpperSection = styled.div`
@@ -69,14 +69,15 @@ const UserDialog: React.FC = () => {
   return (
     <Container>
       <LeftSection>
+        <RTCaudio />
         <UserBox />
       </LeftSection>
       <RightSection>
         <UpperSection>
-          <RecommendBox />
+          <SituationBox />
         </UpperSection>
         <LowerSection>
-          <VocaBox />
+          <ScriptBox />
         </LowerSection>
       </RightSection>
     </Container>
