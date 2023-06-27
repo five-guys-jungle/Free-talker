@@ -17,6 +17,7 @@ import {setUserCharacter, clearcharacters} from "../../stores/userboxslice";
 import axios from "axios";
 
 let DB_URL: string = process.env.REACT_APP_SERVER_URL!;
+let player_Role: string = ""
 const RTCaudio = () => {
     const [ me, setMe ] = useState("")
 	const [ stream, setStream ] = React.useState<MediaStream | undefined>(undefined)
@@ -27,7 +28,7 @@ const RTCaudio = () => {
 	const [ idToCall, setIdToCall ] = useState("")
 	const [ callEnded, setCallEnded] = useState(false)
 	const [ name, setName ] = useState("")
-	let player_Role: string = ""
+	
 
 
 	const dispatch = useAppDispatch();
@@ -295,7 +296,7 @@ const RTCaudio = () => {
 				  >
 					<PhoneIcon fontSize="large" />
 				  </IconButton>
-				  <h4>{player_Role}이 되어 대화를 시작해 보세요</h4>
+				  <h4>({player_Role})이 되어 대화를 시작해 보세요1</h4>
 				</div>
 				
 			  ) : (
@@ -320,7 +321,7 @@ const RTCaudio = () => {
 				<h4>통화를 걸어 다른 유저와 상황극을 시작해 보세요</h4>
 				</div>
 			  )}
-			  
+			  <h4>({player_Role})이 되어 대화를 시작해 보세요3</h4>
 			  {receivingCall && !callAccepted && (
 				<div
 				  className="caller"
