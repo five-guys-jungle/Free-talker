@@ -183,7 +183,7 @@ const SentenceDiv = styled.div`
         // width: 600px;
         height: 7vh;
         width: 32vw;
-        margin: 20px auto;
+        margin: 2vh auto;
         // margin: 0 auto; // Adjust this
         border-top: solid 2px #fff;
         border-radius: 8px;
