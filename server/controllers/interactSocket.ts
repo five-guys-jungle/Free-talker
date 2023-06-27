@@ -49,19 +49,28 @@ export function interactSocketEventHandler(socket: Socket) {
             .call({ input: prompt })
             .then(async (res) => {
                 npcSentence = res.response;
-                socket.emit("npcResponse", npcSentence);
+                // socket.emit("npcFirstResponse", npcSentence);
 
                 await convertTexttoSpeech(prompt, npcSentence, npcName)
                     .then((res) => {
-                        socket.emit("totalResponse", res);
-                        console.log("Total response: ", res);
+                        socket.emit("npcFirstResponse", res);
+                        console.log("npcFirstResponse response: ", res);
                     })
                     .catch((err) => {
                         console.log("convert Text to Speech error: ", err);
                     });
             })
             .catch((err) => {
-                socket.emit("npcResponse", "chain call error");
+                npcSentence = "Hello, Welcome to Free talker! How can I assist you ?"
+                convertTexttoSpeech(prompt, npcSentence, npcName)
+                    .then((res) => {
+                        socket.emit("npcFirstResponse", res);
+                        console.log("npcFirstResponse response: ", res);
+                    })
+                    .catch((err) => {
+                        console.log("convert Text to Speech error: ", err);
+                    });
+
                 console.log("chain call error: ", err);
             });
 

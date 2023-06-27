@@ -115,7 +115,7 @@ const ReportBook = (data: any) => {
             corrections: [],
             messages: [],
         });
-
+        console.log(data);
         if (data === undefined) {
             // console.log(`data : ${data}`);
 

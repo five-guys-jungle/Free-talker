@@ -73,7 +73,7 @@ const Report = (data:any) => {
             userId: playerId,
             timestamp: `${month[date.getMonth() + 1]} ${date.getDate()} ${currentTime}`,
             nickname: playerNickname,
-            npc: messages[1].name,
+            npc: messages[0].name,
             userTexture:playerTexture,
             score:score,
             corrections:corrections,
@@ -186,9 +186,9 @@ const Report = (data:any) => {
                                 <div className="Character">
                                     <h4>NPC</h4>
                                     <center>
-                                    <ScaleImg className="Character__box" src={`./assets/characters/single/${messages[1].img}.png`} alt={"Nancy"} ></ScaleImg>
+                                    <ScaleImg className="Character__box" src={`./assets/characters/single/${messages[0].img}.png`} alt={"Nancy"} ></ScaleImg>
                                     </center>
-                                    <div className="Nickname"><span className="Character__title">{messages[1].name}</span></div>
+                                    <div className="Nickname"><span className="Character__title">{messages[0].name}</span></div>
                                 </div>
                             </div>
                             </>)
