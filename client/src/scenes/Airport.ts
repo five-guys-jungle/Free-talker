@@ -51,8 +51,8 @@ export default class AirportScene extends Phaser.Scene {
     interactKey: Phaser.Input.Keyboard.Key | null = null;
     interactText: Phaser.GameObjects.Text | null = null;
     userIdText: Phaser.GameObjects.Text | null = null;
-    initial_x: number = 1920;
-    initial_y: number = 1440;
+    initial_x: number = 705;
+    initial_y: number = 674;
     allPlayers: PlayerDictionary = {};
     
     recorder: MediaRecorder | null = null;
@@ -910,15 +910,26 @@ export default class AirportScene extends Phaser.Scene {
     }
     createAirportNpc() {
         let npc1: npcInfo = {
-            name: "ImmigrationOfficer",
-            x: 1700,
-            y: 1300,
+            name: "ImmigrationOfficer1",
+            x: 600,
+            y: 243,
             texture: "ImmigrationOfficer",
             sprite: null,
             role: "npc",
         };
         npc1.sprite = this.physics.add.sprite(npc1.x, npc1.y, npc1.texture);
         this.npcList.push(npc1);
+
+        let npc2: npcInfo = {
+            name: "ImmigrationOfficer2",
+            x: 366,
+            y: 243,
+            texture: "ImmigrationOfficer",
+            sprite: null,
+            role: "npc",
+        };
+        npc2.sprite = this.physics.add.sprite(npc2.x, npc2.y, npc2.texture);
+        this.npcList.push(npc2);
 
         // let chair: npcInfo = {
         //     name: "airport_chair1",
@@ -942,18 +953,49 @@ export default class AirportScene extends Phaser.Scene {
         // npc2.sprite = this.physics.add.sprite(npc2.x, npc2.y, npc2.texture);
         // npc2.sprite.setScale(0.35);
         // this.npcList.push(npc2);
-        let gate: npcInfo = {
-            name: "statueOfLiberty",
-            x: 1695,
-            y: 1100,
+        let gate1: npcInfo = {
+            name: "statueOfLiberty1",
+            x: 706,
+            y: 47,
             texture: "gate",
             sprite: null,
             role: "npc",
         };
-        gate.sprite = this.physics.add.sprite(gate.x, gate.y, gate.texture);
-        gate.sprite.setScale(1.6);
+        gate1.sprite = this.physics.add.sprite(gate1.x, gate1.y, gate1.texture);
+        gate1.sprite.setScale(1.6);
         // gate.sprite.play("gateAnim");
-        this.npcList.push(gate);
+        this.npcList.push(gate1);
+
+
+        let gate2: npcInfo = {
+            name: "statueOfLiberty2",
+            x: 476,
+            y: 47,
+            texture: "gate",
+            sprite: null,
+            role: "npc",
+        };
+        gate2.sprite = this.physics.add.sprite(gate2.x, gate2.y, gate2.texture);
+        gate2.sprite.setScale(1.6);
+        // gate.sprite.play("gateAnim");
+        this.npcList.push(gate2);
+
+        let gate3: npcInfo = {
+            name: "statueOfLiberty3",
+            x: 925,
+            y: 47,
+            texture: "gate",
+            sprite: null,
+            role: "npc",
+        };
+        gate3.sprite = this.physics.add.sprite(gate3.x, gate3.y, gate3.texture);
+        gate3.sprite.setScale(1.6);
+        // gate.sprite.play("gateAnim");
+        this.npcList.push(gate3);
+
+
+
+
     }
     gameSocketEventHandler(initial: boolean = true) {
         this.socket = io(serverUrl);
