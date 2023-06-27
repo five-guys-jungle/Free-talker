@@ -259,8 +259,6 @@ const RTCaudio = () => {
 			// Airport 씬으로 이벤트 전달
 			window.dispatchEvent(new Event("exitcall"));
 			socket.current!.disconnect();
-		   
-			
 		}
 	  };
 
