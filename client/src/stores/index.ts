@@ -29,6 +29,7 @@ export const store = configureStore({
         userDialog: userDialogSlice,
         guider: guiderSlice,
         bgmonoff:bgmOnoffSlice,
+        presentScene:reportOnoffSlice,
     },
 });
 
