@@ -48,6 +48,7 @@ let chunks: BlobPart[] = [];
 let audioContext = new window.AudioContext();
 
 export default class AirportScene extends Phaser.Scene {
+    background!: Phaser.GameObjects.Image;
     player1: Phaser.Physics.Arcade.Sprite | null = null;
     cursors: Phaser.Types.Input.Keyboard.CursorKeys | null = null;
     interactKey: Phaser.Input.Keyboard.Key | null = null;
@@ -142,6 +143,11 @@ export default class AirportScene extends Phaser.Scene {
     }
 
     create() {
+        this.background = this.add
+            .image(this.initial_x, this.initial_y, "background")
+            .setDisplaySize(this.cameras.main.width*4, this.cameras.main.height*4)
+            .setOrigin(0.5, 0.5);
+
         // this.game.events.on('pause', this.gamePause);
         this.events.on("wake", this.onSceneWake, this);
         this.events.on("sleep", this.onSceneSleep, this);
@@ -766,6 +772,9 @@ export default class AirportScene extends Phaser.Scene {
         }
     }
     update(time: number, delta: number) {
+        this.background
+            .setDisplaySize(this.cameras.main.width*4, this.cameras.main.height*4)
+            .setOrigin(0.5, 0.5);
         this.deleteNotVaildScoket();
         let speed: number = this.cursors?.shift.isDown
             ? this.dashSpeed
