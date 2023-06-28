@@ -145,7 +145,7 @@ export default class AirportScene extends Phaser.Scene {
     create() {
         this.background = this.add
             .image(this.initial_x, this.initial_y, "background")
-            .setDisplaySize(this.cameras.main.width*4, this.cameras.main.height*4)
+            .setDisplaySize(this.cameras.main.width * 4, this.cameras.main.height * 4)
             .setOrigin(0.5, 0.5);
 
         // this.game.events.on('pause', this.gamePause);
@@ -382,33 +382,6 @@ export default class AirportScene extends Phaser.Scene {
                         this.cursors!.right.enabled = false;
                         this.cursors!.up.enabled = false;
                         this.cursors!.down.enabled = false;
-                        
-                        const recommendBtnClicked = (e: Event) => {
-                            const customEvent = e as CustomEvent;
-                            store.dispatch(clearSentences());
-                            if (customEvent.detail.message === 0) {
-                                store.dispatch(
-                                    appendSentence({
-                                        _id: "1",
-                                        sentence:
-                                            "추천 문장을 준비 중입니다. 잠시만 기다려 주세요.",
-                                    })
-                                );
-                            }
-                            console.log(
-                                "lastMessage in SectanceBox: ",
-                                customEvent.detail.lastMessage
-                            );
-                            this.socket2!.emit(
-                                "getRecommendedResponses",
-                                this.currNpcName,
-                                this.alreadyRecommended,
-                                customEvent.detail.lastMessage
-                            );
-                            store.dispatch(
-                                setCanRequestRecommend(false)
-                            );
-                        };
 
                         if (
                             this.socket2 === null ||
@@ -422,7 +395,37 @@ export default class AirportScene extends Phaser.Scene {
                             store.dispatch(toggleIsClicked());
                             this.socket2 = io(`${serverUrl}/interaction`);
                             this.socket2.on("connect", () => {
-
+                                const recommendBtnClicked = (e: Event) => {
+                                    const customEvent = e as CustomEvent;
+                                    store.dispatch(clearSentences());
+                                    if (customEvent.detail.message === 0) {
+                                        store.dispatch(
+                                            appendSentence({
+                                                _id: "1",
+                                                sentence:
+                                                    "추천 문장을 준비 중입니다. 잠시만 기다려 주세요.",
+                                            })
+                                        );
+                                    }
+                                    console.log(
+                                        "lastMessage in SectanceBox: ",
+                                        customEvent.detail.lastMessage
+                                    );
+                                    this.socket2!.emit(
+                                        "getRecommendedResponses",
+                                        this.currNpcName,
+                                        this.alreadyRecommended,
+                                        customEvent.detail.lastMessage
+                                    );
+                                    store.dispatch(
+                                        setCanRequestRecommend(false)
+                                    );
+                                };
+                                this.socket2!.on("disconnect", () => {
+                                    console.log("disconnect, recommendBtnClicked: ", recommendBtnClicked);
+                                    window.removeEventListener("recomButtonClicked", recommendBtnClicked);
+                                });
+                                console.log("recommendBtnClicked: ", recommendBtnClicked);
                                 this.currNpcName = npcInfo.name;
                                 console.log(
                                     "connect, interaction socket.id: ",
@@ -469,10 +472,6 @@ export default class AirportScene extends Phaser.Scene {
                                     };
                                     this.audio.play();
                                 })
-
-
-
-
 
                                 window.addEventListener(
                                     "recomButtonClicked", recommendBtnClicked
@@ -622,7 +621,6 @@ export default class AirportScene extends Phaser.Scene {
                                 );
                             });
                         } else {
-                            window.removeEventListener("recomButtonClicked", recommendBtnClicked);
                             this.currNpcName = "";
                             // 이미 소켓이 연결되어 있는데 다시 한번 E키를 누른 경우 -> 대화 종료 상황
                             this.isNpcSocketConnected = false;
@@ -778,7 +776,7 @@ export default class AirportScene extends Phaser.Scene {
     }
     update(time: number, delta: number) {
         this.background
-            .setDisplaySize(this.cameras.main.width*4, this.cameras.main.height*4)
+            .setDisplaySize(this.cameras.main.width * 4, this.cameras.main.height * 4)
             .setOrigin(0.5, 0.5);
         this.deleteNotVaildScoket();
         let speed: number = this.cursors?.shift.isDown

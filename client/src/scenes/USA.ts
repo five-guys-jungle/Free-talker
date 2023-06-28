@@ -496,33 +496,6 @@ export default class USAScene extends Phaser.Scene {
                             this.cursors!.right.enabled = false;
                             this.cursors!.up.enabled = false;
                             this.cursors!.down.enabled = false;
-                            
-                            const recommendBtnClicked = (e: Event) => {
-                                const customEvent = e as CustomEvent;
-                                store.dispatch(clearSentences());
-                                if (customEvent.detail.message === 0) {
-                                    store.dispatch(
-                                        appendSentence({
-                                            _id: "1",
-                                            sentence:
-                                                "추천 문장을 준비 중입니다. 잠시만 기다려 주세요.",
-                                        })
-                                    );
-                                }
-                                console.log(
-                                    "lastMessage in SectanceBox: ",
-                                    customEvent.detail.lastMessage
-                                );
-                                this.socket2!.emit(
-                                    "getRecommendedResponses",
-                                    this.currNpcName,
-                                    this.alreadyRecommended,
-                                    customEvent.detail.lastMessage
-                                );
-                                store.dispatch(
-                                    setCanRequestRecommend(false)
-                                );
-                            };
 
                             if (
                                 this.socket2 === null ||
@@ -535,6 +508,36 @@ export default class USAScene extends Phaser.Scene {
                                 store.dispatch(clearSentences());
                                 this.socket2 = io(`${serverUrl}/interaction`);
                                 this.socket2.on("connect", () => {
+                                    const recommendBtnClicked = (e: Event) => {
+                                        const customEvent = e as CustomEvent;
+                                        store.dispatch(clearSentences());
+                                        if (customEvent.detail.message === 0) {
+                                            store.dispatch(
+                                                appendSentence({
+                                                    _id: "1",
+                                                    sentence:
+                                                        "추천 문장을 준비 중입니다. 잠시만 기다려 주세요.",
+                                                })
+                                            );
+                                        }
+                                        console.log(
+                                            "lastMessage in SectanceBox: ",
+                                            customEvent.detail.lastMessage
+                                        );
+                                        this.socket2!.emit(
+                                            "getRecommendedResponses",
+                                            this.currNpcName,
+                                            this.alreadyRecommended,
+                                            customEvent.detail.lastMessage
+                                        );
+                                        store.dispatch(
+                                            setCanRequestRecommend(false)
+                                        );
+                                    };
+                                    this.socket2!.on("disconnect", () => {
+                                        console.log("disconnect, recommendBtnClicked: ", recommendBtnClicked);
+                                        window.removeEventListener("recomButtonClicked", recommendBtnClicked);
+                                    });
                                     this.currNpcName = npcInfo.name;
                                     console.log(
                                         "connect, interaction socket.id: ",
@@ -736,7 +739,6 @@ export default class USAScene extends Phaser.Scene {
                                     );
                                 });
                             } else {
-                                window.removeEventListener("recomButtonClicked", recommendBtnClicked);
                                 // 이미 소켓이 연결되어 있는데 다시 한번 E키를 누른 경우 -> 대화 종료 상황
                                 this.currNpcName = "";
                                 this.isNpcSocketConnected = false;
