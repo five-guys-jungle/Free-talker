@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import store, { RootState, useAppDispatch } from "../stores";
-import { openAirport, openReportBook } from "../stores/gameSlice";
+import { openAirport, openUSA, openReportBook } from "../stores/gameSlice";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux"; // react-redux에서 useSelector를 불러옵니다.
 import TalkBox from "./npcdialog/TalkBox";
@@ -22,7 +22,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import 'swiper/css';
 import 'swiper/css/pagination';
 import { RIGHT } from "phaser";
-
+import { GAME_STATUS } from "../stores/gameSlice";
 // interface NPCDialogProps {
 //     initialDialog?: string;
 //     onClose: () => void;
@@ -34,6 +34,14 @@ let dialogsArr: dialogState = {
 
 const ReportBook = (data: any) => {
     const [openbook, setOpenbook] = useState(false);
+
+    const { presentScene } = useSelector((state: RootState) => {
+        return { ...state.presentScene };
+      });
+
+    const { mode } = useSelector((state: RootState) => {
+        return { ...state.mode };
+      });
 
     const { playerId, playerNickname, playerTexture } = useSelector(
         (state: RootState) => {
@@ -82,7 +90,8 @@ const ReportBook = (data: any) => {
         //   messages: messages,
         // });
         setOpenbook(!openbook);
-        store.dispatch(openAirport());
+        if (presentScene=="airport") store.dispatch(openAirport());
+        else if (presentScene=="usa") store.dispatch(openUSA());
     };
     const handleDelete = (userId: string, timestamp: string) => {
         deleteDialog({
@@ -96,7 +105,8 @@ const ReportBook = (data: any) => {
             messages: [],
         });
         // setOpenbook(!openbook);
-        store.dispatch(openAirport());
+        if (presentScene=="airport") store.dispatch(openAirport());
+        else if (presentScene=="usa") store.dispatch(openUSA());
         handleBook();
     };
 
