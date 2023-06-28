@@ -231,6 +231,7 @@ export default class AirportScene extends Phaser.Scene {
             color: "black",
             fontSize: "16px",
         });
+        this.userIdText!.setOrigin(0.5, 0);
 
         let valve_E = true;
         // npc 와의 대화를 위한 키 설정
@@ -774,11 +775,6 @@ export default class AirportScene extends Phaser.Scene {
 
         if (this.player1 !== null && this.player1 !== undefined) {
             this.playInteractionAnims();
-            // console.log("userNickname : ", this.userNickname);
-            this.userIdText!.setText(this.userNickname);
-            this.userIdText!.setOrigin(0.5, 0);
-            this.userIdText!.setX(this.player1!.x);
-            this.userIdText!.setY(this.player1!.y - 50);
         }
 
         if (
@@ -852,6 +848,9 @@ export default class AirportScene extends Phaser.Scene {
 
             this.player1!.setVelocityX(velocityX);
             this.player1!.setVelocityY(velocityY);
+            this.userIdText!.setText(this.userNickname);
+            this.userIdText!.setX(this.player1!.x);
+            this.userIdText!.setY(this.player1!.y - 50);
 
             if (velocityX === 0 && velocityY === 0) {
                 if (this.player1.anims.isPlaying) {
