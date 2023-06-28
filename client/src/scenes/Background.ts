@@ -43,7 +43,7 @@ export default class Background extends Phaser.Scene {
 
         this.load.spritesheet(
             "MartCashier",
-            "assets/characters/MartCashier.png",
+            "assets/characters/MartCashierSit.png",
             {
                 frameWidth: 32,
                 frameHeight: 48,
