@@ -19,6 +19,8 @@ import { IconButton } from "@material-ui/core";
 import { scoreState } from "../stores/scoreSlice";
 import { Pagination, Navigation } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
+import 'swiper/css';
+import 'swiper/css/pagination';
 import { RIGHT } from "phaser";
 
 // interface NPCDialogProps {
@@ -266,23 +268,6 @@ const ReportBook = (data: any) => {
                                                     <div className="title">
                                                         <h1>REPORT</h1>
                                                         <IconButton
-                                                            color="primary"
-                                                            onClick={handleSave}
-                                                            style={{
-                                                                gridArea: "s3",
-                                                                marginLeft:
-                                                                    "auto",
-                                                                marginRight:
-                                                                    "30px",
-                                                                marginTop:
-                                                                    "19px",
-                                                                width: "50px",
-                                                                height: "25px",
-                                                            }}
-                                                        >
-                                                            <SaveIcon />
-                                                        </IconButton>
-                                                        <IconButton
                                                             color="secondary"
                                                             onClick={() =>
                                                                 handleDelete(
@@ -459,6 +444,12 @@ const ReportBook = (data: any) => {
                   } */}
                                                     <div className="corrections">
                                                         <span>Corrections</span>
+
+                                                        <Swiper
+                                                        style={{ width: "440px" , height:"100px", marginTop:"35px"}}
+                                                        modules={[Pagination]}
+                                                        pagination={{clickable:true}}
+                                                        >
                                                         <div className="corrections-list">
                                                             {dialog.corrections
                                                                 .length !== 0 &&
@@ -467,11 +458,10 @@ const ReportBook = (data: any) => {
                                                                         correction,
                                                                         index
                                                                     ) => (
+                                                                        <SwiperSlide key={index}>
+                                                                        {
                                                                         <div
-                                                                            className="correction-div"
-                                                                            key={
-                                                                                index
-                                                                            }
+                                                                            className="correction-div" style={{marginLeft:"25px"}}
                                                                         >
                                                                             <p>
                                                                                 User
@@ -489,10 +479,14 @@ const ReportBook = (data: any) => {
                                                                                 }
                                                                             </p>
                                                                         </div>
+                                                                    }
+                                                                    </SwiperSlide>
                                                                     )
                                                                 )}
                                                         </div>
+                                                        </Swiper>
                                                     </div>
+
                                                     <div className="talks">
                                                         {dialog.messages
                                                             .length !== 0 &&
