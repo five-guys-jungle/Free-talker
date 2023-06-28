@@ -214,7 +214,20 @@ const FreeDialog = () => {
 			
 		}
 	  };
-
+	  useEffect(() => {
+		const handleKeyDown = (event: KeyboardEvent) => {
+			if (event.key === 'e' || event.key === 'E') {
+				leaveCall();
+			}
+		};
+	
+		window.addEventListener('keydown', handleKeyDown);
+	
+		return () => {
+			window.removeEventListener('keydown', handleKeyDown);
+		};
+	}, []);
+	
 		return (
 			<>
 				<div style={{ 
