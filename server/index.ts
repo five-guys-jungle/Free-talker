@@ -36,7 +36,7 @@ const port = 5000;
 const app = express();
 
 const server = http.createServer(app);
-const io = new SocketIOServer(server);
+export const io = new SocketIOServer(server);
 
 io.on("connection", socketEventHandler);
 

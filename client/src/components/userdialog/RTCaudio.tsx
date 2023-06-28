@@ -91,9 +91,8 @@ const RTCaudio = () => {
 			window.dispatchEvent(seatEvent);
 		}
 			)
-		socket.current!.on("role1", (data: any) => {
-			console.log("role 1: ", data);
-			// let recommendations: string[] = [];
+		socket.current!.on("role", (data: any) => {
+			console.log("role : ", data);
 			dispatch(setSituation({ situation: data.situation }));
 			dispatch(setRole({ role: data.role}));
 			data.recommendations.forEach((recommendation:string, index:number) => {
@@ -107,19 +106,7 @@ const RTCaudio = () => {
 			
 		})
 
-		socket.current!.on("role2", (data: any) => {
-			console.log("role 2: ", data);
-			dispatch(setSituation({ situation: data.situation }));
-			dispatch(setRole({ role: data.role}));
-			data.recommendations.forEach((recommendation:string, index:number) => {
-				store.dispatch(
-						appendRecommendation({
-								_id: index.toString(),
-								recommendation: recommendation,
-						})
-				);
-		});
-		})
+
 
 
 		console.log("socket is connected: ", socket.current!.id);
@@ -181,14 +168,16 @@ const RTCaudio = () => {
 		});
 		return () => {
 			// socket.current!.emit("out_Role" , {playerRole: playerRole, placeName: placeName});
+			socket.current!.emit("userExit", socket.current!.id);
 			socket.current!.disconnect();
+			store.dispatch(clearRecommendations());
+
 		}
 	  
 	
 	}, []);
 
 
-       
 
     const callUser = async(id: string) => {
 		console.log("id:", id)
@@ -271,17 +260,6 @@ const RTCaudio = () => {
 
 		connectionRef.current = peer;
 		// fetchData();
-		// Send placeName using GET request
-		// try {
-		// 	const response = await axios.get(`${DB_URL}/userdialog/place`, {
-		// 		params: {
-		// 			placeName: placeName // placeName you want to send
-		// 		}
-		// 	});
-		// 	console.log(response.data);
-		// } catch (error) {
-		// 	console.error(`Error in sending placeName: ${error}`);
-		// }
 	};
 
 	const leaveCall = () => {
@@ -294,6 +272,7 @@ const RTCaudio = () => {
 			socket.current!.emit("leaveCallEvent", { to: caller });
 			// Airport 씬으로 이벤트 전달
 			window.dispatchEvent(new Event("exitcall"));
+			socket.current!.emit("userExit", socket.current!.id);
 			socket.current!.disconnect();
 		}
 	  };

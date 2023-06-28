@@ -1170,8 +1170,8 @@ export default class USAScene extends Phaser.Scene {
 
         let npc6: npcInfo = {
             name: "MartCashier",
-            x: 2737,
-            y: 1850,
+            x: 2739,
+            y: 1842,
             texture: "MartCashier",
             sprite: null,
             role: "npc",
