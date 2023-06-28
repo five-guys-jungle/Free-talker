@@ -12,6 +12,7 @@ import userboxSlice from "./userboxslice";
 import reportOnoffSlice from "./reportOnoffSlice";
 import userDialogSlice from './userDialogSlice';
 import guiderSlice from "./guiderSlice";
+import bgmOnoffSlice from "./bgmOnoffSlice";
 
 export const store = configureStore({
     reducer: {
@@ -27,6 +28,7 @@ export const store = configureStore({
         reportonoff: reportOnoffSlice,
         userDialog: userDialogSlice,
         guider: guiderSlice,
+        bgmonoff:bgmOnoffSlice,
     },
 });
 
