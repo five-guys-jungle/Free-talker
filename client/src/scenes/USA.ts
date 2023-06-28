@@ -438,8 +438,7 @@ export default class USAScene extends Phaser.Scene {
     
                                     
                                     valve_E = true;
-                                    this.allPlayers[this.socket!.id].seat = false;
-                                    this.seatEvent = true;
+                                   
                                     store.dispatch(openUSA());
                                 });
                             } else {
