@@ -498,7 +498,8 @@ export default class USAScene extends Phaser.Scene {
                             this.cursors!.down.enabled = false;
 
                             if (
-                                this.isNpcSocketConnected === false
+                                this.socket2 === null ||
+                                this.socket2 === undefined
                             ) {
                                 store.dispatch(reportOff());
                                 store.dispatch(setScore({ score: 0 }));
@@ -1133,7 +1134,7 @@ export default class USAScene extends Phaser.Scene {
         let npc2: npcInfo = {
             name: "Barista",
             x: 1810,
-            y: 426,
+            y: 428,
             texture: "Barista",
             sprite: null,
             role: "npc",
@@ -1168,7 +1169,7 @@ export default class USAScene extends Phaser.Scene {
         let npc5: npcInfo = {
             name: "ClothingShopStaff",
             x: 3102,
-            y: 2235,
+            y: 2237,
             texture: "ClothingShopStaff",
             sprite: null,
             role: "npc",
