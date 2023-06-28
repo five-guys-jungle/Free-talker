@@ -45,7 +45,9 @@ const Bgm = () => {
     
     return (
         <div style={{position:"absolute", bottom: '2%', left: '1%',}}>
-            <Box style={{position:"relative"}}
+            {(mode==AIRPORT||mode==USA) &&
+            
+            (<Box style={{position:"relative"}}
                 sx={{
                     position: 'absolute',
                     bottom: 0,
@@ -64,11 +66,11 @@ const Bgm = () => {
                     {bgmonoff && <AudiotrackIcon />}
                     {!bgmonoff && <MusicOffRoundedIcon />}
                 </Fab>
-            </Box>
-        {(mode==START || mode==LOGIN) && <>
+            </Box>)}
+        {/* {(mode==START || mode==LOGIN) && <>
         {bgmonoff && <audio id="myAudio" src={audios[0].audio} controls autoPlay loop style={{ display: "none" }}/>}
         {!bgmonoff && <audio id="myAudio" src={audios[0].audio} controls autoPlay muted style={{ display: "none" }}/>}
-        </>}
+        </>} */}
         {mode==AIRPORT && <>
         {bgmonoff && <audio src={audios[1].audio} controls autoPlay loop style={{  display: "none" }}/>}
         {!bgmonoff && <audio src={audios[1].audio} controls autoPlay muted style={{  display: "none" }}/>}
@@ -77,14 +79,20 @@ const Bgm = () => {
         {bgmonoff && <audio src={audios[2].audio} controls autoPlay loop style={{  display: "none" }}/>}
         {!bgmonoff && <audio src={audios[2].audio} controls autoPlay muted style={{  display: "none" }}/>}
         </>}
-        {(mode==NPCDIALOG || mode== USERDIALOG || mode==REPORT || mode==FREEDIALOG) && <>
-        {bgmonoff &&<audio src={audios[3].audio} controls autoPlay loop style={{  display: "none" }}/>}
+        {/* {(mode==NPCDIALOG || mode== USERDIALOG || mode==REPORT || mode==FREEDIALOG) && <>
+        {bgmonoff &&<audio src={audios[3].audio} controls autoPlay loop style={{  display: "none" }} volume={0.5} />}
         {!bgmonoff &&<audio src={audios[3].audio} controls autoPlay muted style={{  display: "none" }}/>}
-        </>}
+        </>} */}
         </div>
     //   <ReactAudioPlayer src="assets/.mp3" autoPlay controls />
     );
   
 }
+
+declare module 'react' {
+    interface HTMLAttributes<T> extends AriaAttributes, DOMAttributes<T> {
+      volume?: number;
+    }
+  }
 
 export default Bgm;
