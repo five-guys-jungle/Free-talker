@@ -49,7 +49,6 @@ let chunks: BlobPart[] = [];
 let audioContext = new window.AudioContext();
 
 export default class USAScene extends Phaser.Scene {
-    background!: Phaser.GameObjects.Image;
     player1: Phaser.Physics.Arcade.Sprite | null = null;
     cursors: Phaser.Types.Input.Keyboard.CursorKeys | null = null;
     interactKey: Phaser.Input.Keyboard.Key | null = null;
@@ -144,10 +143,6 @@ export default class USAScene extends Phaser.Scene {
     }
 
     create() {
-        this.background = this.add
-            .image(this.initial_x, this.initial_y*2, "background")
-            .setDisplaySize(this.cameras.main.width*2, this.cameras.main.height*6)
-            .setOrigin(0.5, 0.5);
         // this.game.events.on('pause', this.gamePause);
         this.events.on("wake", this.onSceneWake, this);
         this.events.on("sleep", this.onSceneSleep, this);
@@ -293,7 +288,7 @@ export default class USAScene extends Phaser.Scene {
             color: "black",
             fontSize: "16px",
         });
-        this.userIdText = this.add.text(10, 10, this.userNickname, {
+        this.userIdText = this.add.text(10, 10, "", {
             color: "black",
             fontSize: "16px",
         });
@@ -448,7 +443,8 @@ export default class USAScene extends Phaser.Scene {
     
                                     
                                     valve_E = true;
-                                   
+                                    this.allPlayers[this.socket!.id].seat = false;
+                                    this.seatEvent = true;
                                     store.dispatch(openUSA());
                                 });
                             } else {
@@ -498,7 +494,8 @@ export default class USAScene extends Phaser.Scene {
                             this.cursors!.down.enabled = false;
 
                             if (
-                                this.isNpcSocketConnected === false
+                                this.socket2 === null ||
+                                this.socket2 === undefined
                             ) {
                                 store.dispatch(reportOff());
                                 store.dispatch(setScore({ score: 0 }));
@@ -555,7 +552,7 @@ export default class USAScene extends Phaser.Scene {
                                     console.log("npcFirstResponse event");
                                     store.dispatch(
                                         setMessage(
-                                            "응답중입니다. 잠시만 기다려주세요"
+                                            "응답중입니다\n잠시만 기다려주세요"
                                         )
                                     );
                                     store.dispatch(setCanRequestRecommend(false));
@@ -577,7 +574,7 @@ export default class USAScene extends Phaser.Scene {
                                         this.isAudioPlaying = false;
                                         store.dispatch(
                                             setMessage(
-                                                "D키를 눌러 녹음을 시작하세요"
+                                                "D키를 눌러\n녹음을 시작하세요"
                                             )
                                         );
                                         store.dispatch(
@@ -610,7 +607,7 @@ export default class USAScene extends Phaser.Scene {
                                                 setTimeout(() => {
                                                     store.dispatch(
                                                         setMessage(
-                                                            "D키를 눌러 녹음을 시작하세요"
+                                                            "D키를 눌러\n녹음을 시작하세요"
                                                         )
                                                     );
                                                     store.dispatch(
@@ -678,7 +675,7 @@ export default class USAScene extends Phaser.Scene {
                                                 this.isAudioPlaying = false;
                                                 store.dispatch(
                                                     setMessage(
-                                                        "D키를 눌러 녹음을 시작하세요"
+                                                        "D키를 눌러\n녹음을 시작하세요"
                                                     )
                                                 );
                                                 store.dispatch(
@@ -830,7 +827,7 @@ export default class USAScene extends Phaser.Scene {
                         if (this.recorder2.state === "recording") {
                             store.dispatch(setRecord(true));
                             store.dispatch(
-                                setMessage("D키를 눌러 녹음을 시작하세요")
+                                setMessage("D키를 눌러\n녹음을 시작하세요")
                             );
                             this.isAudioPlaying = true;
                             this.recorder2!.stop();
@@ -839,7 +836,7 @@ export default class USAScene extends Phaser.Scene {
                             store.dispatch(setRecord(false));
                             store.dispatch(
                                 setMessage(
-                                    "녹음 중입니다. D키를 눌러 녹음을 종료하세요"
+                                    "녹음 중입니다\nD키를 눌러 녹음을 종료하세요"
                                 )
                             );
                             this.recorder2!.start();
@@ -856,7 +853,7 @@ export default class USAScene extends Phaser.Scene {
             if (this.isAudioPlaying) {
                 this.audio?.pause();
                 this.isAudioPlaying = false;
-                store.dispatch(setMessage("D키를 눌러 녹음을 시작하세요"));
+                store.dispatch(setMessage("D키를 눌러\n녹음을 시작하세요"));
                 store.dispatch(setCanRequestRecommend(true));
                 this.audio = new Audio();
                 this.audio = null
@@ -891,9 +888,6 @@ export default class USAScene extends Phaser.Scene {
         }
     }
     update(time: number, delta: number) {
-        this.background
-            .setDisplaySize(this.cameras.main.width*4, this.cameras.main.height*6)
-            .setOrigin(0.5, 0.5);
         this.deleteNotVaildScoket();
         let speed: number = this.cursors?.shift.isDown
             ? this.dashSpeed
@@ -983,8 +977,6 @@ export default class USAScene extends Phaser.Scene {
 
             this.player1!.setVelocityX(velocityX);
             this.player1!.setVelocityY(velocityY);
-            this.userIdText!.setX(this.player1!.x);
-            this.userIdText!.setY(this.player1!.y - 50);
 
             if (velocityX === 0 && velocityY === 0) {
                 if (this.player1.anims.isPlaying) {
@@ -1089,7 +1081,7 @@ export default class USAScene extends Phaser.Scene {
                     blob.arrayBuffer().then((buffer) => {
                         console.log("buffer: ", buffer);
                         store.dispatch(
-                            setMessage("응답 중입니다. 잠시만 기다려주세요")
+                            setMessage("응답 중입니다\n잠시만 기다려주세요")
                         );
                         this.socket2!.emit("audioSend", {
                             userNickname: this.userNickname,
