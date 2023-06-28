@@ -18,7 +18,7 @@ import {setUserCharacter, clearcharacters} from "../../stores/userboxslice";
 import { UserDialogState, setSituation, clearSituation, setRole, clearRole, appendRecommendation, clearRecommendations } from "../../stores/userDialogSlice";
 import axios from "axios";
 
-let DB_URL: string = process.env.REACT_APP_SERVER_URL!;
+// let DB_URL: string = process.env.REACT_APP_SERVER_URL!;
 
 const RTCaudio = () => {
     const [ me, setMe ] = useState("")
@@ -62,6 +62,7 @@ const RTCaudio = () => {
 			setStream(stream);
 			if (myAudio.current) {
 			  myAudio.current.srcObject = stream;
+			  myAudio.current.volume = 0;
 			  console.log(myAudio.current.srcObject);
 			}
 		  });
@@ -268,11 +269,37 @@ const RTCaudio = () => {
 			// socket.current!.emit("out_Role2" , {playerRole: playerRole});
 			socket.current!.emit("leaveCallEvent", { to: caller });
 			// Airport 씬으로 이벤트 전달
-			window.dispatchEvent(new Event("exitcall"));
 			socket.current!.emit("userExit", socket.current!.id);
+			window.dispatchEvent(new Event("exitcall"));
 			socket.current!.disconnect();
 		}
 	  };
+
+	  useEffect(() => {
+		store.dispatch(clearRecommendations());
+		const handleKeyDown = (event: KeyboardEvent) => {
+			if (event.key === 'e' || event.key === 'E') {
+				setCallEnded(true);
+		
+				if (connectionRef.current) {
+					connectionRef.current.destroy();
+					socket.current!.emit("callEnded"); // 서버로 callEnded 이벤트 전송
+					// socket.current!.emit("out_Role2" , {playerRole: playerRole});
+					socket.current!.emit("leaveCallEvent", { to: caller });
+					// Airport 씬으로 이벤트 전달
+					socket.current!.emit("userExit", socket.current!.id);
+					window.dispatchEvent(new Event("exitcall"));
+					socket.current!.disconnect();
+				}
+			}
+		};
+	
+		window.addEventListener('keydown', handleKeyDown);
+	
+		return () => {
+			window.removeEventListener('keydown', handleKeyDown);
+		};
+	}, []);
 
 	  return (
 		<>
@@ -318,13 +345,13 @@ const RTCaudio = () => {
 						onClick={() => callUser(idToCall)}>
 						<PhoneIcon style={{ fontSize: "3em" }} />
 					</IconButton>
-					<Typography variant="h5" align="center" style={{ fontFamily: "Arial", fontWeight: "bold" }}>통화를 걸어 다른 유저와 상황극을 시작해 보세요</Typography>;
+					<Typography variant="h5" align="center" style={{ fontFamily: "Arial", fontWeight: "bold" }}>통화를 걸어 다른 유저와 상황극을 시작해 보세요</Typography>
 				</div>
 			  )}
 				
 				{receivingCall && !callAccepted && (
 					<div className="caller" style={{ display: 'inline-flex', alignItems: 'center', bottom : '5px' }}>
-						<Typography variant="h5" align="center" style={{ fontFamily: "Arial", fontWeight: "bold" }}> 전화를 받아주세요 ... </Typography>;
+						<Typography variant="h5" align="center" style={{ fontFamily: "Arial", fontWeight: "bold" }}> 전화를 받아주세요 ... </Typography>
 						<Button variant="contained" color="primary" onClick={answerCall} style={{marginLeft: '10px'}}>
 							Answer
 						</Button>
@@ -334,7 +361,7 @@ const RTCaudio = () => {
 					당신의 역할은
 					<div></div>
 					<span style={{ color: "#C70039" }}>{playerRole}</span>입니다 
-				</Typography>;
+				</Typography>
 				</div>
 				
 		  </div>

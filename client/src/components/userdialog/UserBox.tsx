@@ -112,9 +112,9 @@ const UserBox: React.FC = () => {
 
   const renderOtherNickname = () => {
     if (otherNickname) {
-      return <Typography variant="h4" align="center">{otherNickname}</Typography>;
+      return <Typography variant="h4" align="center">{otherNickname}</Typography>
     } else {
-      return <Typography variant="h5" align="center">대화 상대를 <div></div> 기다려 주세요</Typography>;
+      return <Typography variant="h5" align="center">대화 상대를 <div></div> 기다려 주세요</Typography>
     }
   };
 
