@@ -383,7 +383,10 @@ export default class AirportScene extends Phaser.Scene {
                         this.cursors!.up.enabled = false;
                         this.cursors!.down.enabled = false;
 
-                        if (this.isNpcSocketConnected === false) {
+                        if (
+                            this.socket2 === null ||
+                            this.socket2 === undefined
+                        ) {
                             store.dispatch(reportOff());
                             store.dispatch(setScore({ score: 0 }));
                             store.dispatch(clearCorrections());
@@ -663,7 +666,7 @@ export default class AirportScene extends Phaser.Scene {
                             });
                             this.isReportOn = true;
                             store.dispatch(openReport());
-                            store.dispatch(reportOn());
+                            store.dispatch(reportOn("airport"));
                             grammarCorrections = [];
                         }
                         countUserSpeech = 0;

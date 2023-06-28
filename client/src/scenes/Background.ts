@@ -64,7 +64,7 @@ export default class Background extends Phaser.Scene {
             "assets/characters/ClothingShopStaff.png",
             {
                 frameWidth: 32,
-                frameHeight: 48,
+                frameHeight: 40,
             }
         );
 
@@ -80,7 +80,7 @@ export default class Background extends Phaser.Scene {
 
         this.load.spritesheet("Barista", "assets/characters/Barista.png", {
             frameWidth: 32,
-            frameHeight: 48,
+            frameHeight: 40,
         });
 
         // this.load.image("background", "assets/backgrounds/space.png");

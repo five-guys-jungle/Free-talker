@@ -122,7 +122,7 @@ export async function createChain(npcName: string): Promise<ConversationChain> {
         modelName: "gpt-3.5-turbo",
         temperature: 0,
         timeout: 11000,
-        maxTokens: 100,
+        maxTokens: 120,
     });
 
     try {

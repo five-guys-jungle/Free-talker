@@ -782,7 +782,7 @@ export default class USAScene extends Phaser.Scene {
                                 
                                 this.isReportOn = true;
                                 store.dispatch(openReport());
-                                store.dispatch(reportOn());
+                                store.dispatch(reportOn("usa"));
                                 grammarCorrections = [];
                             }
                         
@@ -1125,7 +1125,7 @@ export default class USAScene extends Phaser.Scene {
         let npc2: npcInfo = {
             name: "Barista",
             x: 1810,
-            y: 426,
+            y: 428,
             texture: "Barista",
             sprite: null,
             role: "npc",
@@ -1160,7 +1160,7 @@ export default class USAScene extends Phaser.Scene {
         let npc5: npcInfo = {
             name: "ClothingShopStaff",
             x: 3102,
-            y: 2235,
+            y: 2237,
             texture: "ClothingShopStaff",
             sprite: null,
             role: "npc",
