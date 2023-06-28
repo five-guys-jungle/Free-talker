@@ -494,8 +494,7 @@ export default class USAScene extends Phaser.Scene {
                             this.cursors!.down.enabled = false;
 
                             if (
-                                this.socket2 === null ||
-                                this.socket2 === undefined
+                                this.isNpcSocketConnected === false
                             ) {
                                 store.dispatch(reportOff());
                                 store.dispatch(setScore({ score: 0 }));
