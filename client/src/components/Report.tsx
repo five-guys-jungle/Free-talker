@@ -272,19 +272,6 @@ const Report = (data: any) => {
                             }
 
                         </div>
-                      </div>
-
-                      <div className="msg-text">{message.text}</div>
-                    </div>
-                  </div>
-                ))
-              }
-              {messages.length === 0 &&
-                <center>
-                  <p style={{ textAlign: 'center', marginTop: '50%', fontSize: '20px' }}>Try talk!</p>
-                </center>
-              }
-            </div>
           </div>
         </div>
       </div>
