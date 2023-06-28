@@ -85,10 +85,7 @@ const RTCaudio = () => {
 
 		socket.current!.on("joined", () => {
 			console.log("joined!!!!!!!!!!!!!!!!")
-			const seatEvent = new CustomEvent('seat', {
-				detail: { message: "seat"}
-			});
-			window.dispatchEvent(seatEvent);
+			
 		}
 			)
 		socket.current!.on("role", (data: any) => {
