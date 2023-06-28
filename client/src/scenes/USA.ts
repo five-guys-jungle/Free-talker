@@ -293,7 +293,7 @@ export default class USAScene extends Phaser.Scene {
             color: "black",
             fontSize: "16px",
         });
-        this.userIdText = this.add.text(10, 10, "", {
+        this.userIdText = this.add.text(10, 10, this.userNickname, {
             color: "black",
             fontSize: "16px",
         });
@@ -983,6 +983,8 @@ export default class USAScene extends Phaser.Scene {
 
             this.player1!.setVelocityX(velocityX);
             this.player1!.setVelocityY(velocityY);
+            this.userIdText!.setX(this.player1!.x);
+            this.userIdText!.setY(this.player1!.y - 50);
 
             if (velocityX === 0 && velocityY === 0) {
                 if (this.player1.anims.isPlaying) {
