@@ -1,43 +1,62 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import logo from "./logo.svg";
 import "./App.css";
-// import GameComponent from "./PhaserGame";
 import styled from "styled-components";
-// import SignUpDialog from "./components/SignUpDialog";
 import LoginDialog from "./components/LoginDialog";
 import bgImage from "./assets/images/frame2.jpeg";
-import Game from "./components/Game"; // Game 컴포넌트를 불러옵니다.
-
-import { useRecoilValue } from "recoil";
-import { gameSceneState } from "./recoil/game/atoms";
-
+import { Game } from "./components/Game";
+import type { RootState } from "./stores";
+import { useSelector, useDispatch } from "react-redux"; // react-redux에서 useSelector를 불러옵니다.
+import { GAME_STATUS } from "./stores/gameSlice";
+import Start from "./components/StartPage";
+// import { selectGameScene } from "./redux/gameSlice"; // Redux에서 gameScene 상태를 선택하는 selector를 불러옵니다.
+import NPCDialog from "./components/NPCDialog";
+import UserDialog from "./components/UserDialog";
+import { Dialog } from "@mui/material";
+import TalkBox from "./components/npcdialog/TalkBox";
+import FreeDialog from "./components/FreeDialog";
+import RTC from "./components/freedialog/RTC";
 function App() {
-    const gameScene = useRecoilValue(gameSceneState);
+    const { START, AIRPORT, USA, NPCDIALOG, USERDIALOG, LOGIN, FREEDIALOG, REPORT } = GAME_STATUS;
+    const { userLoginId, playerId, mode } = useSelector((state: RootState) => {
+        return { ...state.user, ...state.mode };
+    });
+
+    const dispatch = useDispatch();
+    const [logined, setLogined] = useState(false);
+    useEffect(() => {
+        if (mode !== START && mode !== LOGIN) {
+            if (logined) return;
+            setLogined(true);
+        }
+    }, [mode]);
 
     return (
-        <div className="App">
-            <StartDiv>
-                {gameScene.scene === "login" && <LoginDialog />}
-                {gameScene.scene === "airport" && <Game />}
-                {/* <Game /> Game 컴포넌트를 렌더링합니다. */}
-                {/* <LoginDialog /> */}
-                {/* <GameComponent /> */}
-            </StartDiv>
-        </div>
+        <HoverDiv>
+            {mode === START || mode === LOGIN ? (
+                !logined && <Start />
+            ) : mode === AIRPORT ||
+              mode === USA ||
+              mode === NPCDIALOG ||
+              mode === USERDIALOG ||
+              mode === REPORT || 
+              mode === FREEDIALOG ? (
+                <Game />
+            ) : (
+                <></>
+            )}
+            {/* <NPCDialog/> */}
+            {/* <UserDialog /> */}
+            {/* <FreeDialog /> */}
+        </HoverDiv>
     );
 }
 
 export default App;
 
-const StartDiv = styled.div`
+const HoverDiv = styled.div`
+    position: absolute;
+    height: 100%;
     width: 100%;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 50px;
-    // background-image: url(${bgImage}); // 배경 이미지를 설정
-    // background-size: cover; // 이미지를 가능한 크게, 단 비율은 유지
-    // background-position: center; // 배경 이미지의 위치를 중앙으로 설정
+    // overflow: hidden;
 `;

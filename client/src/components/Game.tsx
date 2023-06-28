@@ -1,44 +1,58 @@
 import React, { useEffect, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Phaser from "phaser";
-import AirPortScene from "../scenes/airPort";
-import { useRecoilValue } from "recoil";
+import AirPortScene from "../scenes/Airport";
+import styled from "styled-components";
 import {
-    playerIdState,
-    playerNicknameState,
-    playerTextureState,
-} from "../recoil/user/atoms";
+    setPlayerId,
+    setPlayerNickname,
+    setPlayerTexture,
+} from "../stores/userSlice";
+import {
+    selectPlayerId,
+    selectPlayerNickname,
+    selectPlayerTexture,
+} from "../stores/userSlice";
 
-export default function Game() {
-    const playerId = useRecoilValue(playerIdState);
-    const playerNickname = useRecoilValue(playerNicknameState);
-    const playerTexture = useRecoilValue(playerTextureState);
+import { GAME_STATUS } from "../stores/gameSlice";
+import { RootState } from "../stores";
+import NPCDialog from "./NPCDialog";
+import UserDialog from "./UserDialog";
+import FreeDialog from "./FreeDialog";
+import Report from "./Report";  
+import ReportBook from "./Reportbook";  
+import Keyguider from "./KeyGuide";
+import Guider from "./Guide";
 
-    useEffect(() => {
-        const config = {
-            type: Phaser.AUTO,
-            width: 1440,
-            height: 960,
-            parent: "phaser-game", // 게임을 렌더링할 DOM 요소를 지정합니다.
-            physics: {
-                default: "arcade",
-                arcade: {
-                    gravity: { y: 0 },
-                },
-            },
-            scene: [AirPortScene],
-        };
+const Game = () => {
+    // socket intialization, connection
 
-        const game = new Phaser.Game(config);
-        game.scene.start("AirPortScene", {
-            playerId: playerId,
-            playerNickname: playerNickname,
-            playerTexture: playerTexture,
-        });
+    const { START, AIRPORT, USA, NPCDIALOG, USERDIALOG, FREEDIALOG, REPORT } = GAME_STATUS;
+    const { mode } = useSelector((state: RootState) => {
+        return { ...state.mode };
+    });
 
-        return () => {
-            game.destroy(true);
-        };
-    }, []);
+    const { reportonoff  } = useSelector((state: RootState) => {
+        return { ...state.reportonoff };
+    });
 
-    return <div id="phaser-game" />;
-}
+    return <BackgroundDiv>
+        {(mode === NPCDIALOG && reportonoff === false) && <NPCDialog />}
+        {mode === NPCDIALOG && <NPCDialog />}
+        {mode === USERDIALOG && <UserDialog />}
+        {mode === FREEDIALOG && <FreeDialog />}
+        {mode === REPORT && <Report/>}
+        {(mode === AIRPORT || mode === USA) && <ReportBook/>}
+        <Guider/>
+        <Keyguider/>
+        </BackgroundDiv>;
+};
+
+export { Game };
+
+const BackgroundDiv = styled.div`
+    width: 100%;
+    height: 100%;
+    // position: relative;
+    // overflow: hidden;
+`;
