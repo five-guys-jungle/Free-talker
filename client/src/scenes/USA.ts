@@ -49,6 +49,7 @@ let chunks: BlobPart[] = [];
 let audioContext = new window.AudioContext();
 
 export default class USAScene extends Phaser.Scene {
+    background!: Phaser.GameObjects.Image;
     player1: Phaser.Physics.Arcade.Sprite | null = null;
     cursors: Phaser.Types.Input.Keyboard.CursorKeys | null = null;
     interactKey: Phaser.Input.Keyboard.Key | null = null;
@@ -143,6 +144,10 @@ export default class USAScene extends Phaser.Scene {
     }
 
     create() {
+        this.background = this.add
+            .image(this.initial_x, this.initial_y*2, "background")
+            .setDisplaySize(this.cameras.main.width*2, this.cameras.main.height*6)
+            .setOrigin(0.5, 0.5);
         // this.game.events.on('pause', this.gamePause);
         this.events.on("wake", this.onSceneWake, this);
         this.events.on("sleep", this.onSceneSleep, this);
@@ -292,7 +297,6 @@ export default class USAScene extends Phaser.Scene {
             color: "black",
             fontSize: "16px",
         });
-        this.userIdText!.setOrigin(0.5, 0);
 
         let valve_E = true;
         // npc 와의 대화를 위한 키 설정
@@ -887,6 +891,9 @@ export default class USAScene extends Phaser.Scene {
         }
     }
     update(time: number, delta: number) {
+        this.background
+            .setDisplaySize(this.cameras.main.width*4, this.cameras.main.height*6)
+            .setOrigin(0.5, 0.5);
         this.deleteNotVaildScoket();
         let speed: number = this.cursors?.shift.isDown
             ? this.dashSpeed
@@ -897,6 +904,10 @@ export default class USAScene extends Phaser.Scene {
         if (this.player1 !== null && this.player1 !== undefined) {
             this.playInteractionAnims();
             // console.log("userNickname : ", this.userNickname);
+            this.userIdText!.setText(this.userNickname);
+            this.userIdText!.setOrigin(0.5, 0);
+            this.userIdText!.setX(this.player1!.x);
+            this.userIdText!.setY(this.player1!.y - 50);
         }
 
         if (
@@ -972,9 +983,6 @@ export default class USAScene extends Phaser.Scene {
 
             this.player1!.setVelocityX(velocityX);
             this.player1!.setVelocityY(velocityY);
-            this.userIdText!.setText(this.userNickname);
-            this.userIdText!.setX(this.player1!.x);
-            this.userIdText!.setY(this.player1!.y - 50);
 
             if (velocityX === 0 && velocityY === 0) {
                 if (this.player1.anims.isPlaying) {
