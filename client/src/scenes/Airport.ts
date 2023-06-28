@@ -227,7 +227,7 @@ export default class AirportScene extends Phaser.Scene {
             color: "black",
             fontSize: "16px",
         });
-        this.userIdText = this.add.text(10, 10, "", {
+        this.userIdText = this.add.text(10, 10, this.userNickname, {
             color: "black",
             fontSize: "16px",
         });
@@ -848,7 +848,7 @@ export default class AirportScene extends Phaser.Scene {
 
             this.player1!.setVelocityX(velocityX);
             this.player1!.setVelocityY(velocityY);
-            this.userIdText!.setText(this.userNickname);
+            // this.userIdText!.setText(this.userNickname);
             this.userIdText!.setX(this.player1!.x);
             this.userIdText!.setY(this.player1!.y - 50);
 
