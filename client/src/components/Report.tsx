@@ -21,6 +21,10 @@ import {
   setCanRequestRecommend,
 } from "../stores/sentenceBoxSlice";
 import { reportOn, reportOff } from "../stores/reportOnoffSlice"
+import { Pagination, Navigation } from "swiper";
+import { Swiper, SwiperSlide } from "swiper/react";
+import 'swiper/css';
+import 'swiper/css/pagination';
 
 // interface NPCDialogProps {
 //     initialDialog?: string;
@@ -212,33 +216,61 @@ const Report = (data: any) => {
                                 </div>
                             </>)
                         } */}
-            <div className="corrections"><span>Corrections</span>
-              <div className="corrections-list">
-                {corrections.length !== 0 &&
-                  corrections.map((correction, index) => (
-                    <div className="correction-div" key={index}>
-                      <p>User Sentence : {correction.original}</p>
-                      <p>Corrected Sentence: {correction.correction}</p>
-                    </div>
-                  ))
-                }
-              </div>
-            </div>
-            <div className="talks">
-              {messages.length !== 0 &&
-                messages.map((message, index) => (
-                  <div className={`msg ${message.side}-msg`} key={index}>
-                    <div
-                      className="msg-img"
-                      style={{
-                        backgroundImage: `url(${`./assets/characters/single/${message.img}.png`})`,
-                      }}
-                    ></div>
 
-                    <div className="msg-bubble">
-                      <div className="msg-info">
-                        <div className="msg-info-name">
-                          {message.name}
+                        <div className="corrections"><span>Corrections</span>
+                        <Swiper
+                        style={{ width: "440px" , height:"100px", marginTop:"35px"}}
+                        modules={[Pagination]}
+                        pagination={{clickable:true}}
+                        >
+                        
+                            <div className="corrections-list">
+                                {corrections.length!==0 && 
+                                corrections.map((correction, index) => (
+                                  <SwiperSlide key={index}>
+                                  {
+                                  <div className="correction-div" style={{marginLeft:"25px"}}>
+                                    <p>User Sentence : {correction.original}</p>
+                                    <p>Corrected Sentence: {correction.correction}</p>
+                                  </div>
+                                  }
+                                  </SwiperSlide>
+                                ))
+                                }
+                            </div>
+                        
+                        </Swiper>
+                        </div>
+
+                        <div className="talks">
+                            {messages.length!==0 &&
+                                messages.map((message, index) => (
+                                    <div className={`msg ${message.side}-msg`} key={index}>
+                                        <div
+                                            className="msg-img"
+                                            style={{
+                                                backgroundImage: `url(${`./assets/characters/single/${message.img}.png`})`,
+                                            }}
+                                        ></div>
+
+                                        <div className="msg-bubble">
+                                            <div className="msg-info">
+                                                <div className="msg-info-name">
+                                                    {message.name}
+                                                </div>
+                                            </div>
+
+                                            <div className="msg-text">{message.text}</div>
+                                        </div>
+                                    </div>
+                                ))
+                            }
+                            {messages.length===0 &&
+                                <center>
+                                    <p style={{textAlign:'center', marginTop:'50%', fontSize:'20px'}}>Try talk!</p>
+                                </center>
+                            }
+
                         </div>
                       </div>
 
