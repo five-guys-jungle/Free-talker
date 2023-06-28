@@ -18,7 +18,7 @@ import {setUserCharacter, clearcharacters} from "../../stores/userboxslice";
 import { UserDialogState, setSituation, clearSituation, setRole, clearRole, appendRecommendation, clearRecommendations } from "../../stores/userDialogSlice";
 import axios from "axios";
 
-let DB_URL: string = process.env.REACT_APP_SERVER_URL!;
+// let DB_URL: string = process.env.REACT_APP_SERVER_URL!;
 
 const RTCaudio = () => {
     const [ me, setMe ] = useState("")
@@ -62,6 +62,7 @@ const RTCaudio = () => {
 			setStream(stream);
 			if (myAudio.current) {
 			  myAudio.current.srcObject = stream;
+			  myAudio.current.volume = 0;
 			  console.log(myAudio.current.srcObject);
 			}
 		  });
