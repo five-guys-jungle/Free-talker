@@ -227,7 +227,7 @@ const FreeDialog = () => {
 			window.removeEventListener('keydown', handleKeyDown);
 		};
 	}, []);
-	
+
 		return (
 			<>
 				<div style={{ 
@@ -272,13 +272,13 @@ const FreeDialog = () => {
 									onClick={() => callUser(idToCall)}>
 									<PhoneIcon style={{ fontSize: "2em" }} />
 								</IconButton>
-								<Typography variant="h5" align="center" style={{ fontFamily: "Arial", fontWeight: "bold" }}>전화를 걸면 화상 통화가 시작됩니다</Typography>;
+								<Typography variant="h5" align="center" style={{ fontFamily: "Arial", fontWeight: "bold" }}>전화를 걸면 화상 통화가 시작됩니다</Typography>
 							</div>
 						  )}
 						  
 						{receivingCall && !callAccepted && (
 							<div className="caller" style={{ display: 'inline-flex', alignItems: 'center', bottom : '5px' }}>
-								<Typography variant="h5" align="center" style={{ fontFamily: "Arial", fontWeight: "bold" }}> 전화를 받아주세요 ... </Typography>;
+								<Typography variant="h5" align="center" style={{ fontFamily: "Arial", fontWeight: "bold" }}> 전화를 받아주세요 ... </Typography>
 								<Button variant="contained" color="primary" onClick={answerCall} style={{marginLeft: '10px'}}>
 									Answer
 								</Button>

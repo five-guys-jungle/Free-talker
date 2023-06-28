@@ -345,13 +345,13 @@ const RTCaudio = () => {
 						onClick={() => callUser(idToCall)}>
 						<PhoneIcon style={{ fontSize: "3em" }} />
 					</IconButton>
-					<Typography variant="h5" align="center" style={{ fontFamily: "Arial", fontWeight: "bold" }}>통화를 걸어 다른 유저와 상황극을 시작해 보세요</Typography>;
+					<Typography variant="h5" align="center" style={{ fontFamily: "Arial", fontWeight: "bold" }}>통화를 걸어 다른 유저와 상황극을 시작해 보세요</Typography>
 				</div>
 			  )}
 				
 				{receivingCall && !callAccepted && (
 					<div className="caller" style={{ display: 'inline-flex', alignItems: 'center', bottom : '5px' }}>
-						<Typography variant="h5" align="center" style={{ fontFamily: "Arial", fontWeight: "bold" }}> 전화를 받아주세요 ... </Typography>;
+						<Typography variant="h5" align="center" style={{ fontFamily: "Arial", fontWeight: "bold" }}> 전화를 받아주세요 ... </Typography>
 						<Button variant="contained" color="primary" onClick={answerCall} style={{marginLeft: '10px'}}>
 							Answer
 						</Button>
@@ -361,7 +361,7 @@ const RTCaudio = () => {
 					당신의 역할은
 					<div></div>
 					<span style={{ color: "#C70039" }}>{playerRole}</span>입니다 
-				</Typography>;
+				</Typography>
 				</div>
 				
 		  </div>
