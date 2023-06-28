@@ -15,10 +15,11 @@ const Guider = () => {
         <StyledDiv isClicked={isClicked} onClick={handleClick}>
             {isClicked ? (
                 <DescriptionContainer>
-                    <ImageDescription src="./assets/UI/Keyboard_D.png" alt="D keyboard" preText="1. 먼저, 말을하려면 " nextText="키를 눌러 마이크의 상태가 녹음중으로 변하는지 확인하세요." />
-                    <ImageDescription src="./assets/UI/Keyboard_D.png" alt="D keyboard" preText="2. 마이크의 상태가 녹음중으로 변경되면 말을 시작하고, 그만 말하고 싶을때 " nextText="키를 눌러 녹음을 중단하세요." />
-                    <ImageDescription src="./assets/UI/Keyboard_S.png" alt="S keyboard" preText="3. 재생되는 NPC의 음성을 그만 듣고 싶으면 " nextText="키를 눌러 NPC음성을 스킵하세요." />
-                    <ImageDescription src="./assets/UI/Keyboard_E.png" alt="E keyboard" preText="3. 대화를 그만하고 싶을때 " nextText="키를 대화를 종료하고 Report를 받아보세요. " />
+                    <ImageDescription src="./assets/UI/Keyboard_E.png" alt="E keyboard" preText="1. 먼저, NPC 근처로 가 " nextText="키를 눌러 대화를 시작해보세요." />
+                    <ImageDescription src="./assets/UI/Keyboard_D.png" alt="D keyboard" preText="2. 말을하려면 " nextText="키를 눌러 마이크의 상태가 녹음중으로 변하는지 확인하세요." />
+                    <ImageDescription src="./assets/UI/Keyboard_D.png" alt="D keyboard" preText="3. 마이크의 상태가 녹음중으로 변경되면 말을 시작하고, 그만 말하고 싶을때 " nextText="키를 눌러 녹음을 중단하세요." />
+                    <ImageDescription src="./assets/UI/Keyboard_S.png" alt="S keyboard" preText="4. 재생되는 NPC의 음성을 그만 듣고 싶으면 " nextText="키를 눌러 NPC음성을 스킵하세요." />
+                    <ImageDescription src="./assets/UI/Keyboard_E.png" alt="E keyboard" preText="5. 대화를 그만하고 싶을때 " nextText="키를 대화를 종료하고 Report를 받아보세요. " />
                     <ImageDescription2 src1="./assets/UI/Keyboard_E.png" alt1="E keyboard"
                         src2="./assets/UI/Keyboard_D.png" alt2="D keyboard" preText="* NPC의 음성이 재생이 스킵되거나 재생 완료 되기전까지는 " middleText=', ' nextText="키들이 비활성화 됩니다. " />
                 </DescriptionContainer>
