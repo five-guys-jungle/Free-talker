@@ -463,9 +463,9 @@ const ReportBook = (data: any) => {
                                                         <span>Corrections</span>
 
                                                         <Swiper
-                                                        style={{ width: "440px" , height:"100px", marginTop:"35px", textAlign:"center"}}
+                                                        style={{ width: "440px" , height:"100px", marginTop:"35px"}}
                                                         modules={[Pagination]}
-                                                        pagination={true}
+                                                        pagination={{clickable:true}}
                                                         >
                                                         <div className="corrections-list">
                                                             {dialog.corrections
@@ -478,10 +478,7 @@ const ReportBook = (data: any) => {
                                                                         <SwiperSlide key={index}>
                                                                         {
                                                                         <div
-                                                                            className="correction-div"
-                                                                            key={
-                                                                                index
-                                                                            }
+                                                                            className="correction-div" style={{marginLeft:"25px"}}
                                                                         >
                                                                             <p>
                                                                                 User

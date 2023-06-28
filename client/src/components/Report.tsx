@@ -210,9 +210,9 @@ const Report = (data:any) => {
                         } */}
                         <div className="corrections"><span>Corrections</span>
                         <Swiper
-                        style={{ width: "440px" , height:"100px", marginTop:"35px", textAlign:"center"}}
-                        modules={[Navigation]}
-                        navigation={true}
+                        style={{ width: "440px" , height:"100px", marginTop:"35px"}}
+                        modules={[Pagination]}
+                        pagination={{clickable:true}}
                         >
                         
                             <div className="corrections-list">
@@ -220,7 +220,7 @@ const Report = (data:any) => {
                                 corrections.map((correction, index) => (
                                   <SwiperSlide key={index}>
                                   {
-                                  <div className="correction-div">
+                                  <div className="correction-div" style={{marginLeft:"25px"}}>
                                     <p>User Sentence : {correction.original}</p>
                                     <p>Corrected Sentence: {correction.correction}</p>
                                   </div>
