@@ -142,7 +142,7 @@ export async function createChain(npcName: string): Promise<ConversationChain> {
             // memoryKey: "history",
             chatHistory: new RedisChatMessageHistory({
                 sessionId: new Date().toISOString(),
-                sessionTTL: 300,
+                sessionTTL: 180,
                 config: {
                     url: "redis://localhost:6379",
                 },

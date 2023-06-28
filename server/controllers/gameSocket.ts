@@ -24,17 +24,17 @@ export function socketEventHandler(socket: Socket) {
         }
     });
     socket.on("seat", (data : Player) => {
-        console.log("seat, data: ", data);
+        // console.log("seat, data: ", data);
         socket.broadcast.emit("otherseat", data);
     })
     socket.on("playerMovement", (data: Player) => {
         if (data.scene === "AirportScene") {
-            console.log("playerMovement, data: ", data);
+            // console.log("playerMovement, data: ", data);
             data.socketId = socket.id;
             players_airport[socket.id] = data;
             socket.broadcast.emit("playerMoved", players_airport[socket.id]);
         } else if (data.scene === "USAScene") {
-            console.log("playerMovement, data: ", data);
+            // console.log("playerMovement, data: ", data);
             data.socketId = socket.id;
             players_usa[socket.id] = data;
             socket.broadcast.emit("playerMoved", players_usa[socket.id]);
