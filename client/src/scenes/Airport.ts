@@ -666,7 +666,7 @@ export default class AirportScene extends Phaser.Scene {
                             });
                             this.isReportOn = true;
                             store.dispatch(openReport());
-                            store.dispatch(reportOn());
+                            store.dispatch(reportOn("airport"));
                             grammarCorrections = [];
                         }
                         countUserSpeech = 0;

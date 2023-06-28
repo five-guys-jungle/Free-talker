@@ -16,6 +16,8 @@ import { Dialog } from "@mui/material";
 import TalkBox from "./components/npcdialog/TalkBox";
 import FreeDialog from "./components/FreeDialog";
 import RTC from "./components/freedialog/RTC";
+import Bgm from "./components/Bgm"
+
 function App() {
     const { START, AIRPORT, USA, NPCDIALOG, USERDIALOG, LOGIN, FREEDIALOG, REPORT } = GAME_STATUS;
     const { userLoginId, playerId, mode } = useSelector((state: RootState) => {
@@ -33,21 +35,32 @@ function App() {
 
     return (
         <HoverDiv>
+            {/* <Bgm/> */}
             {mode === START || mode === LOGIN ? (
-                !logined && <Start />
+                <>
+                {<Bgm/>}
+                {!logined && <Start />}
+                </>
             ) : mode === AIRPORT ||
               mode === USA ||
               mode === NPCDIALOG ||
               mode === USERDIALOG ||
               mode === REPORT || 
               mode === FREEDIALOG ? (
+                <>
                 <Game />
+                <Bgm/>
+                </>
+                
+
             ) : (
                 <></>
             )}
             {/* <NPCDialog/> */}
             {/* <UserDialog /> */}
             {/* <FreeDialog /> */}
+            
+            
         </HoverDiv>
     );
 }

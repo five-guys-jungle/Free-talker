@@ -786,7 +786,7 @@ export default class USAScene extends Phaser.Scene {
                                 
                                 this.isReportOn = true;
                                 store.dispatch(openReport());
-                                store.dispatch(reportOn());
+                                store.dispatch(reportOn("usa"));
                                 grammarCorrections = [];
                             }
                         

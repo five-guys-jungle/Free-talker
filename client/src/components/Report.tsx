@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import store, { RootState, useAppDispatch } from "../stores";
-import { openAirport, openReportBook } from "../stores/gameSlice";
+import { openAirport, openReportBook, openUSA } from "../stores/gameSlice";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux"; // react-redux에서 useSelector를 불러옵니다.
 import TalkBox from "./npcdialog/TalkBox";
@@ -25,7 +25,7 @@ import { Pagination, Navigation } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import 'swiper/css';
 import 'swiper/css/pagination';
-
+import { GAME_STATUS } from "../stores/gameSlice";
 // interface NPCDialogProps {
 //     initialDialog?: string;
 //     onClose: () => void;
@@ -34,6 +34,14 @@ import 'swiper/css/pagination';
 const Report = (data: any) => {
 
   const { playerId, playerNickname, playerTexture } = useSelector((state: RootState) => { return { ...state.user } });
+  
+  const { presentScene } = useSelector((state: RootState) => {
+    return { ...state.presentScene };
+  });
+
+  const { mode } = useSelector((state: RootState) => {
+    return { ...state.mode };
+  });
 
   useEffect(() => {
     console.log(playerId)
@@ -94,7 +102,9 @@ const Report = (data: any) => {
     store.dispatch(clearCorrections());
     store.dispatch(clearMessages());
     store.dispatch(clearSentences());
-    store.dispatch(openAirport());
+
+    if (presentScene=="airport") store.dispatch(openAirport());
+    else if (presentScene=="usa") store.dispatch(openUSA());
   };
   const handleDelete = () => {
     // 커스텀 이벤트 생성
@@ -119,7 +129,8 @@ const Report = (data: any) => {
     store.dispatch(clearCorrections());
     store.dispatch(clearMessages());
     store.dispatch(clearSentences());
-    store.dispatch(openAirport());
+    if (presentScene=="airport") store.dispatch(openAirport());
+    else if (presentScene=="usa") store.dispatch(openUSA());
   };
 
   const date = new Date();
