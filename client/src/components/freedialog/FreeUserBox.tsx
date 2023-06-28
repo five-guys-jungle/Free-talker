@@ -10,13 +10,13 @@ import {clearcharacters} from "../../stores/userboxslice"
 
 const blankchar = '../assets/characters/blankchar2.png';
 const Image = styled('img')`
-  width: 150%;
+  width: 180px;
   height: auto;
 `;
 
 const UserBoxContainer = styled(Box)`
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 100px;
 `;
 
 const AvatarContainer = styled(Box)`
@@ -39,6 +39,7 @@ const UserBoxWrapper = styled(Box)`
   height: 100vh;
   overflow: hidden;
 `;
+
 
 const UserBox: React.FC = () => {
   const { playerId, playerNickname, playerTexture } = useSelector((state: RootState) => {return {...state.user}});
@@ -106,22 +107,22 @@ const UserBox: React.FC = () => {
 
   const renderOtherNickname = () => {
     if (otherNickname) {
-      return <Typography variant="body1" align="center">{otherNickname}</Typography>;
+      return <Typography variant="h4" align="center">{otherNickname}</Typography>;
     } else {
-      return <Typography variant="body1" align="center">대화 상대를 기다려 주세요</Typography>;
+      return <Typography variant="h5" align="center">대화 상대를 <div></div> 기다려 주세요</Typography>;
     }
   };
 
   return (
     <UserBoxWrapper>
       <UserBoxContainer>
-        <Typography variant="h4">자유롭게 대화를 시작해 보세요</Typography>
+        <Typography variant="h3" style={{ fontFamily: "Arial", fontWeight: "bold" }}>화상을 통해 <div></div> 자유롭게 대화를 나누어 보세요</Typography>
       </UserBoxContainer>
 
       <Box display="flex" flexDirection="row" >
         <AvatarContainer>
           <Image src={`../assets/characters/single/${playerTexture}.png`} alt={fix_playerTexture} />
-          <Typography variant="body1" align="center">{playerNickname}</Typography>
+          <Typography variant="h4" align="center">{playerNickname}</Typography>
         </AvatarContainer>
         <AvatarContainer>
           {/* <Image src={`../assets/characters/single/${otherTexture}.png`} alt="User Avatar" /> */}

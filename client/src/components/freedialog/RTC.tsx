@@ -1,5 +1,6 @@
 import Button from "@material-ui/core/Button"
 import IconButton from "@material-ui/core/IconButton"
+import Typography from '@mui/material/Typography';
 import TextField from "@material-ui/core/TextField"
 import AssignmentIcon from "@material-ui/icons/Assignment"
 import PhoneIcon from "@material-ui/icons/Phone"
@@ -222,34 +223,54 @@ const FreeDialog = () => {
 					alignItems: 'center', 
 				}}>
 					
-					<div className="call-button" style={{ position: 'fixed', textAlign: 'center', top: '5px'}}>
+					<div 
+						className="call-button" 
+						style={{ position: 'fixed', textAlign: 'center', top: '5px'}}>
 						
 						{callAccepted && !callEnded ? (
-							<div className="caller" style={{ display: 'inline-flex', alignItems: 'center', bottom : '5px' }}>
+							<div 
+							className="caller" 
+							style={{ 
+								display: 'inline-flex',
+								 alignItems: 'center', 
+								 bottom : '5px' 
+								 }}>
 
-							<IconButton color="secondary" aria-label="endcall" onClick={leaveCall}>
+							<IconButton 
+								color="secondary" 
+								aria-label="endcall" 
+								onClick={leaveCall}>
 								<PhoneIcon fontSize="large" /> 
 							</IconButton>
-							<h4>통화를 종료하면 맵으로 돌아갑니다.</h4>
+							<Typography variant="h5" align="center" style={{ fontFamily: "Arial", fontWeight: "bold" }}>통화가 종료되면 맵으로 돌아갑니다.</Typography>
 							</div>
-						) : (
-							
-						  	<IconButton className="call-btn" color="primary" aria-label="call" onClick={() => callUser(idToCall)}>
-						  		<PhoneIcon fontSize="large" />
-						  	</IconButton>
-							
-						  )} 
+						) : receivingCall && !callAccepted ? null : (
+							<div
+								className="caller"
+								style={{ 
+								display: "inline-flex",
+								alignItems: "center", 
+								bottom: "5px" 
+							}}>
+								<IconButton
+									className="call-btn"
+									color="primary"
+									aria-label="call"
+									onClick={() => callUser(idToCall)}>
+									<PhoneIcon style={{ fontSize: "2em" }} />
+								</IconButton>
+								<Typography variant="h5" align="center" style={{ fontFamily: "Arial", fontWeight: "bold" }}>전화를 걸면 화상 통화가 시작됩니다</Typography>;
+							</div>
+						  )}
 						  
 						{receivingCall && !callAccepted && (
 							<div className="caller" style={{ display: 'inline-flex', alignItems: 'center', bottom : '5px' }}>
-								<h1> {name} is calling... </h1>
-								<Button variant="contained" color="primary" onClick={answerCall}>
+								<Typography variant="h5" align="center" style={{ fontFamily: "Arial", fontWeight: "bold" }}> 전화를 받아주세요 ... </Typography>;
+								<Button variant="contained" color="primary" onClick={answerCall} style={{marginLeft: '10px'}}>
 									Answer
 								</Button>
-								
 							</div>
 						)}
-						{idToCall}  
 						</div>
 
 				</div>
@@ -276,7 +297,7 @@ const FreeDialog = () => {
 							height: "100%",
 							marginBottom: "30px",
 						}}>
-							{stream && <video playsInline muted ref={myVideo} autoPlay style={{ width: "50%",  margin: "auto"}} />}
+							{stream && <video playsInline muted ref={myVideo} autoPlay style={videoStyle} />}
 						</div>
 						{/* <div className="video" style={{ 
 							display: "flex", 
@@ -287,7 +308,7 @@ const FreeDialog = () => {
 						}}>
 							{callAccepted && !callEnded ?
 								<video playsInline ref={userVideo} autoPlay style={{width: "50%", margin: "auto"  }} /> :
-								(stream && <video playsInline muted ref={myVideo} autoPlay style={{ width: "50%",  margin: "auto" }} />)
+								(stream && <video playsInline muted ref={myVideo} autoPlay style={videoStyle} />)
 							}
 						</div> */}
 						<div className="video" style={{ 
@@ -298,7 +319,7 @@ const FreeDialog = () => {
 							height: "100%",
 						}}>
 							{callAccepted && !callEnded ?
-								<video playsInline ref={userVideo} autoPlay style={{ width: "50%", margin: "auto" }} /> :
+								<video playsInline ref={userVideo} autoPlay style={videoStyle} /> :
 								null}
 						</div>
 
@@ -314,3 +335,10 @@ const FreeDialog = () => {
 
 				  }
 export default FreeDialog;
+
+const videoStyle = {
+	width: '50%',
+	margin: 'auto',
+	border: '10px solid #0D92C8', // 테두리 스타일 및 색상 설정
+	borderRadius: '50px', // 모서리를 10px로 둥글게 설정
+  };

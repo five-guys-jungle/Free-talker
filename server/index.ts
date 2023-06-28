@@ -6,7 +6,6 @@ import path from "path";
 import { Router } from "express";
 import { socketEventHandler } from "./controllers/gameSocket";
 import { interactSocketEventHandler } from "./controllers/interactSocket";
-import { freedialogsocketEventHandler } from "./controllers/voiceController";   
 import { Server as SocketIOServer, Socket } from "socket.io";
 
 import { connectDB } from "./database/db";
@@ -16,7 +15,7 @@ import saveRouter from "./routes/saveDialogRouter";
 
 import { signup, login } from "./controllers/userController";
 import dotenv from "dotenv";
-import {createNamespace} from "./controllers/freeDialogSocket";
+import {createNamespace} from "./controllers/DialogSocket";
 // // import router from "./routes/basicRouter";
 // // import http from 'http'; // Load in http module
 
@@ -37,13 +36,14 @@ const port = 5000;
 const app = express();
 
 const server = http.createServer(app);
-const io = new SocketIOServer(server);
+export const io = new SocketIOServer(server);
 
 io.on("connection", socketEventHandler);
 
 const interactionSocket = io.of(`/interaction`);
 interactionSocket.on("connection", interactSocketEventHandler);
 createNamespace(io, "/freedialog");
+createNamespace(io, "/userdialog");
 // const freedialogSocket = io.of(`/freedialog`);
 
 // const allowedOrigins = [
@@ -76,6 +76,10 @@ app.use("/auth", authRouter);
 app.use("/save", saveRouter);
 // app.post("/signup", signup);
 // app.post("/login", login);
+// app.get("/userdialog/place", async (req: Request, res: Response) => {
+//     console.log(req)
+//     res.send("Hello World!~~~~~~~~~~~~~~~~~~~");
+// });
 
 if (process.env.NODE_ENV === "production") {
     console.log("Production Mode");

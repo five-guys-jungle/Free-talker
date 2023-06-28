@@ -12,7 +12,7 @@ const freeRoom_Num: {
 }
 
 // freedialogsocketEventHandler 함수 수정
-export function freedialogsocketEventHandler(socket: Socket) {
+export function freeDialogSocketEventHandler(socket: Socket) {
 	console.log(socket.id, "connection---------------------------------");
 	let temp: string = "";
 	socket.on("join", (data: { place_name: string }) => {
@@ -73,8 +73,3 @@ export function freedialogsocketEventHandler(socket: Socket) {
 	  socket.broadcast.emit("otherusercallended");
 	});
 }
-// 	socket.on("leaveCallEvent", () => {
-// 		socket.broadcast.emit("otheruserleave");
-// 	  });
-//   }
-  

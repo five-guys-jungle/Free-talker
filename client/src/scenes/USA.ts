@@ -16,6 +16,7 @@ import { createCharacterAnims } from "../anims/CharacterAnims";
 import {
     openNPCDialog,
     openAirport,
+    openUserDialog,
     openFreedialog,
     openReport,
     GAME_STATUS,
@@ -81,6 +82,8 @@ export default class USAScene extends Phaser.Scene {
     beforeSleepY: number = this.initial_y;
     interactionSprite: Phaser.Physics.Arcade.Sprite | null = null;
     interactionSpriteE: Phaser.Physics.Arcade.Sprite | null = null;
+    audio: HTMLAudioElement | null = null;
+    isReportOn: boolean = false;
 
     constructor() {
         super("USAScene");
@@ -306,6 +309,10 @@ export default class USAScene extends Phaser.Scene {
             console.log("grammarCorrection event data: ", data);
             grammarCorrections.push(data);
         };
+        window.addEventListener('reportClose', () => {
+            console.log("reportClose event listener");
+            this.isReportOn = false;
+        });
         this.input.keyboard!.on("keydown-E", async () => {
             if (this.player1 === null || this.player1 === undefined) {
                 return;
@@ -327,10 +334,12 @@ export default class USAScene extends Phaser.Scene {
                             store.dispatch(
                                 setSocketNamespace({
                                     socketNamespace: `${serverUrl}/freedialog/${npcInfo.name}`,
+                                    // socketNamespace: `${serverUrl}/userdialog/${npcInfo.name}`,
                                 })
                             );
                             // store.dispatch(appendSocketNamespace({ socketNamespace: `/freedialog` }));
                             store.dispatch(openFreedialog());
+                            // store.dispatch(openUserDialog());
                             this.cursors!.left.enabled = false;
                             this.cursors!.right.enabled = false;
                             this.cursors!.up.enabled = false;
@@ -392,14 +401,86 @@ export default class USAScene extends Phaser.Scene {
                             this.allPlayers[this.socket!.id].seat = false;
                             this.seatEvent = true;
                             store.dispatch(openUSA());
-                        }
-                    } else if (npcInfo.name === "gate") {
+                        }}
+                    
+                    else if (npcInfo.role === "rolePlayingPlace") {
+                            console.log("chair");
+    
+                            if (valve_E === true) {
+                                store.dispatch(
+                                    setSocketNamespace({
+                                        
+                                        socketNamespace: `${serverUrl}/userdialog/${npcInfo.name}`
+                                    })
+                                );
+                                // store.dispatch(appendSocketNamespace({ socketNamespace: `/freedialog` }));
+                                
+                                store.dispatch(openUserDialog());
+                                this.cursors!.left.enabled = false;
+                                this.cursors!.right.enabled = false;
+                                this.cursors!.up.enabled = false;
+                                this.cursors!.down.enabled = false;
+                                valve_E = false;
+                               
+    
+                                window.addEventListener("exitcall", (e: Event) => {
+                                    console.log("exitcall event listener");
+                                    this.player1!.setVelocity(0, 0);
+                                    this.player1!.setPosition(
+                                        this.player1!.x,
+                                        this.player1!.y
+                                    );
+    
+                                    this.cursors!.left.isDown = false;
+                                    this.cursors!.right.isDown = false;
+                                    this.cursors!.up.isDown = false;
+                                    this.cursors!.down.isDown = false;
+    
+                                    this.cursors!.left.enabled = true;
+                                    this.cursors!.right.enabled = true;
+                                    this.cursors!.up.enabled = true;
+                                    this.cursors!.down.enabled = true;
+    
+                                    
+                                    valve_E = true;
+                                    this.allPlayers[this.socket!.id].seat = false;
+                                    this.seatEvent = true;
+                                    store.dispatch(openUSA());
+                                });
+                            } else {
+                                this.player1!.setVelocity(0, 0);
+                                this.player1!.setPosition(
+                                    this.player1!.x,
+                                    this.player1!.y
+                                );
+    
+                                this.cursors!.left.isDown = false;
+                                this.cursors!.right.isDown = false;
+                                this.cursors!.up.isDown = false;
+                                this.cursors!.down.isDown = false;
+    
+                                this.cursors!.left.enabled = true;
+                                this.cursors!.right.enabled = true;
+                                this.cursors!.up.enabled = true;
+                                this.cursors!.down.enabled = true;
+    
+                                
+                                valve_E = true;
+
+                                store.dispatch(openUSA());
+                            }
+                    } else if (npcInfo.name.includes("gate")) {
+                        console.log("liberty");
                         handleScene(GAME_STATUS.AIRPORT, {});
                     } else {
                         
                             if (this.isAudioPlaying) {
                                 return;
                             }
+                            if (this.isReportOn) {
+                                return;
+                            }
+
                             this.player1!.setVelocity(0, 0);
                             this.player1!.anims.play(
                                 `${this.player1!.texture.key}_idle_down`,
@@ -464,6 +545,44 @@ export default class USAScene extends Phaser.Scene {
                                     );
 
                                     this.interacting = true;
+                                    this.socket2!.emit("dialogStart", npcInfo.name);
+                                this.isAudioPlaying = true;
+                                // TODO : npcFirstResponse 받고, audio 재생하는 동안 E, D키 비활성화 및 '응답중입니다. 잠시만 기다려주세요' 출력
+                                this.socket2!.on("npcFirstResponse", (response:any) => {
+                                    console.log("npcFirstResponse event");
+                                    store.dispatch(
+                                        setMessage(
+                                            "응답중입니다. 잠시만 기다려주세요"
+                                        )
+                                    );
+                                    store.dispatch(setCanRequestRecommend(false));
+                                    store.dispatch(
+                                        appendMessage({
+                                            playerId: this.playerId,
+                                            name: npcInfo.name,
+                                            img: npcInfo.texture,
+                                            // img: "",
+                                            side: "left",
+                                            text: response.assistant,
+                                        })
+                                    );
+                                    this.audio = new Audio(
+                                        response.audioUrl
+                                    );
+                                    this.audio.onended = () => {
+                                        console.log("audio.onended");
+                                        this.isAudioPlaying = false;
+                                        store.dispatch(
+                                            setMessage(
+                                                "D키를 눌러 녹음을 시작하세요"
+                                            )
+                                        );
+                                        store.dispatch(
+                                            setCanRequestRecommend(true)
+                                        );
+                                    };
+                                    this.audio.play();
+                                })
                                     console.log(
                                         "connect, interaction socket.id: ",
                                         this.socket2!.id
@@ -488,7 +607,7 @@ export default class USAScene extends Phaser.Scene {
                                                 setTimeout(() => {
                                                     store.dispatch(
                                                         setMessage(
-                                                            "R키를 눌러 녹음을 시작하세요"
+                                                            "D키를 눌러 녹음을 시작하세요"
                                                         )
                                                     );
                                                     store.dispatch(
@@ -548,22 +667,22 @@ export default class USAScene extends Phaser.Scene {
                                                 response
                                             );
                                             // this.isAudioPlaying = true;
-                                            const audio = new Audio(
+                                            this.audio = new Audio(
                                                 response.audioUrl
                                             );
-                                            audio.onended = () => {
+                                            this.audio.onended = () => {
                                                 console.log("audio.onended");
                                                 this.isAudioPlaying = false;
                                                 store.dispatch(
                                                     setMessage(
-                                                        "R키를 눌러 녹음을 시작하세요"
+                                                        "D키를 눌러 녹음을 시작하세요"
                                                     )
                                                 );
                                                 store.dispatch(
                                                     setCanRequestRecommend(true)
                                                 );
                                             };
-                                            audio.play();
+                                            this.audio.play();
                                         }
                                     );
 
@@ -641,11 +760,11 @@ export default class USAScene extends Phaser.Scene {
                                 this.socket2 = null;
                                 // store.dispatch(clearMessages());
                                 // store.dispatch(openAirport());
-                                let score =
-                                    ((countUserSpeech -
-                                        grammarCorrections.length) /
-                                        countUserSpeech) *
-                                    100;
+                                let score = 0;
+                                if (countUserSpeech !== 0) {
+                                    score = ((countUserSpeech - grammarCorrections.length) /
+                                    countUserSpeech) * 100;
+                                }
                                 console.log("score : ", score);
                                 store.dispatch(setScore({ score: score }));
                                 grammarCorrections.forEach((data, index) => {
@@ -660,7 +779,8 @@ export default class USAScene extends Phaser.Scene {
                                         })
                                     );
                                 });
-
+                                
+                                this.isReportOn = true;
                                 store.dispatch(openReport());
                                 store.dispatch(reportOn());
                                 grammarCorrections = [];
@@ -674,7 +794,7 @@ export default class USAScene extends Phaser.Scene {
             }
         });
         // 녹음 데이터를 보내고 응답을 받는 키 설정
-        this.input.keyboard!.on("keydown-R", async () => {
+        this.input.keyboard!.on("keydown-D", async () => {
             if (!this.isNpcSocketConnected) {
                 console.log("NPC와 연결되지 않았습니다.");
                 return;
@@ -707,7 +827,7 @@ export default class USAScene extends Phaser.Scene {
                         if (this.recorder2.state === "recording") {
                             store.dispatch(setRecord(true));
                             store.dispatch(
-                                setMessage("R키를 눌러 녹음을 시작하세요")
+                                setMessage("D키를 눌러 녹음을 시작하세요")
                             );
                             this.isAudioPlaying = true;
                             this.recorder2!.stop();
@@ -716,7 +836,7 @@ export default class USAScene extends Phaser.Scene {
                             store.dispatch(setRecord(false));
                             store.dispatch(
                                 setMessage(
-                                    "녹음 중입니다. R키를 눌러 녹음을 종료하세요"
+                                    "녹음 중입니다. D키를 눌러 녹음을 종료하세요"
                                 )
                             );
                             this.recorder2!.start();
@@ -725,6 +845,18 @@ export default class USAScene extends Phaser.Scene {
 
                     break;
                 }
+            }
+        });
+        // NPC의 음성 재생을 스킵하는 기능
+        this.input.keyboard!.on("keydown-S", async () => {
+            console.log("S key pressed, isAudioPlaying: ", this.isAudioPlaying);
+            if (this.isAudioPlaying) {
+                this.audio?.pause();
+                this.isAudioPlaying = false;
+                store.dispatch(setMessage("D키를 눌러 녹음을 시작하세요"));
+                store.dispatch(setCanRequestRecommend(true));
+                this.audio = new Audio();
+                this.audio = null
             }
         });
     }
@@ -1038,8 +1170,8 @@ export default class USAScene extends Phaser.Scene {
 
         let npc6: npcInfo = {
             name: "MartCashier",
-            x: 2737,
-            y: 1850,
+            x: 2739,
+            y: 1842,
             texture: "MartCashier",
             sprite: null,
             role: "npc",
@@ -1068,7 +1200,7 @@ export default class USAScene extends Phaser.Scene {
         npc8.sprite = this.physics.add.sprite(npc8.x, npc8.y, npc8.texture);
         this.npcList.push(npc8);
 
-        let interact_sprite: npcInfo = {
+        let interact_sprite1: npcInfo = {
             name: "coach_park",
             x: 1485,
             y: 1157,
@@ -1076,12 +1208,19 @@ export default class USAScene extends Phaser.Scene {
             sprite: null,
             role: "freeTalkingPlace",
         };
-        interact_sprite.sprite = this.physics.add.sprite(
-            interact_sprite.x,
-            interact_sprite.y,
-            interact_sprite.texture
-        );
-        this.npcList.push(interact_sprite);
+        interact_sprite1.sprite = this.physics.add.sprite(interact_sprite1.x, interact_sprite1.y, interact_sprite1.texture);
+        this.npcList.push(interact_sprite1);
+
+        let interact_sprite2: npcInfo = {
+            name: "chairMart",
+            x: 2603,
+            y: 1362,
+            texture: "chairMart",
+            sprite: null,
+            role: "rolePlayingPlace",
+        };
+        interact_sprite2.sprite = this.physics.add.sprite(interact_sprite2.x, interact_sprite2.y, interact_sprite2.texture);
+        this.npcList.push(interact_sprite2);
     }
     gameSocketEventHandler(initial: boolean = true) {
         this.socket = io(serverUrl);

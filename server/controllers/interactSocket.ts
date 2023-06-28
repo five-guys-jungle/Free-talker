@@ -29,8 +29,53 @@ import {
 
 export function interactSocketEventHandler(socket: Socket) {
     let chain: ConversationChain;
-    let count = 0;
+    let npcSentence: string;
     console.log("Interaction socket connected, socketid: ", socket.id);
+
+    socket.on("dialogStart", async (npcName: string) => {
+        console.log("dialogStart");
+        // 소켓이 연결되면, 유저와 NPC 간의 Conversation Chain을 생성한다.
+        await createChain(npcName)
+            .then((res) => {
+                chain = res;
+                console.log("chain 생성 완료");
+            })
+            .catch((err) => {
+                console.log("chain 생성 실패");
+            });
+
+        const prompt = preDefinedPrompt[npcName].start;
+        await chain
+            .call({ input: prompt })
+            .then(async (res) => {
+                npcSentence = res.response;
+                // socket.emit("npcFirstResponse", npcSentence);
+
+                await convertTexttoSpeech(prompt, npcSentence, npcName)
+                    .then((res) => {
+                        socket.emit("npcFirstResponse", res);
+                        console.log("npcFirstResponse response: ", res);
+                    })
+                    .catch((err) => {
+                        console.log("convert Text to Speech error: ", err);
+                    });
+            })
+            .catch((err) => {
+                npcSentence = "Hello, Welcome to Free talker! How can I assist you ?"
+                convertTexttoSpeech(prompt, npcSentence, npcName)
+                    .then((res) => {
+                        socket.emit("npcFirstResponse", res);
+                        console.log("npcFirstResponse response: ", res);
+                    })
+                    .catch((err) => {
+                        console.log("convert Text to Speech error: ", err);
+                    });
+
+                console.log("chain call error: ", err);
+            });
+
+        // TODO : npcInfo 받고, npcInfo를 기반으로 유저에게 대화 전송
+    });
 
     socket.on(
         "audioSend",
@@ -41,16 +86,16 @@ export function interactSocketEventHandler(socket: Socket) {
         }) => {
             /* ---------------------------------------------------------------------------------------  */
             // 소켓이 연결되고 처음으로 유저가 오디오를 입력하면, 유저와 NPC 간의 Conversation Chain을 생성한다.
-            if (count++ == 0) {
-                createChain(data.npcName) //
-                    .then((res) => {
-                        chain = res;
-                        console.log("chain 생성 완료");
-                    })
-                    .catch((err) => {
-                        console.log("chain 생성 실패");
-                    });
-            }
+            // if (count++ == 0) {
+            //     createChain(data.npcName) //
+            //         .then((res) => {
+            //             chain = res;
+            //             console.log("chain 생성 완료");
+            //         })
+            //         .catch((err) => {
+            //             console.log("chain 생성 실패");
+            //         });
+            // }
             /* ---------------------------------------------------------------------------------------  */
             // const chain: ConversationChain = await createChain(data.npcName);
             // console.log("audioSend, data: ", data);
@@ -94,7 +139,7 @@ export function interactSocketEventHandler(socket: Socket) {
                                 response = await convertTexttoSpeech(
                                     inputText,
                                     outputText,
-                                    data.npcName,
+                                    data.npcName
                                 )
                                     .then((res) => {
                                         socket.emit("totalResponse", res);

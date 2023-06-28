@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from "react";
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import { useSelector, useDispatch } from "react-redux";
+import { TalkBoxState } from "../../stores/talkBoxSlice";
+import store, { RootState, useAppDispatch } from "../../stores";
+import io, { Socket } from "socket.io-client"
+import {clearcharacters} from "../../stores/userboxslice"
 
-// Sample image URLs
-const avatarImage1 = './assets/낸시.png';
-const avatarImage2 = './assets/아담.png';
-
+const blankchar = '../assets/characters/blankchar2.png';
 const Image = styled('img')`
-  width: 150%;
+  width: 180px;
   height: auto;
 `;
 
@@ -39,21 +41,99 @@ const UserBoxWrapper = styled(Box)`
 `;
 
 const UserBox: React.FC = () => {
+  const { playerId, playerNickname, playerTexture } = useSelector((state: RootState) => {return {...state.user}});
+  // const { playerId, playerNickname, playerTexture } = useSelector((state: RootState) => state.user);
+  const socket = useRef<Socket | null>(null);
+  const {otherNickname, otherTexture} = useSelector((state: RootState) => {return {...state.userbox}});
+  const dispatch = useAppDispatch();
+	const socketNamespace = useSelector(
+		(state: { rtc: { socketNamespace: string } }) => state.rtc.socketNamespace
+	);
+  let placeName = socketNamespace.substring(socketNamespace.lastIndexOf("/") + 1);
+  switch (placeName) {
+    case "chairMart":
+      placeName = "MART";
+      break;
+    // Add more cases if needed
+  }
+  // useEffect(() => {
+  //     console.log(playerId)
+  //     console.log(playerNickname)
+  //     console.log(playerTexture)
+  //   return () => {
+  //     dispatch(clearcharacters());
+  //   }
+  // }, [playerId, playerNickname, playerTexture]);
+
+  
+  useEffect(() => {
+    console.log(playerId)
+    console.log(playerNickname)
+    console.log(playerTexture)
+    return () => {
+      dispatch(clearcharacters());
+    }
+}, [playerId, playerNickname, playerTexture]);
+
+  
+  
+  // const messages = useSelector(
+  //     (state: { talkBox: TalkBoxState }) => state.talkBox.messages
+  // );
+
+
+  // const messages = useSelector(
+  //     (state: { talkBox: TalkBoxState }) => state.talkBox.messages
+  // );
+
+  let fix_playerTexture=playerTexture;
+
+  // useEffect(() => {
+  //   console.log("char~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+  //   return () => {
+  //     dispatch(clearcharacters());
+  //   }
+  // }, [otherNickname, otherTexture]);
+
+  useEffect(() => {
+    console.log("char~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    // return () => {
+    //   dispatch(clearcharacters());
+    // }
+  }, [otherNickname, otherTexture]);
+
+  const renderUserAvatar = () => {
+    if (otherTexture) {
+      return <Image src={`../assets/characters/single/${otherTexture}.png`} alt="User Avatar" />;
+    } else {
+      return <Image src={blankchar} alt="Blank Avatar" />;
+    }
+  };
+
+  const renderOtherNickname = () => {
+    if (otherNickname) {
+      return <Typography variant="h4" align="center">{otherNickname}</Typography>;
+    } else {
+      return <Typography variant="h5" align="center">대화 상대를 <div></div> 기다려 주세요</Typography>;
+    }
+  };
+
   return (
     <UserBoxWrapper>
       <UserBoxContainer>
-        <Typography variant="h4">카페 직원과 손님이 되어서</Typography>
-        <Typography variant="h4">대화를 시작해 보세요</Typography>
+        <Typography variant="h4"><span style={{ color: "#C70039" }}>{placeName}</span>에서 대화를 시작해 보세요</Typography>
       </UserBoxContainer>
 
       <Box display="flex" flexDirection="row" >
         <AvatarContainer>
-          <Image src={avatarImage1} alt="User Avatar" />
-          <Typography variant="body1" align="center">User Name 1</Typography>
+          <Image src={`../assets/characters/single/${playerTexture}.png`} alt={fix_playerTexture} />
+          <Typography variant="h4" align="center">{playerNickname}</Typography>
         </AvatarContainer>
         <AvatarContainer>
-          <Image src={avatarImage2} alt="User Avatar" />
-          <Typography variant="body1" align="center">User Name 2</Typography>
+          {/* <Image src={`../assets/characters/single/${otherTexture}.png`} alt="User Avatar" /> */}
+          {/* <Typography variant="body1" align="center">{otherNickname}</Typography> */}
+          {renderUserAvatar()}
+          {renderOtherNickname()}
         </AvatarContainer>
       </Box>
     </UserBoxWrapper>
