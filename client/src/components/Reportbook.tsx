@@ -268,23 +268,6 @@ const ReportBook = (data: any) => {
                                                     <div className="title">
                                                         <h1>REPORT</h1>
                                                         <IconButton
-                                                            color="primary"
-                                                            onClick={handleSave}
-                                                            style={{
-                                                                gridArea: "s3",
-                                                                marginLeft:
-                                                                    "auto",
-                                                                marginRight:
-                                                                    "30px",
-                                                                marginTop:
-                                                                    "19px",
-                                                                width: "50px",
-                                                                height: "25px",
-                                                            }}
-                                                        >
-                                                            <SaveIcon />
-                                                        </IconButton>
-                                                        <IconButton
                                                             color="secondary"
                                                             onClick={() =>
                                                                 handleDelete(
