@@ -51,12 +51,12 @@ export function socketEventHandler(socket: Socket) {
         if (players_airport[socket.id] != null) {
             let playerDeleted: Player = players_airport[socket.id];
             delete players_airport[socket.id];
-            console.log("players_airport: ", players_airport);
+            // console.log("players_airport: ", players_airport);
             socket.broadcast.emit("playerDeleted", playerDeleted);
         } else if (players_usa[socket.id] != null) {
             let playerDeleted: Player = players_usa[socket.id];
             delete players_usa[socket.id];
-            console.log("players_usa: ", players_usa);
+            // console.log("players_usa: ", players_usa);
             socket.broadcast.emit("playerDeleted", playerDeleted);
         }
     });

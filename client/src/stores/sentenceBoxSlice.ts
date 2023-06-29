@@ -2,7 +2,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface Sentence {
-    _id: string;
+    _id: number;
     sentence: string;
 }
 
@@ -20,9 +20,24 @@ export const sentenceBoxSlice = createSlice({
     initialState,
     reducers: {
         appendSentence: (state, action: PayloadAction<Sentence>) => {
-            state.sentences.push({
+            let prefix = "";
+            switch(action.payload._id) {
+                case 0:
+                    prefix = "긍정😄 : ";
+                    break;
+                case 1:
+                    prefix = "중립😐 : ";
+                    break;
+                case 2:
+                    prefix = "부정🙁 : ";
+                    break;
+                default:
+                    prefix = "";
+            }
+            state.sentences.push(
+                {
                 _id: action.payload._id,
-                sentence: action.payload.sentence,
+                sentence: prefix + action.payload.sentence,
             });
         },
         clearSentences: (state) => {

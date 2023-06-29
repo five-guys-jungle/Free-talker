@@ -49,6 +49,7 @@ let chunks: BlobPart[] = [];
 let audioContext = new window.AudioContext();
 
 export default class USAScene extends Phaser.Scene {
+    background!: Phaser.GameObjects.Image;
     player1: Phaser.Physics.Arcade.Sprite | null = null;
     cursors: Phaser.Types.Input.Keyboard.CursorKeys | null = null;
     interactKey: Phaser.Input.Keyboard.Key | null = null;
@@ -143,6 +144,10 @@ export default class USAScene extends Phaser.Scene {
     }
 
     create() {
+        this.background = this.add
+            .image(this.initial_x, this.initial_y*2, "background")
+            .setDisplaySize(this.cameras.main.width*2, this.cameras.main.height*6)
+            .setOrigin(0.5, 0.5);
         // this.game.events.on('pause', this.gamePause);
         this.events.on("wake", this.onSceneWake, this);
         this.events.on("sleep", this.onSceneSleep, this);
@@ -288,7 +293,7 @@ export default class USAScene extends Phaser.Scene {
             color: "black",
             fontSize: "16px",
         });
-        this.userIdText = this.add.text(10, 10, "", {
+        this.userIdText = this.add.text(10, 10, this.userNickname, {
             color: "black",
             fontSize: "16px",
         });
@@ -443,8 +448,7 @@ export default class USAScene extends Phaser.Scene {
     
                                     
                                     valve_E = true;
-                                    this.allPlayers[this.socket!.id].seat = false;
-                                    this.seatEvent = true;
+                                   
                                     store.dispatch(openUSA());
                                 });
                             } else {
@@ -504,6 +508,36 @@ export default class USAScene extends Phaser.Scene {
                                 store.dispatch(clearSentences());
                                 this.socket2 = io(`${serverUrl}/interaction`);
                                 this.socket2.on("connect", () => {
+                                    const recommendBtnClicked = (e: Event) => {
+                                        const customEvent = e as CustomEvent;
+                                        store.dispatch(clearSentences());
+                                        if (customEvent.detail.message === 0) {
+                                            store.dispatch(
+                                                appendSentence({
+                                                    _id: 3,
+                                                    sentence:
+                                                        "추천 문장을 준비 중입니다. 잠시만 기다려 주세요.",
+                                                })
+                                            );
+                                        }
+                                        console.log(
+                                            "lastMessage in SectanceBox: ",
+                                            customEvent.detail.lastMessage
+                                        );
+                                        this.socket2!.emit(
+                                            "getRecommendedResponses",
+                                            this.currNpcName,
+                                            this.alreadyRecommended,
+                                            customEvent.detail.lastMessage
+                                        );
+                                        store.dispatch(
+                                            setCanRequestRecommend(false)
+                                        );
+                                    };
+                                    this.socket2!.on("disconnect", () => {
+                                        console.log("disconnect, recommendBtnClicked: ", recommendBtnClicked);
+                                        window.removeEventListener("recomButtonClicked", recommendBtnClicked);
+                                    });
                                     this.currNpcName = npcInfo.name;
                                     console.log(
                                         "connect, interaction socket.id: ",
@@ -513,35 +547,7 @@ export default class USAScene extends Phaser.Scene {
                                     this.isNpcSocketConnected = true;
                                     window.addEventListener(
                                         "recomButtonClicked",
-                                        (e: Event) => {
-                                            const customEvent =
-                                                e as CustomEvent;
-                                            store.dispatch(clearSentences());
-                                            if (
-                                                customEvent.detail.message === 0
-                                            ) {
-                                                store.dispatch(
-                                                    appendSentence({
-                                                        _id: "1",
-                                                        sentence:
-                                                            "추천 문장을 준비 중입니다. 잠시만 기다려 주세요.",
-                                                    })
-                                                );
-                                            }
-                                            console.log(
-                                                "lastMessage in SectanceBox: ",
-                                                customEvent.detail.lastMessage
-                                            );
-                                            this.socket2!.emit(
-                                                "getRecommendedResponses",
-                                                this.currNpcName,
-                                                this.alreadyRecommended,
-                                                customEvent.detail.lastMessage
-                                            );
-                                            store.dispatch(
-                                                setCanRequestRecommend(false)
-                                            );
-                                        }
+                                        recommendBtnClicked
                                     );
 
                                     this.interacting = true;
@@ -722,7 +728,7 @@ export default class USAScene extends Phaser.Scene {
                                                 (response, index) => {
                                                     store.dispatch(
                                                         appendSentence({
-                                                            _id: index.toString(),
+                                                            _id: index,
                                                             sentence: response,
                                                         })
                                                     );
@@ -782,7 +788,7 @@ export default class USAScene extends Phaser.Scene {
                                 
                                 this.isReportOn = true;
                                 store.dispatch(openReport());
-                                store.dispatch(reportOn());
+                                store.dispatch(reportOn("usa"));
                                 grammarCorrections = [];
                             }
                         
@@ -888,6 +894,9 @@ export default class USAScene extends Phaser.Scene {
         }
     }
     update(time: number, delta: number) {
+        this.background
+            .setDisplaySize(this.cameras.main.width*4, this.cameras.main.height*6)
+            .setOrigin(0.5, 0.5);
         this.deleteNotVaildScoket();
         let speed: number = this.cursors?.shift.isDown
             ? this.dashSpeed
@@ -977,6 +986,8 @@ export default class USAScene extends Phaser.Scene {
 
             this.player1!.setVelocityX(velocityX);
             this.player1!.setVelocityY(velocityY);
+            this.userIdText!.setX(this.player1!.x);
+            this.userIdText!.setY(this.player1!.y - 50);
 
             if (velocityX === 0 && velocityY === 0) {
                 if (this.player1.anims.isPlaying) {
@@ -1125,7 +1136,7 @@ export default class USAScene extends Phaser.Scene {
         let npc2: npcInfo = {
             name: "Barista",
             x: 1810,
-            y: 426,
+            y: 428,
             texture: "Barista",
             sprite: null,
             role: "npc",
@@ -1160,7 +1171,7 @@ export default class USAScene extends Phaser.Scene {
         let npc5: npcInfo = {
             name: "ClothingShopStaff",
             x: 3102,
-            y: 2235,
+            y: 2237,
             texture: "ClothingShopStaff",
             sprite: null,
             role: "npc",

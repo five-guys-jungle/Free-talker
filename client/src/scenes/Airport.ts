@@ -48,6 +48,7 @@ let chunks: BlobPart[] = [];
 let audioContext = new window.AudioContext();
 
 export default class AirportScene extends Phaser.Scene {
+    background!: Phaser.GameObjects.Image;
     player1: Phaser.Physics.Arcade.Sprite | null = null;
     cursors: Phaser.Types.Input.Keyboard.CursorKeys | null = null;
     interactKey: Phaser.Input.Keyboard.Key | null = null;
@@ -142,71 +143,76 @@ export default class AirportScene extends Phaser.Scene {
     }
 
     create() {
-          // this.game.events.on('pause', this.gamePause);
-          this.events.on("wake", this.onSceneWake, this);
-          this.events.on("sleep", this.onSceneSleep, this);
-  
-          // this.add.image(400, 300, "background");
-          // 배경 설정
-          this.cursors = this.input.keyboard!.createCursorKeys();
-          const map = this.make.tilemap({ key: "map" });
-          const tileset_exteriors = map.addTilesetImage(
-              "fiveguys_Exteriors",
-              "fiveguys_Exteriors"
-          )!;
-          const tileset_interiors_1 = map.addTilesetImage(
-              "fiveguys_Interiors_1",
-              "fiveguys_Interiors_1"
-          )!;
-          const tileset_interiors_2 = map.addTilesetImage(
-              "fiveguys_Interiors_2",
-              "fiveguys_Interiors_2"
-          )!;
-          const tileset_interiors_3 = map.addTilesetImage(
-              "fiveguys_Interiors_3",
-              "fiveguys_Interiors_3"
-          )!;
-          const tileset_interiors_4 = map.addTilesetImage(
-              "fiveguys_Interiors_4",
-              "fiveguys_Interiors_4"
-          )!;
-          const tileset_roombuilder = map.addTilesetImage(
-              "fiveguys_Room_Builder",
-              "fiveguys_Room_Builder"
-          )!;
-          const tileset_immigration = map.addTilesetImage(
-              "fiveguys_Immigrations",
-              "fiveguys_Immigrations"
-          )!;
-  
-  
-          const roombuilder_1 = map.createLayer("layer1/Roombuilder", tileset_roombuilder)!;
-          const roombuilder_2 = map.createLayer("layer2/Roombuilder", tileset_roombuilder)!;
-          const exteriors = map.createLayer("layer1/Exteriors", tileset_exteriors)!;
-          const interiors_1 = map.createLayer("layer1/Interiors1", tileset_interiors_1)!;
-          const interiors_2 = map.createLayer("layer1/Interiors2", tileset_interiors_2)!;
-          const interiors_3 = map.createLayer("layer1/Interiors3", tileset_interiors_3)!;
-          const interiors_4 = map.createLayer("layer1/Interiors4", tileset_interiors_4)!;
-          const immigration = map.createLayer("layer1/Immigration", tileset_immigration)!;
-  
-          roombuilder_1.setCollisionByProperty({ collides: true });
-          roombuilder_2.setCollisionByProperty({ collides: true });
-          exteriors.setCollisionByProperty({ collides: true });
-          interiors_1.setCollisionByProperty({ collides: true });
-          interiors_2.setCollisionByProperty({ collides: true });
-          interiors_3.setCollisionByProperty({ collides: true });
-          interiors_4.setCollisionByProperty({ collides: true });
-          immigration.setCollisionByProperty({ collides: true });
-  
-          this.tilemapLayerList.push(roombuilder_1);
-          this.tilemapLayerList.push(roombuilder_2);
-          this.tilemapLayerList.push(exteriors);
-          this.tilemapLayerList.push(interiors_1);
-          this.tilemapLayerList.push(interiors_2);
-          this.tilemapLayerList.push(interiors_3);
-          this.tilemapLayerList.push(interiors_4);
-          this.tilemapLayerList.push(immigration)
-  
+        this.background = this.add
+            .image(this.initial_x, this.initial_y, "background")
+            .setDisplaySize(this.cameras.main.width * 4, this.cameras.main.height * 4)
+            .setOrigin(0.5, 0.5);
+
+        // this.game.events.on('pause', this.gamePause);
+        this.events.on("wake", this.onSceneWake, this);
+        this.events.on("sleep", this.onSceneSleep, this);
+
+        // this.add.image(400, 300, "background");
+        // 배경 설정
+        this.cursors = this.input.keyboard!.createCursorKeys();
+        const map = this.make.tilemap({ key: "map" });
+        const tileset_exteriors = map.addTilesetImage(
+            "fiveguys_Exteriors",
+            "fiveguys_Exteriors"
+        )!;
+        const tileset_interiors_1 = map.addTilesetImage(
+            "fiveguys_Interiors_1",
+            "fiveguys_Interiors_1"
+        )!;
+        const tileset_interiors_2 = map.addTilesetImage(
+            "fiveguys_Interiors_2",
+            "fiveguys_Interiors_2"
+        )!;
+        const tileset_interiors_3 = map.addTilesetImage(
+            "fiveguys_Interiors_3",
+            "fiveguys_Interiors_3"
+        )!;
+        const tileset_interiors_4 = map.addTilesetImage(
+            "fiveguys_Interiors_4",
+            "fiveguys_Interiors_4"
+        )!;
+        const tileset_roombuilder = map.addTilesetImage(
+            "fiveguys_Room_Builder",
+            "fiveguys_Room_Builder"
+        )!;
+        const tileset_immigration = map.addTilesetImage(
+            "fiveguys_Immigrations",
+            "fiveguys_Immigrations"
+        )!;
+
+
+        const roombuilder_1 = map.createLayer("layer1/Roombuilder", tileset_roombuilder)!;
+        const roombuilder_2 = map.createLayer("layer2/Roombuilder", tileset_roombuilder)!;
+        const exteriors = map.createLayer("layer1/Exteriors", tileset_exteriors)!;
+        const interiors_1 = map.createLayer("layer1/Interiors1", tileset_interiors_1)!;
+        const interiors_2 = map.createLayer("layer1/Interiors2", tileset_interiors_2)!;
+        const interiors_3 = map.createLayer("layer1/Interiors3", tileset_interiors_3)!;
+        const interiors_4 = map.createLayer("layer1/Interiors4", tileset_interiors_4)!;
+        const immigration = map.createLayer("layer1/Immigration", tileset_immigration)!;
+
+        roombuilder_1.setCollisionByProperty({ collides: true });
+        roombuilder_2.setCollisionByProperty({ collides: true });
+        exteriors.setCollisionByProperty({ collides: true });
+        interiors_1.setCollisionByProperty({ collides: true });
+        interiors_2.setCollisionByProperty({ collides: true });
+        interiors_3.setCollisionByProperty({ collides: true });
+        interiors_4.setCollisionByProperty({ collides: true });
+        immigration.setCollisionByProperty({ collides: true });
+
+        this.tilemapLayerList.push(roombuilder_1);
+        this.tilemapLayerList.push(roombuilder_2);
+        this.tilemapLayerList.push(exteriors);
+        this.tilemapLayerList.push(interiors_1);
+        this.tilemapLayerList.push(interiors_2);
+        this.tilemapLayerList.push(interiors_3);
+        this.tilemapLayerList.push(interiors_4);
+        this.tilemapLayerList.push(immigration)
+
         createCharacterAnims(this.anims);
         if (this.socket) {
             this.socket.disconnect();
@@ -227,10 +233,11 @@ export default class AirportScene extends Phaser.Scene {
             color: "black",
             fontSize: "16px",
         });
-        this.userIdText = this.add.text(10, 10, "", {
+        this.userIdText = this.add.text(10, 10, this.userNickname, {
             color: "black",
             fontSize: "16px",
         });
+        this.userIdText!.setOrigin(0.5, 0);
 
         let valve_E = true;
         // npc 와의 대화를 위한 키 설정
@@ -388,6 +395,37 @@ export default class AirportScene extends Phaser.Scene {
                             store.dispatch(toggleIsClicked());
                             this.socket2 = io(`${serverUrl}/interaction`);
                             this.socket2.on("connect", () => {
+                                const recommendBtnClicked = (e: Event) => {
+                                    const customEvent = e as CustomEvent;
+                                    store.dispatch(clearSentences());
+                                    if (customEvent.detail.message === 0) {
+                                        store.dispatch(
+                                            appendSentence({
+                                                _id: 3,
+                                                sentence:
+                                                    "추천 문장을 준비 중입니다. 잠시만 기다려 주세요.",
+                                            })
+                                        );
+                                    }
+                                    console.log(
+                                        "lastMessage in SectanceBox: ",
+                                        customEvent.detail.lastMessage
+                                    );
+                                    this.socket2!.emit(
+                                        "getRecommendedResponses",
+                                        this.currNpcName,
+                                        this.alreadyRecommended,
+                                        customEvent.detail.lastMessage
+                                    );
+                                    store.dispatch(
+                                        setCanRequestRecommend(false)
+                                    );
+                                };
+                                this.socket2!.on("disconnect", () => {
+                                    console.log("disconnect, recommendBtnClicked: ", recommendBtnClicked);
+                                    window.removeEventListener("recomButtonClicked", recommendBtnClicked);
+                                });
+                                console.log("recommendBtnClicked: ", recommendBtnClicked);
                                 this.currNpcName = npcInfo.name;
                                 console.log(
                                     "connect, interaction socket.id: ",
@@ -435,38 +473,8 @@ export default class AirportScene extends Phaser.Scene {
                                     this.audio.play();
                                 })
 
-
-
-
-
                                 window.addEventListener(
-                                    "recomButtonClicked",
-                                    (e: Event) => {
-                                        const customEvent = e as CustomEvent;
-                                        store.dispatch(clearSentences());
-                                        if (customEvent.detail.message === 0) {
-                                            store.dispatch(
-                                                appendSentence({
-                                                    _id: "1",
-                                                    sentence:
-                                                        "추천 문장을 준비 중입니다. 잠시만 기다려 주세요.",
-                                                })
-                                            );
-                                        }
-                                        console.log(
-                                            "lastMessage in SectanceBox: ",
-                                            customEvent.detail.lastMessage
-                                        );
-                                        this.socket2!.emit(
-                                            "getRecommendedResponses",
-                                            this.currNpcName,
-                                            this.alreadyRecommended,
-                                            customEvent.detail.lastMessage
-                                        );
-                                        store.dispatch(
-                                            setCanRequestRecommend(false)
-                                        );
-                                    }
+                                    "recomButtonClicked", recommendBtnClicked
                                 );
 
                                 this.socket2!.on(
@@ -601,9 +609,10 @@ export default class AirportScene extends Phaser.Scene {
                                         // TODO : Store에 SentenceBox 상태정의하고 dispatch
                                         store.dispatch(clearSentences());
                                         responses.forEach((response, index) => {
+                                            
                                             store.dispatch(
                                                 appendSentence({
-                                                    _id: index.toString(),
+                                                    _id: index,
                                                     sentence: response,
                                                 })
                                             );
@@ -658,7 +667,7 @@ export default class AirportScene extends Phaser.Scene {
                             });
                             this.isReportOn = true;
                             store.dispatch(openReport());
-                            store.dispatch(reportOn());
+                            store.dispatch(reportOn("airport"));
                             grammarCorrections = [];
                         }
                         countUserSpeech = 0;
@@ -767,6 +776,9 @@ export default class AirportScene extends Phaser.Scene {
         }
     }
     update(time: number, delta: number) {
+        this.background
+            .setDisplaySize(this.cameras.main.width * 4, this.cameras.main.height * 4)
+            .setOrigin(0.5, 0.5);
         this.deleteNotVaildScoket();
         let speed: number = this.cursors?.shift.isDown
             ? this.dashSpeed
@@ -776,11 +788,6 @@ export default class AirportScene extends Phaser.Scene {
 
         if (this.player1 !== null && this.player1 !== undefined) {
             this.playInteractionAnims();
-            // console.log("userNickname : ", this.userNickname);
-            this.userIdText!.setText(this.userNickname);
-            this.userIdText!.setOrigin(0.5, 0);
-            this.userIdText!.setX(this.player1!.x);
-            this.userIdText!.setY(this.player1!.y - 50);
         }
 
         if (
@@ -854,6 +861,9 @@ export default class AirportScene extends Phaser.Scene {
 
             this.player1!.setVelocityX(velocityX);
             this.player1!.setVelocityY(velocityY);
+            // this.userIdText!.setText(this.userNickname);
+            this.userIdText!.setX(this.player1!.x);
+            this.userIdText!.setY(this.player1!.y - 50);
 
             if (velocityX === 0 && velocityY === 0) {
                 if (this.player1.anims.isPlaying) {
