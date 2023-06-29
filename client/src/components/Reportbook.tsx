@@ -196,7 +196,7 @@ const ReportBook = (data: any) => {
             {openbook == true && (
                 <>
                     <Swiper
-                        style={{ width: "970px" , marginTop:"72px"}}
+                        style={{ width: "970px" , marginTop:"35px"}}
                         modules={[Navigation]}
                         navigation={true}
                     >

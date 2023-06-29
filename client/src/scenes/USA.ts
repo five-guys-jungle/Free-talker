@@ -504,6 +504,36 @@ export default class USAScene extends Phaser.Scene {
                                 store.dispatch(clearSentences());
                                 this.socket2 = io(`${serverUrl}/interaction`);
                                 this.socket2.on("connect", () => {
+                                    const recommendBtnClicked = (e: Event) => {
+                                        const customEvent = e as CustomEvent;
+                                        store.dispatch(clearSentences());
+                                        if (customEvent.detail.message === 0) {
+                                            store.dispatch(
+                                                appendSentence({
+                                                    _id: "1",
+                                                    sentence:
+                                                        "추천 문장을 준비 중입니다. 잠시만 기다려 주세요.",
+                                                })
+                                            );
+                                        }
+                                        console.log(
+                                            "lastMessage in SectanceBox: ",
+                                            customEvent.detail.lastMessage
+                                        );
+                                        this.socket2!.emit(
+                                            "getRecommendedResponses",
+                                            this.currNpcName,
+                                            this.alreadyRecommended,
+                                            customEvent.detail.lastMessage
+                                        );
+                                        store.dispatch(
+                                            setCanRequestRecommend(false)
+                                        );
+                                    };
+                                    this.socket2!.on("disconnect", () => {
+                                        console.log("disconnect, recommendBtnClicked: ", recommendBtnClicked);
+                                        window.removeEventListener("recomButtonClicked", recommendBtnClicked);
+                                    });
                                     this.currNpcName = npcInfo.name;
                                     console.log(
                                         "connect, interaction socket.id: ",
@@ -513,35 +543,7 @@ export default class USAScene extends Phaser.Scene {
                                     this.isNpcSocketConnected = true;
                                     window.addEventListener(
                                         "recomButtonClicked",
-                                        (e: Event) => {
-                                            const customEvent =
-                                                e as CustomEvent;
-                                            store.dispatch(clearSentences());
-                                            if (
-                                                customEvent.detail.message === 0
-                                            ) {
-                                                store.dispatch(
-                                                    appendSentence({
-                                                        _id: "1",
-                                                        sentence:
-                                                            "추천 문장을 준비 중입니다. 잠시만 기다려 주세요.",
-                                                    })
-                                                );
-                                            }
-                                            console.log(
-                                                "lastMessage in SectanceBox: ",
-                                                customEvent.detail.lastMessage
-                                            );
-                                            this.socket2!.emit(
-                                                "getRecommendedResponses",
-                                                this.currNpcName,
-                                                this.alreadyRecommended,
-                                                customEvent.detail.lastMessage
-                                            );
-                                            store.dispatch(
-                                                setCanRequestRecommend(false)
-                                            );
-                                        }
+                                        recommendBtnClicked
                                     );
 
                                     this.interacting = true;
