@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "NODE_ENV=production ts-node index.ts",
+    "start": "NODE_ENV=production pm2 start --interpreter ./node_modules/.bin/ts-node index.ts",
     "start-dev": "NODE_ENV=development ts-node index.ts",
     "start-win": "set NODE_ENV=development && ts-node index.ts"
   },
@@ -40,6 +40,7 @@
     "mongoose": "^7.2.4",
     "multer": "^1.4.5-lts.1",
     "openai": "^3.2.1",
+    "pm2": "^5.3.0",
     "redis": "^4.6.7",
     "socket.io": "^4.6.2",
     "ts-node": "^10.9.1",

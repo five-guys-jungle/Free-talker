@@ -29,7 +29,7 @@ export const saveDialog = async (req: Request, res: Response) => {
             corrections,
             messages,
         } = req.body;
-        console.log(`messages: ${JSON.stringify(messages)}`);
+        // console.log(`messages: ${JSON.stringify(messages)}`);
 
         const item = {
             userId: { S: userId },
@@ -43,37 +43,37 @@ export const saveDialog = async (req: Request, res: Response) => {
                 corrections === undefined
                     ? { L: [] }
                     : {
-                          L: corrections.map(
-                              ({ original, correction }: Correction) => ({
-                                  M: {
-                                      original: { S: original },
-                                      correction: { S: correction },
-                                  },
-                              })
-                          ),
-                      },
+                        L: corrections.map(
+                            ({ original, correction }: Correction) => ({
+                                M: {
+                                    original: { S: original },
+                                    correction: { S: correction },
+                                },
+                            })
+                        ),
+                    },
             messages:
                 messages === undefined
                     ? { L: [] }
                     : {
-                          L: messages.map(
-                              ({
-                                  playerId,
-                                  name,
-                                  img,
-                                  side,
-                                  text,
-                              }: Message) => ({
-                                  M: {
-                                      playerId: { S: playerId },
-                                      name: { S: name },
-                                      img: { S: img },
-                                      side: { S: side },
-                                      text: { S: text },
-                                  },
-                              })
-                          ),
-                      },
+                        L: messages.map(
+                            ({
+                                playerId,
+                                name,
+                                img,
+                                side,
+                                text,
+                            }: Message) => ({
+                                M: {
+                                    playerId: { S: playerId },
+                                    name: { S: name },
+                                    img: { S: img },
+                                    side: { S: side },
+                                    text: { S: text },
+                                },
+                            })
+                        ),
+                    },
         };
 
         // console.log(JSON.stringify(item, null, 2));
