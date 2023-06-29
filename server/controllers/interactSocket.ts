@@ -61,7 +61,7 @@ export function interactSocketEventHandler(socket: Socket) {
                     });
             })
             .catch((err) => {
-                npcSentence = "Hello, Welcome to Free talker! How can I assist you ?"
+                npcSentence = "Hello, How can I assist you today?"
                 convertTexttoSpeech(prompt, npcSentence, npcName)
                     .then((res) => {
                         socket.emit("npcFirstResponse", res);

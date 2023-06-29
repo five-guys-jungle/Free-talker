@@ -515,7 +515,7 @@ export default class USAScene extends Phaser.Scene {
                                     if (customEvent.detail.message === 0) {
                                         store.dispatch(
                                             appendSentence({
-                                                _id: "1",
+                                                _id: 3,
                                                 sentence:
                                                     "추천 문장을 준비 중입니다. 잠시만 기다려 주세요.",
                                             })
@@ -729,7 +729,7 @@ export default class USAScene extends Phaser.Scene {
                                             (response, index) => {
                                                 store.dispatch(
                                                     appendSentence({
-                                                        _id: index.toString(),
+                                                        _id: index,
                                                         sentence: response,
                                                     })
                                                 );
