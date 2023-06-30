@@ -91,7 +91,7 @@ export default class AirportScene extends Phaser.Scene {
 
     constructor() {
         super("AirportScene");
-        
+
     }
 
     preload() {
@@ -165,7 +165,7 @@ export default class AirportScene extends Phaser.Scene {
             }).catch((error) => {
                 console.error("Error:", error);
             });
-        
+
         };
 
         this.background = this.add
@@ -243,7 +243,7 @@ export default class AirportScene extends Phaser.Scene {
             this.socket.disconnect();
         }
         this.gameSocketEventHandler();
-
+        store.dispatch(toggleIsClicked());
         this.interactionSprite = this.physics.add.sprite(0, 0, "arrowDown");
         this.interactionSprite.setVisible(false);
         this.interactionSprite.setScale(1.3);
@@ -432,7 +432,6 @@ export default class AirportScene extends Phaser.Scene {
                             store.dispatch(clearCorrections());
                             store.dispatch(clearMessages());
                             store.dispatch(clearSentences());
-                            store.dispatch(toggleIsClicked());
                             this.socket2 = io(`${serverUrl}/interaction`);
                             this.socket2.on("connect", () => {
                                 const recommendBtnClicked = (e: Event) => {
@@ -1116,10 +1115,10 @@ export default class AirportScene extends Phaser.Scene {
         this.socket.on("connect", () => {
             console.log(`connect, socket.id: ${this.socket!.id}, 
             this.socket.recovered: ${this.socket!.recovered}`);
-            if(this.socket!.recovered){
+            if (this.socket!.recovered) {
                 this.scene.resume();
             }
-            if(this.player1){
+            if (this.player1) {
                 this.beforeSleepX = this.player1.x;
                 this.beforeSleepY = this.player1.y;
                 this.player1.destroy();

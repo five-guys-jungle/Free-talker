@@ -21,7 +21,7 @@ import UserDialog from "./UserDialog";
 import FreeDialog from "./FreeDialog";
 import Report from "./Report";
 import ReportBook from "./Reportbook";
-import Keyguider from "./KeyGuide";
+import KeyGuider from "./KeyGuide";
 import Guider from "./Guide";
 import LevelButton from './LevelButton';
 import { Button } from '@mui/material';
@@ -45,11 +45,14 @@ const Game = () => {
         {mode === FREEDIALOG && <FreeDialog />}
         {mode === REPORT && <Report />}
         {(mode === AIRPORT || mode === USA) && <ReportBook />}
-        {/* <ButtonContainer> */}
-        <LevelButton />
-        <Guider />
-        <Keyguider />
-        {/* </ButtonContainer> */}
+        {mode !== NPCDIALOG && mode !== USERDIALOG && mode !== FREEDIALOG && (
+            <ButtonContainer>
+                <LevelButton />
+                <Guider />
+                <KeyGuider />
+            </ButtonContainer>
+        )}
+
     </BackgroundDiv>;
 };
 
@@ -62,13 +65,11 @@ const BackgroundDiv = styled.div`
     // overflow: hidden;
 `;
 
-// const ButtonContainer = styled.div`
-//   position: fixed;
-//   right: 10%; /* Adjust the positioning based on your desired distance from the right edge */
-//   bottom: 20px; /* Adjust the positioning based on your desired distance from the bottom edge */
-//   display: flex;
-//   flex-direction: row;
-//   flex-shrink: 0;
-//   gap: 10px; /* Add gap to separate the buttons */
-// `;
-
+const ButtonContainer = styled.div`
+  position: fixed;
+  right: 10%; /* Adjust the positioning based on your desired distance from the right edge */
+  bottom: 20px; /* Adjust the positioning based on your desired distance from the bottom edge */
+  display: flex;
+  flex-direction: row;
+  gap: 10px; /* Add gap to separate the buttons */
+`;

@@ -25,9 +25,6 @@ const LevelButton = () => {
 export default LevelButton;
 
 const StyledDiv = styled.div`
-  position: fixed;
-  right: 20%; /* Adjust the positioning based on your desired distance from the right edge */
-  bottom: 20px; /* Adjust the positioning based on your desired distance from the bottom edge */
   padding: 10px;
   border-radius: 20px;
   background-color: lightskyblue;
