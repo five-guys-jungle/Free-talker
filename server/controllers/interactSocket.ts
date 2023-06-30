@@ -32,10 +32,10 @@ export function interactSocketEventHandler(socket: Socket) {
     let npcSentence: string;
     console.log("Interaction socket connected, socketid: ", socket.id);
 
-    socket.on("dialogStart", async (npcName: string) => {
+    socket.on("dialogStart", async (npcName: string, level: string) => {
         console.log("dialogStart");
         // 소켓이 연결되면, 유저와 NPC 간의 Conversation Chain을 생성한다.
-        await createChain(npcName)
+        await createChain(npcName, level)
             .then((res) => {
                 chain = res;
                 console.log("chain 생성 완료");
@@ -103,8 +103,7 @@ export function interactSocketEventHandler(socket: Socket) {
             const buffer = Buffer.from(data.audioDataBuffer);
             const filePath = path.join(
                 __dirname,
-                `../audio/user_audio/${data.userNickname}_${
-                    data.npcName
+                `../audio/user_audio/${data.userNickname}_${data.npcName
                 }_${uuidv4()}.wav`
             );
             fs.writeFileSync(filePath, buffer); // 동기적으로 실행
