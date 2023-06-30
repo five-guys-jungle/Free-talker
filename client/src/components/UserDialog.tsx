@@ -15,10 +15,10 @@ const Container = styled.div`
     255,
     255,
     255,
-    0.5
+    0.8
   );
-  background-image: url("./assets/logo/logo_transparent.png");
-  background-size: 100% 100%;
+  // background-image: url("./assets/logo/logo_transparent.png");
+  // background-size: 100% 100%;
   `;
 
 const LeftSection = styled.section`
@@ -27,7 +27,7 @@ const LeftSection = styled.section`
 `;
 
 const UpperSection = styled.div`
-  flex: 1;
+  flex: 0.3;
 
   // border-bottom: 1px solid #ddd;
   display: flex;
@@ -39,7 +39,7 @@ const UpperSection = styled.div`
 `;
 
 const LowerSection = styled.div`
-  flex: 1;
+  flex: 0.7;
 
   // border-top: 1px solid #ddd;
   display: flex;

@@ -36,7 +36,7 @@ function App() {
     return (
         <HoverDiv>
             {/* <Bgm/> */}
-            {mode === START || mode === LOGIN ? (
+            {/* {mode === START || mode === LOGIN ? (
                 <>
                 {<Bgm/>}
                 {!logined && <Start />}
@@ -55,9 +55,9 @@ function App() {
 
             ) : (
                 <></>
-            )}
+            )} */}
             {/* <NPCDialog/> */}
-            {/* <UserDialog /> */}
+            <UserDialog />
             {/* <FreeDialog /> */}
             
             

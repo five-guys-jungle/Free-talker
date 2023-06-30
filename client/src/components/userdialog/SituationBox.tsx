@@ -23,14 +23,13 @@ const SituationBox: React.FC = () => {
 
   return (
     
-    <Box sx={{ width: '70%', height: '70%', pb: 20 }}>
-      <Title>상황 추천</Title>
+    <Box sx={{ width: '70%', height: '70%', pb: 10 }}>
+      <Title>Situation Recommendation</Title>
       <Box sx={{ overflow: 'auto', height: '100%',backgroundColor: '#e3f2fd' }} ref={ref}>
         <Typography 
           className="Situation" 
-          variant="h5" 
-          style={{ fontFamily: "Arial", fontWeight: "bold", wordBreak: "break-word", paddingTop: "10px", paddingLeft: "10px", paddingRight: "10px"  }}>
-            {situation}
+          style={{ fontSize : "25px", fontFamily: "Arial", fontWeight: "bold", wordBreak: "break-word", paddingTop: "10px", paddingLeft: "5%", paddingRight: "5%"  }}>
+            {situation}sfdasdsadfsadfsdaf
         </Typography>
         {/* <List>
           {messages.map(({ primary, secondary }, index) => (

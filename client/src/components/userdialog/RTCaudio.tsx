@@ -53,7 +53,13 @@ const RTCaudio = () => {
 	
 	const {playerNickname, playerTexture} = useSelector((state: RootState) => {return {...state.user}});
 
-	const placeName = socketNamespace.substring(socketNamespace.lastIndexOf("/") + 1);
+	let placeName = socketNamespace.substring(socketNamespace.lastIndexOf("/") + 1);
+	switch (placeName) {
+		case "chairMart":
+		  placeName = "MART";
+		  break;
+		// Add more cases if needed
+	  }
 	useEffect(() => {
 		socket.current = io(socketNamespace);
 		navigator.mediaDevices
@@ -336,6 +342,7 @@ const RTCaudio = () => {
 					style={{ 
 						display: "inline-flex",
 					alignItems: "center", 
+					marginTop : '10%',
 					bottom: "5px" 
 					}}>
 					<IconButton
@@ -345,7 +352,7 @@ const RTCaudio = () => {
 						onClick={() => callUser(idToCall)}>
 						<PhoneIcon style={{ fontSize: "3em" }} />
 					</IconButton>
-					<Typography variant="h5" align="center" style={{ fontFamily: "Arial", fontWeight: "bold" }}>통화를 걸어 다른 유저와 상황극을 시작해 보세요</Typography>
+					<Typography variant="h4" align="center" style={{ fontFamily: "Arial", fontWeight: "bold"}}>Make a call</Typography>
 				</div>
 			  )}
 				
@@ -357,11 +364,10 @@ const RTCaudio = () => {
 						</Button>
 					</div>
 					)}
-				<Typography variant="h3" align="center">
-					당신의 역할은
-					<div></div>
-					<span style={{ color: "#C70039" }}>{playerRole}</span>입니다 
+				<Typography fontSize={"35px"} align="center" marginTop={"10%"}>
+					My role is <span style={{ color: "#C70039" }}>({playerRole})</span>
 				</Typography>
+				<Typography fontSize={"35px"}>Place is <span style={{ color: "#C70039" }}>{placeName}</span></Typography>
 				</div>
 				
 		  </div>

@@ -49,13 +49,12 @@ const UserBox: React.FC = () => {
 	const socketNamespace = useSelector(
 		(state: { rtc: { socketNamespace: string } }) => state.rtc.socketNamespace
 	);
-  let placeName = socketNamespace.substring(socketNamespace.lastIndexOf("/") + 1);
-  switch (placeName) {
-    case "chairMart":
-      placeName = "MART";
-      break;
-    // Add more cases if needed
-  }
+  // let placeName = socketNamespace.substring(socketNamespace.lastIndexOf("/") + 1);
+  // switch (placeName) {
+  //   case "chairMart":
+  //     placeName = "MART";
+  //     break;
+  // }
   // useEffect(() => {
   //     console.log(playerId)
   //     console.log(playerNickname)
@@ -120,9 +119,9 @@ const UserBox: React.FC = () => {
 
   return (
     <UserBoxWrapper>
-      <UserBoxContainer>
-        <Typography variant="h4"><span style={{ color: "#C70039" }}>{placeName}</span>에서 대화를 시작해 보세요</Typography>
-      </UserBoxContainer>
+      {/* <UserBoxContainer>
+        <Typography variant="h4">Place : <span style={{ color: "#C70039" }}>{placeName}</span></Typography>
+      </UserBoxContainer> */}
 
       <Box display="flex" flexDirection="row" >
         <AvatarContainer>
