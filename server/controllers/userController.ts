@@ -1,9 +1,7 @@
 import { Request, Response } from "express";
-import { IUserInfo, User } from "../models/User";
 import { v4 as uuidv4 } from "uuid";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import AWS from "aws-sdk";
 import "dotenv/config";
 import {
     GetItemCommand,
@@ -38,11 +36,12 @@ export const signup = async (req: Request, res: Response) => {
         const { userId, userPw, userNickname } = req.body;
 
         // Data validation
-        if (
-            !userIdRegex.test(userId) ||
-            !userNicknameRegex.test(userNickname)
-        ) {
-            return res.status(400).send("Invalid userId or userNickname");
+        if (!userIdRegex.test(userId) || (userId.length < 4 || userId.length > 20)) {
+            return res.status(400).send("Invalid userId");
+        } else if (!userNicknameRegex.test(userNickname) || (userNickname.length < 2 || userNickname.length > 12)) {
+            return res.status(400).send("Invalid userNickname");
+        } else if (userPw === "" || userPw === undefined || userPw === null || userPw.length < 4 || userPw.length > 20) {
+            return res.status(400).send("Invalid userPw");
         } else {
             const queryByUserId = {
                 TableName: tableName,
@@ -177,7 +176,7 @@ export const login = async (req: Request, res: Response) => {
                             },
                             jwtKey,
                             {
-                                expiresIn: "1h",
+                                expiresIn: "2h",
                             }
                         );
                         console.log("accessToken:", accessToken);
@@ -204,3 +203,4 @@ export const login = async (req: Request, res: Response) => {
         return res.status(500).send("Internal Server Error");
     }
 };
+
