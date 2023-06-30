@@ -1077,7 +1077,9 @@ export default class AirportScene extends Phaser.Scene {
         this.socket.on("connect", () => {
             console.log(`connect, socket.id: ${this.socket!.id}, 
             this.socket.recovered: ${this.socket!.recovered}`);
-            this.scene.resume();
+            if(this.socket!.recovered){
+                this.scene.resume();
+            }
             if(this.player1){
                 this.beforeSleepX = this.player1.x;
                 this.beforeSleepY = this.player1.y;

@@ -1268,7 +1268,9 @@ export default class USAScene extends Phaser.Scene {
         this.socket!.on("connect", () => {
             console.log(`connect, socket.id: ${this.socket!.id}, 
             this.socket.recovered: ${this.socket!.recovered}`);
-            this.scene.resume();
+            if(this.socket!.recovered){
+                this.scene.resume();
+            }
             this.player1 = this.createPlayer({
                 socketId: this.socket!.id,
                 nickname: this.userNickname,
