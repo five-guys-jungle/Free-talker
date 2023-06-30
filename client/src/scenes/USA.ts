@@ -55,8 +55,10 @@ export default class USAScene extends Phaser.Scene {
     interactKey: Phaser.Input.Keyboard.Key | null = null;
     interactText: Phaser.GameObjects.Text | null = null;
     userIdText: Phaser.GameObjects.Text | null = null;
-    initial_x: number = 1850;
-    initial_y: number = 800;
+    offset_x:number=480;
+    offset_y:number=320;
+    initial_x: number = 1850-this.offset_x;
+    initial_y: number = 800-this.offset_y;
     allPlayers: PlayerDictionary = {};
     recorder: MediaRecorder | null = null;
     socket: Socket | null = null;
@@ -1124,12 +1126,12 @@ export default class USAScene extends Phaser.Scene {
         gate.sprite.setScale(0.35);
         this.npcList.push(gate);
 
-        this.physics.add.sprite(1819, 1200, "statueOfLiberty").setDepth(3);
+        this.physics.add.sprite(1819-this.offset_x, 1200-this.offset_y, "statueOfLiberty").setDepth(3);
 
         let npc1: npcInfo = {
             name: "HotelReceptionist",
-            x: 650,
-            y: 1632,
+            x: 650-this.offset_x,
+            y: 1632-this.offset_y,
             texture: "HotelReceptionist",
             sprite: null,
             role: "npc",
@@ -1139,8 +1141,8 @@ export default class USAScene extends Phaser.Scene {
 
         let npc2: npcInfo = {
             name: "Barista",
-            x: 1810,
-            y: 428,
+            x: 1810-this.offset_x,
+            y: 428-this.offset_y,
             texture: "Barista",
             sprite: null,
             role: "npc",
@@ -1150,8 +1152,8 @@ export default class USAScene extends Phaser.Scene {
 
         let npc3: npcInfo = {
             name: "Doctor",
-            x: 1741,
-            y: 2413,
+            x: 1741-this.offset_x,
+            y: 2413-this.offset_y,
             texture: "Doctor",
             sprite: null,
             role: "npc",
@@ -1161,8 +1163,8 @@ export default class USAScene extends Phaser.Scene {
 
         let npc4: npcInfo = {
             name: "Nurse",
-            x: 1741,
-            y: 2213,
+            x: 1741-this.offset_x,
+            y: 2213-this.offset_y,
             texture: "Nurse",
             sprite: null,
             role: "npc",
@@ -1174,8 +1176,8 @@ export default class USAScene extends Phaser.Scene {
 
         let npc5: npcInfo = {
             name: "ClothingShopStaff",
-            x: 3102,
-            y: 2237,
+            x: 3102-this.offset_x,
+            y: 2237-this.offset_y,
             texture: "ClothingShopStaff",
             sprite: null,
             role: "npc",
@@ -1185,8 +1187,8 @@ export default class USAScene extends Phaser.Scene {
 
         let npc6: npcInfo = {
             name: "MartCashier",
-            x: 2739,
-            y: 1842,
+            x: 2739-this.offset_x,
+            y: 1842-this.offset_y,
             texture: "MartCashier",
             sprite: null,
             role: "npc",
@@ -1196,8 +1198,8 @@ export default class USAScene extends Phaser.Scene {
 
         let npc7: npcInfo = {
             name: "Chef",
-            x: 3216,
-            y: 417,
+            x: 3216-this.offset_x,
+            y: 417-this.offset_y,
             texture: "Chef",
             sprite: null,
             role: "npc",
@@ -1206,8 +1208,8 @@ export default class USAScene extends Phaser.Scene {
         this.npcList.push(npc7);
         let npc8: npcInfo = {
             name: "Waitress",
-            x: 2928,
-            y: 432,
+            x: 2928-this.offset_x,
+            y: 432-this.offset_y,
             texture: "Waitress",
             sprite: null,
             role: "npc",
@@ -1217,8 +1219,8 @@ export default class USAScene extends Phaser.Scene {
 
         let interact_sprite1: npcInfo = {
             name: "coach_park",
-            x: 1485,
-            y: 1157,
+            x: 1485-this.offset_x,
+            y: 1157-this.offset_y,
             texture: "coach_park",
             sprite: null,
             role: "freeTalkingPlace",
@@ -1228,8 +1230,8 @@ export default class USAScene extends Phaser.Scene {
 
         let interact_sprite2: npcInfo = {
             name: "chairMart",
-            x: 2603,
-            y: 1362,
+            x: 2603-this.offset_x,
+            y: 1362-this.offset_y,
             texture: "chairMart",
             sprite: null,
             role: "rolePlayingPlace",
