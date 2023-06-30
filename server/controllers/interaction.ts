@@ -205,17 +205,41 @@ export async function textCompletion(
 export async function convertTexttoSpeech(
     inputText: string,
     outputText: string,
-    npcName: string = "ImmigrationOfficer"
+    npcName: string = "ImmigrationOfficer",
+    npcEmotion: string = "neutral"
 ): Promise<Object> {
     try {
-        const request: any = {
-            input: { text: outputText },
-            voice: {
-                languageCode: "en-US",
-                name: preDefinedVoiceType[npcName].voiceType,
-            },
-            audioConfig: { audioEncoding: "MP3" },
-        };
+        let request: any
+        const ssmlText: string = await generateSsmlText(outputText, npcEmotion);
+        if (ssmlText == "ChatGPT API Error.") {
+            request = {
+                input: { text: outputText },
+                voice: {
+                    languageCode: "en-US",
+                    name: preDefinedVoiceType[npcName].voiceType,
+                },
+                audioConfig: { audioEncoding: "MP3" },
+            };
+        }
+        else if (ssmlText.includes("</speak>")) {
+            request = {
+                input: { ssml: ssmlText },
+                voice: {
+                    languageCode: "en-US",
+                    name: preDefinedVoiceType[npcName].voiceType,
+                },
+                audioConfig: { audioEncoding: "MP3" },
+            };
+        } else {
+            request = {
+                input: { text: outputText },
+                voice: {
+                    languageCode: "en-US",
+                    name: preDefinedVoiceType[npcName].voiceType,
+                },
+                audioConfig: { audioEncoding: "MP3" },
+            };
+        }
         const [response_audio]: any = await client.synthesizeSpeech(request);
         const audioFileName = `${uuidv4()}.mp3`;
         const writeFile = util.promisify(fs.writeFile);
@@ -363,4 +387,34 @@ export function compareWithCorrectedText(
     const lowercaseInputText = preprocessSentence(inputText);
     const lowercaseCorrectedText = preprocessSentence(correctedText);
     return lowercaseInputText === lowercaseCorrectedText;
+}
+
+async function generateSsmlText(text: string, emotion: string): Promise<string> {
+    let response: any;
+    console.log("text: ", text, " emotion: ", emotion);
+    try {
+        response = await openai.createChatCompletion({
+            model: "gpt-3.5-turbo",
+            messages: [
+                {
+                    role: "system",
+                    content: `your role is tanslate '${text}' to can express ${emotion}. reply at full ssml format. And do not change the text of contents.`,
+                },
+                {
+                    role: "user",
+                    content: `your role is tanslate '${text}' to can express ${emotion}. reply at ssml format. And do not change the text of contents.`,
+                },
+            ],
+            temperature: 0.2,
+            max_tokens: 300,
+            top_p: 1.0,
+            frequency_penalty: 0.0,
+            presence_penalty: 0.0,
+        });
+        console.log("response.data.choices[0].message: ",response.data.choices[0].message['content']);
+        return response.data.choices[0].message['content'];
+    } catch (error) {
+        console.log(error);
+        return "ChatGPT API Error.";
+    }
 }

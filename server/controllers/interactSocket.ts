@@ -32,8 +32,9 @@ export function interactSocketEventHandler(socket: Socket) {
     let npcSentence: string;
     console.log("Interaction socket connected, socketid: ", socket.id);
 
-    socket.on("dialogStart", async (npcName: string) => {
+    socket.on("dialogStart", async (npcName: string, npcEmotion: string) => {
         console.log("dialogStart");
+        console.log('npcName: ', npcName, ', npcEmotion: ', npcEmotion);
         // 소켓이 연결되면, 유저와 NPC 간의 Conversation Chain을 생성한다.
         await createChain(npcName)
             .then((res) => {
@@ -51,7 +52,7 @@ export function interactSocketEventHandler(socket: Socket) {
                 npcSentence = res.response;
                 // socket.emit("npcFirstResponse", npcSentence);
 
-                await convertTexttoSpeech(prompt, npcSentence, npcName)
+                await convertTexttoSpeech(prompt, npcSentence, npcName, npcEmotion)
                     .then((res) => {
                         socket.emit("npcFirstResponse", res);
                         console.log("npcFirstResponse response: ", res);
@@ -61,7 +62,7 @@ export function interactSocketEventHandler(socket: Socket) {
                     });
             })
             .catch((err) => {
-                npcSentence = "Hello, How can I assist you today?"
+                npcSentence = "Hello, Welcome to Free talker! How can I assist you ?"
                 convertTexttoSpeech(prompt, npcSentence, npcName)
                     .then((res) => {
                         socket.emit("npcFirstResponse", res);
@@ -103,8 +104,7 @@ export function interactSocketEventHandler(socket: Socket) {
             const buffer = Buffer.from(data.audioDataBuffer);
             const filePath = path.join(
                 __dirname,
-                `../audio/user_audio/${data.userNickname}_${
-                    data.npcName
+                `../audio/user_audio/${data.userNickname}_${data.npcName
                 }_${uuidv4()}.wav`
             );
             fs.writeFileSync(filePath, buffer); // 동기적으로 실행
