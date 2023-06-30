@@ -123,3 +123,23 @@ const Description = styled.p`
     margin: 0;
     white-space: nowrap;
 `;
+
+
+// const StyledDiv = styled.div<StyledDivProps>`
+//     padding: 10px;
+//     border-radius: 20px;
+//     background-color: lightskyblue;
+//     display: flex;
+//     align-items: center;
+//     justify-content: center;
+//     transition: all 0.5s ease;
+//     cursor: pointer;
+
+//     ${props => props.isClicked ? css`
+//         width: auto;
+//         height: auto;
+//         padding: 20px;
+//     ` : css`
+//         padding: 10px;
+//     `}
+// `;

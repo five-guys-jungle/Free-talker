@@ -33,6 +33,7 @@ import { setRecord, setMessage, setMessageColor } from "../stores/recordSlice";
 import { reportOn, reportOff } from "../stores/reportOnoffSlice";
 import { handleScene } from "./common/handleScene";
 import { RootState } from "../stores/index";
+import { changeLevel } from "../stores/levelSlice";
 
 import dotenv from "dotenv";
 import Report from "../components/Report";
@@ -75,7 +76,7 @@ export default class AirportScene extends Phaser.Scene {
     isNpcSocketConnected: boolean = false;
     npcList: npcInfo[] = [];
     alreadyRecommended: boolean = false;
-
+    level: string = "intermediate";
     speed: number = 200;
     dashSpeed: number = 600;
     tilemapLayerList: Phaser.Tilemaps.TilemapLayer[] = [];
@@ -99,6 +100,7 @@ export default class AirportScene extends Phaser.Scene {
         this.playerId = data.playerId;
         this.userNickname = data.playerNickname;
         this.playerTexture = data.playerTexture;
+        this.level = data.level;
         console.log("data: ", data);
     }
     gamePause(pausedX: number, pausedY: number) {
@@ -259,6 +261,20 @@ export default class AirportScene extends Phaser.Scene {
             console.log("reportClose event listener");
             this.isReportOn = false;
         });
+        this.level = "intermediate";
+
+        window.addEventListener('levelChanged', (event) => {
+            if (this.level === "intermediate") {
+                this.level = "advanced";
+                // store.dispatch(changeLevel())
+            } else if (this.level === "advanced") {
+                this.level = "beginner";
+                // store.dispatch(changeLevel())
+            } else if (this.level === "beginner") {
+                this.level = "intermediate";
+            }
+            console.log(`level : ${this.level}`);
+        });
         this.input.keyboard!.on("keydown-E", async () => {
             if (this.player1 === null || this.player1 === undefined) {
                 return;
@@ -353,6 +369,7 @@ export default class AirportScene extends Phaser.Scene {
                                 playerId: this.playerId,
                                 playerNickname: this.userNickname,
                                 playerTexture: this.playerTexture,
+                                level: this.level
                             });
                         });
                         gate.play("gateAnim"); // 생성한 sprite에 애니메이션 적용
@@ -434,7 +451,7 @@ export default class AirportScene extends Phaser.Scene {
                                 countUserSpeech = 0;
                                 this.isNpcSocketConnected = true;
                                 this.interacting = true;
-                                this.socket2!.emit("dialogStart", npcInfo.name);
+                                this.socket2!.emit("dialogStart", npcInfo.name, this.level);
                                 this.isAudioPlaying = true;
                                 // TODO : npcFirstResponse 받고, audio 재생하는 동안 E, D키 비활성화 및 '응답중입니다. 잠시만 기다려주세요' 출력
                                 this.socket2!.on("npcFirstResponse", (response: any) => {
@@ -609,7 +626,7 @@ export default class AirportScene extends Phaser.Scene {
                                         // TODO : Store에 SentenceBox 상태정의하고 dispatch
                                         store.dispatch(clearSentences());
                                         responses.forEach((response, index) => {
-                                            
+
                                             store.dispatch(
                                                 appendSentence({
                                                     _id: index,
@@ -941,7 +958,7 @@ export default class AirportScene extends Phaser.Scene {
             playerSprite,
             playerInfo.x,
             playerInfo.y,
-            playerInfo.scene
+            playerInfo.scene,
         );
 
         // Add the sprite to the Phaser scene

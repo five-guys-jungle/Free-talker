@@ -15,7 +15,7 @@ import saveRouter from "./routes/saveDialogRouter";
 
 import { signup, login } from "./controllers/userController";
 import dotenv from "dotenv";
-import {createNamespace} from "./controllers/DialogSocket";
+import { createNamespace } from "./controllers/DialogSocket";
 // // import router from "./routes/basicRouter";
 // // import http from 'http'; // Load in http module
 
@@ -68,18 +68,10 @@ app.get("/audio/npc_audio/*", function (req: Request, res: Response) {
     res.sendFile(path.join(__dirname, "audio/npc_audio", req.params[0]));
 });
 
-// freedialogSocket.on("connection", freedialogsocketEventHandler);
-// app.post("/interact", upload.single("audio"), interact);
-// app.use(Router);
-app.use("/auth", authRouter);
 
+app.use("/auth", authRouter);
 app.use("/save", saveRouter);
-// app.post("/signup", signup);
-// app.post("/login", login);
-// app.get("/userdialog/place", async (req: Request, res: Response) => {
-//     console.log(req)
-//     res.send("Hello World!~~~~~~~~~~~~~~~~~~~");
-// });
+
 
 if (process.env.NODE_ENV === "production") {
     console.log("Production Mode");

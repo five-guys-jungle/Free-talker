@@ -56,7 +56,7 @@ const StyledDiv = styled.div<StyledDivProps>`
     justify-content: center;
     transition: all 0.5s ease;
     cursor: pointer;
-  
+
     ${props => props.isClicked && css`
       border-radius: 20px;
       width: auto;
@@ -92,3 +92,25 @@ const Image = styled.img`
 const Description = styled.p`
     margin: 0;
 `;
+
+
+// const StyledDiv = styled.div<StyledDivProps>`
+//     padding: 10px;
+//     border-radius: 20px;
+//     background-color: lightskyblue;
+//     display: flex;
+//     align-items: center;
+//     justify-content: center;
+//     transition: all 0.5s ease;
+//     cursor: pointer;
+//     flex-shrink: 0;
+
+//     ${props => props.isClicked && css`
+//       border-radius: 20px;
+//       width: auto;
+//       height: auto;
+//       max-width: 300px;
+//       max-height: 400px;
+//       padding: 20px;
+//     `}
+// `;
