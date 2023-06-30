@@ -113,6 +113,7 @@ export default class USAScene extends Phaser.Scene {
     gameResume(pausedX: number, pausedY: number) {
         console.log("Scene is Resumed: USA");
         console.log("allPlayer in Resumed: ", this.allPlayers);
+        console.log("this.socket in Resumed: ", this.socket);
         // if(this.intervalId){
         //     clearInterval(this.intervalId);
         //     this.intervalId = null;
@@ -150,7 +151,7 @@ export default class USAScene extends Phaser.Scene {
             .image(this.initial_x, this.initial_y * 2, "background")
             .setDisplaySize(this.cameras.main.width * 2, this.cameras.main.height * 6)
             .setOrigin(0.5, 0.5);
-        // this.game.events.on('pause', this.gamePause);
+        this.game.events.on('pause', this.gamePause);
         this.events.on("wake", this.onSceneWake, this);
         this.events.on("sleep", this.onSceneSleep, this);
         // this.add.image(400, 300, "background");
@@ -1280,7 +1281,11 @@ export default class USAScene extends Phaser.Scene {
         this.socket = io(serverUrl);
 
         this.socket!.on("connect", () => {
-            console.log("connect, socket.id: ", this.socket!.id);
+            console.log(`connect, socket.id: ${this.socket!.id}, 
+            this.socket.recovered: ${this.socket!.recovered}`);
+            if(this.socket!.recovered){
+                this.scene.resume();
+            }
             this.player1 = this.createPlayer({
                 socketId: this.socket!.id,
                 nickname: this.userNickname,
@@ -1413,6 +1418,7 @@ export default class USAScene extends Phaser.Scene {
                 }
             });
             this.socket!.on("disconnect", (reason: string) => {
+                this.scene.pause();
                 console.log("client side disconnect, reason: ", reason);
                 // window.location.reload();
             });

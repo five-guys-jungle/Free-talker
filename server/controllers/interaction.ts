@@ -208,7 +208,10 @@ export async function convertTexttoSpeech(
     npcName: string = "ImmigrationOfficer"
 ): Promise<Object> {
     try {
+        const ssmlText: string = `<speak><prosody rate="low" pitch="low">${outputText}</prosody></speak> `;
+        console.log(`convertTexttoSpeech, inputText: ${inputText}, outputText: ${outputText}`);
         const request: any = {
+            // input: { ssml: ssmlText },
             input: { text: outputText },
             voice: {
                 languageCode: "en-US",
