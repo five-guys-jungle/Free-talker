@@ -81,15 +81,16 @@ const SentenceList: React.FC = () => {
     ));
 
     return (
-        <div className="container" style={{ height: "80%" }}>
+        <div className="container" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100%" }}>
             <DialogTitle>You can say something like this</DialogTitle>
+            
+            {isOuterDivVisible && (
+                <SentenceOuterDiv>{sentenceViews}</SentenceOuterDiv>
+            )}
             {canRequestRecommend && (
                 <Button onClick={handleClick} isOpen={isOuterDivVisible} longPress={isLongPress} style={{position:"absolute"}}>
                     추천 문장 보기
                 </Button>)}
-            {isOuterDivVisible && (
-                <SentenceOuterDiv>{sentenceViews}</SentenceOuterDiv>
-            )}
         </div>
     );
 };
@@ -118,12 +119,13 @@ const blinking = keyframes`
 const Button = styled.button<{ isOpen: boolean; longPress: boolean }>`
     background-color: ${({ isOpen, longPress }) =>
         isOpen ? '#3182ce' : longPress ? '#ee3823' : '#3182ce'};
+    font-size: 25px; // 글자 크기 조정
     color: #fff;
     border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    margin-bottom: 10px;
-    margin-left: 30px;
+    padding: 20px 30px;
+    border-radius: 90px;
+    // margin-bottom: 10px;
+    // margin-left: 30px;
     cursor: pointer;
 
     ${({ longPress, isOpen }) =>
@@ -139,7 +141,7 @@ const SentenceOuterDiv = styled.div`
     flex: 1;
     width: 40vw;
     height: 50vh;
-    margin: 60px auto 0px;
+    margin: 10px auto 0px;
     flex-direction: column; // Add this
     padding: 0 0%; /* 화면 양쪽에 10% 공간을 추가 */
     justify-content: center;

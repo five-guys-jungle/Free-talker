@@ -102,7 +102,7 @@ const Record: React.FC = () => {
                     ref={mainSVGRef}
                     id="mainSVG"
                     xmlns="http://www.w3.org/2000/svg"
-                    viewBox="330 150 400 220"
+                    viewBox="340 200 100 170"
                     preserveAspectRatio="xMidYMid meet"
                 >
                     <defs>
@@ -276,6 +276,7 @@ const Record: React.FC = () => {
                     ))}
                 </Instructions>
             </Container>
+
         </RecDiv>
     );
 };
@@ -286,7 +287,7 @@ const RecDiv = styled.div`
     body {
         background-color: #111;
         width: 100%;
-        height: 100%;
+        height: 50%;
         text-align: center;
         display: flex;
         align-items: center;
@@ -302,12 +303,15 @@ const RecDiv = styled.div`
     }
 
     svg {
-        width: 65vh;
-        margin-top:-10vh;
-        margin-right: -42vh;
-        // visibility: hidden;
+        display: flex;                  // Add flex display
+        align-items: center;             // Center vertically
+        justify-content: center;         // Center horizontally
+        width: 100%;
+        height: 100%;
+        // margin-top:10px;
+        // margin-right: -42vh;
         object-fit: contain;
-        // cursor: pointer;
+        
     }
 `;
 
@@ -316,13 +320,24 @@ const Container = styled.div`
     align-items: center;
     justify-content: center;
     width: 100%;
-    height: 100%;
+    height: 25vh;
+    // margin-top:5%;
+    margin-left:5%;
     flex-direction: row;
-    gap: 20px;
+    // gap: 5px;
+
+    & > svg {
+        flex: 4; 
+        aspect-ratio: 4 / 6;
+    }
+
+    & > div {
+        flex: 6; 
+    }
 `;
 
 const Instructions = styled.div`
     font-family: Verdana;
-    font-size: 1.8em;
+    font-size: 1.5em;
     font-weight: bold;
 `;

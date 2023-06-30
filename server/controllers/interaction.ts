@@ -142,7 +142,7 @@ export async function createChain(npcName: string): Promise<ConversationChain> {
             // memoryKey: "history",
             chatHistory: new RedisChatMessageHistory({
                 sessionId: new Date().toISOString(),
-                sessionTTL: 300,
+                sessionTTL: 180,
                 config: {
                     url: "redis://localhost:6379",
                 },
@@ -205,12 +205,15 @@ export async function textCompletion(
 export async function convertTexttoSpeech(
     inputText: string,
     outputText: string,
-    npcName: string = "ImmigrationOfficer",
+    npcName: string = "ImmigrationOfficer"
 ): Promise<Object> {
     try {
         const request: any = {
             input: { text: outputText },
-            voice: { languageCode: "en-US", name: preDefinedVoiceType[npcName].voiceType },
+            voice: {
+                languageCode: "en-US",
+                name: preDefinedVoiceType[npcName].voiceType,
+            },
             audioConfig: { audioEncoding: "MP3" },
         };
         const [response_audio]: any = await client.synthesizeSpeech(request);
@@ -301,11 +304,11 @@ export async function recommendNextResponses(
             messages: [
                 {
                     role: "system",
-                    content: `I'm currently talking with the ${npcName}, Recommend me three expressions I can reply to the sentence that ${previous} without any explanations`,
+                    content: `I'm currently talking with the ${npcName}. Recommend me three expressions, one positive, one neutral, and one negative, that I can use to respond to the sentence that ${previous} without any explanations`,
                 },
                 {
                     role: "user",
-                    content: `I'm currently talking with the ${npcName}, Recommend me three expressions I can reply to the sentence that ${previous} without any explanations`,
+                    content: `I'm currently talking with the ${npcName}. Recommend me three expressions, one positive, one neutral, and one negative, that I can use to respond to the sentence that ${previous} without any explanations`,
                 },
                 {
                     role: "user",
@@ -319,10 +322,11 @@ export async function recommendNextResponses(
             frequency_penalty: 0.0,
             presence_penalty: 0.0,
         });
+        console.log(response.data.choices[0].message["content"]);
         recommendations = response.data.choices[0].message["content"]
-            .trim()
-            .split("\n")
-            .map((sentence: string) => sentence.trim());
+            .split("\n\n")
+            .filter(Boolean)
+            .map((sentence: string) => sentence.split(": ")[1]);
         return recommendations;
     } catch (error) {
         console.log(error);

@@ -32,7 +32,7 @@ import {
     setCanRequestRecommend,
 } from "../stores/sentenceBoxSlice";
 import { setRecord, setMessage, setMessageColor } from "../stores/recordSlice";
-import { reportOn, reportOff} from "../stores/reportOnoffSlice";
+import { reportOn, reportOff } from "../stores/reportOnoffSlice";
 import { handleScene } from "./common/handleScene";
 import { RootState } from "../stores/index";
 
@@ -49,6 +49,7 @@ let chunks: BlobPart[] = [];
 let audioContext = new window.AudioContext();
 
 export default class USAScene extends Phaser.Scene {
+    background!: Phaser.GameObjects.Image;
     player1: Phaser.Physics.Arcade.Sprite | null = null;
     cursors: Phaser.Types.Input.Keyboard.CursorKeys | null = null;
     interactKey: Phaser.Input.Keyboard.Key | null = null;
@@ -143,6 +144,10 @@ export default class USAScene extends Phaser.Scene {
     }
 
     create() {
+        this.background = this.add
+            .image(this.initial_x, this.initial_y * 2, "background")
+            .setDisplaySize(this.cameras.main.width * 2, this.cameras.main.height * 6)
+            .setOrigin(0.5, 0.5);
         // this.game.events.on('pause', this.gamePause);
         this.events.on("wake", this.onSceneWake, this);
         this.events.on("sleep", this.onSceneSleep, this);
@@ -401,156 +406,156 @@ export default class USAScene extends Phaser.Scene {
                             this.allPlayers[this.socket!.id].seat = false;
                             this.seatEvent = true;
                             store.dispatch(openUSA());
-                        }}
-                    
+                        }
+                    }
+
                     else if (npcInfo.role === "rolePlayingPlace") {
-                            console.log("chair");
-    
-                            if (valve_E === true) {
-                                store.dispatch(
-                                    setSocketNamespace({
-                                        
-                                        socketNamespace: `${serverUrl}/userdialog/${npcInfo.name}`
-                                    })
-                                );
-                                // store.dispatch(appendSocketNamespace({ socketNamespace: `/freedialog` }));
-                                
-                                store.dispatch(openUserDialog());
-                                this.cursors!.left.enabled = false;
-                                this.cursors!.right.enabled = false;
-                                this.cursors!.up.enabled = false;
-                                this.cursors!.down.enabled = false;
-                                valve_E = false;
-                               
-    
-                                window.addEventListener("exitcall", (e: Event) => {
-                                    console.log("exitcall event listener");
-                                    this.player1!.setVelocity(0, 0);
-                                    this.player1!.setPosition(
-                                        this.player1!.x,
-                                        this.player1!.y
-                                    );
-    
-                                    this.cursors!.left.isDown = false;
-                                    this.cursors!.right.isDown = false;
-                                    this.cursors!.up.isDown = false;
-                                    this.cursors!.down.isDown = false;
-    
-                                    this.cursors!.left.enabled = true;
-                                    this.cursors!.right.enabled = true;
-                                    this.cursors!.up.enabled = true;
-                                    this.cursors!.down.enabled = true;
-    
-                                    
-                                    valve_E = true;
-                                    this.allPlayers[this.socket!.id].seat = false;
-                                    this.seatEvent = true;
-                                    store.dispatch(openUSA());
-                                });
-                            } else {
+                        console.log("chair");
+
+                        if (valve_E === true) {
+                            store.dispatch(
+                                setSocketNamespace({
+
+                                    socketNamespace: `${serverUrl}/userdialog/${npcInfo.name}`
+                                })
+                            );
+                            // store.dispatch(appendSocketNamespace({ socketNamespace: `/freedialog` }));
+
+                            store.dispatch(openUserDialog());
+                            this.cursors!.left.enabled = false;
+                            this.cursors!.right.enabled = false;
+                            this.cursors!.up.enabled = false;
+                            this.cursors!.down.enabled = false;
+                            valve_E = false;
+
+
+                            window.addEventListener("exitcall", (e: Event) => {
+                                console.log("exitcall event listener");
                                 this.player1!.setVelocity(0, 0);
                                 this.player1!.setPosition(
                                     this.player1!.x,
                                     this.player1!.y
                                 );
-    
+
                                 this.cursors!.left.isDown = false;
                                 this.cursors!.right.isDown = false;
                                 this.cursors!.up.isDown = false;
                                 this.cursors!.down.isDown = false;
-    
+
                                 this.cursors!.left.enabled = true;
                                 this.cursors!.right.enabled = true;
                                 this.cursors!.up.enabled = true;
                                 this.cursors!.down.enabled = true;
-    
-                                
+
+
                                 valve_E = true;
 
                                 store.dispatch(openUSA());
-                            }
+                            });
+                        } else {
+                            this.player1!.setVelocity(0, 0);
+                            this.player1!.setPosition(
+                                this.player1!.x,
+                                this.player1!.y
+                            );
+
+                            this.cursors!.left.isDown = false;
+                            this.cursors!.right.isDown = false;
+                            this.cursors!.up.isDown = false;
+                            this.cursors!.down.isDown = false;
+
+                            this.cursors!.left.enabled = true;
+                            this.cursors!.right.enabled = true;
+                            this.cursors!.up.enabled = true;
+                            this.cursors!.down.enabled = true;
+
+
+                            valve_E = true;
+
+                            store.dispatch(openUSA());
+                        }
                     } else if (npcInfo.name.includes("gate")) {
                         console.log("liberty");
                         handleScene(GAME_STATUS.AIRPORT, {});
                     } else {
-                        
-                            if (this.isAudioPlaying) {
-                                return;
-                            }
-                            if (this.isReportOn) {
-                                return;
-                            }
 
-                            this.player1!.setVelocity(0, 0);
-                            this.player1!.anims.play(
-                                `${this.player1!.texture.key}_idle_down`,
-                                true
-                            );
-                            store.dispatch(openNPCDialog());
+                        if (this.isAudioPlaying) {
+                            return;
+                        }
+                        if (this.isReportOn) {
+                            return;
+                        }
 
-                            this.cursors!.left.enabled = false;
-                            this.cursors!.right.enabled = false;
-                            this.cursors!.up.enabled = false;
-                            this.cursors!.down.enabled = false;
+                        this.player1!.setVelocity(0, 0);
+                        this.player1!.anims.play(
+                            `${this.player1!.texture.key}_idle_down`,
+                            true
+                        );
+                        store.dispatch(openNPCDialog());
 
-                            if (
-                                this.socket2 === null ||
-                                this.socket2 === undefined
-                            ) {
-                                store.dispatch(reportOff());
-                                store.dispatch(setScore({ score: 0 }));
-                                store.dispatch(clearCorrections());
-                                store.dispatch(clearMessages());
-                                store.dispatch(clearSentences());
-                                this.socket2 = io(`${serverUrl}/interaction`);
-                                this.socket2.on("connect", () => {
-                                    const recommendBtnClicked = (e: Event) => {
-                                        const customEvent = e as CustomEvent;
-                                        store.dispatch(clearSentences());
-                                        if (customEvent.detail.message === 0) {
-                                            store.dispatch(
-                                                appendSentence({
-                                                    _id: "1",
-                                                    sentence:
-                                                        "추천 문장을 준비 중입니다. 잠시만 기다려 주세요.",
-                                                })
-                                            );
-                                        }
-                                        console.log(
-                                            "lastMessage in SectanceBox: ",
-                                            customEvent.detail.lastMessage
-                                        );
-                                        this.socket2!.emit(
-                                            "getRecommendedResponses",
-                                            this.currNpcName,
-                                            this.alreadyRecommended,
-                                            customEvent.detail.lastMessage
-                                        );
+                        this.cursors!.left.enabled = false;
+                        this.cursors!.right.enabled = false;
+                        this.cursors!.up.enabled = false;
+                        this.cursors!.down.enabled = false;
+
+                        if (
+                            this.socket2 === null ||
+                            this.socket2 === undefined
+                        ) {
+                            store.dispatch(reportOff());
+                            store.dispatch(setScore({ score: 0 }));
+                            store.dispatch(clearCorrections());
+                            store.dispatch(clearMessages());
+                            store.dispatch(clearSentences());
+                            this.socket2 = io(`${serverUrl}/interaction`);
+                            this.socket2.on("connect", () => {
+                                const recommendBtnClicked = (e: Event) => {
+                                    const customEvent = e as CustomEvent;
+                                    store.dispatch(clearSentences());
+                                    if (customEvent.detail.message === 0) {
                                         store.dispatch(
-                                            setCanRequestRecommend(false)
+                                            appendSentence({
+                                                _id: 3,
+                                                sentence:
+                                                    "추천 문장을 준비 중입니다. 잠시만 기다려 주세요.",
+                                            })
                                         );
-                                    };
-                                    this.socket2!.on("disconnect", () => {
-                                        console.log("disconnect, recommendBtnClicked: ", recommendBtnClicked);
-                                        window.removeEventListener("recomButtonClicked", recommendBtnClicked);
-                                    });
-                                    this.currNpcName = npcInfo.name;
+                                    }
                                     console.log(
-                                        "connect, interaction socket.id: ",
-                                        this.socket2!.id
+                                        "lastMessage in SectanceBox: ",
+                                        customEvent.detail.lastMessage
                                     );
-                                    countUserSpeech = 0;
-                                    this.isNpcSocketConnected = true;
-                                    window.addEventListener(
-                                        "recomButtonClicked",
-                                        recommendBtnClicked
+                                    this.socket2!.emit(
+                                        "getRecommendedResponses",
+                                        this.currNpcName,
+                                        this.alreadyRecommended,
+                                        customEvent.detail.lastMessage
                                     );
+                                    store.dispatch(
+                                        setCanRequestRecommend(false)
+                                    );
+                                };
+                                this.socket2!.on("disconnect", () => {
+                                    console.log("disconnect, recommendBtnClicked: ", recommendBtnClicked);
+                                    window.removeEventListener("recomButtonClicked", recommendBtnClicked);
+                                });
+                                this.currNpcName = npcInfo.name;
+                                console.log(
+                                    "connect, interaction socket.id: ",
+                                    this.socket2!.id
+                                );
+                                countUserSpeech = 0;
+                                this.isNpcSocketConnected = true;
+                                window.addEventListener(
+                                    "recomButtonClicked",
+                                    recommendBtnClicked
+                                );
 
-                                    this.interacting = true;
-                                    this.socket2!.emit("dialogStart", npcInfo.name);
+                                this.interacting = true;
+                                this.socket2!.emit("dialogStart", npcInfo.name);
                                 this.isAudioPlaying = true;
                                 // TODO : npcFirstResponse 받고, audio 재생하는 동안 E, D키 비활성화 및 '응답중입니다. 잠시만 기다려주세요' 출력
-                                this.socket2!.on("npcFirstResponse", (response:any) => {
+                                this.socket2!.on("npcFirstResponse", (response: any) => {
                                     console.log("npcFirstResponse event");
                                     store.dispatch(
                                         setMessage(
@@ -688,108 +693,108 @@ export default class USAScene extends Phaser.Scene {
                                         }
                                     );
 
-                                    this.socket2!.on(
-                                        "grammarCorrection",
-                                        processGrammarCorrection
-                                    );
-                                    this.socket2!.on(
-                                        "recommendedResponses",
-                                        (responses: string[]) => {
-                                            console.log(
-                                                "Recommended Responses: ",
-                                                responses
-                                            );
-                                            // 요청 실패, 재요청
-                                            if (responses.length === 1) {
-                                                console.log(
-                                                    "요청 실패, 재요청"
-                                                );
-                                                this.alreadyRecommended = false;
-                                                this.socket2!.emit(
-                                                    "getRecommendedResponses",
-                                                    this.currNpcName,
-                                                    this.alreadyRecommended,
-                                                    responses[0]
-                                                );
-                                                store.dispatch(
-                                                    setCanRequestRecommend(
-                                                        false
-                                                    )
-                                                );
-                                                return;
-                                            }
-                                            // TODO : Store에 SentenceBox 상태정의하고 dispatch
-                                            store.dispatch(clearSentences());
-                                            responses.forEach(
-                                                (response, index) => {
-                                                    store.dispatch(
-                                                        appendSentence({
-                                                            _id: index.toString(),
-                                                            sentence: response,
-                                                        })
-                                                    );
-                                                }
-                                            );
-                                            this.alreadyRecommended = true;
-                                        }
-                                    );
-                                });
-                            } else {
-                                // 이미 소켓이 연결되어 있는데 다시 한번 E키를 누른 경우 -> 대화 종료 상황
-                                this.currNpcName = "";
-                                this.isNpcSocketConnected = false;
-                                this.player1!.setVelocity(0, 0);
-                                this.player1!.setPosition(
-                                    this.player1!.x,
-                                    this.player1!.y
+                                this.socket2!.on(
+                                    "grammarCorrection",
+                                    processGrammarCorrection
                                 );
+                                this.socket2!.on(
+                                    "recommendedResponses",
+                                    (responses: string[]) => {
+                                        console.log(
+                                            "Recommended Responses: ",
+                                            responses
+                                        );
+                                        // 요청 실패, 재요청
+                                        if (responses.length === 1) {
+                                            console.log(
+                                                "요청 실패, 재요청"
+                                            );
+                                            this.alreadyRecommended = false;
+                                            this.socket2!.emit(
+                                                "getRecommendedResponses",
+                                                this.currNpcName,
+                                                this.alreadyRecommended,
+                                                responses[0]
+                                            );
+                                            store.dispatch(
+                                                setCanRequestRecommend(
+                                                    false
+                                                )
+                                            );
+                                            return;
+                                        }
+                                        // TODO : Store에 SentenceBox 상태정의하고 dispatch
+                                        store.dispatch(clearSentences());
+                                        responses.forEach(
+                                            (response, index) => {
+                                                store.dispatch(
+                                                    appendSentence({
+                                                        _id: index,
+                                                        sentence: response,
+                                                    })
+                                                );
+                                            }
+                                        );
+                                        this.alreadyRecommended = true;
+                                    }
+                                );
+                            });
+                        } else {
+                            // 이미 소켓이 연결되어 있는데 다시 한번 E키를 누른 경우 -> 대화 종료 상황
+                            this.currNpcName = "";
+                            this.isNpcSocketConnected = false;
+                            this.player1!.setVelocity(0, 0);
+                            this.player1!.setPosition(
+                                this.player1!.x,
+                                this.player1!.y
+                            );
 
-                                this.cursors!.left.isDown = false;
-                                this.cursors!.right.isDown = false;
-                                this.cursors!.up.isDown = false;
-                                this.cursors!.down.isDown = false;
+                            this.cursors!.left.isDown = false;
+                            this.cursors!.right.isDown = false;
+                            this.cursors!.up.isDown = false;
+                            this.cursors!.down.isDown = false;
 
-                                this.cursors!.left.enabled = true;
-                                this.cursors!.right.enabled = true;
-                                this.cursors!.up.enabled = true;
-                                this.cursors!.down.enabled = true;
+                            this.cursors!.left.enabled = true;
+                            this.cursors!.right.enabled = true;
+                            this.cursors!.up.enabled = true;
+                            this.cursors!.down.enabled = true;
 
-                                this.interacting = false;
-                                this.alreadyRecommended = false;
-                                store.dispatch(setCanRequestRecommend(false));
+                            this.interacting = false;
+                            this.alreadyRecommended = false;
+                            store.dispatch(setCanRequestRecommend(false));
 
-                                this.socket2?.disconnect();
-                                this.socket2 = null;
-                                // store.dispatch(clearMessages());
-                                // store.dispatch(openAirport());
-                                let score = 0;
-                                if (countUserSpeech !== 0) {
-                                    score = ((countUserSpeech - grammarCorrections.length) /
+                            this.socket2?.disconnect();
+                            this.socket2 = null;
+                            // store.dispatch(clearMessages());
+                            // store.dispatch(openAirport());
+                            let score = 0;
+                            if (countUserSpeech !== 0) {
+                                score = ((countUserSpeech - grammarCorrections.length) /
                                     countUserSpeech) * 100;
-                                }
-                                console.log("score : ", score);
-                                store.dispatch(setScore({ score: score }));
-                                grammarCorrections.forEach((data, index) => {
-                                    console.log(
-                                        "grammarCorrection data: ",
-                                        data
-                                    );
-                                    store.dispatch(
-                                        appendCorrection({
-                                            original: data.userText,
-                                            correction: data.correctedText,
-                                        })
-                                    );
-                                });
-                                
-                                this.isReportOn = true;
-                                store.dispatch(openReport());
-                                store.dispatch(reportOn("usa"));
-                                grammarCorrections = [];
                             }
-                        
-                            countUserSpeech = 0;
-                        
+                            console.log("score : ", score);
+                            store.dispatch(setScore({ score: score }));
+                            grammarCorrections.forEach((data, index) => {
+                                console.log(
+                                    "grammarCorrection data: ",
+                                    data
+                                );
+                                store.dispatch(
+                                    appendCorrection({
+                                        original: data.userText,
+                                        correction: data.correctedText,
+                                    })
+                                );
+                            });
+
+                            this.isReportOn = true;
+                            store.dispatch(openReport());
+                            store.dispatch(reportOn("usa"));
+                            grammarCorrections = [];
+                        }
+
+                        countUserSpeech = 0;
+
                     }
                     break;
                 }
@@ -865,10 +870,13 @@ export default class USAScene extends Phaser.Scene {
     playInteractionAnims() {
         for (let npcInfo of this.npcList) {
             if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y, npcInfo.x, npcInfo.y) < 100) {
+                if (npcInfo.name === 'chairMart' || npcInfo.name === 'coach_park') {
+                    return;
+                }
                 this.interactionSprite?.setPosition(npcInfo.x, npcInfo.y - 50);
                 this.interactionSprite?.setVisible(true);
                 this.interactionSprite?.play('arrowDownAnim', true);
-                
+
                 this.interactionSpriteE?.setPosition(npcInfo.x + 30, npcInfo.y - 50);
                 this.interactionSpriteE?.setVisible(true);
                 break;
@@ -890,6 +898,9 @@ export default class USAScene extends Phaser.Scene {
         }
     }
     update(time: number, delta: number) {
+        this.background
+            .setDisplaySize(this.cameras.main.width * 4, this.cameras.main.height * 6)
+            .setOrigin(0.5, 0.5);
         this.deleteNotVaildScoket();
         let speed: number = this.cursors?.shift.isDown
             ? this.dashSpeed
@@ -1223,6 +1234,30 @@ export default class USAScene extends Phaser.Scene {
         };
         interact_sprite2.sprite = this.physics.add.sprite(interact_sprite2.x, interact_sprite2.y, interact_sprite2.texture);
         this.npcList.push(interact_sprite2);
+
+        const temp1: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite1.x, interact_sprite1.y - 50, "arrowDown");
+        temp1.setVisible(true);
+        temp1.setScale(1.3);
+        temp1.setDepth(100);
+        temp1.play('arrowDownAnim', true);
+
+
+        const temp2: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite1.x + 30, interact_sprite1.y - 50, "E_keyboard");
+        temp2.setVisible(true);
+        temp2.setScale(0.5);
+        temp2.setDepth(100);
+
+        const temp3: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite2.x, interact_sprite2.y - 50, "arrowDown");
+        temp3.setVisible(true);
+        temp3.setScale(1.3);
+        temp3.setDepth(100);
+        temp3.play('arrowDownAnim', true);
+
+
+        const temp4: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite2.x + 30, interact_sprite2.y - 50, "E_keyboard");
+        temp4.setVisible(true);
+        temp4.setScale(0.5);
+        temp4.setDepth(100);
     }
     gameSocketEventHandler(initial: boolean = true) {
         this.socket = io(serverUrl);

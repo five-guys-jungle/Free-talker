@@ -24,7 +24,7 @@ export function socketEventHandler(socket: Socket) {
         }
     });
     socket.on("seat", (data : Player) => {
-        console.log("seat, data: ", data);
+        // console.log("seat, data: ", data);
         socket.broadcast.emit("otherseat", data);
     })
     socket.on("playerMovement", (data: Player) => {
