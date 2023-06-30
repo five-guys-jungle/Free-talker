@@ -1227,6 +1227,8 @@ export default class USAScene extends Phaser.Scene {
             sprite: null,
             role: "freeTalkingPlace",
         };
+
+        
         interact_sprite1.sprite = this.physics.add.sprite(interact_sprite1.x, interact_sprite1.y, interact_sprite1.texture);
         this.npcList.push(interact_sprite1);
 
@@ -1240,6 +1242,16 @@ export default class USAScene extends Phaser.Scene {
         };
         interact_sprite2.sprite = this.physics.add.sprite(interact_sprite2.x, interact_sprite2.y, interact_sprite2.texture);
         this.npcList.push(interact_sprite2);
+
+        let interact_sprite3: npcInfo = {
+            name: "taxi",
+            x: 1361,
+            y: 554,
+            texture: "taxi",
+            sprite: null,
+            role: "freeTalkingPlace",
+        };
+        interact_sprite3.sprite = this.physics.add.sprite(interact_sprite3.x, interact_sprite3.y, interact_sprite3.texture).setScale(1.5);
 
         const temp1: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite1.x, interact_sprite1.y - 50, "arrowDown");
         temp1.setVisible(true);
@@ -1419,3 +1431,7 @@ export default class USAScene extends Phaser.Scene {
         });
     }
 }
+function setScale(arg0: number) {
+    throw new Error("Function not implemented.");
+}
+
