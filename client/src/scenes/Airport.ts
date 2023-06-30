@@ -46,6 +46,7 @@ const serverUrl: string = process.env.REACT_APP_SERVER_URL!;
 
 let chunks: BlobPart[] = [];
 let audioContext = new window.AudioContext();
+let DB_URL: string = process.env.REACT_APP_SERVER_URL!;
 
 export default class AirportScene extends Phaser.Scene {
     background!: Phaser.GameObjects.Image;
@@ -89,6 +90,7 @@ export default class AirportScene extends Phaser.Scene {
 
     constructor() {
         super("AirportScene");
+        
     }
 
     preload() {
@@ -143,6 +145,26 @@ export default class AirportScene extends Phaser.Scene {
     }
 
     create() {
+        window.onbeforeunload = async () => {
+            console.log("beforeunload");
+            const body = JSON.stringify({ userNickname: this.userNickname })
+            fetch(`${DB_URL}/auth/logout`, {
+                method: 'POST', // or 'DELETE' based on your endpoint
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: body
+            }).then((response) => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                console.log("Successful logout");
+            }).catch((error) => {
+                console.error("Error:", error);
+            });
+        
+        };
+
         this.background = this.add
             .image(this.initial_x, this.initial_y, "background")
             .setDisplaySize(this.cameras.main.width * 4, this.cameras.main.height * 4)

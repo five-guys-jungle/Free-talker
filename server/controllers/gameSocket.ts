@@ -19,12 +19,15 @@ export function socketEventHandler(socket: Socket) {
         } else if (data.scene === "USAScene") {
             data.socketId = socket.id;
             players_usa[socket.id] = data;
+            // console.log("players_usa: ", players_usa);
             socket.emit("updateAlluser", players_usa);
             socket.broadcast.emit("newPlayerConnected", players_usa[socket.id]);
         }
     });
     socket.on("seat", (data : Player) => {
-        // console.log("seat, data: ", data);
+        // console.log("seat, data: ", data);   
+        
+        players_usa[data.socketId] = data;
         socket.broadcast.emit("otherseat", data);
     })
     socket.on("playerMovement", (data: Player) => {
