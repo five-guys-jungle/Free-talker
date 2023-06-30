@@ -1170,7 +1170,7 @@ export default class AirportScene extends Phaser.Scene {
 
             this.socket!.on("playerMoved", (playerInfo: PlayerInfo) => {
                 if (playerInfo.scene === "AirportScene") {
-                    console.log("playerMoved, playerInfo: ", playerInfo);
+                    // console.log("playerMoved, playerInfo: ", playerInfo);
                     if (playerInfo.socketId in this.allPlayers) {
                         console.log("already exist, so just set position");
                         this.allPlayers[playerInfo.socketId].x = playerInfo.x;
