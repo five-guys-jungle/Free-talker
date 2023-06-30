@@ -110,6 +110,7 @@ export default class AirportScene extends Phaser.Scene {
     gameResume(pausedX: number, pausedY: number) {
         console.log("Scene is Resumed: Airport");
         console.log("allPlayer in Resumed: ", this.allPlayers);
+        console.log("this.socket in Resumed: ", this.socket);
         // if(this.intervalId){
         //     clearInterval(this.intervalId);
         //     this.intervalId = null;
@@ -148,7 +149,7 @@ export default class AirportScene extends Phaser.Scene {
             .setDisplaySize(this.cameras.main.width * 4, this.cameras.main.height * 4)
             .setOrigin(0.5, 0.5);
 
-        // this.game.events.on('pause', this.gamePause);
+        this.game.events.on('pause', this.gamePause);
         this.events.on("wake", this.onSceneWake, this);
         this.events.on("sleep", this.onSceneSleep, this);
 
@@ -1074,7 +1075,15 @@ export default class AirportScene extends Phaser.Scene {
         this.socket = io(serverUrl);
 
         this.socket.on("connect", () => {
-            console.log("connect, socket.id: ", this.socket!.id);
+            console.log(`connect, socket.id: ${this.socket!.id}, 
+            this.socket.recovered: ${this.socket!.recovered}`);
+            this.scene.resume();
+            if(this.player1){
+                this.beforeSleepX = this.player1.x;
+                this.beforeSleepY = this.player1.y;
+                this.player1.destroy();
+                this.player1 = null;
+            }
             this.player1 = this.createPlayer({
                 socketId: this.socket!.id,
                 nickname: this.userNickname,
@@ -1194,6 +1203,7 @@ export default class AirportScene extends Phaser.Scene {
                 }
             });
             this.socket!.on("disconnect", (reason: string) => {
+                this.scene.pause();
                 console.log("client side disconnect, reason: ", reason);
                 // window.location.reload();
             });
