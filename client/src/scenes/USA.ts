@@ -1023,13 +1023,14 @@ export default class USAScene extends Phaser.Scene {
             }
 
             if (this.seatEvent === true) {
+                console.log("seatEvent");
                 this.socket!.emit("seat",
                     {
                         socketId: this.socket!.id,
                         nickname: this.allPlayers[this.socket!.id].nickname,
                         playerTexture: this.allPlayers[this.socket!.id].playerTexture,
-                        x: this.allPlayers[this.socket!.id].x,
-                        y: this.allPlayers[this.socket!.id].y,
+                        x: this.player1!.x,
+                        y: this.player1!.y,
                         scene: this.allPlayers[this.socket!.id].scene,
                         dash: this.allPlayers[this.socket!.id].dash,
                         seat: this.allPlayers[this.socket!.id].seat,
@@ -1297,18 +1298,29 @@ export default class USAScene extends Phaser.Scene {
                 (otherPlayers: PlayerInfoDictionary) => {
                     console.log("updateAlluser, allPlayers: ", otherPlayers);
                     for (let key in otherPlayers) {
-                        console.log("updateAlluser, key: ", key);
+                        // console.log("updateAlluser, key: ", key);
                         if (otherPlayers[key].socketId !== this.socket!.id) {
                             if (
                                 !(otherPlayers[key].socketId in this.allPlayers)
                             ) {
+                                // console.log("updateAlluser, ", otherPlayers);
                                 let playerSprite: Phaser.Physics.Arcade.Sprite =
                                     this.createPlayer(otherPlayers[key]);
                                 // playerSprite.setCollideWorldBounds(true);
+                                if (otherPlayers[key].seat) {
+                                    // console.log("he is seated")
+                                //     `${otherPlayers[key].playerTexture}_idle_down`;
+                                playerSprite.anims.play(
+                                        `${otherPlayers[key].playerTexture}_sit_left`,
+                                        true
+                                    );
+                                } else {
+                                    // console.log("he is not seated")
                                 playerSprite.anims.play(
                                     `${otherPlayers[key].playerTexture}_idle_down`,
                                     true
                                 );
+                                }
                             } else {
                                 console.log(
                                     "updateAlluser, already exist, so just set position"
@@ -1321,6 +1333,9 @@ export default class USAScene extends Phaser.Scene {
                                 this.allPlayers[
                                     otherPlayers[key].socketId
                                 ].dash = otherPlayers[key].dash;
+                                this.allPlayers[
+                                    otherPlayers[key].socketId
+                                ].seat = otherPlayers[key].seat;
                             }
                         }
                     }
