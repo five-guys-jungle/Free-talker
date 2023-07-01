@@ -36,29 +36,8 @@ const StyledDiv = styled.div`
   font-size: 16px;
   font-weight: bold;
   color: white;
-
+  width: 100px; 
   &:hover {
     background-color: deepskyblue;
   }
 `;
-
-// const StyledDiv = styled.div`
-//   // position: relative; /* Use relative instead of fixed */
-//   /* Remove right and bottom */
-//   padding: 10px;
-//   border-radius: 20px;
-//   background-color: lightskyblue;
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-//   transition: all 0.5s ease;
-//   cursor: pointer;
-//   font-size: 16px;
-//   font-weight: bold;
-//   color: white;
-//   flex-shrink: 0;
-
-//   &:hover {
-//     background-color: deepskyblue;
-//   }
-// `;
