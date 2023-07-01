@@ -82,11 +82,12 @@ const SentenceList: React.FC = () => {
 
     return (
         <div className="container" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100%" }}>
-            <DialogTitle>You can say something like this</DialogTitle>
+            <DialogTitle>Try freetalking with NPC</DialogTitle>
             
             {isOuterDivVisible && (
                 <SentenceOuterDiv>{sentenceViews}</SentenceOuterDiv>
             )}
+             <AdditionalText>녹음 시작/끝 : <span style={{ color: "#C70039", fontWeight : "bold"}}>D</span><Space></Space> 대화스킵 : <span style={{ color: "#C70039", fontWeight : "bold"}}>S</span><Space></Space>대화종료 : <span style={{ color: "#C70039", fontWeight : "bold" }}>E</span> </AdditionalText>
             {canRequestRecommend && (
                 <Button onClick={handleClick} isOpen={isOuterDivVisible} longPress={isLongPress} style={{position:"absolute"}}>
                     추천 문장 보기
@@ -141,7 +142,7 @@ const SentenceOuterDiv = styled.div`
     flex: 1;
     width: 40vw;
     height: 50vh;
-    margin: 10px auto 0px;
+    margin: 5px auto 10px;
     flex-direction: column; // Add this
     padding: 0 0%; /* 화면 양쪽에 10% 공간을 추가 */
     justify-content: center;
@@ -157,7 +158,16 @@ const SentenceOuterDiv = styled.div`
     opacity: 0.7;
     border-radius: 8px;
 `;
+// 추가 텍스트를 위한 styled-component 생성
+const AdditionalText = styled.div`
+    font-size: 1.2rem;  // 원하는 텍스트 크기로 설정하세요.
+    margin-left: -35%;  // 원하는 간격으로 조정하세요.
 
+`;
+const Space = styled.span`
+    margin-left: 25px;  // 원하는 간격으로 조정하세요.
+
+`;
 const SentenceDiv = styled.div`
     body {
         // padding: 0 10%;
