@@ -51,7 +51,7 @@ const UserBox: React.FC = () => {
 	);
   // let placeName = socketNamespace.substring(socketNamespace.lastIndexOf("/") + 1);
   // switch (placeName) {
-  //   case "chairMart":
+  //   case "Mart":
   //     placeName = "MART";
   //     break;
   // }

@@ -911,7 +911,7 @@ export default class USAScene extends Phaser.Scene {
     playInteractionAnims() {
         for (let npcInfo of this.npcList) {
             if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y, npcInfo.x, npcInfo.y) < 100) {
-                if (npcInfo.name === 'chairMart' || npcInfo.name === 'coach_park') {
+                if (npcInfo.name === 'Mart' || npcInfo.name === 'coach_park') {
                     return;
                 }
                 this.interactionSprite?.setPosition(npcInfo.x, npcInfo.y - 50);
@@ -1341,10 +1341,10 @@ export default class USAScene extends Phaser.Scene {
         this.npcList.push(interact_sprite1);
 
         let interact_sprite2: npcInfo = {
-            name: "chairMart",
+            name: "Mart",
             x: 2603 - this.offset_x,
             y: 1362 - this.offset_y,
-            texture: "chairMart",
+            texture: "Mart",
             sprite: null,
             role: "rolePlayingPlace",
             moving: false,
