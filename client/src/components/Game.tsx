@@ -40,7 +40,7 @@ const Game = () => {
 
     return <BackgroundDiv>
         {(mode === NPCDIALOG && reportonoff === false) && <NPCDialog />}
-        {mode === NPCDIALOG && <NPCDialog />}
+        {/* {mode === NPCDIALOG && <NPCDialog />} */}
         {mode === USERDIALOG && <UserDialog />}
         {mode === FREEDIALOG && <FreeDialog />}
         {mode === REPORT && <Report />}

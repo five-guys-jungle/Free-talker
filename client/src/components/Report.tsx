@@ -258,7 +258,7 @@ const Report = (data: any) => {
                             </>)
                         } */}
 
-            <div className="corrections"><span>Corrections</span>
+            <div className="corrections"><span>✔︎ Corrections</span>
               <Swiper
                 style={{ width: "440px", height: "100px", marginTop: "35px" }}
                 modules={[Pagination]}
@@ -403,9 +403,9 @@ const ReportDiv = styled.div`
         "s4 s5 s5 s6";
   }
   .title h1 {
-    font: 50px/1 "Lexend Peta", cursive;
+    font: 50px/1 "Poppins", cursive;
     // font: 50px/1 "Lobster", cursive;
-    text-shadow: 2px 1px 0 #fbfae8, 5px 4px 0 coral;
+    text-shadow: 2px 1px 0 #fbfae8, 3px 2px 0 coral;
     margin: 0;
     padding: 5px;
     background: rgba(186, 114, 123, 0.5);
@@ -413,9 +413,9 @@ const ReportDiv = styled.div`
     grid-area: s1/s1/s2/s3;
   }
   .title h3 {
-    font: 18px/1 "Lexend Peta", cursive;
+    font: 18px/1 "Poppins", cursive;
     font-weight: bold;
-    margin: 8px;
+    margin: 6px;
     text-align: right;
     grid-area: s6;
   }
@@ -448,12 +448,13 @@ const ReportDiv = styled.div`
   }
   .results__name {
     padding: 5px 5px 2px;
-    font: 14px/1.5 "Gasoek One", cursive;
+    font: 16px/1 "Poppins", cursive;
+    font-weight:900;
     border-bottom: 2px solid #111;
   }
   .results__list {
+    font: 16px/1.5 "MICEGothic Bold", cursive;
     padding: 8px;
-    font-size: 14px/1.5;
     line-height: 0.9;
   }
   .results p {
@@ -476,6 +477,7 @@ const ReportDiv = styled.div`
     text-align: center;
     font-size: 30px;
     color: blue;
+    font-family: "Gochi Hand", sans-serif;
   }
   .results .highlighted .text {
     margin-top: 5px;
@@ -503,11 +505,12 @@ const ReportDiv = styled.div`
     border-width: 0 2px 2px;
     margin: 35px 20px 0 0;
     position: relative;
+    font-family: Open Sans;
   }
   .corrections span {
     display: block;
-    margin: -25px 22px;
-    font: 32px "Lexend Peta", cursive;
+    margin: -12px 0px -33px 0px;
+    font: 32px "Open Sans", cursive;
     // text-shadow: 2px 1px 0 #fbfae8, 5px 4px 0 coral;
   }
   // .corrections span:before {
@@ -559,7 +562,7 @@ const ReportDiv = styled.div`
     padding: 7px 7px 5px;
   }
   .Character__title {
-    font: 4px "Lexend Peta", cursive;
+    font: 15px "MaplestoryOTFLight", cursive;
   }
   .Character__amount {
     font: 19px "Gochi Hand", cursive;
@@ -574,6 +577,7 @@ const ReportDiv = styled.div`
     background: rgba(239, 184, 186, 0.4);
     box-shadow: 3px 3px 0 0 rgba(231, 149, 152, 0.7);
     font: 16px/1 "Lexend Peta", cursive;
+    text-align:center;
   }
 
   .talks {
@@ -586,6 +590,7 @@ const ReportDiv = styled.div`
     height:100%
     grid-column: 1/span 2;
     overflow: auto;
+    font-family:Open Sans;
   }
 
 

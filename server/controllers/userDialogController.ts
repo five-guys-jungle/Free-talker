@@ -12,7 +12,7 @@ const roomNum: {
 } = {
 	airport_chair1: 0,
 	coach_park: 0,
-	chairMart: 0,
+	Mart: 0,
 }
 let socketIdList:string[] = [];
 // freedialogsocketEventHandler 함수 수정

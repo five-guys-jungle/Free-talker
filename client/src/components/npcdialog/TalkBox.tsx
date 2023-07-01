@@ -99,6 +99,7 @@ const TalkBox: React.FC = () => {
 export default TalkBox;
 
 const TalkDiv = styled.div`
+    font-family: 'Open Sans', sans-serif;
     :root {
         --body-bg: rgba(
             255,
@@ -154,9 +155,9 @@ const TalkDiv = styled.div`
         // width: 500px;
         // max-width: 500px;
         // max-width: 700px;
-        margin: 25px 10px;
+        margin: 0 10px 70px 10px;
         width: 45vw;
-        height: 90vh;
+        height: 85vh;
         // height: 700px;
         border: 2px solid #ddd;
         border-radius: 5px;
@@ -220,8 +221,8 @@ const TalkDiv = styled.div`
     }
 
     .msg-img {
-        width: 50px;
-        height: 50px;
+        width: 65px;
+        height: 65px;
         margin-right: 10px;
         background: #ddd;
         background-repeat: no-repeat;

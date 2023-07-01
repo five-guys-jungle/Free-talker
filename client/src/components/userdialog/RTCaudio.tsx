@@ -52,8 +52,13 @@ const RTCaudio = () => {
 
 	
 	const {playerNickname, playerTexture} = useSelector((state: RootState) => {return {...state.user}});
-
 	const placeName = socketNamespace.substring(socketNamespace.lastIndexOf("/") + 1);
+	// let placeName = socketNamespace.substring(socketNamespace.lastIndexOf("/") + 1);
+	// switch (placeName) {
+	// 	case "Mart":
+	// 	  placeName = "MART";
+	// 	  break;
+	//   }
 	useEffect(() => {
 		socket.current = io(socketNamespace);
 		navigator.mediaDevices
@@ -303,23 +308,22 @@ const RTCaudio = () => {
 
 	  return (
 		<>
-		  <div
+		<div
 			style={{
-			  display: "flex",
-			  justifyContent: "center",
-			  alignItems: "center",
-			}}
-		  >
+			display: "flex",
+			justifyContent: "center",
+			alignItems: "center",
+			width: "100%"
+			}}>
 			<div
 			  className="call-button"
-			  style={{ position: "fixed", textAlign: "center", top: "5px" }}>
+			  style={{ position: "fixed", textAlign: "center", top: "5%" }}>
 			  {callAccepted && !callEnded ? (
 				<div
 				  className="caller"
 				  style={{
 					display: "inline-flex",
 					alignItems: "center",
-					bottom: "5px",
 				  }}>
 
 				<IconButton
@@ -328,15 +332,15 @@ const RTCaudio = () => {
 					onClick={leaveCall}>
 					<PhoneIcon style={{ fontSize: "3em" }} />
 				</IconButton>
-				<Typography variant="h5" align="center" style={{ fontFamily: "Arial", fontWeight: "bold" }}>통화가 종료되면 맵으로 돌아갑니다.</Typography>
+				<Typography variant="h5" align="center" style={{ fontFamily: "MaplestoryOTFLight", fontWeight: "bold" }}>통화를 종료하면 맵으로 돌아갑니다.</Typography>
 				</div>
 			) : receivingCall && !callAccepted ? null : (
 				<div
 					className="caller"
 					style={{ 
 						display: "inline-flex",
-					alignItems: "center", 
-					bottom: "5px" 
+						alignItems: "center", 
+						bottom: "5px"
 					}}>
 					<IconButton
 						className="call-btn"
@@ -345,35 +349,32 @@ const RTCaudio = () => {
 						onClick={() => callUser(idToCall)}>
 						<PhoneIcon style={{ fontSize: "3em" }} />
 					</IconButton>
-					<Typography variant="h5" align="center" style={{ fontFamily: "Arial", fontWeight: "bold" }}>통화를 걸어 다른 유저와 상황극을 시작해 보세요</Typography>
+					<Typography variant="h4" align="center" style={{ fontFamily: "Poppins", fontWeight: "bold"}}>Make a call</Typography>
 				</div>
-			  )}
+				)}
 				
 				{receivingCall && !callAccepted && (
-					<div className="caller" style={{ display: 'inline-flex', alignItems: 'center', bottom : '5px' }}>
-						<Typography variant="h5" align="center" style={{ fontFamily: "Arial", fontWeight: "bold" }}> 전화를 받아주세요 ... </Typography>
+					<div className="caller" style={{ display: 'inline-flex', alignItems: 'center'}}>
+						<Typography variant="h5" align="center" style={{ fontFamily: "Poppins", fontWeight: "bold" }}> Please answer the call ... </Typography>
 						<Button variant="contained" color="primary" onClick={answerCall} style={{marginLeft: '10px'}}>
 							Answer
 						</Button>
 					</div>
-					)}
-				<Typography variant="h3" align="center">
-					당신의 역할은
-					<div></div>
-					<span style={{ color: "#C70039" }}>{playerRole}</span>입니다 
+				)}
+				<Typography fontSize={"35px"} fontFamily={"Poppins"} align="center" marginTop={"10%"}>
+					My role is <span style={{ color: "#C70039" }}>{playerRole}</span>
 				</Typography>
-				</div>
-				
-		  </div>
-		  <div
-			className="container"
-			style={{
-			  flexDirection: "column",
-			  alignItems: "center",
-			  justifyContent: "center",
-			  paddingTop: "50px",
-			}}
-		  >
+				<Typography fontSize={"35px"} fontFamily={"Poppins"} >Place is <span style={{ color: "#C70039" }}>{placeName}</span></Typography>
+			</div>	
+		</div>
+			<div
+				className="container"
+				style={{
+				flexDirection: "column",
+				alignItems: "center",
+				justifyContent: "center",
+				paddingTop: "50px",
+				}}>
 			<div
 			  className="audio-container"
 			  style={{
@@ -383,9 +384,8 @@ const RTCaudio = () => {
 				justifyContent: "center",
 				width: "100%",
 				marginTop: "30px",
-			  }}
-			>
-			  <div
+			}}>
+			<div
 				className="audio"
 				style={{
 				  display: "flex",
@@ -394,17 +394,15 @@ const RTCaudio = () => {
 				  width: "100%",
 				  height: "100%",
 				  marginBottom: "30px",
-				}}
-			  >
+			}}>
 				{stream && (
 				  <audio
 					ref={myAudio}
 					autoPlay
-					style={{ width: "50%", margin: "auto" }}
-				  />
+					style={{ width: "50%", margin: "auto" }}/>
 				)}
-			  </div>
-			  <div
+			</div>
+			<div
 				className="audio"
 				style={{
 				  display: "flex",
@@ -412,18 +410,16 @@ const RTCaudio = () => {
 				  alignItems: "center",
 				  width: "100%",
 				  height: "100%",
-				}}
-			  >
+				}}>
 				{callAccepted && !callEnded ? (
 				  <audio
 					ref={userAudio}
 					autoPlay
-					style={{ width: "50%", margin: "auto" }}
-				  />
+					style={{ width: "50%", margin: "auto" }}/>
 				) : null}
-			  </div>
+			  	</div>
 			</div>
-		  </div>
+		</div>
 		</>
 	  );
 	};

@@ -302,7 +302,7 @@ export default class USAScene extends Phaser.Scene {
             color: "black",
             fontSize: "16px",
         });
-        this.userIdText = this.add.text(10, 10, this.userNickname, {
+        this.userIdText = this.add.text(10, 10, "", {
             color: "black",
             fontSize: "16px",
         });
@@ -593,7 +593,7 @@ export default class USAScene extends Phaser.Scene {
                                     console.log("npcFirstResponse event");
                                     store.dispatch(
                                         setMessage(
-                                            "응답중입니다. 잠시만 기다려주세요"
+                                            "응답중입니다\n잠시만 기다려주세요"
                                         )
                                     );
                                     store.dispatch(setCanRequestRecommend(false));
@@ -616,7 +616,7 @@ export default class USAScene extends Phaser.Scene {
                                         this.isAudioPlaying = false;
                                         store.dispatch(
                                             setMessage(
-                                                "D키를 눌러 녹음을 시작하세요"
+                                                "D키를 눌러\n녹음을 시작하세요"
                                             )
                                         );
                                         store.dispatch(
@@ -649,11 +649,11 @@ export default class USAScene extends Phaser.Scene {
                                             setTimeout(() => {
                                                 store.dispatch(
                                                     setMessage(
-                                                        "D키를 눌러 녹음을 시작하세요"
+                                                        "다시 말씀해주세요"
                                                     )
                                                 );
                                                 store.dispatch(
-                                                    setMessageColor("black")
+                                                    setMessageColor("red")
                                                 );
                                             }, 2500);
                                             store.dispatch(
@@ -673,14 +673,16 @@ export default class USAScene extends Phaser.Scene {
                                             store.dispatch(
                                                 appendMessage({
                                                     playerId: this.playerId,
-                                                    name: this.userNickname,
-                                                    img: this.playerTexture,
+                                                    name: npcInfo.name,
+                                                    img: npcInfo.texture,
                                                     // img: "",
                                                     side: "right",
                                                     text: response.transcription,
                                                     audioUrl: response.audioUrl
                                                 })
                                             );
+                                            store.dispatch(clearSentences());
+                                            this.alreadyRecommended = false;
                                         }
                                     }
                                 );
@@ -737,11 +739,24 @@ export default class USAScene extends Phaser.Scene {
                                                     "D키를 눌러 녹음을 시작하세요"
                                                 )
                                             );
-                                            store.dispatch(
-                                                setCanRequestRecommend(true)
+                                            // this.isAudioPlaying = true;
+                                            this.audio = new Audio(
+                                                response.audioUrl
                                             );
-                                        };
-                                        this.audio.play();
+                                            this.audio.onended = () => {
+                                                console.log("audio.onended");
+                                                this.isAudioPlaying = false;
+                                                store.dispatch(
+                                                    setMessage(
+                                                        "D키를 눌러\n녹음을 시작하세요"
+                                                    )
+                                                );
+                                                store.dispatch(
+                                                    setCanRequestRecommend(true)
+                                                );
+                                            };
+                                            this.audio.play();
+                                        }
                                     }
                                 );
 
@@ -893,7 +908,7 @@ export default class USAScene extends Phaser.Scene {
                         if (this.recorder2.state === "recording") {
                             store.dispatch(setRecord(true));
                             store.dispatch(
-                                setMessage("D키를 눌러 녹음을 시작하세요")
+                                setMessage("D키를 눌러\n녹음을 시작하세요")
                             );
                             this.isAudioPlaying = true;
                             this.recorder2!.stop();
@@ -902,7 +917,7 @@ export default class USAScene extends Phaser.Scene {
                             store.dispatch(setRecord(false));
                             store.dispatch(
                                 setMessage(
-                                    "녹음 중입니다. D키를 눌러 녹음을 종료하세요"
+                                    "녹음 중입니다\nD키를 눌러 녹음을 종료하세요"
                                 )
                             );
                             this.recorder2!.start();
@@ -919,7 +934,7 @@ export default class USAScene extends Phaser.Scene {
             if (this.isAudioPlaying) {
                 this.audio?.pause();
                 this.isAudioPlaying = false;
-                store.dispatch(setMessage("D키를 눌러 녹음을 시작하세요"));
+                store.dispatch(setMessage("D키를 눌러\n녹음을 시작하세요"));
                 store.dispatch(setCanRequestRecommend(true));
                 this.audio = new Audio();
                 this.audio = null
@@ -929,7 +944,7 @@ export default class USAScene extends Phaser.Scene {
     playInteractionAnims() {
         for (let npcInfo of this.npcList) {
             if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y, npcInfo.x, npcInfo.y) < 100) {
-                if (npcInfo.name === 'chairMart' || npcInfo.name === 'coach_park') {
+                if (npcInfo.name === 'Mart' || npcInfo.name === 'coach_park') {
                     return;
                 }
                 this.interactionSprite?.setPosition(npcInfo.x, npcInfo.y - 50);
@@ -1049,8 +1064,6 @@ export default class USAScene extends Phaser.Scene {
 
             this.player1!.setVelocityX(velocityX);
             this.player1!.setVelocityY(velocityY);
-            this.userIdText!.setX(this.player1!.x);
-            this.userIdText!.setY(this.player1!.y - 50);
 
             if (velocityX === 0 && velocityY === 0) {
                 if (this.player1.anims.isPlaying) {
@@ -1164,7 +1177,7 @@ export default class USAScene extends Phaser.Scene {
                     blob.arrayBuffer().then((buffer) => {
                         console.log("buffer: ", buffer);
                         store.dispatch(
-                            setMessage("응답 중입니다. 잠시만 기다려주세요")
+                            setMessage("응답 중입니다\n잠시만 기다려주세요")
                         );
                         this.socket2!.emit("audioSend", {
                             userNickname: this.userNickname,
@@ -1361,10 +1374,10 @@ export default class USAScene extends Phaser.Scene {
         this.npcList.push(interact_sprite1);
 
         let interact_sprite2: npcInfo = {
-            name: "chairMart",
+            name: "Mart",
             x: 2603 - this.offset_x,
             y: 1362 - this.offset_y,
-            texture: "chairMart",
+            texture: "Mart",
             sprite: null,
             role: "rolePlayingPlace",
             moving: false,
