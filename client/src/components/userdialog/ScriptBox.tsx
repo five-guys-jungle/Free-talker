@@ -38,11 +38,11 @@ const ScriptBox: React.FC = () => {
         }} 
         ref={ref}
       >
-        <List>
-          {recommendations.map((recommendation: Recommendation) => (
-            <ListItem key={recommendation._id}>
-              <ListItemText primary={recommendation.recommendation} 
-              style={{ fontFamily: "Arial", fontWeight: "bold", wordBreak: "break-word" }}/>
+        <List >
+          {recommendations.map((recommendation: Recommendation, index) => (
+            <ListItem key={recommendation._id} style={{fontFamily: "Open Sans"}}>
+              {index+1} : <ListItemText primary={recommendation.recommendation} 
+              style={{ fontWeight: "bold", wordBreak: "break-word" }}/>
             </ListItem>
           ))}
         </List>
@@ -70,4 +70,5 @@ const Title = styled.h2`
   @media (max-width: 480px) {
     font-size: 1rem;
   }
+  font-family: Poppins;
 `;

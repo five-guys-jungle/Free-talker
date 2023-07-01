@@ -44,7 +44,7 @@ const SituationBox: React.FC = () => {
       >
         <Typography 
           className="Situation" 
-          style={{ fontSize : "25px", fontFamily: "Arial", fontWeight: "bold", wordBreak: "break-word", paddingTop: "10px", paddingLeft: "5%", paddingRight: "5%"  }}>
+          style={{ fontSize : "25px", fontFamily: "Open Sans", fontWeight: "bold", wordBreak: "break-word", paddingTop: "10px", paddingLeft: "5%", paddingRight: "5%"  }}>
             {situation}
         </Typography>
         {/* <List>
@@ -76,4 +76,5 @@ const Title = styled.h2`
   @media (max-width: 480px) {
     font-size: 1rem;
   }
+  font-family: Poppins;
 `;

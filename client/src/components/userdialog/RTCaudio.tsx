@@ -332,7 +332,7 @@ const RTCaudio = () => {
 					onClick={leaveCall}>
 					<PhoneIcon style={{ fontSize: "3em" }} />
 				</IconButton>
-				<Typography variant="h5" align="center" style={{ fontFamily: "Arial", fontWeight: "bold" }}>통화를 종료하면 맵으로 돌아갑니다.</Typography>
+				<Typography variant="h5" align="center" style={{ fontFamily: "MaplestoryOTFLight", fontWeight: "bold" }}>통화를 종료하면 맵으로 돌아갑니다.</Typography>
 				</div>
 			) : receivingCall && !callAccepted ? null : (
 				<div
@@ -349,22 +349,22 @@ const RTCaudio = () => {
 						onClick={() => callUser(idToCall)}>
 						<PhoneIcon style={{ fontSize: "3em" }} />
 					</IconButton>
-					<Typography variant="h4" align="center" style={{ fontFamily: "Arial", fontWeight: "bold"}}>Make a call</Typography>
+					<Typography variant="h4" align="center" style={{ fontFamily: "Poppins", fontWeight: "bold"}}>Make a call</Typography>
 				</div>
 				)}
 				
 				{receivingCall && !callAccepted && (
 					<div className="caller" style={{ display: 'inline-flex', alignItems: 'center'}}>
-						<Typography variant="h5" align="center" style={{ fontFamily: "Arial", fontWeight: "bold" }}> Please answer the call ... </Typography>
+						<Typography variant="h5" align="center" style={{ fontFamily: "Poppins", fontWeight: "bold" }}> Please answer the call ... </Typography>
 						<Button variant="contained" color="primary" onClick={answerCall} style={{marginLeft: '10px'}}>
 							Answer
 						</Button>
 					</div>
 				)}
-				<Typography fontSize={"35px"} align="center" marginTop={"10%"}>
+				<Typography fontSize={"35px"} fontFamily={"Poppins"} align="center" marginTop={"10%"}>
 					My role is <span style={{ color: "#C70039" }}>{playerRole}</span>
 				</Typography>
-				<Typography fontSize={"35px"}>Place is <span style={{ color: "#C70039" }}>{placeName}</span></Typography>
+				<Typography fontSize={"35px"} fontFamily={"Poppins"} >Place is <span style={{ color: "#C70039" }}>{placeName}</span></Typography>
 			</div>	
 		</div>
 			<div

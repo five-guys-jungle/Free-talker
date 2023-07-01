@@ -81,7 +81,7 @@ const SentenceList: React.FC = () => {
     ));
 
     return (
-        <div className="container" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100%" }}>
+        <div className="container" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100%", fontFamily:"Poppins" }}>
             <DialogTitle>Try freetalking with NPC</DialogTitle>
             
             {isOuterDivVisible && (
@@ -128,6 +128,7 @@ const Button = styled.button<{ isOpen: boolean; longPress: boolean }>`
     // margin-bottom: 10px;
     // margin-left: 30px;
     cursor: pointer;
+    font-family: 'MaplestoryOTFLight';
 
     ${({ longPress, isOpen }) =>
         longPress && !isOpen &&
@@ -162,6 +163,7 @@ const SentenceOuterDiv = styled.div`
 const AdditionalText = styled.div`
     font-size: 1.2rem;  // 원하는 텍스트 크기로 설정하세요.
     margin-left: -35%;  // 원하는 간격으로 조정하세요.
+    font-family: 'MaplestoryOTFLight';
 
 `;
 const Space = styled.span`

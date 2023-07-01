@@ -337,7 +337,8 @@ const Container = styled.div`
 `;
 
 const Instructions = styled.div`
-    font-family: Verdana;
-    font-size: 1.5em;
+    // font-family: Verdana;
+    font-family: 'MaplestoryOTFLight';
+    font-size: 1.6em;
     font-weight: bold;
 `;

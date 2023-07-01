@@ -108,22 +108,22 @@ const UserBox: React.FC = () => {
 
   const renderOtherNickname = () => {
     if (otherNickname) {
-      return <Typography variant="h4" align="center">{otherNickname}</Typography>
+      return <Typography variant="h4" align="center" fontFamily={"MaplestoryOTFLight"}>{otherNickname}</Typography>
     } else {
-      return <Typography variant="h5" align="center">대화 상대를 <div></div> 기다려 주세요</Typography>
+      return <Typography variant="h5" align="center" fontFamily={"MaplestoryOTFLight"}>대화 상대를 <div></div> 기다려 주세요</Typography>
     }
   };
 
   return (
     <UserBoxWrapper>
       <UserBoxContainer>
-        <Typography variant="h3" style={{ fontFamily: "Arial", fontWeight: "bold" }}>화상을 통해 <div></div> 자유롭게 대화를 나누어 보세요</Typography>
+        <Typography variant="h3" style={{ fontFamily: "MaplestoryOTFLight", fontWeight: "bold" }}>화상을 통해 <div></div> 자유롭게 대화를 나누어 보세요</Typography>
       </UserBoxContainer>
 
       <Box display="flex" flexDirection="row" >
         <AvatarContainer>
           <Image src={`../assets/characters/single/${playerTexture}.png`} alt={fix_playerTexture} />
-          <Typography variant="h4" align="center">{playerNickname}</Typography>
+          <Typography variant="h4" align="center" fontFamily={"MaplestoryOTFLight"}>{playerNickname}</Typography>
         </AvatarContainer>
         <AvatarContainer>
           {/* <Image src={`../assets/characters/single/${otherTexture}.png`} alt="User Avatar" /> */}
@@ -142,6 +142,7 @@ const UserBox: React.FC = () => {
           padding: '5px',
           borderRadius: '5px'
         }}
+        fontFamily={"MaplestoryOTFLight"}
       >
         EXIT : <span style={{ color: "#C70039" }}>(E)</span><div></div>통화 중 E키를 누르면 맵으로 돌아갑니다.
       </Typography>
