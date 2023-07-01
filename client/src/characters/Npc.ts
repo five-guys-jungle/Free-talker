@@ -5,4 +5,5 @@ export interface npcInfo {
     texture: string;
     sprite: Phaser.Physics.Arcade.Sprite | null;
     role: string;
+    moving: boolean;
 }
