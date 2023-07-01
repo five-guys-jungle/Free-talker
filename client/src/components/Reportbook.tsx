@@ -21,12 +21,25 @@ import { Pagination, Navigation } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import 'swiper/css';
 import 'swiper/css/pagination';
-import { RIGHT } from "phaser";
 import { GAME_STATUS } from "../stores/gameSlice";
 // interface NPCDialogProps {
 //     initialDialog?: string;
 //     onClose: () => void;
 // }
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+
+const theme = createTheme({
+    palette: {
+    primary: {
+        // Purple and green play nicely together.
+        main: '#2979ff',
+    },
+      secondary: {
+        main: '#2962ff',
+      },
+    },
+  });
+
 
 let dialogsArr: dialogState = {
     dialogs: [],
@@ -35,7 +48,7 @@ let dialogsArr: dialogState = {
 const ReportBook = (data: any) => {
     const [openbook, setOpenbook] = useState(false);
 
-    const { presentScene } = useSelector((state: RootState) => {
+    const { presentScene, isButtonClicked } = useSelector((state: RootState) => {
         return { ...state.presentScene };
       });
 
@@ -48,6 +61,7 @@ const ReportBook = (data: any) => {
             return { ...state.user };
         }
     );
+    
 
     useEffect(() => {
         console.log(playerId);
@@ -173,9 +187,13 @@ const ReportBook = (data: any) => {
                     textAlign: "right",
                     marginTop: "20px",
                     marginRight: "20px",
+                    position:"absolute",
+                    right:"0px"
                 }}
             >
-                <Button variant="contained" size="large" onClick={handleBook}>
+                <ThemeProvider theme={theme}>
+                <Button color={isButtonClicked?"primary":"secondary"} variant="contained" size="large" onClick={handleBook}
+                 style={{boxShadow: isButtonClicked? "0px 0px 25px #fff":"0px 0px 0px #fff"}}>
                     <img
                         src={"./assets/ReportBookIcon.png"}
                         alt={"ReportBook"}
@@ -191,17 +209,18 @@ const ReportBook = (data: any) => {
                         여행<br></br>기록
                     </span>
                 </Button>
+                </ThemeProvider>
             </div>
 
             {openbook == true && (
-                <>
+                <div style={{ width: "100%" , height:"100%", display:"flex"}}>
                     <Swiper
-                        style={{ width: "970px" , marginTop:"35px"}}
+                        style={{ width: "970px"}}
                         modules={[Navigation]}
                         navigation={true}
                     >
                         {dialogsArr.dialogs.length == 0 && (
-                            <>
+                            <SwiperSlide >
                                 <ReportDiv>
                                     <div className="main-content">
                                         <div className="notebook">
@@ -265,7 +284,7 @@ const ReportBook = (data: any) => {
                                         </div>
                                     </div>
                                 </ReportDiv>
-                            </>
+                            </SwiperSlide>
                         )}
 
                         {dialogsArr.dialogs.map((dialog, index) => (
@@ -562,7 +581,7 @@ const ReportBook = (data: any) => {
                             </SwiperSlide>
                         ))}
                     </Swiper>
-                </>
+                </div>
             )}
         </div>
     );
