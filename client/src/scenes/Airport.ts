@@ -481,7 +481,7 @@ export default class AirportScene extends Phaser.Scene {
                                     console.log("npcFirstResponse event");
                                     store.dispatch(
                                         setMessage(
-                                            "응답중입니다. 잠시만 기다려주세요"
+                                            "응답중입니다\n잠시만 기다려주세요"
                                         )
                                     );
                                     store.dispatch(setCanRequestRecommend(false));
@@ -503,7 +503,7 @@ export default class AirportScene extends Phaser.Scene {
                                         this.isAudioPlaying = false;
                                         store.dispatch(
                                             setMessage(
-                                                "D키를 눌러 녹음을 시작하세요"
+                                                "D키를 눌러\n녹음을 시작하세요"
                                             )
                                         );
                                         store.dispatch(
@@ -539,7 +539,7 @@ export default class AirportScene extends Phaser.Scene {
                                             setTimeout(() => {
                                                 store.dispatch(
                                                     setMessage(
-                                                        "D키를 눌러 녹음을 시작하세요"
+                                                        "D키를 눌러\n녹음을 시작하세요"
                                                     )
                                                 );
                                                 store.dispatch(
@@ -609,7 +609,7 @@ export default class AirportScene extends Phaser.Scene {
                                             this.isAudioPlaying = false;
                                             store.dispatch(
                                                 setMessage(
-                                                    "D키를 눌러 녹음을 시작하세요"
+                                                    "D키를 눌러\n녹음을 시작하세요"
                                                 )
                                             );
                                             store.dispatch(
@@ -750,7 +750,7 @@ export default class AirportScene extends Phaser.Scene {
                         if (this.recorder2.state === "recording") {
                             store.dispatch(setRecord(true));
                             store.dispatch(
-                                setMessage("D키를 눌러 녹음을 시작하세요")
+                                setMessage("D키를 눌러\n녹음을 시작하세요")
                             );
                             this.isAudioPlaying = true;
                             this.recorder2!.stop();
@@ -759,7 +759,7 @@ export default class AirportScene extends Phaser.Scene {
                             store.dispatch(setRecord(false));
                             store.dispatch(
                                 setMessage(
-                                    "녹음 중입니다. D키를 눌러 녹음을 종료하세요"
+                                    "녹음 중입니다\nD키를 눌러 녹음을 종료하세요"
                                 )
                             );
                             this.recorder2!.start();
@@ -776,7 +776,7 @@ export default class AirportScene extends Phaser.Scene {
             if (this.isAudioPlaying) {
                 this.audio?.pause();
                 this.isAudioPlaying = false;
-                store.dispatch(setMessage("D키를 눌러 녹음을 시작하세요"));
+                store.dispatch(setMessage("D키를 눌러\n녹음을 시작하세요"));
                 store.dispatch(setCanRequestRecommend(true));
                 this.audio = new Audio();
                 this.audio = null
@@ -1006,7 +1006,7 @@ export default class AirportScene extends Phaser.Scene {
                     blob.arrayBuffer().then((buffer) => {
                         console.log("buffer: ", buffer);
                         store.dispatch(
-                            setMessage("응답 중입니다. 잠시만 기다려주세요")
+                            setMessage("응답 중입니다\n잠시만 기다려주세요")
                         );
                         console.log("this.currNpcName: ", this.currNpcName);
                         this.socket2!.emit("audioSend", {

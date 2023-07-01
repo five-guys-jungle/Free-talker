@@ -30,12 +30,12 @@ const LeftSection = styled.section`
         255,
         255,
         255,
-        0.5
+        0.8
     ); // Semi-transparent white background
 `;
 
 const UpperSection = styled.div`
-    flex: 6;
+    flex: 7;
     height:100%;
     
     // padding: 0 5%; /* 화면 양쪽에 5% 공간을 추가 */
@@ -52,18 +52,18 @@ const UpperSection = styled.div`
         255,
         255,
         255,
-        0.5
+        0.8
     // border-bottom: 1px solid #ddd;
 `;
 
 const LowerSection = styled.div`
-    flex: 4;
-    
+    flex: 3;
+    height:100%;
     rgba(
         255,
         255,
         255,
-        0.5
+        0.8
     // border-top: 1px solid #ddd;
 `;
 
@@ -79,7 +79,7 @@ const RightSection = styled.section`
         255,
         255,
         255,
-        0.5
+        0.8
     ); // Semi-transparent white background
 `;
 

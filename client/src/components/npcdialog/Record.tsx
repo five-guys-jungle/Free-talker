@@ -102,7 +102,7 @@ const Record: React.FC = () => {
                     ref={mainSVGRef}
                     id="mainSVG"
                     xmlns="http://www.w3.org/2000/svg"
-                    viewBox="200 150 400 220"
+                    viewBox="340 200 100 170"
                     preserveAspectRatio="xMidYMid meet"
                 >
                     <defs>
@@ -269,9 +269,14 @@ const Record: React.FC = () => {
                     </g>
                 </svg>
                 <Instructions style={{ color: messageColor }}>
-                    {message}
+                    {message.split("\n").map((line, index) => (
+                        <p key={index}>
+                            {line}
+                        </p>
+                    ))}
                 </Instructions>
             </Container>
+
         </RecDiv>
     );
 };
@@ -282,7 +287,7 @@ const RecDiv = styled.div`
     body {
         background-color: #111;
         width: 100%;
-        height: 100%;
+        height: 50%;
         text-align: center;
         display: flex;
         align-items: center;
@@ -298,29 +303,41 @@ const RecDiv = styled.div`
     }
 
     svg {
-        width: 65vh;
-        margin-top:-10vh;
-        // visibility: hidden;
+        display: flex;                  // Add flex display
+        align-items: center;             // Center vertically
+        justify-content: center;         // Center horizontally
+        width: 100%;
+        height: 100%;
+        // margin-top:10px;
+        // margin-right: -42vh;
         object-fit: contain;
-        // cursor: pointer;
+        
     }
 `;
 
 const Container = styled.div`
     display: flex;
     align-items: center;
-    justify-content: space-around;
+    justify-content: center;
     width: 100%;
-    height: 100%;
-    // overflow: hidden;
-    // display: flex;
-    flex-direction: column; // Stacks items vertically
-    // align-items: center; // Horizontally aligns items in the middle
-    // gap: 20px; // Creates a gap between items
+    height: 25vh;
+    // margin-top:5%;
+    margin-left:5%;
+    flex-direction: row;
+    // gap: 5px;
+
+    & > svg {
+        flex: 4; 
+        aspect-ratio: 4 / 6;
+    }
+
+    & > div {
+        flex: 6; 
+    }
 `;
 
 const Instructions = styled.div`
     font-family: Verdana;
-    font-size: 1em;
+    font-size: 1.5em;
     font-weight: bold;
 `;

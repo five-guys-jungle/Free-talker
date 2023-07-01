@@ -20,8 +20,24 @@ const ScriptBox: React.FC = () => {
 
   return (
     <Box sx={{ width: '70%', height: '70%', pb: 20 }}>
-      <Title>많이 사용하는 문장</Title>
-      <Box sx={{ overflow: 'auto', height: '100%', backgroundColor: '#e3f2fd' }} ref={ref}>
+      <Title>Sentence Recommendation</Title>
+      <Box 
+        sx={{ 
+          overflow: 'auto', 
+          height: '100%', 
+          backgroundImage: 'linear-gradient(rgba(135,150,235, 0.7), rgba(164,181,235, 0.2))',
+          padding: '20px',
+          borderRadius: '10px',
+          boxShadow: '5px 5px 15px rgba(0, 0, 0, 0.1)',
+          '@media screen and (max-width: 600px)': {
+            borderRadius: '0px',
+          },
+          ':hover': {
+            backgroundColor: 'rgba(0, 0, 0, 0.9)',
+          }
+        }} 
+        ref={ref}
+      >
         <List>
           {recommendations.map((recommendation: Recommendation) => (
             <ListItem key={recommendation._id}>
@@ -37,63 +53,21 @@ const ScriptBox: React.FC = () => {
 
 export default ScriptBox;
 
-interface ScriptExample {
-  primary: string;
-  secondary: string;
-}
 
-// const messageExamples: RecommendedExample[] = [
-//   {
-//     primary: 'Voca',
-//     secondary: 'chronic: 만성적인\npersistent: 지속적인\naccumulate: 축적하다'
-//   },
-//   {
-//     primary: 'Idium',
-//     secondary: 'come about : 발생하다\nqualify for : ~의 자격을 얻다'
-//   }
-  
-// ];
 
-const messageExamples: ScriptExample[] = [
-  {
-    primary: 'chronic',
-    secondary: '만성적인'
-  },
-  {
-    primary: 'persistent',
-    secondary: '지속적인'
-  },
-  {
-    primary: 'accumulate',
-    secondary: '축적하다'
-  },
-  {
-    primary: 'come about',
-    secondary: '발생하다'
-  },
-  {
-    primary: 'qualify for',
-    secondary: '~의 자격을 얻다'
-  }
-  
-];
-
-// 랜덤으로 스크립트 추천
-function refreshMessages(): ScriptExample[] {
-  const shuffledExamples = [...messageExamples].sort(() => 0.5 - Math.random());
-  return shuffledExamples.slice(0, 3);
-}
 
 
 const Title = styled.h2`
   text-align: center;
   margin-top: 5%;
-  font-size: 2rem; // 기본 글자 크기
+  font-size: 2rem;
+  background: linear-gradient(45deg, rgba(135,150,250, 0.9), rgba(222,188,250, 0.8));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   @media (max-width: 768px) {
-    font-size: 1.5rem; // 창 너비가 768px 이하일 때 글자 크기 조정
+    font-size: 1.5rem;
   }
   @media (max-width: 480px) {
-    font-size: 1rem; // 창 너비가 480px 이하일 때 글자 크기 조정
+    font-size: 1rem;
   }
 `;
-;

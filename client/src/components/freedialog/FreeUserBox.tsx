@@ -38,6 +38,7 @@ const UserBoxWrapper = styled(Box)`
   justify-content: center;
   height: 100vh;
   overflow: hidden;
+
 `;
 
 
@@ -131,6 +132,19 @@ const UserBox: React.FC = () => {
           {renderOtherNickname()}
         </AvatarContainer>
       </Box>
+      <Typography 
+        variant="h6" 
+        sx={{ 
+          position: 'absolute',
+          bottom: 10, 
+          left: 10, 
+          color: '#000',
+          padding: '5px',
+          borderRadius: '5px'
+        }}
+      >
+        EXIT : <span style={{ color: "#C70039" }}>(E)</span><div></div>통화 중 E키를 누르면 맵으로 돌아갑니다.
+      </Typography>
     </UserBoxWrapper>
   );
 };
