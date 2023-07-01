@@ -286,12 +286,15 @@ export default class USAScene extends Phaser.Scene {
         this.tilemapLayerList.push(interiors_33);
 
         let USA_talkingzone: TalkingZone = {
-            "coach_park": {
-                first_seat: {x: 1013, y: 804},
-                second_seat: {x: 1013, y: 837}
-            }
-        };
-
+            "coach_park1": {
+                first_seat: {x: 847, y: 1272},
+                second_seat: {x: 847, y: 1243}
+            },
+            "coach_park2": {
+                first_seat: {x: 847, y: 913},
+                second_seat: {x: 847, y: 889}
+        },
+    }
         createCharacterAnims(this.anims);
         if (this.socket) {
             this.socket.disconnect();
@@ -1362,9 +1365,9 @@ export default class USAScene extends Phaser.Scene {
 
 
         let interact_sprite1: npcInfo = {
-            name: "coach_park",
-            x: 1485 - this.offset_x,
-            y: 1157 - this.offset_y,
+            name: "coach_park1",
+            x: 848,
+            y: 1273,
             texture: "coach_park",
             sprite: null,
             role: "freeTalkingPlace",
@@ -1376,6 +1379,20 @@ export default class USAScene extends Phaser.Scene {
         this.npcList.push(interact_sprite1);
 
         let interact_sprite2: npcInfo = {
+            name: "coach_park2",
+            x: 848,
+            y: 920,
+            texture: "coach_park",
+            sprite: null,
+            role: "freeTalkingPlace",
+            moving: false,
+        };
+
+
+        interact_sprite2.sprite = this.physics.add.sprite(interact_sprite2.x, interact_sprite2.y, interact_sprite2.texture);
+        this.npcList.push(interact_sprite2);
+
+        let interact_sprite10: npcInfo = {
             name: "chairMart",
             x: 2603 - this.offset_x,
             y: 1362 - this.offset_y,
@@ -1384,8 +1401,8 @@ export default class USAScene extends Phaser.Scene {
             role: "rolePlayingPlace",
             moving: false,
         };
-        interact_sprite2.sprite = this.physics.add.sprite(interact_sprite2.x, interact_sprite2.y, interact_sprite2.texture);
-        this.npcList.push(interact_sprite2);
+        interact_sprite10.sprite = this.physics.add.sprite(interact_sprite10.x, interact_sprite10.y, interact_sprite10.texture);
+        this.npcList.push(interact_sprite10);
 
         let interact_sprite3: npcInfo = {
             name: "taxi",
