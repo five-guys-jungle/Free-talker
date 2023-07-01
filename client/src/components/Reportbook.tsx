@@ -16,6 +16,8 @@ import Button from "@mui/material/Button";
 import SaveIcon from "@material-ui/icons/Save";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { IconButton } from "@material-ui/core";
+import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+import PauseIcon from '@material-ui/icons/Pause';
 import { scoreState } from "../stores/scoreSlice";
 import { Pagination, Navigation } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -30,15 +32,15 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const theme = createTheme({
     palette: {
-    primary: {
-        // Purple and green play nicely together.
-        main: '#2979ff',
+        primary: {
+            // Purple and green play nicely together.
+            main: '#2979ff',
+        },
+        secondary: {
+            main: '#2962ff',
+        },
     },
-      secondary: {
-        main: '#2962ff',
-      },
-    },
-  });
+});
 
 
 let dialogsArr: dialogState = {
@@ -50,18 +52,40 @@ const ReportBook = (data: any) => {
 
     const { presentScene, isButtonClicked } = useSelector((state: RootState) => {
         return { ...state.presentScene };
-      });
+    });
 
     const { mode } = useSelector((state: RootState) => {
         return { ...state.mode };
-      });
+    });
 
     const { playerId, playerNickname, playerTexture } = useSelector(
         (state: RootState) => {
             return { ...state.user };
         }
     );
-    
+
+    const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
+
+    const playAudio = (audioUrl: string) => {
+        if (currentAudio) {
+            currentAudio.pause();
+            setCurrentAudio(null);
+        }
+
+        const audio = new Audio(audioUrl);
+        audio.onended = () => setCurrentAudio(null);
+        audio.play();
+        setCurrentAudio(audio);
+    };
+
+    const pauseAudio = () => {
+        if (currentAudio) {
+            currentAudio.pause();
+            setCurrentAudio(null);
+        }
+    }
+
+
 
     useEffect(() => {
         console.log(playerId);
@@ -104,8 +128,8 @@ const ReportBook = (data: any) => {
         //   messages: messages,
         // });
         setOpenbook(!openbook);
-        if (presentScene=="airport") store.dispatch(openAirport());
-        else if (presentScene=="usa") store.dispatch(openUSA());
+        if (presentScene == "airport") store.dispatch(openAirport());
+        else if (presentScene == "usa") store.dispatch(openUSA());
     };
     const handleDelete = (userId: string, timestamp: string) => {
         deleteDialog({
@@ -119,8 +143,8 @@ const ReportBook = (data: any) => {
             messages: [],
         });
         // setOpenbook(!openbook);
-        if (presentScene=="airport") store.dispatch(openAirport());
-        else if (presentScene=="usa") store.dispatch(openUSA());
+        if (presentScene == "airport") store.dispatch(openAirport());
+        else if (presentScene == "usa") store.dispatch(openUSA());
         handleBook();
     };
 
@@ -181,41 +205,41 @@ const ReportBook = (data: any) => {
     };
 
     return (
-        <div style={{ width: "100%", height: "100%" , position: "absolute"}}>
+        <div style={{ width: "100%", height: "100%", position: "absolute" }}>
             <div
                 style={{
                     textAlign: "right",
                     marginTop: "20px",
                     marginRight: "20px",
-                    position:"absolute",
-                    right:"0px"
+                    position: "absolute",
+                    right: "0px"
                 }}
             >
                 <ThemeProvider theme={theme}>
-                <Button color={isButtonClicked?"primary":"secondary"} variant="contained" size="large" onClick={handleBook}
-                 style={{boxShadow: isButtonClicked? "0px 0px 25px #fff":"0px 0px 0px #fff"}}>
-                    <img
-                        src={"./assets/ReportBookIcon.png"}
-                        alt={"ReportBook"}
-                        style={{ width: "40px" }}
-                    ></img>
-                    <span
-                        style={{
-                            marginLeft: "5px",
-                            fontFamily: "Lexend Peta",
-                            fontWeight: "bolder",
-                        }}
-                    >
-                        여행<br></br>기록
-                    </span>
-                </Button>
+                    <Button color={isButtonClicked ? "primary" : "secondary"} variant="contained" size="large" onClick={handleBook}
+                        style={{ boxShadow: isButtonClicked ? "0px 0px 25px #fff" : "0px 0px 0px #fff" }}>
+                        <img
+                            src={"./assets/ReportBookIcon.png"}
+                            alt={"ReportBook"}
+                            style={{ width: "40px" }}
+                        ></img>
+                        <span
+                            style={{
+                                marginLeft: "5px",
+                                fontFamily: "Lexend Peta",
+                                fontWeight: "bolder",
+                            }}
+                        >
+                            여행<br></br>기록
+                        </span>
+                    </Button>
                 </ThemeProvider>
             </div>
 
             {openbook == true && (
-                <div style={{ width: "100%" , height:"100%", display:"flex"}}>
+                <div style={{ width: "100%", height: "100%", display: "flex" }}>
                     <Swiper
-                        style={{ width: "970px"}}
+                        style={{ width: "970px" }}
                         modules={[Navigation]}
                         navigation={true}
                     >
@@ -330,30 +354,30 @@ const ReportBook = (data: any) => {
                                                             <div className="results__list">
                                                                 {dialog.score ==
                                                                     100 && (
-                                                                    <>
-                                                                        <p>
-                                                                            원어민
-                                                                            수준이에요!
-                                                                        </p>
-                                                                        <p>
-                                                                            영어로
-                                                                            대화가
-                                                                            자연스러워요!
-                                                                        </p>
-                                                                        <div className="highlighted">
-                                                                            <div className="text">
-                                                                                {" "}
-                                                                                <span>
-                                                                                    Perfect!
-                                                                                </span>
+                                                                        <>
+                                                                            <p>
+                                                                                원어민
+                                                                                수준이에요!
+                                                                            </p>
+                                                                            <p>
+                                                                                영어로
+                                                                                대화가
+                                                                                자연스러워요!
+                                                                            </p>
+                                                                            <div className="highlighted">
+                                                                                <div className="text">
+                                                                                    {" "}
+                                                                                    <span>
+                                                                                        Perfect!
+                                                                                    </span>
+                                                                                </div>
                                                                             </div>
-                                                                        </div>
-                                                                    </>
-                                                                )}
+                                                                        </>
+                                                                    )}
                                                                 {dialog.score >=
                                                                     80 &&
                                                                     dialog.score <
-                                                                        100 && (
+                                                                    100 && (
                                                                         <>
                                                                             <p>
                                                                                 대화에
@@ -382,84 +406,84 @@ const ReportBook = (data: any) => {
                                                                     )}
                                                                 {dialog.score <
                                                                     80 && (
-                                                                    <>
-                                                                        <p>
-                                                                            생존영어
-                                                                            가능!
-                                                                        </p>
-                                                                        <p>
-                                                                            말
-                                                                            못해
-                                                                            죽진
-                                                                            않을
-                                                                            거
-                                                                            같아요!
-                                                                        </p>
-                                                                        <div className="highlighted">
-                                                                            <div className="text">
-                                                                                {" "}
-                                                                                <span>
-                                                                                    You
-                                                                                    can
-                                                                                    survive!
-                                                                                </span>
+                                                                        <>
+                                                                            <p>
+                                                                                생존영어
+                                                                                가능!
+                                                                            </p>
+                                                                            <p>
+                                                                                말
+                                                                                못해
+                                                                                죽진
+                                                                                않을
+                                                                                거
+                                                                                같아요!
+                                                                            </p>
+                                                                            <div className="highlighted">
+                                                                                <div className="text">
+                                                                                    {" "}
+                                                                                    <span>
+                                                                                        You
+                                                                                        can
+                                                                                        survive!
+                                                                                    </span>
+                                                                                </div>
                                                                             </div>
-                                                                        </div>
-                                                                    </>
-                                                                )}
+                                                                        </>
+                                                                    )}
                                                             </div>
                                                         </div>
                                                     </div>
                                                     {dialog.messages.length !==
                                                         0 && (
-                                                        <>
-                                                            <div className="wrapChracterL">
-                                                                <div className="Character">
-                                                                    <h4>
-                                                                        My
-                                                                        Character
-                                                                    </h4>
-                                                                    <center>
-                                                                        <ScaleImg
-                                                                            className="Character__box"
-                                                                            src={`./assets/characters/single/${dialog.userTexture}.png`}
-                                                                            alt={
-                                                                                dialog.userTexture
-                                                                            }
-                                                                        ></ScaleImg>
-                                                                    </center>
-                                                                    <div className="Nickname">
-                                                                        <span className="Character__title">
-                                                                            {
-                                                                                dialog.nickname
-                                                                            }
-                                                                        </span>
+                                                            <>
+                                                                <div className="wrapChracterL">
+                                                                    <div className="Character">
+                                                                        <h4>
+                                                                            My
+                                                                            Character
+                                                                        </h4>
+                                                                        <center>
+                                                                            <ScaleImg
+                                                                                className="Character__box"
+                                                                                src={`./assets/characters/single/${dialog.userTexture}.png`}
+                                                                                alt={
+                                                                                    dialog.userTexture
+                                                                                }
+                                                                            ></ScaleImg>
+                                                                        </center>
+                                                                        <div className="Nickname">
+                                                                            <span className="Character__title">
+                                                                                {
+                                                                                    dialog.nickname
+                                                                                }
+                                                                            </span>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                            <div className="wrapChracterR">
-                                                                <div className="Character">
-                                                                    <h4>NPC</h4>
-                                                                    <center>
-                                                                        <ScaleImg
-                                                                            className="Character__box"
-                                                                            src={`./assets/characters/single/${dialog.npc}.png`}
-                                                                            alt={
-                                                                                "dialog.npc"
-                                                                            }
-                                                                        ></ScaleImg>
-                                                                    </center>
-                                                                    <div className="Nickname">
-                                                                        <span className="Character__title">
-                                                                            {
-                                                                                dialog.npc
-                                                                            }
-                                                                        </span>
+                                                                <div className="wrapChracterR">
+                                                                    <div className="Character">
+                                                                        <h4>NPC</h4>
+                                                                        <center>
+                                                                            <ScaleImg
+                                                                                className="Character__box"
+                                                                                src={`./assets/characters/single/${dialog.npc}.png`}
+                                                                                alt={
+                                                                                    "dialog.npc"
+                                                                                }
+                                                                            ></ScaleImg>
+                                                                        </center>
+                                                                        <div className="Nickname">
+                                                                            <span className="Character__title">
+                                                                                {
+                                                                                    dialog.npc
+                                                                                }
+                                                                            </span>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                        </>
-                                                    )}
+                                                            </>
+                                                        )}
                                                     {/* {messages.length===0 &&
                       (<>
                       <div className="Character" style={{gridColumn:'1/span 2', width:'50%', margin:'20px auto'}}>
@@ -475,44 +499,44 @@ const ReportBook = (data: any) => {
                                                         <span>Corrections</span>
 
                                                         <Swiper
-                                                        style={{ width: "440px" , height:"100px", marginTop:"35px"}}
-                                                        modules={[Pagination]}
-                                                        pagination={{clickable:true}}
+                                                            style={{ width: "440px", height: "100px", marginTop: "35px" }}
+                                                            modules={[Pagination]}
+                                                            pagination={{ clickable: true }}
                                                         >
-                                                        <div className="corrections-list">
-                                                            {dialog.corrections
-                                                                .length !== 0 &&
-                                                                dialog.corrections.map(
-                                                                    (
-                                                                        correction,
-                                                                        index
-                                                                    ) => (
-                                                                        <SwiperSlide key={index}>
-                                                                        {
-                                                                        <div
-                                                                            className="correction-div" style={{marginLeft:"25px"}}
-                                                                        >
-                                                                            <p>
-                                                                                User
-                                                                                Sentence
-                                                                                :{" "}
+                                                            <div className="corrections-list">
+                                                                {dialog.corrections
+                                                                    .length !== 0 &&
+                                                                    dialog.corrections.map(
+                                                                        (
+                                                                            correction,
+                                                                            index
+                                                                        ) => (
+                                                                            <SwiperSlide key={index}>
                                                                                 {
-                                                                                    correction.original
+                                                                                    <div
+                                                                                        className="correction-div" style={{ marginLeft: "25px" }}
+                                                                                    >
+                                                                                        <p>
+                                                                                            User
+                                                                                            Sentence
+                                                                                            :{" "}
+                                                                                            {
+                                                                                                correction.original
+                                                                                            }
+                                                                                        </p>
+                                                                                        <p>
+                                                                                            Corrected
+                                                                                            Sentence:{" "}
+                                                                                            {
+                                                                                                correction.correction
+                                                                                            }
+                                                                                        </p>
+                                                                                    </div>
                                                                                 }
-                                                                            </p>
-                                                                            <p>
-                                                                                Corrected
-                                                                                Sentence:{" "}
-                                                                                {
-                                                                                    correction.correction
-                                                                                }
-                                                                            </p>
-                                                                        </div>
-                                                                    }
-                                                                    </SwiperSlide>
-                                                                    )
-                                                                )}
-                                                        </div>
+                                                                            </SwiperSlide>
+                                                                        )
+                                                                    )}
+                                                            </div>
                                                         </Swiper>
                                                     </div>
 
@@ -551,27 +575,32 @@ const ReportBook = (data: any) => {
                                                                                     message.text
                                                                                 }
                                                                             </div>
+                                                                            {message.audioUrl && (
+                                                                                currentAudio && currentAudio.src === message.audioUrl ?
+                                                                                    <PauseIcon onClick={pauseAudio} /> :
+                                                                                    <PlayArrowIcon onClick={() => playAudio(message.audioUrl)} />
+                                                                            )}
                                                                         </div>
                                                                     </div>
                                                                 )
                                                             )}
                                                         {dialog.messages
                                                             .length === 0 && (
-                                                            <center>
-                                                                <p
-                                                                    style={{
-                                                                        textAlign:
-                                                                            "center",
-                                                                        marginTop:
-                                                                            "50%",
-                                                                        fontSize:
-                                                                            "20px",
-                                                                    }}
-                                                                >
-                                                                    Try talk!
-                                                                </p>
-                                                            </center>
-                                                        )}
+                                                                <center>
+                                                                    <p
+                                                                        style={{
+                                                                            textAlign:
+                                                                                "center",
+                                                                            marginTop:
+                                                                                "50%",
+                                                                            fontSize:
+                                                                                "20px",
+                                                                        }}
+                                                                    >
+                                                                        Try talk!
+                                                                    </p>
+                                                                </center>
+                                                            )}
                                                     </div>
                                                 </div>
                                             </div>

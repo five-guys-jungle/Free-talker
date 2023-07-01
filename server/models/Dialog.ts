@@ -45,7 +45,7 @@ export interface Message {
     img: string;
     side: string;
     text: string;
-    audioURL: string;
+    audioUrl: string;
 }
 
 export interface Correction {

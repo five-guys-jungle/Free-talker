@@ -558,7 +558,7 @@ export default class AirportScene extends Phaser.Scene {
                                             );
                                         } else {
                                             addCountUserSpeech();
-                                            console.log("USER: ", response);
+                                            console.log("USER: ", response.transcription);
                                             console.log(
                                                 "playerTexture",
                                                 this.playerTexture
@@ -571,7 +571,7 @@ export default class AirportScene extends Phaser.Scene {
                                                     img: this.playerTexture,
                                                     // img: "",
                                                     side: "right",
-                                                    text: response,
+                                                    text: response.transcription,
                                                     audioUrl: response.audioUrl
                                                 })
                                             );
@@ -1013,7 +1013,7 @@ export default class AirportScene extends Phaser.Scene {
             .getUserMedia({ audio: true })
             .then((stream) => {
                 if (this.recorder2 === null || this.recorder2 === undefined) {
-                    this.recorder2 = new MediaRecorder(stream);
+                    this.recorder2 = new MediaRecorder(stream, { audioBitsPerSecond: 128000 });
                 }
 
                 this.recorder2.ondataavailable = (e) => {

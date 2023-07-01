@@ -75,6 +75,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "../client/build")));
 app.use(express.static(path.join(__dirname, "/audio/npc_audio")));
+app.use(express.static(path.join(__dirname, "/audio/user_audio")));
 // app.use('/', require('./routes/basicRouter'));
 
 app.get("/", function (req, res) {
@@ -84,6 +85,11 @@ app.get("/", function (req, res) {
 app.get("/audio/npc_audio/*", function (req: Request, res: Response) {
     console.log(path.join(__dirname, "audio/npc_audio", req.params[0]));
     res.sendFile(path.join(__dirname, "audio/npc_audio", req.params[0]));
+});
+
+app.get("/audio/user_audio/*", function (req: Request, res: Response) {
+    console.log(path.join(__dirname, "audio/user_audio", req.params[0]));
+    res.sendFile(path.join(__dirname, "audio/user_audio", req.params[0]));
 });
 
 

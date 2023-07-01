@@ -63,7 +63,7 @@ export const saveDialog = async (req: Request, res: Response) => {
                                 img,
                                 side,
                                 text,
-                                audioURL
+                                audioUrl
                             }: Message) => ({
                                 M: {
                                     playerId: { S: playerId },
@@ -71,7 +71,7 @@ export const saveDialog = async (req: Request, res: Response) => {
                                     img: { S: img },
                                     side: { S: side },
                                     text: { S: text },
-                                    audioURL: { S: text },
+                                    audioUrl: { S: audioUrl },
                                 },
                             })
                         ),

@@ -633,10 +633,10 @@ export default class USAScene extends Phaser.Scene {
                                     "speechToText",
                                     (response: any) => {
                                         if (
-                                            response === "" ||
-                                            response ===
+                                            response.transcription === "" ||
+                                            response.transcription ===
                                             "convertSpeechToText Error" ||
-                                            response === "chain call error"
+                                            response.transcription === "chain call error"
                                         ) {
                                             store.dispatch(
                                                 setMessage(
@@ -665,7 +665,7 @@ export default class USAScene extends Phaser.Scene {
                                             this.isAudioPlaying = false;
                                         } else {
                                             addCountUserSpeech();
-                                            console.log("USER: ", response);
+                                            console.log("USER: ", response.transcription);
                                             console.log(
                                                 "playerTexture",
                                                 this.playerTexture
@@ -1151,7 +1151,7 @@ export default class USAScene extends Phaser.Scene {
             .getUserMedia({ audio: true })
             .then((stream) => {
                 if (this.recorder2 === null || this.recorder2 === undefined) {
-                    this.recorder2 = new MediaRecorder(stream);
+                    this.recorder2 = new MediaRecorder(stream, { audioBitsPerSecond: 128000 });
                 }
 
                 this.recorder2.ondataavailable = (e) => {

@@ -11,7 +11,6 @@ import {
     SystemMessagePromptTemplate,
     MessagesPlaceholder,
 } from "langchain/prompts";
-import { BufferMemory } from "langchain/memory";
 import { preDefinedPrompt } from "../models/Prompt";
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { RedisChatMessageHistory } from "langchain/stores/message/redis";
@@ -33,6 +32,7 @@ export function interactSocketEventHandler(socket: Socket) {
     let chain: ConversationChain;
     let npcSentence: string;
     console.log("Interaction socket connected, socketid: ", socket.id);
+
     const s3Client = new S3Client({ region: "ap-northeast-2" });
     socket.on("dialogStart", async (npcName: string, level: string) => {
         console.log("dialogStart");
@@ -93,25 +93,29 @@ export function interactSocketEventHandler(socket: Socket) {
                 // Conver ArrayBuffer to Buffer
                 const buffer = Buffer.from(data.audioDataBuffer);
 
-                // Convert Buffer to a stream
-                const audioStream = new Readable();
-                audioStream.push(buffer);
-                audioStream.push(null); // indicates end of file
+                const audioFileName = `${data.userNickname}_${data.npcName}_${uuidv4()}.wav`;
+                // const filePath = path.join(
+                //     __dirname,
+                //     `../audio/user_audio/${audioFileName}`
+                // );
+
+                // fs.writeFileSync(filePath, buffer); // 동기적으로 실행
 
                 // Define the bucket name and file name
                 const bucketName = process.env.S3_BUCKET_NAME;
-                const audioFileName = `${data.userNickname}_${data.npcName}_${uuidv4()}.mp3`;
 
                 const uploadParams = {
                     Bucket: bucketName,
                     Key: audioFileName,
-                    Body: audioStream,
-                    ContentType: 'audio/mpeg',
+                    Body: buffer,
+                    ContentType: 'audio/wav',
                 }
 
                 await s3Client.send(new PutObjectCommand(uploadParams));
-                const audioFileUrl: string = `https://${bucketName}.s3.amazonaws.com/${audioFileName}`;
+                const s3Url: string = `https://${bucketName}.s3.amazonaws.com/${audioFileName}`;
 
+                console.log(`${audioFileName} is uploaded to S3 Bucket.`);
+                console.log(`s3Url : ${s3Url}`);
 
                 let inputText: string;
                 let outputText: string;
@@ -122,7 +126,7 @@ export function interactSocketEventHandler(socket: Socket) {
                 // 입력 음성 " "이면 -> "다시 말씀해주세요" 출력
                 // NPC 대답 돌아올 때까지 R, E block 되어 있으므로 풀어줘야 함
 
-                await convertSpeechToText(audioFileUrl) //
+                await convertSpeechToText(s3Url) //
                     .then(async (res: any) => {
                         inputText = res.transcription;
                         socket.emit("speechToText", res);

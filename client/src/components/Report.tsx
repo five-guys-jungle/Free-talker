@@ -11,6 +11,8 @@ import Button from "@mui/material/Button";
 import SaveIcon from "@material-ui/icons/Save";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { IconButton } from "@material-ui/core";
+import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+import PauseIcon from '@material-ui/icons/Pause';
 import { scoreState } from "../stores/scoreSlice"
 import { appendMessage, clearMessages } from "../stores/talkBoxSlice";
 import { appendCorrection, clearCorrections } from "../stores/reportSlice";
@@ -34,7 +36,7 @@ import { GAME_STATUS } from "../stores/gameSlice";
 const Report = (data: any) => {
 
   const { playerId, playerNickname, playerTexture } = useSelector((state: RootState) => { return { ...state.user } });
-  
+
   const { presentScene } = useSelector((state: RootState) => {
     return { ...state.presentScene };
   });
@@ -42,6 +44,27 @@ const Report = (data: any) => {
   const { mode } = useSelector((state: RootState) => {
     return { ...state.mode };
   });
+
+  const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
+
+  const playAudio = (audioUrl: string) => {
+    if (currentAudio) {
+      currentAudio.pause();
+      setCurrentAudio(null);
+    }
+
+    const audio = new Audio(audioUrl);
+    audio.onended = () => setCurrentAudio(null);
+    audio.play();
+    setCurrentAudio(audio);
+  };
+
+  const pauseAudio = () => {
+    if (currentAudio) {
+      currentAudio.pause();
+      setCurrentAudio(null);
+    }
+  }
 
   useEffect(() => {
     console.log(playerId)
@@ -95,13 +118,13 @@ const Report = (data: any) => {
         corrections: corrections,
         messages: messages,
       });
-        // store.dispatch(buttonClickedOn());
-        setTimeout(() => {store.dispatch(buttonClickedOn());},500);
-        setTimeout(() => {store.dispatch(buttonClickedOff());},1000);
-        setTimeout(() => {store.dispatch(buttonClickedOn());},1500);
-        setTimeout(() => {store.dispatch(buttonClickedOff());},2000);
-        setTimeout(() => {store.dispatch(buttonClickedOn());},2500);
-        setTimeout(() => {store.dispatch(buttonClickedOff());},3000);
+      // store.dispatch(buttonClickedOn());
+      setTimeout(() => { store.dispatch(buttonClickedOn()); }, 500);
+      setTimeout(() => { store.dispatch(buttonClickedOff()); }, 1000);
+      setTimeout(() => { store.dispatch(buttonClickedOn()); }, 1500);
+      setTimeout(() => { store.dispatch(buttonClickedOff()); }, 2000);
+      setTimeout(() => { store.dispatch(buttonClickedOn()); }, 2500);
+      setTimeout(() => { store.dispatch(buttonClickedOff()); }, 3000);
     }
 
     store.dispatch(reportOff());
@@ -110,8 +133,8 @@ const Report = (data: any) => {
     store.dispatch(clearMessages());
     store.dispatch(clearSentences());
 
-    if (presentScene=="airport") store.dispatch(openAirport());
-    else if (presentScene=="usa") store.dispatch(openUSA());
+    if (presentScene == "airport") store.dispatch(openAirport());
+    else if (presentScene == "usa") store.dispatch(openUSA());
   };
   const handleDelete = () => {
     // 커스텀 이벤트 생성
@@ -136,8 +159,8 @@ const Report = (data: any) => {
     store.dispatch(clearCorrections());
     store.dispatch(clearMessages());
     store.dispatch(clearSentences());
-    if (presentScene=="airport") store.dispatch(openAirport());
-    else if (presentScene=="usa") store.dispatch(openUSA());
+    if (presentScene == "airport") store.dispatch(openAirport());
+    else if (presentScene == "usa") store.dispatch(openUSA());
   };
 
   const date = new Date();
@@ -235,61 +258,66 @@ const Report = (data: any) => {
                             </>)
                         } */}
 
-                        <div className="corrections"><span>Corrections</span>
-                        <Swiper
-                        style={{ width: "440px" , height:"100px", marginTop:"35px"}}
-                        modules={[Pagination]}
-                        pagination={{clickable:true}}
-                        >
-                        
-                            <div className="corrections-list">
-                                {corrections.length!==0 && 
-                                corrections.map((correction, index) => (
-                                  <SwiperSlide key={index}>
-                                  {
-                                  <div className="correction-div" style={{marginLeft:"25px"}}>
-                                    <p>User Sentence : {correction.original}</p>
-                                    <p>Corrected Sentence: {correction.correction}</p>
-                                  </div>
-                                  }
-                                  </SwiperSlide>
-                                ))
-                                }
-                            </div>
-                        
-                        </Swiper>
+            <div className="corrections"><span>Corrections</span>
+              <Swiper
+                style={{ width: "440px", height: "100px", marginTop: "35px" }}
+                modules={[Pagination]}
+                pagination={{ clickable: true }}
+              >
+
+                <div className="corrections-list">
+                  {corrections.length !== 0 &&
+                    corrections.map((correction, index) => (
+                      <SwiperSlide key={index}>
+                        {
+                          <div className="correction-div" style={{ marginLeft: "25px" }}>
+                            <p>User Sentence : {correction.original}</p>
+                            <p>Corrected Sentence: {correction.correction}</p>
+                          </div>
+                        }
+                      </SwiperSlide>
+                    ))
+                  }
+                </div>
+
+              </Swiper>
+            </div>
+
+            <div className="talks">
+              {messages.length !== 0 &&
+                messages.map((message, index) => (
+                  <div className={`msg ${message.side}-msg`} key={index}>
+                    <div
+                      className="msg-img"
+                      style={{
+                        backgroundImage: `url(${`./assets/characters/single/${message.img}.png`})`,
+                      }}
+                    ></div>
+
+                    <div className="msg-bubble">
+                      <div className="msg-info">
+                        <div className="msg-info-name">
+                          {message.name}
                         </div>
+                      </div>
 
-                        <div className="talks">
-                            {messages.length!==0 &&
-                                messages.map((message, index) => (
-                                    <div className={`msg ${message.side}-msg`} key={index}>
-                                        <div
-                                            className="msg-img"
-                                            style={{
-                                                backgroundImage: `url(${`./assets/characters/single/${message.img}.png`})`,
-                                            }}
-                                        ></div>
+                      <div className="msg-text">{message.text}</div>
+                      {message.audioUrl && (
+                        currentAudio && currentAudio.src === message.audioUrl ?
+                          <PauseIcon onClick={pauseAudio} /> :
+                          <PlayArrowIcon onClick={() => playAudio(message.audioUrl)} />
+                      )}
+                    </div>
+                  </div>
+                ))
+              }
+              {messages.length === 0 &&
+                <center>
+                  <p style={{ textAlign: 'center', marginTop: '50%', fontSize: '20px' }}>Try talk!</p>
+                </center>
+              }
 
-                                        <div className="msg-bubble">
-                                            <div className="msg-info">
-                                                <div className="msg-info-name">
-                                                    {message.name}
-                                                </div>
-                                            </div>
-
-                                            <div className="msg-text">{message.text}</div>
-                                        </div>
-                                    </div>
-                                ))
-                            }
-                            {messages.length===0 &&
-                                <center>
-                                    <p style={{textAlign:'center', marginTop:'50%', fontSize:'20px'}}>Try talk!</p>
-                                </center>
-                            }
-
-                        </div>
+            </div>
           </div>
         </div>
       </div>

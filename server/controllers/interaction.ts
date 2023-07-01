@@ -1,15 +1,14 @@
 import { Request, Response } from "express";
 import { OpenAIApi, Configuration } from "openai";
-import multer from "multer";
-import util from "util";
-import fs from "fs";
+import toArray from 'stream-to-array';
 import { v4 as uuidv4 } from "uuid";
 import texttoSpeech from "@google-cloud/text-to-speech";
 import FormData from "form-data";
 import axios from "axios";
 import dotenv from "dotenv";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { Readable } from "stream";
+import { createWriteStream } from "fs";
 import { preDefinedPrompt } from "../models/Prompt";
 import { ConversationChain } from "langchain/chains";
 import { ChatOpenAI } from "langchain/chat_models/openai";
@@ -57,37 +56,37 @@ const s3Client = new S3Client({ region: "ap-northeast-2" });
 // export const upload = multer({ storage });
 
 // Function to process the user's voice input
-export async function interact(req: Request, res: Response): Promise<void> {
-    console.log("NPC Interaction Start.");
-    const voiceFile = req.file;
-    const chain = await createChain("ImmigrationOfficer", "intermediate");
-    if (voiceFile && voiceFile.size > 0) {
-        // Convert speech to text
-        const audioFilePath = voiceFile.path;
-        console.log(audioFilePath);
-        let inputText: string;
-        let outputText: string;
+// export async function interact(req: Request, res: Response): Promise<void> {
+//     console.log("NPC Interaction Start.");
+//     const voiceFile = req.file;
+//     const chain = await createChain("ImmigrationOfficer", "intermediate");
+//     if (voiceFile && voiceFile.size > 0) {
+//         // Convert speech to text
+//         const audioFilePath = voiceFile.path;
+//         console.log(audioFilePath);
+//         let inputText: string;
+//         let outputText: string;
 
-        inputText = await convertSpeechToText(audioFilePath);
-        const correctedText = await grammarCorrection(inputText);
+//         inputText = await convertSpeechToText(audioFilePath);
+//         const correctedText = await grammarCorrection(inputText);
 
-        console.log(`correctedText: ${correctedText}, inputText: ${inputText}`);
+//         console.log(`correctedText: ${correctedText}, inputText: ${inputText}`);
 
-        outputText = await textCompletion(inputText, chain);
-        const response = await convertTexttoSpeech(inputText, outputText);
-        // console.log("response: ", response);
-        res.json(response);
+//         outputText = await textCompletion(inputText, chain);
+//         const response = await convertTexttoSpeech(inputText, outputText);
+//         // console.log("response: ", response);
+//         res.json(response);
 
-        // Call the ChatGPT API with the extracted text and process the response
-        // Implement your logic to interact with the ChatGPT API
+//         // Call the ChatGPT API with the extracted text and process the response
+//         // Implement your logic to interact with the ChatGPT API
 
-        // Call the Text to Speech API to generate the response audio
-        // Implement your logic to convert text to speech using the appropriate libraries or APIs
-        // Return the response to the user
-    } else {
-        res.status(400).json({ error: "NPC Interaction Fail." });
-    }
-}
+//         // Call the Text to Speech API to generate the response audio
+//         // Implement your logic to convert text to speech using the appropriate libraries or APIs
+//         // Return the response to the user
+//     } else {
+//         res.status(400).json({ error: "NPC Interaction Fail." });
+//     }
+// }
 
 // Function to convert speech to text
 export async function convertSpeechToText(
@@ -99,7 +98,27 @@ export async function convertSpeechToText(
         let transcription: string;
         let result: any;
 
-        data.append("file", fs.createReadStream(audioFilePath));
+        let fileName = audioFilePath.split('/').pop();
+
+        const getParams = {
+            Bucket: process.env.S3_BUCKET_NAME,
+            Key: fileName
+        }
+
+        const command = new GetObjectCommand(getParams);
+        const item = await s3Client.send(command);
+
+        // We will convert the stream into a Buffer, because axios can't handle the stream directly
+
+        if (item.Body instanceof Readable) {
+            const parts = await toArray(item.Body);
+            const audioBuffer = Buffer.concat(parts);
+
+            data.append("file", audioBuffer, {
+                filename: fileName, // You need to specify filename
+                contentType: 'audio/wav', // And content type, adjusted for .wav audio files
+            });
+        }
         data.append("model", "whisper-1");
         data.append("language", "en");
         response_STT = await axios.post(
@@ -113,10 +132,15 @@ export async function convertSpeechToText(
             }
         );
         transcription = response_STT.data.text;
+
+        const audioUrl: string = audioFilePath.replace('https://bucket-fiveguys-audio.s3.ap-northeast-2.amazonaws.com', 'https://freetalker.site/s3bucket');
+
+        console.log("temp, audioUrl : ", audioUrl);
         result = {
             transcription: transcription,
-            audioUrl: audioFilePath,
+            audioUrl: audioUrl,
         }
+
         return result;
     } catch (err) {
         console.log("음성 파일 변환 실패");
@@ -208,9 +232,11 @@ export async function convertTexttoSpeech(
         const [response_audio]: any = await client.synthesizeSpeech(request);
 
         // Convert audio content to a stream
-        const audioStream = new Readable();
-        audioStream.push(response_audio.audioContent);
-        audioStream.push(null); // indicates end of file 
+
+
+        // const audioStream = new Readable();
+        // audioStream.push(response_audio.audioContent);
+        // audioStream.push(null); // indicates end of file 
 
         // Define the bucket name and file name
         const bucketName = process.env.S3_BUCKET_NAME;
@@ -220,17 +246,18 @@ export async function convertTexttoSpeech(
         const uploadParams = {
             Bucket: bucketName,
             Key: audioFileName,
-            Body: audioStream,
+            Body: Buffer.from(response_audio.audioContent),
             ContentType: 'audio/mpeg',
         };
 
         await s3Client.send(new PutObjectCommand(uploadParams));
-        const audioFileUrl: string = `https://${bucketName}.s3.amazonaws.com/${audioFileName}`
+        const s3Url: string = `https://${bucketName}.s3.amazonaws.com/${audioFileName}`;
+        const audioUrl: string = s3Url.replace(`https://${bucketName}.s3.ap-northeast-2.amazonaws.com`, 'https://freetalker.site/s3bucket');
 
         let result = {
             user: inputText,
             assistant: outputText,
-            audioUrl: audioFileUrl,
+            audioUrl: audioUrl,
         };
 
         console.log("result: ", result);
