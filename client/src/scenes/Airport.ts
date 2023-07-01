@@ -90,7 +90,7 @@ export default class AirportScene extends Phaser.Scene {
 
     constructor() {
         super("AirportScene");
-        
+
     }
 
     preload() {
@@ -163,7 +163,7 @@ export default class AirportScene extends Phaser.Scene {
             }).catch((error) => {
                 console.error("Error:", error);
             });
-        
+
         };
 
         this.background = this.add
@@ -632,7 +632,7 @@ export default class AirportScene extends Phaser.Scene {
                                         // TODO : Store에 SentenceBox 상태정의하고 dispatch
                                         store.dispatch(clearSentences());
                                         responses.forEach((response, index) => {
-                                            
+
                                             store.dispatch(
                                                 appendSentence({
                                                     _id: index,
@@ -1012,6 +1012,7 @@ export default class AirportScene extends Phaser.Scene {
             texture: "ImmigrationOfficer",
             sprite: null,
             role: "npc",
+            moving: false,
         };
         npc1.sprite = this.physics.add.sprite(npc1.x, npc1.y, npc1.texture);
         this.npcList.push(npc1);
@@ -1023,6 +1024,7 @@ export default class AirportScene extends Phaser.Scene {
             texture: "ImmigrationOfficer",
             sprite: null,
             role: "npc",
+            moving: false,
         };
         npc2.sprite = this.physics.add.sprite(npc2.x, npc2.y, npc2.texture);
         this.npcList.push(npc2);
@@ -1056,6 +1058,7 @@ export default class AirportScene extends Phaser.Scene {
             texture: "gate",
             sprite: null,
             role: "npc",
+            moving: false,
         };
         gate1.sprite = this.physics.add.sprite(gate1.x, gate1.y, gate1.texture);
         gate1.sprite.setScale(1.6);
@@ -1070,6 +1073,7 @@ export default class AirportScene extends Phaser.Scene {
             texture: "gate",
             sprite: null,
             role: "npc",
+            moving: false,
         };
         gate2.sprite = this.physics.add.sprite(gate2.x, gate2.y, gate2.texture);
         gate2.sprite.setScale(1.6);
@@ -1083,6 +1087,7 @@ export default class AirportScene extends Phaser.Scene {
             texture: "gate",
             sprite: null,
             role: "npc",
+            moving: false,
         };
         gate3.sprite = this.physics.add.sprite(gate3.x, gate3.y, gate3.texture);
         gate3.sprite.setScale(1.6);
@@ -1099,41 +1104,37 @@ export default class AirportScene extends Phaser.Scene {
         this.socket.on("connect", () => {
             console.log(`connect, socket.id: ${this.socket!.id}, 
             this.socket.recovered: ${this.socket!.recovered}`);
-            if(this.socket!.recovered){
+            if (this.socket!.recovered) {
                 this.scene.resume();
             }
-            if(this.player1){
-                this.beforeSleepX = this.player1.x;
-                this.beforeSleepY = this.player1.y;
-                this.player1.destroy();
-                this.player1 = null;
+            else {
+                this.player1 = this.createPlayer({
+                    socketId: this.socket!.id,
+                    nickname: this.userNickname,
+                    playerTexture: this.playerTexture,
+                    x: this.initial_x,
+                    y: this.initial_y,
+                    scene: "AirportScene",
+                    dash: false,
+                    seat: false,
+                });
+                this.player1!.x = this.beforeSleepX;
+                this.player1!.y = this.beforeSleepY;
+
+                this.cameras.main.startFollow(this.player1);
+                this.cameras.main.zoom = 1.2;
+
+                this.socket!.emit("connected", {
+                    socketId: this.socket!.id,
+                    nickname: this.userNickname,
+                    playerTexture: this.playerTexture,
+                    x: this.player1.x,
+                    y: this.player1.y,
+                    scene: "AirportScene",
+                    dash: false,
+                    seat: false,
+                });
             }
-            this.player1 = this.createPlayer({
-                socketId: this.socket!.id,
-                nickname: this.userNickname,
-                playerTexture: this.playerTexture,
-                x: this.initial_x,
-                y: this.initial_y,
-                scene: "AirportScene",
-                dash: false,
-                seat: false,
-            });
-            this.player1!.x = this.beforeSleepX;
-            this.player1!.y = this.beforeSleepY;
-
-            this.cameras.main.startFollow(this.player1);
-            this.cameras.main.zoom = 1.2;
-
-            this.socket!.emit("connected", {
-                socketId: this.socket!.id,
-                nickname: this.userNickname,
-                playerTexture: this.playerTexture,
-                x: this.player1.x,
-                y: this.player1.y,
-                scene: "AirportScene",
-                dash: false,
-                seat: false,
-            });
 
             this.socket!.on(
                 "updateAlluser",
@@ -1232,9 +1233,10 @@ export default class AirportScene extends Phaser.Scene {
                 // window.location.reload();
             });
             for (let platform of this.tilemapLayerList) {
-                this.physics.add.collider(this.player1, platform);
+                this.physics.add.collider(this.player1!, platform);
             }
-            if (initial) {
+
+            if (initial && !this.socket!.recovered) {
                 this.createAirportNpc();
             }
         });
