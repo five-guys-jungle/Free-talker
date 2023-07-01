@@ -15,7 +15,7 @@ const Container = styled.div`
     255,
     0.5
 );
-  background-image: url("./assets/logo/logo_transparent.png");
+  background-image: url("./assets/backgrounds/park.jpg");
   background-size: 100% 100%;
   `;
 
@@ -23,6 +23,7 @@ const LeftSection = styled.section`
   flex: 1;
   height: 100%;
   overflow: auto;
+  background-color: rgba(255, 255, 255, 0.7);
 `;
 
 
@@ -32,7 +33,7 @@ const RightSection = styled.section`
   display: flex;
   flex-direction: column;
   height: 100%;
-
+  background-color: rgba(255, 255, 255, 0.7);
 `;
 
 const FreeDialog: React.FC = () => {

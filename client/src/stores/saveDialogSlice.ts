@@ -1,6 +1,7 @@
 import axios, { AxiosError } from "axios";
-import { appendMessage, clearMessages } from "./talkBoxSlice";
+import { Message, appendMessage, clearMessages } from "./talkBoxSlice";
 import store from "../stores/index";
+
 export interface Dialog {
     userId: string;
     timestamp: string;
@@ -12,12 +13,6 @@ export interface Dialog {
     messages: Message[];
 }
 
-export interface Message {
-    name: string;
-    img: string;
-    side: string;
-    text: string;
-}
 
 export interface dialogState {
     dialogs: Dialog[];
@@ -51,8 +46,7 @@ export const saveDialog = async (state: Dialog) => {
     };
 
     try {
-        console.log("try");
-        // console.log(body);
+        console.log("save dialog");
 
         const response = await axios.post(`${DB_URL}/save/saveDialog`, body);
         store.dispatch(clearMessages());
@@ -82,9 +76,8 @@ export const loadDialog = async (state: Dialog) => {
     };
 
     try {
-        console.log("loading Dialog....");
         const response = await axios.post(`${DB_URL}/save/loadDialog`, body);
-        console.log("before sorting: ", response.data.existingDialogs);
+
         let existingDialogs = response.data.existingDialogs;
         existingDialogs.sort((dialogA: any, dialogB: any) => {
             const convertTimestamp = (timestamp: string) => {
@@ -103,12 +96,7 @@ export const loadDialog = async (state: Dialog) => {
             const timestampA = Date.parse(convertedTimestampA);
             const timestampB = Date.parse(convertedTimestampB);
 
-            console.log(
-                `Converted timestamp A: ${convertedTimestampA}, parsed: ${timestampA}`
-            );
-            console.log(
-                `Converted timestamp B: ${convertedTimestampB}, parsed: ${timestampB}`
-            );
+
 
             if (timestampA > timestampB) {
                 return -1;
@@ -118,10 +106,9 @@ export const loadDialog = async (state: Dialog) => {
                 return 0;
             }
         });
-        console.log("after sorting: ", existingDialogs);
         // console.log(existingDialogs)
         return existingDialogs;
     } catch (e) {
-        console.log("!!! delete error");
+        console.log("load dialog error");
     }
 };

@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
+import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+import PauseIcon from '@material-ui/icons/Pause';
+
 import {
     Message,
     appendMessage,
@@ -18,65 +21,57 @@ const TalkBox: React.FC = () => {
     const msgerInputRef = useRef<HTMLInputElement>(null);
     const msgerChatRef = useRef<HTMLDivElement>(null);
 
+    const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
+
+    const playAudio = (audioUrl: string) => {
+        if (currentAudio) {
+            currentAudio.pause();
+            setCurrentAudio(null);
+        }
+
+        const audio = new Audio(audioUrl);
+        audio.onended = () => setCurrentAudio(null);
+        audio.play();
+        setCurrentAudio(audio);
+    };
+
+    const pauseAudio = () => {
+        if (currentAudio) {
+            currentAudio.pause();
+            setCurrentAudio(null);
+        }
+    }
+
     useEffect(() => {
         if (msgerChatRef.current) {
             msgerChatRef.current.scrollTop = msgerChatRef.current.scrollHeight;
         }
     }, [messages]);
 
-    // const appendMessageToState = (
-    //     playerId: string,
-    //     name: string,
-    //     img: string,
-    //     side: string,
-    //     text: string
-    // ) => {
-    //     const newMessage: Message = { playerId, name, img, side, text };
-    //     dispatch(appendMessage(newMessage)); // Redux action
-    // };
-
-    const formatDate = (date: Date) => {
-        const h = "0" + date.getHours();
-        const m = "0" + date.getMinutes();
-
-        return `${h.slice(-2)}:${m.slice(-2)}`;
-    };
 
     return (
         <TalkDiv>
             <section className="msger">
-                {/* <header className="msger-header">
-                <div className="msger-header-title">
-                    <i className="fas fa-comment-alt"></i> NPCDialog
-                </div>
-                <div className="msger-header-options">
-                    <span>
-                        <i className="fas fa-cog"></i>
-                    </span>
-                </div>
-            </header> */}
                 <main className="msger-chat" ref={msgerChatRef}>
                     {messages.map((message, index) => (
                         <div className={`msg ${message.side}-msg`} key={index}>
                             <div
                                 className="msg-img"
                                 style={{
-                                    backgroundImage: `url(${
-                                        message.side === "left"
-                                            ? `./assets/characters/single/${message.img}.png`
-                                            : `./assets/characters/single/${message.img}.png`
-                                    })`,
+                                    backgroundImage: `url(${message.side === "left"
+                                        ? `./assets/characters/single/${message.img}.png`
+                                        : `./assets/characters/single/${message.img}.png`
+                                        })`,
                                 }}
                             ></div>
 
                             <div className="msg-bubble">
                                 <div className="msg-info">
                                     <div
-                                        className={`msg-info-name ${
-                                            message.side === "left"
-                                                ? "bot-name"
-                                                : ""
-                                        }`}
+                                        className={`msg-info-name ${message.side === "left"
+                                            ? "bot-name"
+                                            : ""
+                                            }`}
                                     >
                                         {message.side === "left"
                                             ? message.name
@@ -86,6 +81,11 @@ const TalkBox: React.FC = () => {
                                 </div>
 
                                 <div className="msg-text">{message.text}</div>
+                                {message.audioUrl && (
+                                    currentAudio && currentAudio.src === message.audioUrl ?
+                                        <PauseIcon onClick={pauseAudio} /> :
+                                        <PlayArrowIcon onClick={() => playAudio(message.audioUrl)} />
+                                )}
                             </div>
                         </div>
                     ))}
@@ -99,6 +99,7 @@ const TalkBox: React.FC = () => {
 export default TalkBox;
 
 const TalkDiv = styled.div`
+    font-family: 'Open Sans', sans-serif;
     :root {
         --body-bg: rgba(
             255,
@@ -154,9 +155,9 @@ const TalkDiv = styled.div`
         // width: 500px;
         // max-width: 500px;
         // max-width: 700px;
-        margin: 25px 10px;
+        margin: 0 10px 70px 10px;
         width: 45vw;
-        height: 90vh;
+        height: 85vh;
         // height: 700px;
         border: 2px solid #ddd;
         border-radius: 5px;
@@ -220,8 +221,8 @@ const TalkDiv = styled.div`
     }
 
     .msg-img {
-        width: 50px;
-        height: 50px;
+        width: 65px;
+        height: 65px;
         margin-right: 10px;
         background: #ddd;
         background-repeat: no-repeat;

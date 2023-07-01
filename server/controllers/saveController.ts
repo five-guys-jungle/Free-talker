@@ -63,6 +63,7 @@ export const saveDialog = async (req: Request, res: Response) => {
                                 img,
                                 side,
                                 text,
+                                audioUrl
                             }: Message) => ({
                                 M: {
                                     playerId: { S: playerId },
@@ -70,6 +71,7 @@ export const saveDialog = async (req: Request, res: Response) => {
                                     img: { S: img },
                                     side: { S: side },
                                     text: { S: text },
+                                    audioUrl: { S: audioUrl },
                                 },
                             })
                         ),
@@ -116,9 +118,13 @@ export const deleteDialog = async (req: Request, res: Response) => {
                 userId: { S: userId },
                 timestamp: { S: timestamp },
             },
+            ReturnValues: "ALL_OLD",
         };
 
         const deleteItem = new DeleteItemCommand(deleteParams);
+        console.log(deleteItem);
+
+        // TODO : deleteItem에서 오디오 URL 받아서, S3 Audio 파일 지우기
         await client.send(deleteItem);
 
         console.log("Successfully deleted dialog");

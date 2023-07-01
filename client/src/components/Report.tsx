@@ -11,6 +11,8 @@ import Button from "@mui/material/Button";
 import SaveIcon from "@material-ui/icons/Save";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { IconButton } from "@material-ui/core";
+import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+import PauseIcon from '@material-ui/icons/Pause';
 import { scoreState } from "../stores/scoreSlice"
 import { appendMessage, clearMessages } from "../stores/talkBoxSlice";
 import { appendCorrection, clearCorrections } from "../stores/reportSlice";
@@ -20,7 +22,7 @@ import {
   clearSentences,
   setCanRequestRecommend,
 } from "../stores/sentenceBoxSlice";
-import { reportOn, reportOff } from "../stores/reportOnoffSlice"
+import { reportOn, reportOff, buttonClickedOn, buttonClickedOff } from "../stores/reportOnoffSlice"
 import { Pagination, Navigation } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import 'swiper/css';
@@ -34,7 +36,7 @@ import { GAME_STATUS } from "../stores/gameSlice";
 const Report = (data: any) => {
 
   const { playerId, playerNickname, playerTexture } = useSelector((state: RootState) => { return { ...state.user } });
-  
+
   const { presentScene } = useSelector((state: RootState) => {
     return { ...state.presentScene };
   });
@@ -42,6 +44,27 @@ const Report = (data: any) => {
   const { mode } = useSelector((state: RootState) => {
     return { ...state.mode };
   });
+
+  const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
+
+  const playAudio = (audioUrl: string) => {
+    if (currentAudio) {
+      currentAudio.pause();
+      setCurrentAudio(null);
+    }
+
+    const audio = new Audio(audioUrl);
+    audio.onended = () => setCurrentAudio(null);
+    audio.play();
+    setCurrentAudio(audio);
+  };
+
+  const pauseAudio = () => {
+    if (currentAudio) {
+      currentAudio.pause();
+      setCurrentAudio(null);
+    }
+  }
 
   useEffect(() => {
     console.log(playerId)
@@ -95,6 +118,13 @@ const Report = (data: any) => {
         corrections: corrections,
         messages: messages,
       });
+      // store.dispatch(buttonClickedOn());
+      setTimeout(() => { store.dispatch(buttonClickedOn()); }, 500);
+      setTimeout(() => { store.dispatch(buttonClickedOff()); }, 1000);
+      setTimeout(() => { store.dispatch(buttonClickedOn()); }, 1500);
+      setTimeout(() => { store.dispatch(buttonClickedOff()); }, 2000);
+      setTimeout(() => { store.dispatch(buttonClickedOn()); }, 2500);
+      setTimeout(() => { store.dispatch(buttonClickedOff()); }, 3000);
     }
 
     store.dispatch(reportOff());
@@ -103,8 +133,8 @@ const Report = (data: any) => {
     store.dispatch(clearMessages());
     store.dispatch(clearSentences());
 
-    if (presentScene=="airport") store.dispatch(openAirport());
-    else if (presentScene=="usa") store.dispatch(openUSA());
+    if (presentScene == "airport") store.dispatch(openAirport());
+    else if (presentScene == "usa") store.dispatch(openUSA());
   };
   const handleDelete = () => {
     // 커스텀 이벤트 생성
@@ -129,8 +159,8 @@ const Report = (data: any) => {
     store.dispatch(clearCorrections());
     store.dispatch(clearMessages());
     store.dispatch(clearSentences());
-    if (presentScene=="airport") store.dispatch(openAirport());
-    else if (presentScene=="usa") store.dispatch(openUSA());
+    if (presentScene == "airport") store.dispatch(openAirport());
+    else if (presentScene == "usa") store.dispatch(openUSA());
   };
 
   const date = new Date();
@@ -228,61 +258,66 @@ const Report = (data: any) => {
                             </>)
                         } */}
 
-                        <div className="corrections"><span>Corrections</span>
-                        <Swiper
-                        style={{ width: "440px" , height:"100px", marginTop:"35px"}}
-                        modules={[Pagination]}
-                        pagination={{clickable:true}}
-                        >
-                        
-                            <div className="corrections-list">
-                                {corrections.length!==0 && 
-                                corrections.map((correction, index) => (
-                                  <SwiperSlide key={index}>
-                                  {
-                                  <div className="correction-div" style={{marginLeft:"25px"}}>
-                                    <p>User Sentence : {correction.original}</p>
-                                    <p>Corrected Sentence: {correction.correction}</p>
-                                  </div>
-                                  }
-                                  </SwiperSlide>
-                                ))
-                                }
-                            </div>
-                        
-                        </Swiper>
+            <div className="corrections"><span>✔︎ Corrections</span>
+              <Swiper
+                style={{ width: "440px", height: "100px", marginTop: "35px" }}
+                modules={[Pagination]}
+                pagination={{ clickable: true }}
+              >
+
+                <div className="corrections-list">
+                  {corrections.length !== 0 &&
+                    corrections.map((correction, index) => (
+                      <SwiperSlide key={index}>
+                        {
+                          <div className="correction-div" style={{ marginLeft: "25px" }}>
+                            <p>User Sentence : {correction.original}</p>
+                            <p>Corrected Sentence: {correction.correction}</p>
+                          </div>
+                        }
+                      </SwiperSlide>
+                    ))
+                  }
+                </div>
+
+              </Swiper>
+            </div>
+
+            <div className="talks">
+              {messages.length !== 0 &&
+                messages.map((message, index) => (
+                  <div className={`msg ${message.side}-msg`} key={index}>
+                    <div
+                      className="msg-img"
+                      style={{
+                        backgroundImage: `url(${`./assets/characters/single/${message.img}.png`})`,
+                      }}
+                    ></div>
+
+                    <div className="msg-bubble">
+                      <div className="msg-info">
+                        <div className="msg-info-name">
+                          {message.name}
                         </div>
+                      </div>
 
-                        <div className="talks">
-                            {messages.length!==0 &&
-                                messages.map((message, index) => (
-                                    <div className={`msg ${message.side}-msg`} key={index}>
-                                        <div
-                                            className="msg-img"
-                                            style={{
-                                                backgroundImage: `url(${`./assets/characters/single/${message.img}.png`})`,
-                                            }}
-                                        ></div>
+                      <div className="msg-text">{message.text}</div>
+                      {message.audioUrl && (
+                        currentAudio && currentAudio.src === message.audioUrl ?
+                          <PauseIcon onClick={pauseAudio} /> :
+                          <PlayArrowIcon onClick={() => playAudio(message.audioUrl)} />
+                      )}
+                    </div>
+                  </div>
+                ))
+              }
+              {messages.length === 0 &&
+                <center>
+                  <p style={{ textAlign: 'center', marginTop: '50%', fontSize: '20px' }}>Try talk!</p>
+                </center>
+              }
 
-                                        <div className="msg-bubble">
-                                            <div className="msg-info">
-                                                <div className="msg-info-name">
-                                                    {message.name}
-                                                </div>
-                                            </div>
-
-                                            <div className="msg-text">{message.text}</div>
-                                        </div>
-                                    </div>
-                                ))
-                            }
-                            {messages.length===0 &&
-                                <center>
-                                    <p style={{textAlign:'center', marginTop:'50%', fontSize:'20px'}}>Try talk!</p>
-                                </center>
-                            }
-
-                        </div>
+            </div>
           </div>
         </div>
       </div>
@@ -368,9 +403,9 @@ const ReportDiv = styled.div`
         "s4 s5 s5 s6";
   }
   .title h1 {
-    font: 50px/1 "Lexend Peta", cursive;
+    font: 50px/1 "Poppins", cursive;
     // font: 50px/1 "Lobster", cursive;
-    text-shadow: 2px 1px 0 #fbfae8, 5px 4px 0 coral;
+    text-shadow: 2px 1px 0 #fbfae8, 3px 2px 0 coral;
     margin: 0;
     padding: 5px;
     background: rgba(186, 114, 123, 0.5);
@@ -378,9 +413,9 @@ const ReportDiv = styled.div`
     grid-area: s1/s1/s2/s3;
   }
   .title h3 {
-    font: 18px/1 "Lexend Peta", cursive;
+    font: 18px/1 "Poppins", cursive;
     font-weight: bold;
-    margin: 8px;
+    margin: 6px;
     text-align: right;
     grid-area: s6;
   }
@@ -413,12 +448,13 @@ const ReportDiv = styled.div`
   }
   .results__name {
     padding: 5px 5px 2px;
-    font: 14px/1.5 "Gasoek One", cursive;
+    font: 16px/1 "Poppins", cursive;
+    font-weight:900;
     border-bottom: 2px solid #111;
   }
   .results__list {
+    font: 16px/1.5 "MICEGothic Bold", cursive;
     padding: 8px;
-    font-size: 14px/1.5;
     line-height: 0.9;
   }
   .results p {
@@ -441,6 +477,7 @@ const ReportDiv = styled.div`
     text-align: center;
     font-size: 30px;
     color: blue;
+    font-family: "Gochi Hand", sans-serif;
   }
   .results .highlighted .text {
     margin-top: 5px;
@@ -468,11 +505,12 @@ const ReportDiv = styled.div`
     border-width: 0 2px 2px;
     margin: 35px 20px 0 0;
     position: relative;
+    font-family: Open Sans;
   }
   .corrections span {
     display: block;
-    margin: -25px 22px;
-    font: 32px "Lexend Peta", cursive;
+    margin: -12px 0px -33px 0px;
+    font: 32px "Open Sans", cursive;
     // text-shadow: 2px 1px 0 #fbfae8, 5px 4px 0 coral;
   }
   // .corrections span:before {
@@ -524,7 +562,7 @@ const ReportDiv = styled.div`
     padding: 7px 7px 5px;
   }
   .Character__title {
-    font: 4px "Lexend Peta", cursive;
+    font: 15px "MaplestoryOTFLight", cursive;
   }
   .Character__amount {
     font: 19px "Gochi Hand", cursive;
@@ -539,6 +577,7 @@ const ReportDiv = styled.div`
     background: rgba(239, 184, 186, 0.4);
     box-shadow: 3px 3px 0 0 rgba(231, 149, 152, 0.7);
     font: 16px/1 "Lexend Peta", cursive;
+    text-align:center;
   }
 
   .talks {
@@ -551,6 +590,7 @@ const ReportDiv = styled.div`
     height:100%
     grid-column: 1/span 2;
     overflow: auto;
+    font-family:Open Sans;
   }
 
 
@@ -633,4 +673,32 @@ const ReportDiv = styled.div`
         margin: 0 0 0 10px;
     }
 
+
+
+    @keyframes throw{
+      0%{
+        transform: translate(0, 0);
+      }
+      50%{
+        transform: translate(0, -30px) rotate(-10deg);
+      }
+      60%{
+        transform: translate(0, -40px) rotate(-30deg);
+      }
+      70%{
+        transform: translate(-5px, -50px) rotate(-40deg) scale(1);
+        opacity: 1;
+      }
+      80%{ 
+        transform: translate(-10px, -60px) rotate(-60deg) scale(.9);
+        opacity: 1;
+      }
+      90%{
+        transform: translate(-20px, -50px) rotate(-100deg) scale(.5);
+        opacity: .8;
+      }
+      100%{
+        transform: translate(-30px, -20px) rotate(-80deg) scale(.4);
+        opacity: 0;
+      }
 `

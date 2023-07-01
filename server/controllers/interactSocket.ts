@@ -2,6 +2,7 @@ import { Server as SocketIOServer, Socket } from "socket.io";
 import fs from "fs";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
+import { Readable } from "stream";
 
 import { ConversationChain } from "langchain/chains";
 import {
@@ -10,11 +11,11 @@ import {
     SystemMessagePromptTemplate,
     MessagesPlaceholder,
 } from "langchain/prompts";
-import { BufferMemory } from "langchain/memory";
 import { preDefinedPrompt } from "../models/Prompt";
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { RedisChatMessageHistory } from "langchain/stores/message/redis";
 import { ChainValues } from "langchain/dist/schema";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import {
     convertSpeechToText,
     textCompletion,
@@ -32,10 +33,13 @@ export function interactSocketEventHandler(socket: Socket) {
     let npcSentence: string;
     console.log("Interaction socket connected, socketid: ", socket.id);
 
-    socket.on("dialogStart", async (npcName: string) => {
+    const s3Client = new S3Client({ region: "ap-northeast-2" });
+    socket.on("dialogStart", async (npcName: string, level: string) => {
         console.log("dialogStart");
+
+
         // 소켓이 연결되면, 유저와 NPC 간의 Conversation Chain을 생성한다.
-        await createChain(npcName)
+        await createChain(npcName, level)
             .then((res) => {
                 chain = res;
                 console.log("chain 생성 완료");
@@ -84,106 +88,114 @@ export function interactSocketEventHandler(socket: Socket) {
             npcName: string;
             audioDataBuffer: ArrayBuffer;
         }) => {
-            /* ---------------------------------------------------------------------------------------  */
-            // 소켓이 연결되고 처음으로 유저가 오디오를 입력하면, 유저와 NPC 간의 Conversation Chain을 생성한다.
-            // if (count++ == 0) {
-            //     createChain(data.npcName) //
-            //         .then((res) => {
-            //             chain = res;
-            //             console.log("chain 생성 완료");
-            //         })
-            //         .catch((err) => {
-            //             console.log("chain 생성 실패");
-            //         });
-            // }
-            /* ---------------------------------------------------------------------------------------  */
-            // const chain: ConversationChain = await createChain(data.npcName);
-            // console.log("audioSend, data: ", data);
 
-            const buffer = Buffer.from(data.audioDataBuffer);
-            const filePath = path.join(
-                __dirname,
-                `../audio/user_audio/${data.userNickname}_${
-                    data.npcName
-                }_${uuidv4()}.wav`
-            );
-            fs.writeFileSync(filePath, buffer); // 동기적으로 실행
+            try {
+                // Conver ArrayBuffer to Buffer
+                const buffer = Buffer.from(data.audioDataBuffer);
 
-            let inputText: string;
-            let outputText: string;
-            let correctedText: string;
-            let recommendedText: string;
-            let response: any;
+                const audioFileName = `${data.userNickname}_${data.npcName}_${uuidv4()}.wav`;
+                // const filePath = path.join(
+                //     __dirname,
+                //     `../audio/user_audio/${audioFileName}`
+                // );
 
-            // 입력 음성 " "이면 -> "다시 말씀해주세요" 출력
-            // NPC 대답 돌아올 때까지 R, E block 되어 있으므로 풀어줘야 함
+                // fs.writeFileSync(filePath, buffer); // 동기적으로 실행
 
-            await convertSpeechToText(filePath) //
-                .then(async (res) => {
-                    inputText = res;
-                    socket.emit("speechToText", res);
-                    if (inputText !== "") {
-                        console.log("chain 호출 시작");
-                        var startTime: any = new Date();
+                // Define the bucket name and file name
+                const bucketName = process.env.S3_BUCKET_NAME;
 
-                        const chainOutput = await chain
-                            .call({ input: inputText })
-                            .then(async (res) => {
-                                var endTime: any = new Date();
-                                var elapsedTime: any = endTime - startTime; // 밀리초 단위
+                const uploadParams = {
+                    Bucket: bucketName,
+                    Key: audioFileName,
+                    Body: buffer,
+                    ContentType: 'audio/wav',
+                }
 
-                                console.log(`실행 시간: ${elapsedTime}ms`);
-                                outputText = res.response;
-                                socket.emit("npcResponse", outputText);
+                await s3Client.send(new PutObjectCommand(uploadParams));
+                const s3Url: string = `https://${bucketName}.s3.amazonaws.com/${audioFileName}`;
 
-                                response = await convertTexttoSpeech(
-                                    inputText,
-                                    outputText,
-                                    data.npcName
-                                )
-                                    .then((res) => {
-                                        socket.emit("totalResponse", res);
-                                        console.log("Total response: ", res);
-                                    })
-                                    .catch((err) => {
-                                        console.log(
-                                            "convert Text to Speech error: ",
-                                            err
-                                        );
-                                    });
-                                grammarCorrection(inputText).then(
-                                    async (res) => {
-                                        if (
-                                            !checkIfSoundsGood(res) &&
-                                            !compareWithCorrectedText(
-                                                inputText,
-                                                res
-                                            )
-                                        ) {
-                                            socket.emit("grammarCorrection", {
-                                                userText: inputText,
-                                                correctedText: res,
-                                            });
+                console.log(`${audioFileName} is uploaded to S3 Bucket.`);
+                console.log(`s3Url : ${s3Url}`);
+
+                let inputText: string;
+                let outputText: string;
+                let correctedText: string;
+                let recommendedText: string;
+                let response: any;
+
+                // 입력 음성 " "이면 -> "다시 말씀해주세요" 출력
+                // NPC 대답 돌아올 때까지 R, E block 되어 있으므로 풀어줘야 함
+
+                await convertSpeechToText(s3Url) //
+                    .then(async (res: any) => {
+                        inputText = res.transcription;
+                        socket.emit("speechToText", res);
+                        if (inputText !== "") {
+                            console.log("chain 호출 시작");
+                            var startTime: any = new Date();
+
+                            const chainOutput = await chain
+                                .call({ input: inputText })
+                                .then(async (res) => {
+                                    var endTime: any = new Date();
+                                    var elapsedTime: any = endTime - startTime; // 밀리초 단위
+
+                                    console.log(`실행 시간: ${elapsedTime}ms`);
+                                    outputText = res.response;
+
+                                    // socket.emit("npcResponse", outputText);
+
+                                    response = await convertTexttoSpeech(
+                                        inputText,
+                                        outputText,
+                                        data.npcName
+                                    )
+                                        .then((res) => {
+                                            socket.emit("totalResponse", res);
+                                            console.log("Total response: ", res);
+                                        })
+                                        .catch((err) => {
                                             console.log(
-                                                "socket emitted grammarCorrection."
+                                                "convert Text to Speech error: ",
+                                                err
                                             );
-                                            return res;
+                                        });
+                                    grammarCorrection(inputText).then(
+                                        async (res) => {
+                                            if (
+                                                !checkIfSoundsGood(res) &&
+                                                !compareWithCorrectedText(
+                                                    inputText,
+                                                    res
+                                                )
+                                            ) {
+                                                socket.emit("grammarCorrection", {
+                                                    userText: inputText,
+                                                    correctedText: res,
+                                                });
+                                                console.log(
+                                                    "socket emitted grammarCorrection."
+                                                );
+                                                return res;
+                                            }
                                         }
-                                    }
-                                );
-                            })
-                            .catch((err) => {
-                                socket.emit("speechToText", "chain call error");
-                                console.log("chain call error: ", err);
-                            });
-                    }
+                                    );
+                                })
+                                .catch((err) => {
+                                    socket.emit("speechToText", { transcription: "chain call error" });
+                                    console.log("chain call error: ", err);
+                                });
+                        }
 
-                    return res;
-                }) //
-                .catch((err) => {
-                    socket.emit("speechToText", "convertSpeechToText Error");
-                    console.log("convert Speech to Text error: ", err);
-                });
+                        return res;
+                    }) //
+                    .catch((err) => {
+                        socket.emit("speechToText", { transcription: "chain call error" });
+                        console.log("convert Speech to Text error: ", err);
+                    });
+            } catch (err) {
+                console.log(err);
+            }
         }
     );
     socket.on(
