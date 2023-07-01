@@ -368,11 +368,12 @@ export default class USAScene extends Phaser.Scene {
                                     `${this.player1!.texture.key}_sit_left`,
                                     true
                                 );
-                                // console.log("이게 들어와??")
-                                // this.allPlayers[this.socket!.id].seat = true;
-                                // this.allPlayers[this.socket!.id].x = 1013;
-                                // this.allPlayers[this.socket!.id].y = 804;
-                                // this.player1!.setPosition(1013, 804);
+                                console.log("이게 들어와??")
+                                this.allPlayers[this.socket!.id].seat = true;
+                                this.allPlayers[this.socket!.id].x = 1013;
+                                this.allPlayers[this.socket!.id].y = 804;
+                                this.player1!.setPosition(1013, 804);
+                                
                                 this.seatEvent = true;
                             });
 
@@ -1074,8 +1075,8 @@ export default class USAScene extends Phaser.Scene {
                         socketId: this.socket!.id,
                         nickname: this.allPlayers[this.socket!.id].nickname,
                         playerTexture: this.allPlayers[this.socket!.id].playerTexture,
-                        x: this.player1!.x,
-                        y: this.player1!.y,
+                        x: this.allPlayers[this.socket!.id].x,
+                        y: this.allPlayers[this.socket!.id].y,
                         scene: this.allPlayers[this.socket!.id].scene,
                         dash: this.allPlayers[this.socket!.id].dash,
                         seat: this.allPlayers[this.socket!.id].seat,
@@ -1087,7 +1088,12 @@ export default class USAScene extends Phaser.Scene {
             this.socket!.on("otherseat", (playerInfo: PlayerInfo) => {
                 if (playerInfo.scene == "USAScene") {
                     this.allPlayers[playerInfo.socketId].seat = playerInfo.seat;
-                    console.log("otherseat", playerInfo);
+                    this.allPlayers[playerInfo.socketId].x = playerInfo.x;
+                    this.allPlayers[playerInfo.socketId].y = playerInfo.y;
+                    // console.log("otherseat", playerInfo);
+                    this.allPlayers[playerInfo.socketId].sprite!.setX(playerInfo.x);
+                    this.allPlayers[playerInfo.socketId].sprite!.setY(playerInfo.y);
+
                 }
             });
 
@@ -1447,7 +1453,7 @@ export default class USAScene extends Phaser.Scene {
                                     this.createPlayer(otherPlayers[key]);
                                 // playerSprite.setCollideWorldBounds(true);
                                 if (otherPlayers[key].seat) {
-                                    // console.log("he is seated")
+                                    console.log("he is seated")
                                     //     `${otherPlayers[key].playerTexture}_idle_down`;
                                     playerSprite.anims.play(
                                         `${otherPlayers[key].playerTexture}_sit_left`,
