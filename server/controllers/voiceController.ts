@@ -11,6 +11,21 @@ const freeRoom_Num: {
 	coach_park: 0,
 }
 
+class seat_position {
+	first_position: number;
+	second_position: number;
+  
+	constructor(first_position: number, second_position: number) {
+	  this.first_position = first_position;
+	  this.second_position = second_position;
+	}
+}
+	const seat_position_list: {
+		[key: string]: seat_position;
+	} = {
+		coach_park: new seat_position(0, 0),
+	}
+
 // freedialogsocketEventHandler 함수 수정
 export function freeDialogSocketEventHandler(socket: Socket) {
 	console.log(socket.id, "connection---------------------------------");
@@ -23,20 +38,47 @@ export function freeDialogSocketEventHandler(socket: Socket) {
 			freeRoom_Num[place_name]++;
 			socket.emit("roomFull");
 			return;
-		
 		}
-
 		else {
-
 			freeRoom_Num[place_name]++;
 			socket.emit("joined");
 			console.log("freeRoom_Num: ", freeRoom_Num[place_name]);
 			// socket.emit("joined",  freeRoom_Num[place_name] );
 		}
-
+		switch (place_name) {
+			case "coach_park":
+				if (seat_position_list[place_name].first_position == 0 && seat_position_list[place_name].second_position == 0) {
+					seat_position_list[place_name].first_position = 1;
+					console.log("-111111111111111`11111111111")
+					socket.emit("seat_position", 1);
+				}
+				else if (seat_position_list[place_name].first_position == 1 && seat_position_list[place_name].second_position == 0) {
+					seat_position_list[place_name].second_position = 1;
+					socket.emit("seat_position", 2);
+				}
+				else if (seat_position_list[place_name].first_position == 0 && seat_position_list[place_name].second_position == 1) {
+					socket.emit("seat_position", 1);
+				}
+				break;
+				
 
 		
-	});
+	}});
+	socket.on("standup", (data) =>{
+		console.log("standup: ", data);
+		const  place_name  = data.place_name;
+		if (data.seat_position ==1){
+			seat_position_list[place_name].first_position --; 
+
+		}
+		else if (data.seat_position ==2){
+			seat_position_list[place_name].second_position --;
+		}
+		console.log("standup")
+		
+		console.log("standup: ", seat_position_list);
+	})
+			
 	socket.on("disconnect", () => {
 		//   socket.broadcast.emit("callEnded");
 		  console.log("disconnected~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");

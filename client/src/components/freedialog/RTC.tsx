@@ -43,7 +43,8 @@ const FreeDialog = () => {
 
 	
 	const {playerNickname, playerTexture} = useSelector((state: RootState) => {return {...state.user}});
-
+	let seatPosition : number
+	let place_name : string
     useEffect(() => {
 		socket.current = io(socketNamespace);
 		// socket.current = io("http://localhost:5000/freedialog/airport_chair1");
@@ -55,8 +56,9 @@ const FreeDialog = () => {
             }
         })
 		
-		const place_name = socketNamespace.substring(socketNamespace.lastIndexOf("/") + 1);
+		let place_name = socketNamespace.substring(socketNamespace.lastIndexOf("/") + 1);
 		console.log("place_name:::", place_name);
+		place_name = place_name;
 		// socket.current!.emit("join", { place_name });
 
 		socket.current!.emit("join", { place_name });
@@ -76,17 +78,22 @@ const FreeDialog = () => {
 			});
 			window.dispatchEvent(clickEvent);
 		})
+		
 
-		socket.current!.on("joined", () => {
-			console.log("joined!!!!!!!!!!!!!!!!")
+		socket.current!.on("seat_position", (seat_position: number) => {
+			console.log("seat_position:::", seat_position);
+			seatPosition = seat_position;
 			const seatEvent = new CustomEvent('seat', {
-				detail: { message: "seat"}
+				detail: { 
+					message: "seat",
+					seat_position: seat_position,
+					place_name: place_name
+				}
 			});
 			window.dispatchEvent(seatEvent);
 		}
 			)
 
-		console.log("socket is connected: ", socket.current!.id);
 		
 			
 			socket.current!.emit("otherchar", {playerNickname: playerNickname, playerTexture:playerTexture});
@@ -144,7 +151,14 @@ const FreeDialog = () => {
 			}
 		});
 		return () => {
+			console.log("disconnect!!!!!")
+			console.log("disconnect!!!!!", seatPosition, place_name)
+			socket.current!.emit("standup", { 
+				seat_position: seatPosition,
+				place_name: place_name
+			  });
 			socket.current!.disconnect();
+			
 		}
 	  
 	
@@ -206,6 +220,10 @@ const FreeDialog = () => {
 			connectionRef.current.destroy();
 			socket.current!.emit("callEnded"); // 서버로 callEnded 이벤트 전송
 			socket.current!.emit("leaveCallEvent", { to: caller });
+			socket.current!.emit("standup", { 
+				seatPosition,
+				place_name
+			  });
 			// Airport 씬으로 이벤트 전달
 			window.dispatchEvent(new Event("exitcall"));
 			socket.current!.disconnect();

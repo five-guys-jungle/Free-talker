@@ -10,6 +10,9 @@ import {
     PlayerInfo,
     PlayerInfoDictionary,
 } from "../characters/Player";
+import {
+    TalkingZone
+} from "../characters/TalkingZone";
 
 // import { playerNicknameState } from '../recoil/user/atoms';
 import { createCharacterAnims } from "../anims/CharacterAnims";
@@ -282,6 +285,13 @@ export default class USAScene extends Phaser.Scene {
         this.tilemapLayerList.push(interiors_32);
         this.tilemapLayerList.push(interiors_33);
 
+        let USA_talkingzone: TalkingZone = {
+            "coach_park": {
+                first_seat: {x: 1013, y: 804},
+                second_seat: {x: 1013, y: 837}
+            }
+        };
+
         createCharacterAnims(this.anims);
         if (this.socket) {
             this.socket.disconnect();
@@ -362,20 +372,33 @@ export default class USAScene extends Phaser.Scene {
                             this.cursors!.up.enabled = false;
                             this.cursors!.down.enabled = false;
                             valve_E = false;
-                            window.addEventListener("seat", (e: Event) => {
+                            window.addEventListener("seat", (event: any) => {
+                                console.log("event.detail: ", event.detail);
                                 console.log("seat event listener");
+                                
                                 this.player1!.anims.play(
                                     `${this.player1!.texture.key}_sit_left`,
                                     true
                                 );
                                 console.log("이게 들어와??")
+                                console.log("뭐가 찍혀" , event.detail.seat_position)
                                 this.allPlayers[this.socket!.id].seat = true;
-                                this.allPlayers[this.socket!.id].x = 1013;
-                                this.allPlayers[this.socket!.id].y = 804;
-                                this.player1!.setPosition(1013, 804);
+                                if (event.detail.seat_position === 1) {
+                                    console.log("((((((((((((((((((((((((((((((((((((((((((((((((((((((((")
+                                    console.log("x좌표 뭐들어와!!!!!",USA_talkingzone[event.detail.place_name].first_seat.x)
+                                    this.allPlayers[this.socket!.id].x = USA_talkingzone[event.detail.place_name].first_seat.x;
+                                    this.allPlayers[this.socket!.id].y = USA_talkingzone[event.detail.place_name].first_seat.y;
+                                    this.player1!.setPosition(USA_talkingzone[event.detail.place_name].first_seat.x, USA_talkingzone[event.detail.place_name].first_seat.y);
+                                }
+                                else if (event.detail.seat_position === 2) {
+                                    console.log("x좌표 뭐들어와!!!!!",USA_talkingzone[event.detail.place_name].second_seat.x)
+                                    this.allPlayers[this.socket!.id].x = USA_talkingzone[event.detail.place_name].second_seat.x;
+                                    this.allPlayers[this.socket!.id].y = USA_talkingzone[event.detail.place_name].second_seat.y;
+                                    this.player1!.setPosition(USA_talkingzone[event.detail.place_name].second_seat.x, USA_talkingzone[event.detail.place_name].second_seat.y);
+                                }
                                 
                                 this.seatEvent = true;
-                            });
+                            },false);
 
                             window.addEventListener("exitcall", (e: Event) => {
                                 console.log("exitcall event listener");
