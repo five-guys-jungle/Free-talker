@@ -333,13 +333,14 @@ const RTCaudio = () => {
 					<PhoneIcon style={{ fontSize: "3em" }} />
 				</IconButton>
 				<Typography variant="h5" align="center" style={{ fontFamily: "Arial", fontWeight: "bold" }}>통화를 종료하면 맵으로 돌아갑니다.</Typography>
-			</div>
-				) : receivingCall && !callAccepted ? null : (
+				</div>
+			) : receivingCall && !callAccepted ? null : (
 				<div
 					className="caller"
 					style={{ 
 						display: "inline-flex",
-					alignItems: "center", 
+						alignItems: "center", 
+						bottom: "5px"
 					}}>
 					<IconButton
 						className="call-btn"

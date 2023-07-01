@@ -238,32 +238,31 @@ const FreeDialog = () => {
 					
 					<div 
 						className="call-button" 
-						style={{ position: 'fixed', textAlign: 'center', top: '5px'}}>
+						style={{ position: 'fixed', textAlign: 'center', top: '1.5%'}}>
 						
 						{callAccepted && !callEnded ? (
-							<div 
+						<div 
 							className="caller" 
 							style={{ 
 								display: 'inline-flex',
-								 alignItems: 'center', 
-								 bottom : '5px' 
-								 }}>
+								alignItems: 'center', 
+						}}>
 
 							<IconButton 
 								color="secondary" 
 								aria-label="endcall" 
 								onClick={leaveCall}>
-								<PhoneIcon fontSize="large" /> 
+								<PhoneIcon style={{ fontSize: "2em" }} /> 
 							</IconButton>
-							<Typography variant="h5" align="center" style={{ fontFamily: "Arial", fontWeight: "bold" }}>통화가 종료되면 맵으로 돌아갑니다.</Typography>
+							<Typography variant="h5" align="center" style={{ fontFamily: "Arial", fontWeight: "bold" }}>통화를 종료하면 맵으로 돌아갑니다.</Typography>
 							</div>
 						) : receivingCall && !callAccepted ? null : (
 							<div
 								className="caller"
 								style={{ 
-								display: "inline-flex",
-								alignItems: "center", 
-								bottom: "5px" 
+									display: "inline-flex",
+									alignItems: "center", 
+									bottom: "5px" 
 							}}>
 								<IconButton
 									className="call-btn"
@@ -272,13 +271,13 @@ const FreeDialog = () => {
 									onClick={() => callUser(idToCall)}>
 									<PhoneIcon style={{ fontSize: "2em" }} />
 								</IconButton>
-								<Typography variant="h5" align="center" style={{ fontFamily: "Arial", fontWeight: "bold" }}>전화를 걸면 화상 통화가 시작됩니다</Typography>
+								<Typography variant="h5" align="center" style={{ fontFamily: "Arial", fontWeight: "bold" }}>Make a call</Typography>
 							</div>
 						  )}
 						  
 						{receivingCall && !callAccepted && (
 							<div className="caller" style={{ display: 'inline-flex', alignItems: 'center', bottom : '5px' }}>
-								<Typography variant="h5" align="center" style={{ fontFamily: "Arial", fontWeight: "bold" }}> 전화를 받아주세요 ... </Typography>
+								<Typography variant="h5" align="center" style={{ fontFamily: "Arial", fontWeight: "bold" }}> Please answer the call ... </Typography>
 								<Button variant="contained" color="primary" onClick={answerCall} style={{marginLeft: '10px'}}>
 									Answer
 								</Button>
