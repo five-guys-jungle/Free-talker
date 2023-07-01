@@ -86,9 +86,9 @@ const UserBox: React.FC = () => {
 
   const renderOtherNickname = () => {
     if (otherNickname) {
-      return <Typography variant="h4" align="center">{otherNickname}</Typography>
+      return <Typography variant="h4" align="center" fontFamily={"MaplestoryOTFLight"}>{otherNickname}</Typography>
     } else {
-      return <Typography variant="h5" align="center">대화 상대를 <div></div> 기다려 주세요</Typography>
+      return <Typography variant="h5" align="center" fontFamily={"MaplestoryOTFLight"}>대화 상대를 <div></div> 기다려 주세요</Typography>
     }
   };
 
@@ -101,7 +101,7 @@ const UserBox: React.FC = () => {
       <Box display="flex" flexDirection="row" >
         <AvatarContainer>
           <Image src={`../assets/characters/single/${playerTexture}.png`} alt={fix_playerTexture} />
-          <Typography variant="h4" align="center">{playerNickname}</Typography>
+          <Typography variant="h4" align="center" fontFamily={"MaplestoryOTFLight"}>{playerNickname}</Typography>
         </AvatarContainer>
         <AvatarContainer>
           {renderUserAvatar()}
@@ -118,6 +118,7 @@ const UserBox: React.FC = () => {
           padding: '5px',
           borderRadius: '5px'
         }}
+        fontFamily={"MaplestoryOTFLight"}
       >
         EXIT : <span style={{ color: "#C70039" }}>(E)</span><div></div>통화 중 E키를 누르면 맵으로 돌아갑니다.
       </Typography>

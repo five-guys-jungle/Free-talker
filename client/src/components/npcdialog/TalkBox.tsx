@@ -99,6 +99,7 @@ const TalkBox: React.FC = () => {
 export default TalkBox;
 
 const TalkDiv = styled.div`
+    font-family: 'Open Sans', sans-serif;
     :root {
         --body-bg: rgba(
             255,
