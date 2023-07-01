@@ -11,7 +11,7 @@ export class Player {
     dashVelocity: number = 600;
     dash: boolean = false;
     seat: boolean = false;
-
+    level: string = "intermediate";
     constructor(
         socketId: string,
         name: string,
@@ -19,7 +19,8 @@ export class Player {
         sprite: Phaser.Physics.Arcade.Sprite,
         x: number,
         y: number,
-        scene: string
+        scene: string,
+
     ) {
         this.socketId = socketId;
         this.nickname = name;

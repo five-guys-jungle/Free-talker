@@ -56,7 +56,7 @@ export const upload = multer({ storage });
 export async function interact(req: Request, res: Response): Promise<void> {
     console.log("NPC Interaction Start.");
     const voiceFile = req.file;
-    const chain = await createChain("ImmigrationOfficer");
+    const chain = await createChain("ImmigrationOfficer", "intermediate");
     if (voiceFile && voiceFile.size > 0) {
         // Convert speech to text
         const audioFilePath = voiceFile.path;
@@ -117,7 +117,7 @@ export async function convertSpeechToText(
     // Implement your logic to convert speech to text using the appropriate libraries or APIs
 }
 
-export async function createChain(npcName: string): Promise<ConversationChain> {
+export async function createChain(npcName: string, level: string): Promise<ConversationChain> {
     const chat = new ChatOpenAI({
         modelName: "gpt-3.5-turbo",
         temperature: 0,
@@ -131,7 +131,7 @@ export async function createChain(npcName: string): Promise<ConversationChain> {
         }
         const chatPrompt = ChatPromptTemplate.fromPromptMessages([
             SystemMessagePromptTemplate.fromTemplate(
-                preDefinedPrompt[npcName].message
+                preDefinedPrompt[npcName].message(level)
             ),
             new MessagesPlaceholder("history"),
             HumanMessagePromptTemplate.fromTemplate("{input}"),
@@ -208,7 +208,10 @@ export async function convertTexttoSpeech(
     npcName: string = "ImmigrationOfficer"
 ): Promise<Object> {
     try {
+        const ssmlText: string = `<speak><prosody rate="low" pitch="low">${outputText}</prosody></speak> `;
+        console.log(`convertTexttoSpeech, inputText: ${inputText}, outputText: ${outputText}`);
         const request: any = {
+            // input: { ssml: ssmlText },
             input: { text: outputText },
             voice: {
                 languageCode: "en-US",

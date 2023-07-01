@@ -33,6 +33,7 @@ import { setRecord, setMessage, setMessageColor } from "../stores/recordSlice";
 import { reportOn, reportOff } from "../stores/reportOnoffSlice";
 import { handleScene } from "./common/handleScene";
 import { RootState } from "../stores/index";
+import { changeLevel } from "../stores/levelSlice";
 
 import dotenv from "dotenv";
 import Report from "../components/Report";
@@ -46,6 +47,7 @@ const serverUrl: string = process.env.REACT_APP_SERVER_URL!;
 
 let chunks: BlobPart[] = [];
 let audioContext = new window.AudioContext();
+let DB_URL: string = process.env.REACT_APP_SERVER_URL!;
 
 export default class AirportScene extends Phaser.Scene {
     background!: Phaser.GameObjects.Image;
@@ -75,7 +77,7 @@ export default class AirportScene extends Phaser.Scene {
     isNpcSocketConnected: boolean = false;
     npcList: npcInfo[] = [];
     alreadyRecommended: boolean = false;
-
+    level: string = "intermediate";
     speed: number = 200;
     dashSpeed: number = 600;
     tilemapLayerList: Phaser.Tilemaps.TilemapLayer[] = [];
@@ -89,6 +91,7 @@ export default class AirportScene extends Phaser.Scene {
 
     constructor() {
         super("AirportScene");
+
     }
 
     preload() {
@@ -99,6 +102,7 @@ export default class AirportScene extends Phaser.Scene {
         this.playerId = data.playerId;
         this.userNickname = data.playerNickname;
         this.playerTexture = data.playerTexture;
+        this.level = data.level;
         console.log("data: ", data);
     }
     gamePause(pausedX: number, pausedY: number) {
@@ -110,6 +114,7 @@ export default class AirportScene extends Phaser.Scene {
     gameResume(pausedX: number, pausedY: number) {
         console.log("Scene is Resumed: Airport");
         console.log("allPlayer in Resumed: ", this.allPlayers);
+        console.log("this.socket in Resumed: ", this.socket);
         // if(this.intervalId){
         //     clearInterval(this.intervalId);
         //     this.intervalId = null;
@@ -143,12 +148,32 @@ export default class AirportScene extends Phaser.Scene {
     }
 
     create() {
+        window.onbeforeunload = async () => {
+            console.log("beforeunload");
+            const body = JSON.stringify({ userNickname: this.userNickname })
+            fetch(`${DB_URL}/auth/logout`, {
+                method: 'POST', // or 'DELETE' based on your endpoint
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: body
+            }).then((response) => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                console.log("Successful logout");
+            }).catch((error) => {
+                console.error("Error:", error);
+            });
+
+        };
+
         this.background = this.add
             .image(this.initial_x, this.initial_y, "background")
             .setDisplaySize(this.cameras.main.width * 4, this.cameras.main.height * 4)
             .setOrigin(0.5, 0.5);
 
-        // this.game.events.on('pause', this.gamePause);
+        this.game.events.on('pause', this.gamePause);
         this.events.on("wake", this.onSceneWake, this);
         this.events.on("sleep", this.onSceneSleep, this);
 
@@ -218,7 +243,7 @@ export default class AirportScene extends Phaser.Scene {
             this.socket.disconnect();
         }
         this.gameSocketEventHandler();
-
+        store.dispatch(toggleIsClicked());
         this.interactionSprite = this.physics.add.sprite(0, 0, "arrowDown");
         this.interactionSprite.setVisible(false);
         this.interactionSprite.setScale(1.3);
@@ -258,6 +283,20 @@ export default class AirportScene extends Phaser.Scene {
         window.addEventListener('reportClose', () => {
             console.log("reportClose event listener");
             this.isReportOn = false;
+        });
+        this.level = "intermediate";
+
+        window.addEventListener('levelChanged', (event) => {
+            if (this.level === "intermediate") {
+                this.level = "advanced";
+                // store.dispatch(changeLevel())
+            } else if (this.level === "advanced") {
+                this.level = "beginner";
+                // store.dispatch(changeLevel())
+            } else if (this.level === "beginner") {
+                this.level = "intermediate";
+            }
+            console.log(`level : ${this.level}`);
         });
         this.input.keyboard!.on("keydown-E", async () => {
             if (this.player1 === null || this.player1 === undefined) {
@@ -353,6 +392,7 @@ export default class AirportScene extends Phaser.Scene {
                                 playerId: this.playerId,
                                 playerNickname: this.userNickname,
                                 playerTexture: this.playerTexture,
+                                level: this.level
                             });
                         });
                         gate.play("gateAnim"); // 생성한 sprite에 애니메이션 적용
@@ -392,7 +432,6 @@ export default class AirportScene extends Phaser.Scene {
                             store.dispatch(clearCorrections());
                             store.dispatch(clearMessages());
                             store.dispatch(clearSentences());
-                            store.dispatch(toggleIsClicked());
                             this.socket2 = io(`${serverUrl}/interaction`);
                             this.socket2.on("connect", () => {
                                 const recommendBtnClicked = (e: Event) => {
@@ -434,7 +473,7 @@ export default class AirportScene extends Phaser.Scene {
                                 countUserSpeech = 0;
                                 this.isNpcSocketConnected = true;
                                 this.interacting = true;
-                                this.socket2!.emit("dialogStart", npcInfo.name);
+                                this.socket2!.emit("dialogStart", npcInfo.name, this.level);
                                 this.isAudioPlaying = true;
                                 // TODO : npcFirstResponse 받고, audio 재생하는 동안 E, D키 비활성화 및 '응답중입니다. 잠시만 기다려주세요' 출력
                                 this.socket2!.on("npcFirstResponse", (response: any) => {
@@ -609,7 +648,7 @@ export default class AirportScene extends Phaser.Scene {
                                         // TODO : Store에 SentenceBox 상태정의하고 dispatch
                                         store.dispatch(clearSentences());
                                         responses.forEach((response, index) => {
-                                            
+
                                             store.dispatch(
                                                 appendSentence({
                                                     _id: index,
@@ -941,7 +980,7 @@ export default class AirportScene extends Phaser.Scene {
             playerSprite,
             playerInfo.x,
             playerInfo.y,
-            playerInfo.scene
+            playerInfo.scene,
         );
 
         // Add the sprite to the Phaser scene
@@ -1074,7 +1113,17 @@ export default class AirportScene extends Phaser.Scene {
         this.socket = io(serverUrl);
 
         this.socket.on("connect", () => {
-            console.log("connect, socket.id: ", this.socket!.id);
+            console.log(`connect, socket.id: ${this.socket!.id}, 
+            this.socket.recovered: ${this.socket!.recovered}`);
+            if (this.socket!.recovered) {
+                this.scene.resume();
+            }
+            if (this.player1) {
+                this.beforeSleepX = this.player1.x;
+                this.beforeSleepY = this.player1.y;
+                this.player1.destroy();
+                this.player1 = null;
+            }
             this.player1 = this.createPlayer({
                 socketId: this.socket!.id,
                 nickname: this.userNickname,
@@ -1161,7 +1210,7 @@ export default class AirportScene extends Phaser.Scene {
 
             this.socket!.on("playerMoved", (playerInfo: PlayerInfo) => {
                 if (playerInfo.scene === "AirportScene") {
-                    console.log("playerMoved, playerInfo: ", playerInfo);
+                    // console.log("playerMoved, playerInfo: ", playerInfo);
                     if (playerInfo.socketId in this.allPlayers) {
                         console.log("already exist, so just set position");
                         this.allPlayers[playerInfo.socketId].x = playerInfo.x;
@@ -1194,6 +1243,7 @@ export default class AirportScene extends Phaser.Scene {
                 }
             });
             this.socket!.on("disconnect", (reason: string) => {
+                this.scene.pause();
                 console.log("client side disconnect, reason: ", reason);
                 // window.location.reload();
             });

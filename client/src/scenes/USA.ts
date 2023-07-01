@@ -66,6 +66,7 @@ export default class USAScene extends Phaser.Scene {
     playerId: string = "";
     userNickname: string = "";
     playerTexture: string = "";
+    level: string = "intermediate";
 
     userText: Phaser.GameObjects.Text | null = null;
     npcText: Phaser.GameObjects.Text | null = null;
@@ -100,6 +101,7 @@ export default class USAScene extends Phaser.Scene {
         this.playerId = data.playerId;
         this.userNickname = data.playerNickname;
         this.playerTexture = data.playerTexture;
+        this.level = data.level;
         console.log("data: ", data);
     }
 
@@ -113,6 +115,7 @@ export default class USAScene extends Phaser.Scene {
     gameResume(pausedX: number, pausedY: number) {
         console.log("Scene is Resumed: USA");
         console.log("allPlayer in Resumed: ", this.allPlayers);
+        console.log("this.socket in Resumed: ", this.socket);
         // if(this.intervalId){
         //     clearInterval(this.intervalId);
         //     this.intervalId = null;
@@ -150,7 +153,7 @@ export default class USAScene extends Phaser.Scene {
             .image(this.initial_x, this.initial_y * 2, "background")
             .setDisplaySize(this.cameras.main.width * 2, this.cameras.main.height * 6)
             .setOrigin(0.5, 0.5);
-        // this.game.events.on('pause', this.gamePause);
+        this.game.events.on('pause', this.gamePause);
         this.events.on("wake", this.onSceneWake, this);
         this.events.on("sleep", this.onSceneSleep, this);
         // this.add.image(400, 300, "background");
@@ -320,6 +323,8 @@ export default class USAScene extends Phaser.Scene {
             console.log("reportClose event listener");
             this.isReportOn = false;
         });
+
+
         this.input.keyboard!.on("keydown-E", async () => {
             if (this.player1 === null || this.player1 === undefined) {
                 return;
@@ -478,7 +483,19 @@ export default class USAScene extends Phaser.Scene {
                         }
                     } else if (npcInfo.name.includes("gate")) {
                         console.log("liberty");
-                        handleScene(GAME_STATUS.AIRPORT, {});
+                        handleScene(GAME_STATUS.AIRPORT, {
+                            playerId: this.playerId,
+                            playerNickname: this.userNickname,
+                            playerTexture: this.playerTexture,
+                            level: this.level
+                        });
+
+                        // handleScene(GAME_STATUS.USA, {
+                        //     playerId: this.playerId,
+                        //     playerNickname: this.userNickname,
+                        //     playerTexture: this.playerTexture,
+                        //     level: this.level
+                        // }
                     } else {
 
                         if (this.isAudioPlaying) {
@@ -554,7 +571,7 @@ export default class USAScene extends Phaser.Scene {
                                 );
 
                                 this.interacting = true;
-                                this.socket2!.emit("dialogStart", npcInfo.name);
+                                this.socket2!.emit("dialogStart", npcInfo.name, this.level);
                                 this.isAudioPlaying = true;
                                 // TODO : npcFirstResponse 받고, audio 재생하는 동안 E, D키 비활성화 및 '응답중입니다. 잠시만 기다려주세요' 출력
                                 this.socket2!.on("npcFirstResponse", (response: any) => {
@@ -1025,13 +1042,14 @@ export default class USAScene extends Phaser.Scene {
             }
 
             if (this.seatEvent === true) {
+                console.log("seatEvent");
                 this.socket!.emit("seat",
                     {
                         socketId: this.socket!.id,
                         nickname: this.allPlayers[this.socket!.id].nickname,
                         playerTexture: this.allPlayers[this.socket!.id].playerTexture,
-                        x: this.allPlayers[this.socket!.id].x,
-                        y: this.allPlayers[this.socket!.id].y,
+                        x: this.player1!.x,
+                        y: this.player1!.y,
                         scene: this.allPlayers[this.socket!.id].scene,
                         dash: this.allPlayers[this.socket!.id].dash,
                         seat: this.allPlayers[this.socket!.id].seat,
@@ -1073,7 +1091,7 @@ export default class USAScene extends Phaser.Scene {
             playerSprite,
             playerInfo.x,
             playerInfo.y,
-            playerInfo.scene
+            playerInfo.scene,
         );
 
         // Add the sprite to the Phaser scene
@@ -1225,6 +1243,8 @@ export default class USAScene extends Phaser.Scene {
             sprite: null,
             role: "freeTalkingPlace",
         };
+
+        
         interact_sprite1.sprite = this.physics.add.sprite(interact_sprite1.x, interact_sprite1.y, interact_sprite1.texture);
         this.npcList.push(interact_sprite1);
 
@@ -1238,6 +1258,16 @@ export default class USAScene extends Phaser.Scene {
         };
         interact_sprite2.sprite = this.physics.add.sprite(interact_sprite2.x, interact_sprite2.y, interact_sprite2.texture);
         this.npcList.push(interact_sprite2);
+
+        let interact_sprite3: npcInfo = {
+            name: "taxi",
+            x: 1361,
+            y: 554,
+            texture: "taxi",
+            sprite: null,
+            role: "freeTalkingPlace",
+        };
+        interact_sprite3.sprite = this.physics.add.sprite(interact_sprite3.x, interact_sprite3.y, interact_sprite3.texture).setScale(1.5);
 
         const temp1: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite1.x, interact_sprite1.y - 50, "arrowDown");
         temp1.setVisible(true);
@@ -1267,7 +1297,11 @@ export default class USAScene extends Phaser.Scene {
         this.socket = io(serverUrl);
 
         this.socket!.on("connect", () => {
-            console.log("connect, socket.id: ", this.socket!.id);
+            console.log(`connect, socket.id: ${this.socket!.id}, 
+            this.socket.recovered: ${this.socket!.recovered}`);
+            if(this.socket!.recovered){
+                this.scene.resume();
+            }
             this.player1 = this.createPlayer({
                 socketId: this.socket!.id,
                 nickname: this.userNickname,
@@ -1299,18 +1333,29 @@ export default class USAScene extends Phaser.Scene {
                 (otherPlayers: PlayerInfoDictionary) => {
                     console.log("updateAlluser, allPlayers: ", otherPlayers);
                     for (let key in otherPlayers) {
-                        console.log("updateAlluser, key: ", key);
+                        // console.log("updateAlluser, key: ", key);
                         if (otherPlayers[key].socketId !== this.socket!.id) {
                             if (
                                 !(otherPlayers[key].socketId in this.allPlayers)
                             ) {
+                                // console.log("updateAlluser, ", otherPlayers);
                                 let playerSprite: Phaser.Physics.Arcade.Sprite =
                                     this.createPlayer(otherPlayers[key]);
                                 // playerSprite.setCollideWorldBounds(true);
+                                if (otherPlayers[key].seat) {
+                                    // console.log("he is seated")
+                                //     `${otherPlayers[key].playerTexture}_idle_down`;
+                                playerSprite.anims.play(
+                                        `${otherPlayers[key].playerTexture}_sit_left`,
+                                        true
+                                    );
+                                } else {
+                                    // console.log("he is not seated")
                                 playerSprite.anims.play(
                                     `${otherPlayers[key].playerTexture}_idle_down`,
                                     true
                                 );
+                                }
                             } else {
                                 console.log(
                                     "updateAlluser, already exist, so just set position"
@@ -1323,6 +1368,9 @@ export default class USAScene extends Phaser.Scene {
                                 this.allPlayers[
                                     otherPlayers[key].socketId
                                 ].dash = otherPlayers[key].dash;
+                                this.allPlayers[
+                                    otherPlayers[key].socketId
+                                ].seat = otherPlayers[key].seat;
                             }
                         }
                     }
@@ -1386,6 +1434,7 @@ export default class USAScene extends Phaser.Scene {
                 }
             });
             this.socket!.on("disconnect", (reason: string) => {
+                this.scene.pause();
                 console.log("client side disconnect, reason: ", reason);
                 // window.location.reload();
             });
@@ -1398,3 +1447,7 @@ export default class USAScene extends Phaser.Scene {
         });
     }
 }
+function setScale(arg0: number) {
+    throw new Error("Function not implemented.");
+}
+

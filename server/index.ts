@@ -15,7 +15,7 @@ import saveRouter from "./routes/saveDialogRouter";
 
 import { signup, login } from "./controllers/userController";
 import dotenv from "dotenv";
-import {createNamespace} from "./controllers/DialogSocket";
+import { createNamespace } from "./controllers/DialogSocket";
 // // import router from "./routes/basicRouter";
 // // import http from 'http'; // Load in http module
 
@@ -36,7 +36,19 @@ const port = 5000;
 const app = express();
 
 const server = http.createServer(app);
-export const io = new SocketIOServer(server);
+// export const io = new SocketIOServer(server);
+export const io = new SocketIOServer(server, {
+    pingTimeout: 100, // 100ms
+    pingInterval: 10, // 10ms
+    connectionStateRecovery: {
+        // the backup duration of the sessions and the packets
+        // maxDisconnectionDuration: 2 * 60 * 1000,
+        maxDisconnectionDuration: Infinity,
+        // whether to skip middlewares upon successful recovery
+        skipMiddlewares: true,
+    }
+});
+
 
 io.on("connection", socketEventHandler);
 
@@ -68,18 +80,10 @@ app.get("/audio/npc_audio/*", function (req: Request, res: Response) {
     res.sendFile(path.join(__dirname, "audio/npc_audio", req.params[0]));
 });
 
-// freedialogSocket.on("connection", freedialogsocketEventHandler);
-// app.post("/interact", upload.single("audio"), interact);
-// app.use(Router);
-app.use("/auth", authRouter);
 
+app.use("/auth", authRouter);
 app.use("/save", saveRouter);
-// app.post("/signup", signup);
-// app.post("/login", login);
-// app.get("/userdialog/place", async (req: Request, res: Response) => {
-//     console.log(req)
-//     res.send("Hello World!~~~~~~~~~~~~~~~~~~~");
-// });
+
 
 if (process.env.NODE_ENV === "production") {
     console.log("Production Mode");
