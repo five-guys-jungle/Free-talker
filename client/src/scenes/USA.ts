@@ -67,6 +67,7 @@ export default class USAScene extends Phaser.Scene {
     playerId: string = "";
     userNickname: string = "";
     playerTexture: string = "";
+    level: string = "intermediate";
 
     userText: Phaser.GameObjects.Text | null = null;
     npcText: Phaser.GameObjects.Text | null = null;
@@ -104,6 +105,7 @@ export default class USAScene extends Phaser.Scene {
         this.playerId = data.playerId;
         this.userNickname = data.playerNickname;
         this.playerTexture = data.playerTexture;
+        this.level = data.level;
         console.log("data: ", data);
     }
 
@@ -325,6 +327,8 @@ export default class USAScene extends Phaser.Scene {
             console.log("reportClose event listener");
             this.isReportOn = false;
         });
+
+
         this.input.keyboard!.on("keydown-E", async () => {
             if (this.player1 === null || this.player1 === undefined) {
                 return;
@@ -484,7 +488,19 @@ export default class USAScene extends Phaser.Scene {
                         }
                     } else if (npcInfo.name.includes("gate")) {
                         console.log("liberty");
-                        handleScene(GAME_STATUS.AIRPORT, {});
+                        handleScene(GAME_STATUS.AIRPORT, {
+                            playerId: this.playerId,
+                            playerNickname: this.userNickname,
+                            playerTexture: this.playerTexture,
+                            level: this.level
+                        });
+
+                        // handleScene(GAME_STATUS.USA, {
+                        //     playerId: this.playerId,
+                        //     playerNickname: this.userNickname,
+                        //     playerTexture: this.playerTexture,
+                        //     level: this.level
+                        // }
                     } else {
 
                         if (this.isAudioPlaying) {
@@ -570,7 +586,7 @@ export default class USAScene extends Phaser.Scene {
                                 );
 
                                 this.interacting = true;
-                                this.socket2!.emit("dialogStart", npcInfo.name);
+                                this.socket2!.emit("dialogStart", npcInfo.name, this.level);
                                 this.isAudioPlaying = true;
                                 // TODO : npcFirstResponse 받고, audio 재생하는 동안 E, D키 비활성화 및 '응답중입니다. 잠시만 기다려주세요' 출력
                                 this.socket2!.on("npcFirstResponse", (response: any) => {
@@ -1105,7 +1121,7 @@ export default class USAScene extends Phaser.Scene {
             playerSprite,
             playerInfo.x,
             playerInfo.y,
-            playerInfo.scene
+            playerInfo.scene,
         );
 
         // Add the sprite to the Phaser scene

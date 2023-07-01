@@ -20,7 +20,7 @@ import {
   clearSentences,
   setCanRequestRecommend,
 } from "../stores/sentenceBoxSlice";
-import { reportOn, reportOff } from "../stores/reportOnoffSlice"
+import { reportOn, reportOff, buttonClickedOn, buttonClickedOff } from "../stores/reportOnoffSlice"
 import { Pagination, Navigation } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import 'swiper/css';
@@ -95,6 +95,13 @@ const Report = (data: any) => {
         corrections: corrections,
         messages: messages,
       });
+        // store.dispatch(buttonClickedOn());
+        setTimeout(() => {store.dispatch(buttonClickedOn());},500);
+        setTimeout(() => {store.dispatch(buttonClickedOff());},1000);
+        setTimeout(() => {store.dispatch(buttonClickedOn());},1500);
+        setTimeout(() => {store.dispatch(buttonClickedOff());},2000);
+        setTimeout(() => {store.dispatch(buttonClickedOn());},2500);
+        setTimeout(() => {store.dispatch(buttonClickedOff());},3000);
     }
 
     store.dispatch(reportOff());
@@ -633,4 +640,32 @@ const ReportDiv = styled.div`
         margin: 0 0 0 10px;
     }
 
+
+
+    @keyframes throw{
+      0%{
+        transform: translate(0, 0);
+      }
+      50%{
+        transform: translate(0, -30px) rotate(-10deg);
+      }
+      60%{
+        transform: translate(0, -40px) rotate(-30deg);
+      }
+      70%{
+        transform: translate(-5px, -50px) rotate(-40deg) scale(1);
+        opacity: 1;
+      }
+      80%{ 
+        transform: translate(-10px, -60px) rotate(-60deg) scale(.9);
+        opacity: 1;
+      }
+      90%{
+        transform: translate(-20px, -50px) rotate(-100deg) scale(.5);
+        opacity: .8;
+      }
+      100%{
+        transform: translate(-30px, -20px) rotate(-80deg) scale(.4);
+        opacity: 0;
+      }
 `
