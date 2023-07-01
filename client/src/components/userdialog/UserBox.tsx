@@ -55,14 +55,6 @@ const UserBox: React.FC = () => {
   //     placeName = "MART";
   //     break;
   // }
-  // useEffect(() => {
-  //     console.log(playerId)
-  //     console.log(playerNickname)
-  //     console.log(playerTexture)
-  //   return () => {
-  //     dispatch(clearcharacters());
-  //   }
-  // }, [playerId, playerNickname, playerTexture]);
 
   
   useEffect(() => {
@@ -74,25 +66,8 @@ const UserBox: React.FC = () => {
     }
 }, [playerId, playerNickname, playerTexture]);
 
-  
-  
-  // const messages = useSelector(
-  //     (state: { talkBox: TalkBoxState }) => state.talkBox.messages
-  // );
-
-
-  // const messages = useSelector(
-  //     (state: { talkBox: TalkBoxState }) => state.talkBox.messages
-  // );
 
   let fix_playerTexture=playerTexture;
-
-  // useEffect(() => {
-  //   console.log("char~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-  //   return () => {
-  //     dispatch(clearcharacters());
-  //   }
-  // }, [otherNickname, otherTexture]);
 
   useEffect(() => {
     console.log("char~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
@@ -129,12 +104,23 @@ const UserBox: React.FC = () => {
           <Typography variant="h4" align="center">{playerNickname}</Typography>
         </AvatarContainer>
         <AvatarContainer>
-          {/* <Image src={`../assets/characters/single/${otherTexture}.png`} alt="User Avatar" /> */}
-          {/* <Typography variant="body1" align="center">{otherNickname}</Typography> */}
           {renderUserAvatar()}
           {renderOtherNickname()}
         </AvatarContainer>
       </Box>
+      <Typography 
+        variant="h6" 
+        sx={{ 
+          position: 'absolute',
+          bottom: 10, 
+          left: 10, 
+          color: '#000',
+          padding: '5px',
+          borderRadius: '5px'
+        }}
+      >
+        EXIT : <span style={{ color: "#C70039" }}>(E)</span><div></div>통화 중 E키를 누르면 맵으로 돌아갑니다.
+      </Typography>
     </UserBoxWrapper>
   );
 };
