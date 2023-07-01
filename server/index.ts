@@ -38,8 +38,8 @@ const app = express();
 const server = http.createServer(app);
 // export const io = new SocketIOServer(server);
 export const io = new SocketIOServer(server, {
-    pingTimeout: 100, // 100ms
-    pingInterval: 10, // 10ms
+    // pingTimeout: 100, // 100ms
+    // pingInterval: 10, // 10ms
     connectionStateRecovery: {
         // the backup duration of the sessions and the packets
         // maxDisconnectionDuration: 2 * 60 * 1000,
