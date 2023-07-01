@@ -363,7 +363,11 @@ export default class USAScene extends Phaser.Scene {
                                     `${this.player1!.texture.key}_sit_left`,
                                     true
                                 );
-                                this.allPlayers[this.socket!.id].seat = true;
+                                // console.log("이게 들어와??")
+                                // this.allPlayers[this.socket!.id].seat = true;
+                                // this.allPlayers[this.socket!.id].x = 1013;
+                                // this.allPlayers[this.socket!.id].y = 804;
+                                // this.player1!.setPosition(1013, 804);
                                 this.seatEvent = true;
                             });
 
@@ -1447,7 +1451,5 @@ export default class USAScene extends Phaser.Scene {
         });
     }
 }
-function setScale(arg0: number) {
-    throw new Error("Function not implemented.");
-}
+
 
