@@ -67,8 +67,8 @@ const BackgroundDiv = styled.div`
 
 const ButtonContainer = styled.div`
   position: fixed;
-  right: 10%; /* Adjust the positioning based on your desired distance from the right edge */
-  bottom: 20px; /* Adjust the positioning based on your desired distance from the bottom edge */
+  right: 1%; /* Adjust the positioning based on your desired distance from the right edge */
+  bottom: 2%; /* Adjust the positioning based on your desired distance from the bottom edge */
   display: flex;
   flex-direction: row;
   gap: 10px; /* Add gap to separate the buttons */
