@@ -42,6 +42,7 @@ import {
     appendSocketNamespace,
 } from "../stores/socketSlice";
 import { toggleIsClicked } from "../stores/guiderSlice";
+import { RepeatOneSharp } from '@material-ui/icons';
 
 const serverUrl: string = process.env.REACT_APP_SERVER_URL!;
 
@@ -493,6 +494,7 @@ export default class AirportScene extends Phaser.Scene {
                                             // img: "",
                                             side: "left",
                                             text: response.assistant,
+                                            audioUrl: response.audioUrl
                                         })
                                     );
                                     this.audio = new Audio(
@@ -519,12 +521,12 @@ export default class AirportScene extends Phaser.Scene {
 
                                 this.socket2!.on(
                                     "speechToText",
-                                    (response: string) => {
+                                    (response: any) => {
                                         if (
-                                            response === "" ||
-                                            response ===
+                                            response.transcription === "" ||
+                                            response.transcription ===
                                             "convertSpeechToText Error" ||
-                                            response === "chain call error"
+                                            response.transcription === "chain call error"
                                         ) {
                                             store.dispatch(
                                                 setMessage(
@@ -570,29 +572,31 @@ export default class AirportScene extends Phaser.Scene {
                                                     // img: "",
                                                     side: "right",
                                                     text: response,
+                                                    audioUrl: response.audioUrl
                                                 })
                                             );
                                         }
                                     }
                                 );
-                                this.socket2!.on(
-                                    "npcResponse",
-                                    (response: string) => {
-                                        console.log("NPC: ", response);
-                                        store.dispatch(
-                                            appendMessage({
-                                                playerId: this.playerId,
-                                                name: npcInfo.name,
-                                                img: npcInfo.texture,
-                                                // img: "",
-                                                side: "left",
-                                                text: response,
-                                            })
-                                        );
-                                        store.dispatch(clearSentences());
-                                        this.alreadyRecommended = false;
-                                    }
-                                );
+                                // this.socket2!.on(
+                                //     "npcResponse",
+                                //     (response: string) => {
+                                //         console.log("NPC: ", response);
+                                //         store.dispatch(
+                                //             appendMessage({
+                                //                 playerId: this.playerId,
+                                //                 name: npcInfo.name,
+                                //                 img: npcInfo.texture,
+                                //                 // img: "",
+                                //                 side: "left",
+                                //                 text: response,
+                                //                 audioUrl: response.audioUrl
+                                //             })
+                                //         );
+                                //         store.dispatch(clearSentences());
+                                //         this.alreadyRecommended = false;
+                                //     }
+                                // );
                                 this.socket2!.on(
                                     "totalResponse",
                                     (response: any) => {
@@ -600,6 +604,22 @@ export default class AirportScene extends Phaser.Scene {
                                             "totalResponse event response: ",
                                             response
                                         );
+
+                                        console.log("NPC: ", response.assistant);
+                                        store.dispatch(
+                                            appendMessage({
+                                                playerId: this.playerId,
+                                                name: npcInfo.name,
+                                                img: npcInfo.texture,
+                                                // img: "",
+                                                side: "left",
+                                                text: response.assistant,
+                                                audioUrl: response.audioUrl
+                                            })
+                                        );
+                                        store.dispatch(clearSentences());
+                                        this.alreadyRecommended = false;
+
                                         // this.isAudioPlaying = true;
                                         this.audio = new Audio(
                                             response.audioUrl

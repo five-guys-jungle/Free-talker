@@ -1,3 +1,12 @@
+import dotenv from "dotenv";
+dotenv.config();
+if (process.env.NODE_ENV === "production") {
+    dotenv.config({ path: ".env.production" })
+}
+else {
+    dotenv.config({ path: ".env.development" })
+}
+
 import express, { Express, Request, Response } from "express";
 import http from "http";
 import cors from "cors";
@@ -10,11 +19,14 @@ import { Server as SocketIOServer, Socket } from "socket.io";
 
 import { connectDB } from "./database/db";
 import { connectDBLocal } from "./database/dbLocal";
+
+import { createBucket } from "./audio/s3";
+
 import authRouter from "./routes/authRouter";
 import saveRouter from "./routes/saveDialogRouter";
 
 import { signup, login } from "./controllers/userController";
-import dotenv from "dotenv";
+
 import { createNamespace } from "./controllers/DialogSocket";
 // // import router from "./routes/basicRouter";
 // // import http from 'http'; // Load in http module
@@ -24,13 +36,7 @@ import { createNamespace } from "./controllers/DialogSocket";
 // env.SERVER_URl = "https://seunghunshin.shop"
 // 서버 시작시 npm run build-dev 로 시작하면
 // env.SERVER_URl = "http://localhost:5000"
-dotenv.config();
-if (process.env.NODE_ENV === "production") {
-    dotenv.config({ path: ".env.production" })
-}
-else {
-    dotenv.config({ path: ".env.development" })
-}
+
 console.log("process.env.SERVER_URL: ", process.env.SERVER_URL);
 const port = 5000;
 const app = express();
@@ -87,6 +93,8 @@ app.use("/save", saveRouter);
 
 if (process.env.NODE_ENV === "production") {
     console.log("Production Mode");
+    console.log("S3_BUCKET_NAME:", process.env.S3_BUCKET_NAME);
+    createBucket(process.env.S3_BUCKET_NAME);
     connectDB()
         .then((db) => {
             server.listen(port);
@@ -96,6 +104,8 @@ if (process.env.NODE_ENV === "production") {
 }
 else {
     console.log("Development Mode");
+    console.log("S3_BUCKET_NAME:", process.env.S3_BUCKET_NAME);
+    createBucket(process.env.S3_BUCKET_NAME);
     connectDBLocal()
         .then((db) => {
             server.listen(port);

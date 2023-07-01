@@ -8,6 +8,8 @@ import texttoSpeech from "@google-cloud/text-to-speech";
 import FormData from "form-data";
 import axios from "axios";
 import dotenv from "dotenv";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { Readable } from "stream";
 import { preDefinedPrompt } from "../models/Prompt";
 import { ConversationChain } from "langchain/chains";
 import { ChatOpenAI } from "langchain/chat_models/openai";
@@ -42,15 +44,17 @@ const client = new texttoSpeech.TextToSpeechClient({
     keyFilename: keyPath,
 });
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, __dirname + "/../audio/user_audio"); // 음성 파일을 저장할 폴더 경로 지정
-    },
-    filename: (req, file, cb) => {
-        cb(null, `${Date.now()}_${file.originalname}.mp3`); // 음성 파일 이름 지정
-    },
-});
-export const upload = multer({ storage });
+const s3Client = new S3Client({ region: "ap-northeast-2" });
+
+// const storage = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//         cb(null, __dirname + "/../audio/user_audio"); // 음성 파일을 저장할 폴더 경로 지정
+//     },
+//     filename: (req, file, cb) => {
+//         cb(null, `${Date.now()}_${file.originalname}.mp3`); // 음성 파일 이름 지정
+//     },
+// });
+// export const upload = multer({ storage });
 
 // Function to process the user's voice input
 export async function interact(req: Request, res: Response): Promise<void> {
@@ -93,6 +97,7 @@ export async function convertSpeechToText(
         const data: FormData = new FormData();
         let response_STT: any;
         let transcription: string;
+        let result: any;
 
         data.append("file", fs.createReadStream(audioFilePath));
         data.append("model", "whisper-1");
@@ -108,7 +113,11 @@ export async function convertSpeechToText(
             }
         );
         transcription = response_STT.data.text;
-        return transcription;
+        result = {
+            transcription: transcription,
+            audioUrl: audioFilePath,
+        }
+        return result;
     } catch (err) {
         console.log("음성 파일 변환 실패");
         console.log(err);
@@ -139,7 +148,6 @@ export async function createChain(npcName: string, level: string): Promise<Conve
 
         const memory = new BufferMemory({
             returnMessages: true,
-            // memoryKey: "history",
             chatHistory: new RedisChatMessageHistory({
                 sessionId: new Date().toISOString(),
                 sessionTTL: 180,
@@ -148,14 +156,7 @@ export async function createChain(npcName: string, level: string): Promise<Conve
                 },
             }),
         });
-        // const chain: ConversationChain = new ConversationChain({
-        //     memory: new BufferMemory({
-        //         returnMessages: true,
-        //         memoryKey: "history",
-        //     }),
-        //     prompt: chatPrompt,
-        //     llm: chat,
-        // });
+
         return new ConversationChain({
             memory: memory,
             prompt: chatPrompt,
@@ -169,7 +170,6 @@ export async function createChain(npcName: string, level: string): Promise<Conve
 // TODO: 인자로 NPC 이름을 받아서 preDefindPrompt에서 해당 NPC의 prompt를 가져오도록 수정 필요
 export async function textCompletion(
     inputText: string,
-    // npcName: string = "ImmigrationOfficer",
     chain: ConversationChain
 ): Promise<string> {
     let completion: any;
@@ -181,20 +181,6 @@ export async function textCompletion(
         });
 
         console.log(`LLM response : ${response.response}`);
-        // ChatGPT API에 요청 보내기
-        // console.log("preDefindPrompt: ",
-        // preDefindPrompt['Immigration Officer'].messages.
-        // concat([{ role: "user", content: inputText }]));
-
-        // completion = await openai.createChatCompletion({
-        //     model: "gpt-3.5-turbo",
-        //     messages: preDefinedPrompt[npcName].messages.concat([
-        //         { role: "user", content: inputText },
-        //     ]),
-        // });
-        // ChatGPT API의 결과 받기
-        // role_answer = completion.data.choices[0].message["content"];
-        // console.log("NPC: ", role_answer);
         return response.response;
     } catch (error) {
         console.log(error);
@@ -220,23 +206,37 @@ export async function convertTexttoSpeech(
             audioConfig: { audioEncoding: "MP3" },
         };
         const [response_audio]: any = await client.synthesizeSpeech(request);
-        const audioFileName = `${uuidv4()}.mp3`;
-        const writeFile = util.promisify(fs.writeFile);
 
-        await writeFile(
-            `audio/npc_audio/${audioFileName}`,
-            response_audio.audioContent,
-            "binary"
-        );
-        const audioFileUrl: string = `${serverUrl}/audio/npc_audio/${audioFileName}`;
+        // Convert audio content to a stream
+        const audioStream = new Readable();
+        audioStream.push(response_audio.audioContent);
+        audioStream.push(null); // indicates end of file 
+
+        // Define the bucket name and file name
+        const bucketName = process.env.S3_BUCKET_NAME;
+        const audioFileName = `${uuidv4()}.mp3`;
+
+
+        const uploadParams = {
+            Bucket: bucketName,
+            Key: audioFileName,
+            Body: audioStream,
+            ContentType: 'audio/mpeg',
+        };
+
+        await s3Client.send(new PutObjectCommand(uploadParams));
+        const audioFileUrl: string = `https://${bucketName}.s3.amazonaws.com/${audioFileName}`
 
         let result = {
             user: inputText,
             assistant: outputText,
             audioUrl: audioFileUrl,
         };
-        // console.log("result: ", result);
+
+        console.log("result: ", result);
         return result;
+
+
     } catch (error) {
         console.log(error);
         return { error: "text-to-speech request failed." };

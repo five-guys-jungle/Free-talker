@@ -13,20 +13,20 @@ export interface DialogInfo {
 
 const dialog: Schema = new Schema<DialogInfo>({
 
-    userId: { type: String, required: true},
-    timestamp: { type: String, required: true},
-    nickname:{ type: String, required: true},
-    npc: { type: String, required: true},
-    userTexture: { type: String, required: true},
-    score: { type: Number, required: true},
-    corrections: { type: String, required: true},
-    messages: { type: String, required: true},
+    userId: { type: String, required: true },
+    timestamp: { type: String, required: true },
+    nickname: { type: String, required: true },
+    npc: { type: String, required: true },
+    userTexture: { type: String, required: true },
+    score: { type: Number, required: true },
+    corrections: { type: String, required: true },
+    messages: { type: String, required: true },
 
 });
 
 export const Dialog = model<DialogInfo>("dialog", dialog); // user 스키마를 이용해 user 모델 정의
 
-export interface DialogDocument extends DialogInfo, Document {} // user 모델의 인터페이스 정의
+export interface DialogDocument extends DialogInfo, Document { } // user 모델의 인터페이스 정의
 // export interface IUserModel extends Model<IUserDocument> {}
 export interface Dialog {
     userId: string;
@@ -45,6 +45,7 @@ export interface Message {
     img: string;
     side: string;
     text: string;
+    audioURL: string;
 }
 
 export interface Correction {

@@ -91,7 +91,7 @@ export default class USAScene extends Phaser.Scene {
     isReportOn: boolean = false;
     tweenDict: { [key: string]: Phaser.Tweens.Tween[] } = {};
     nowTween: Phaser.Tweens.Tween | null = null;
-    nowAnims: string = ""; 
+    nowAnims: string = "";
 
     constructor() {
         super("USAScene");
@@ -526,9 +526,9 @@ export default class USAScene extends Phaser.Scene {
                             this.socket2 === null ||
                             this.socket2 === undefined
                         ) {
-                            if(npcInfo.moving){
-                                for(let tween of this.tweenDict[npcInfo.name]){
-                                    if(tween.isPlaying()){
+                            if (npcInfo.moving) {
+                                for (let tween of this.tweenDict[npcInfo.name]) {
+                                    if (tween.isPlaying()) {
                                         this.nowTween = tween;
                                         this.nowAnims = npcInfo.sprite?.anims.currentAnim?.key!;
                                         npcInfo.sprite!.anims.play(`${npcInfo.texture}_idle_down`, true);
@@ -605,6 +605,7 @@ export default class USAScene extends Phaser.Scene {
                                             // img: "",
                                             side: "left",
                                             text: response.assistant,
+                                            audioUrl: response.audioUrl
                                         })
                                     );
                                     this.audio = new Audio(
@@ -630,7 +631,7 @@ export default class USAScene extends Phaser.Scene {
                                 );
                                 this.socket2!.on(
                                     "speechToText",
-                                    (response: string) => {
+                                    (response: any) => {
                                         if (
                                             response === "" ||
                                             response ===
@@ -676,30 +677,31 @@ export default class USAScene extends Phaser.Scene {
                                                     img: this.playerTexture,
                                                     // img: "",
                                                     side: "right",
-                                                    text: response,
+                                                    text: response.transcription,
+                                                    audioUrl: response.audioUrl
                                                 })
                                             );
                                         }
                                     }
                                 );
-                                this.socket2!.on(
-                                    "npcResponse",
-                                    (response: string) => {
-                                        console.log("NPC: ", response);
-                                        store.dispatch(
-                                            appendMessage({
-                                                playerId: this.playerId,
-                                                name: npcInfo.name,
-                                                img: npcInfo.texture,
-                                                // img: "",
-                                                side: "left",
-                                                text: response,
-                                            })
-                                        );
-                                        store.dispatch(clearSentences());
-                                        this.alreadyRecommended = false;
-                                    }
-                                );
+                                // this.socket2!.on(
+                                //     "npcResponse",
+                                //     (response: string) => {
+                                //         console.log("NPC: ", response);
+                                //         store.dispatch(
+                                //             appendMessage({
+                                //                 playerId: this.playerId,
+                                //                 name: npcInfo.name,
+                                //                 img: npcInfo.texture,
+                                //                 // img: "",
+                                //                 side: "left",
+                                //                 text: response,
+                                //             })
+                                //         );
+                                //         store.dispatch(clearSentences());
+                                //         this.alreadyRecommended = false;
+                                //     }
+                                // );
                                 this.socket2!.on(
                                     "totalResponse",
                                     (response: any) => {
@@ -707,6 +709,22 @@ export default class USAScene extends Phaser.Scene {
                                             "totalResponse event response: ",
                                             response
                                         );
+
+                                        console.log("NPC: ", response.assistant);
+                                        store.dispatch(
+                                            appendMessage({
+                                                playerId: this.playerId,
+                                                name: npcInfo.name,
+                                                img: npcInfo.texture,
+                                                // img: "",
+                                                side: "left",
+                                                text: response.assistant,
+                                                audioUrl: response.audioUrl
+                                            })
+                                        );
+                                        store.dispatch(clearSentences());
+                                        this.alreadyRecommended = false;
+
                                         // this.isAudioPlaying = true;
                                         this.audio = new Audio(
                                             response.audioUrl
@@ -775,9 +793,9 @@ export default class USAScene extends Phaser.Scene {
                             });
                         } else {
                             // 이미 소켓이 연결되어 있는데 다시 한번 E키를 누른 경우 -> 대화 종료 상황
-                            if(npcInfo.moving){
+                            if (npcInfo.moving) {
                                 npcInfo.sprite!.anims.resume();
-                                npcInfo.sprite!.anims.play(this.nowAnims, true);   
+                                npcInfo.sprite!.anims.play(this.nowAnims, true);
                                 this.nowTween?.resume();
                                 this.nowTween = null;
                             }

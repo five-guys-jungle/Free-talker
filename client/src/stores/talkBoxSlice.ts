@@ -7,6 +7,7 @@ export interface Message {
     img: string;
     side: string;
     text: string;
+    audioUrl: string;
 }
 
 export interface TalkBoxState {
