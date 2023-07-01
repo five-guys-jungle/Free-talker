@@ -5,6 +5,7 @@ export interface IUserInfo {
     userPw: string;
     userNickname: string;
     userTexture?: string;
+    accessToken?: string;
 }
 
 const user: Schema = new Schema<IUserInfo>({
@@ -13,6 +14,7 @@ const user: Schema = new Schema<IUserInfo>({
     userPw: { type: String, required: true },
     userNickname: { type: String, required: true, unique: true },
     userTexture: { type: String, default: "char0" },
+    accessToken: { type: String },
 });
 
 export const User = model<IUserInfo>("user", user); // user 스키마를 이용해 user 모델 정의

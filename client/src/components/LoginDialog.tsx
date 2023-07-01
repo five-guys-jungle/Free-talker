@@ -119,7 +119,11 @@ function LoginDialog() {
             } catch (e) {
                 if (e instanceof AxiosError && e.response?.status === 420) {
                     setLoginFailMsg("이미 접속중인 유저입니다.");
-                } else {
+                }
+                else if (e instanceof AxiosError && e.response?.status === 401) {
+                    setLoginFailMsg("이미 접속중인 유저입니다.");
+                }
+                else {
                     setLoginFailMsg(
                         "아이디 혹은 비밀번호가 일치하지 않습니다."
                     );
