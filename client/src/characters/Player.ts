@@ -10,7 +10,7 @@ export class Player {
     defaultVelocity: number = 200;
     dashVelocity: number = 600;
     dash: boolean = false;
-    seat: boolean = false;
+    seat: number = 0;
     level: string = "intermediate";
     constructor(
         socketId: string,
@@ -42,10 +42,14 @@ export class Player {
         const dialgonalVelocity: number = velocity / Math.SQRT2;
 
         // console.log('Other player seat: ', this.seat);
-        if (this.seat) {
+        if (this.seat ==1) {
             // console.log(`${this.playerTexture}_sit_left`);
             this.sprite.anims.play(`${this.playerTexture}_sit_left`, true);
-        } else {
+        }
+        else if (this.seat == 2) {
+            this.sprite.anims.play(`${this.playerTexture}_idle_down`, true);
+        }
+        else {
             if (
                 destination.x !== thisSprite.x ||
                 destination.y !== thisSprite.y
@@ -221,7 +225,7 @@ export interface PlayerInfo {
     y: number;
     scene: string;
     dash: boolean;
-    seat: boolean;
+    seat: number;
 }
 export interface PlayerInfoDictionary {
     [key: string]: PlayerInfo;

@@ -77,7 +77,7 @@ export default class USAScene extends Phaser.Scene {
     socket2: Socket | null = null;
     interacting: boolean = false;
     recorder2: MediaRecorder | null = null;
-    seatEvent: boolean = false;
+    seatEvent: number = 0;
     isAudioPlaying: boolean = false;
     isNpcSocketConnected: boolean = false;
     npcList: npcInfo[] = [];
@@ -286,14 +286,34 @@ export default class USAScene extends Phaser.Scene {
         this.tilemapLayerList.push(interiors_33);
 
         let USA_talkingzone: TalkingZone = {
-            "coach_park1": {
+            "couch_park1": {
                 first_seat: {x: 847, y: 1272},
                 second_seat: {x: 847, y: 1243}
             },
-            "coach_park2": {
+            "couch_park2": {
                 first_seat: {x: 847, y: 913},
                 second_seat: {x: 847, y: 889}
-        },
+            },
+            "couch_park3": {
+                first_seat: {x: 1667, y: 795},
+                second_seat: {x: 1727, y: 795}
+            },
+            "couch_park4": {
+                first_seat: {x: 1048, y: 1272},
+                second_seat: {x: 1108, y: 1272}
+            },
+            "couch_park5": {
+                first_seat: {x: 713, y: 1916},
+                second_seat: {x: 773, y: 1916}
+            },
+            "couch_park6": {
+                first_seat: {x: 374, y: 1916},
+                second_seat: {x: 434, y: 1916}
+            },
+            "couch_park7": {
+                first_seat: {x: 72, y: 1916},
+                second_seat: {x: 132, y: 1916}
+            },
     }
         createCharacterAnims(this.anims);
         if (this.socket) {
@@ -378,14 +398,25 @@ export default class USAScene extends Phaser.Scene {
                             window.addEventListener("seat", (event: any) => {
                                 console.log("event.detail: ", event.detail);
                                 console.log("seat event listener");
-                                
-                                this.player1!.anims.play(
-                                    `${this.player1!.texture.key}_sit_left`,
-                                    true
+                                if (event.detail.place_name === "couch_park1" || event.detail.place_name === "couch_park2") {
+                                    this.player1!.anims.play(
+                                        `${this.player1!.texture.key}_sit_left`,
+                                        true
                                 );
+                                this.allPlayers[this.socket!.id].seat = 1;
+                                this.seatEvent = 1;
+                                }
+                                else {
+                                    this.player1!.anims.play(
+                                        `${this.player1!.texture.key}_idle_down`,
+                                        true
+                                );
+                                this.allPlayers[this.socket!.id].seat = 2;
+                                this.seatEvent = 2;
+                                }
                                 console.log("이게 들어와??")
                                 console.log("뭐가 찍혀" , event.detail.seat_position)
-                                this.allPlayers[this.socket!.id].seat = true;
+                                
                                 if (event.detail.seat_position === 1) {
                                     console.log("((((((((((((((((((((((((((((((((((((((((((((((((((((((((")
                                     console.log("x좌표 뭐들어와!!!!!",USA_talkingzone[event.detail.place_name].first_seat.x)
@@ -400,7 +431,7 @@ export default class USAScene extends Phaser.Scene {
                                     this.player1!.setPosition(USA_talkingzone[event.detail.place_name].second_seat.x, USA_talkingzone[event.detail.place_name].second_seat.y);
                                 }
                                 
-                                this.seatEvent = true;
+                                
                             },false);
 
                             window.addEventListener("exitcall", (e: Event) => {
@@ -423,8 +454,8 @@ export default class USAScene extends Phaser.Scene {
 
 
                                 valve_E = true;
-                                this.allPlayers[this.socket!.id].seat = false;
-                                this.seatEvent = true;
+                                this.allPlayers[this.socket!.id].seat = 0;
+                                this.seatEvent = 3;
                                 store.dispatch(openUSA());
                             });
                         } else {
@@ -446,8 +477,8 @@ export default class USAScene extends Phaser.Scene {
 
 
                             valve_E = true;
-                            this.allPlayers[this.socket!.id].seat = false;
-                            this.seatEvent = true;
+                            this.allPlayers[this.socket!.id].seat = 0;
+                            this.seatEvent = 3;
                             store.dispatch(openUSA());
                         }
                     }
@@ -1094,7 +1125,7 @@ export default class USAScene extends Phaser.Scene {
                 });
             }
 
-            if (this.seatEvent === true) {
+            if (this.seatEvent) {
                 console.log("seatEvent");
                 this.socket!.emit("seat",
                     {
@@ -1107,7 +1138,7 @@ export default class USAScene extends Phaser.Scene {
                         dash: this.allPlayers[this.socket!.id].dash,
                         seat: this.allPlayers[this.socket!.id].seat,
                     },
-                    this.seatEvent = false
+                    this.seatEvent = 0
                 )
             }
 
@@ -1365,10 +1396,10 @@ export default class USAScene extends Phaser.Scene {
 
 
         let interact_sprite1: npcInfo = {
-            name: "coach_park1",
+            name: "couch_park1",
             x: 848,
             y: 1273,
-            texture: "coach_park",
+            texture: "couch_park1",
             sprite: null,
             role: "freeTalkingPlace",
             moving: false,
@@ -1379,10 +1410,10 @@ export default class USAScene extends Phaser.Scene {
         this.npcList.push(interact_sprite1);
 
         let interact_sprite2: npcInfo = {
-            name: "coach_park2",
+            name: "couch_park2",
             x: 848,
             y: 920,
-            texture: "coach_park",
+            texture: "couch_park1",
             sprite: null,
             role: "freeTalkingPlace",
             moving: false,
@@ -1391,6 +1422,77 @@ export default class USAScene extends Phaser.Scene {
 
         interact_sprite2.sprite = this.physics.add.sprite(interact_sprite2.x, interact_sprite2.y, interact_sprite2.texture);
         this.npcList.push(interact_sprite2);
+
+        let interact_sprite3: npcInfo = {
+            name: "couch_park3",
+            x: 1695,
+            y: 795,
+            texture: "couch_park2",
+            sprite: null,
+            role: "freeTalkingPlace",
+            moving: false,
+        };
+
+
+        interact_sprite3.sprite = this.physics.add.sprite(interact_sprite3.x, interact_sprite3.y, interact_sprite3.texture);
+        this.npcList.push(interact_sprite3);
+
+        let interact_sprite4: npcInfo = {
+            name: "couch_park4",
+            x: 1078,
+            y: 795,
+            texture: "couch_park2",
+            sprite: null,
+            role: "freeTalkingPlace",
+            moving: false,
+        };
+
+
+        interact_sprite4.sprite = this.physics.add.sprite(interact_sprite4.x, interact_sprite4.y, interact_sprite4.texture);
+        this.npcList.push(interact_sprite4);
+
+        let interact_sprite5: npcInfo = {
+            name: "couch_park5",
+            x: 743,
+            y: 1916,
+            texture: "couch_park2",
+            sprite: null,
+            role: "freeTalkingPlace",
+            moving: false,
+        };
+
+
+        interact_sprite5.sprite = this.physics.add.sprite(interact_sprite5.x, interact_sprite5.y, interact_sprite5.texture);
+        this.npcList.push(interact_sprite5);
+
+        let interact_sprite6: npcInfo = {
+            name: "couch_park6",
+            x: 404,
+            y: 1916,
+            texture: "couch_park2",
+            sprite: null,
+            role: "freeTalkingPlace",
+            moving: false,
+        };
+
+
+        interact_sprite6.sprite = this.physics.add.sprite(interact_sprite6.x, interact_sprite6.y, interact_sprite6.texture);
+        this.npcList.push(interact_sprite6);
+
+        let interact_sprite7: npcInfo = {
+            name: "couch_park7",
+            x: 102,
+            y: 1916,
+            texture: "couch_park2",
+            sprite: null,
+            role: "freeTalkingPlace",
+            moving: false,
+        };
+
+
+        interact_sprite7.sprite = this.physics.add.sprite(interact_sprite7.x, interact_sprite7.y, interact_sprite7.texture);
+        this.npcList.push(interact_sprite7);
+
 
         let interact_sprite10: npcInfo = {
             name: "chairMart",
@@ -1404,7 +1506,7 @@ export default class USAScene extends Phaser.Scene {
         interact_sprite10.sprite = this.physics.add.sprite(interact_sprite10.x, interact_sprite10.y, interact_sprite10.texture);
         this.npcList.push(interact_sprite10);
 
-        let interact_sprite3: npcInfo = {
+        let interact_sprite8: npcInfo = {
             name: "taxi",
             x: 1361,
             y: 554,
@@ -1413,7 +1515,7 @@ export default class USAScene extends Phaser.Scene {
             role: "freeTalkingPlace",
             moving: false,
         };
-        interact_sprite3.sprite = this.physics.add.sprite(interact_sprite3.x, interact_sprite3.y, interact_sprite3.texture).setScale(1.5);
+        interact_sprite8.sprite = this.physics.add.sprite(interact_sprite8.x, interact_sprite8.y, interact_sprite8.texture).setScale(1.5);
 
 
 
@@ -1459,7 +1561,7 @@ export default class USAScene extends Phaser.Scene {
                     y: this.initial_y,
                     scene: "USAScene",
                     dash: false,
-                    seat: false,
+                    seat: 0,
                 });
                 this.player1!.x = this.beforeSleepX;
                 this.player1!.y = this.beforeSleepY;
@@ -1492,14 +1594,14 @@ export default class USAScene extends Phaser.Scene {
                                 let playerSprite: Phaser.Physics.Arcade.Sprite =
                                     this.createPlayer(otherPlayers[key]);
                                 // playerSprite.setCollideWorldBounds(true);
-                                if (otherPlayers[key].seat) {
+                                if (otherPlayers[key].seat == 1) {
                                     console.log("he is seated")
                                     //     `${otherPlayers[key].playerTexture}_idle_down`;
                                     playerSprite.anims.play(
                                         `${otherPlayers[key].playerTexture}_sit_left`,
                                         true
                                     );
-                                } else {
+                                } else  {
                                     // console.log("he is not seated")
                                     playerSprite.anims.play(
                                         `${otherPlayers[key].playerTexture}_idle_down`,

@@ -8,8 +8,14 @@ const freeRoom_Num: {
 	[key: string]: number;
 } = {
 	airport_chair1: 0,
-	coach_park1: 0,
-	coach_park2: 0,
+	couch_park1: 0,
+	couch_park2: 0,
+	couch_park3: 0,
+	couch_park4: 0,
+	couch_park5: 0,
+	couch_park6: 0,
+	couch_park7: 0,
+	couch_park8: 0,
 }
 
 class seat_position {
@@ -24,8 +30,13 @@ class seat_position {
 	const seat_position_list: {
 		[key: string]: seat_position;
 	} = {
-		coach_park1: new seat_position(0, 0),
-		coach_park2: new seat_position(0, 0),
+		couch_park1: new seat_position(0, 0),
+		couch_park2: new seat_position(0, 0),
+		couch_park3: new seat_position(0, 0),
+		couch_park4: new seat_position(0, 0),
+		couch_park5: new seat_position(0, 0),
+		couch_park6: new seat_position(0, 0),
+		couch_park7: new seat_position(0, 0),
 	}
 
 // freedialogsocketEventHandler 함수 수정
@@ -48,7 +59,7 @@ export function freeDialogSocketEventHandler(socket: Socket) {
 			// socket.emit("joined",  freeRoom_Num[place_name] );
 		}
 		switch (place_name) {
-			case "coach_park1":
+			case "couch_park1":
 				if (seat_position_list[place_name].first_position == 0 && seat_position_list[place_name].second_position == 0) {
 					seat_position_list[place_name].first_position = 1;
 					console.log("-111111111111111`11111111111")
@@ -62,7 +73,7 @@ export function freeDialogSocketEventHandler(socket: Socket) {
 					socket.emit("seat_position", 1);
 				}
 				break;
-			case "coach_park2":
+			case "couch_park2":
 				if (seat_position_list[place_name].first_position == 0 && seat_position_list[place_name].second_position == 0) {
 					seat_position_list[place_name].first_position = 1;
 					console.log("-111111111111111`11111111111")
@@ -76,6 +87,93 @@ export function freeDialogSocketEventHandler(socket: Socket) {
 					socket.emit("seat_position", 1);
 				}
 				break;
+			case "couch_park3":
+				if (seat_position_list[place_name].first_position == 0 && seat_position_list[place_name].second_position == 0) {
+					seat_position_list[place_name].first_position = 1;
+					console.log("-111111111111111`11111111111")
+					socket.emit("seat_position", 1);
+				}
+				else if (seat_position_list[place_name].first_position == 1 && seat_position_list[place_name].second_position == 0) {
+					seat_position_list[place_name].second_position = 1;
+					socket.emit("seat_position", 2);
+				}
+				else if (seat_position_list[place_name].first_position == 0 && seat_position_list[place_name].second_position == 1) {
+					socket.emit("seat_position", 1);
+				}
+				break;
+			case "couch_park3":
+				if (seat_position_list[place_name].first_position == 0 && seat_position_list[place_name].second_position == 0) {
+					seat_position_list[place_name].first_position = 1;
+					console.log("-111111111111111`11111111111")
+					socket.emit("seat_position", 1);
+				}
+				else if (seat_position_list[place_name].first_position == 1 && seat_position_list[place_name].second_position == 0) {
+					seat_position_list[place_name].second_position = 1;
+					socket.emit("seat_position", 2);
+				}
+				else if (seat_position_list[place_name].first_position == 0 && seat_position_list[place_name].second_position == 1) {
+					socket.emit("seat_position", 1);
+				}
+				break;
+			case "couch_park4":
+				if (seat_position_list[place_name].first_position == 0 && seat_position_list[place_name].second_position == 0) {
+					seat_position_list[place_name].first_position = 1;
+					console.log("-111111111111111`11111111111")
+					socket.emit("seat_position", 1);
+				}
+				else if (seat_position_list[place_name].first_position == 1 && seat_position_list[place_name].second_position == 0) {
+					seat_position_list[place_name].second_position = 1;
+					socket.emit("seat_position", 2);
+				}
+				else if (seat_position_list[place_name].first_position == 0 && seat_position_list[place_name].second_position == 1) {
+					socket.emit("seat_position", 1);
+				}
+				break;
+			case "couch_park5":
+				if (seat_position_list[place_name].first_position == 0 && seat_position_list[place_name].second_position == 0) {
+						seat_position_list[place_name].first_position = 1;
+						console.log("-111111111111111`11111111111")
+						socket.emit("seat_position", 1);
+					}
+					else if (seat_position_list[place_name].first_position == 1 && seat_position_list[place_name].second_position == 0) {
+						seat_position_list[place_name].second_position = 1;
+						socket.emit("seat_position", 2);
+					}
+					else if (seat_position_list[place_name].first_position == 0 && seat_position_list[place_name].second_position == 1) {
+						socket.emit("seat_position", 1);
+					}
+					break;
+			case "couch_park6":
+						if (seat_position_list[place_name].first_position == 0 && seat_position_list[place_name].second_position == 0) {
+							seat_position_list[place_name].first_position = 1;
+							console.log("-111111111111111`11111111111")
+							socket.emit("seat_position", 1);
+						}
+						else if (seat_position_list[place_name].first_position == 1 && seat_position_list[place_name].second_position == 0) {
+							seat_position_list[place_name].second_position = 1;
+							socket.emit("seat_position", 2);
+						}
+						else if (seat_position_list[place_name].first_position == 0 && seat_position_list[place_name].second_position == 1) {
+							socket.emit("seat_position", 1);
+						}
+						break;
+			case "couch_park7":
+							if (seat_position_list[place_name].first_position == 0 && seat_position_list[place_name].second_position == 0) {
+								seat_position_list[place_name].first_position = 1;
+								console.log("-111111111111111`11111111111")
+								socket.emit("seat_position", 1);
+							}
+							else if (seat_position_list[place_name].first_position == 1 && seat_position_list[place_name].second_position == 0) {
+								seat_position_list[place_name].second_position = 1;
+								socket.emit("seat_position", 2);
+							}
+							else if (seat_position_list[place_name].first_position == 0 && seat_position_list[place_name].second_position == 1) {
+								socket.emit("seat_position", 1);
+							}
+							break;
+						
+					
+					
 				
 
 		
