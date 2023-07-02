@@ -42,24 +42,32 @@ const TranslationBox: React.FC<TranslationBoxProps> = ({ text, position, onOut }
                 position: 'absolute',
                 left: position.x,
                 top: position.y,
-                border: '1px solid black',
-                backgroundColor: 'white',
+                // border: '1px solid black',
+                backgroundColor: 'skyblue',
                 padding: '10px',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'flex-start',
                 width: 'fit-content',
+                borderRadius: '15px',
             }}
         >
             <CloseButton onClick={() => { onOut(); clearTranslation(); }}>X</CloseButton>
-            <p>{text}</p>
-            {translationLines.map((line: string, index: number) => <p key={index}>{line}</p>)}
+            <Text1>{text}</Text1>
+            {translationLines.map((line: string, index: number) => <Text2 key={index}>{line}</Text2>)}
         </div>
     );
 };
 
 export default TranslationBox;
 
+const Text1 = styled.p`
+  margin-bottom: 10px;
+  font-weight: bold;
+`;
+const Text2 = styled.p`
+  margin-bottom: 10px;
+`;
 const CloseButton = styled.button`
   position: absolute;
   top: 5px;

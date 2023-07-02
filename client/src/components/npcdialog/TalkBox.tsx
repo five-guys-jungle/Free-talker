@@ -20,6 +20,8 @@ const TalkBox: React.FC = () => {
     const msgerChatRef = useRef<HTMLDivElement>(null);
     const [selectedText, setSelectedText] = useState<string | null>(null); // Add this state
     const [mousePosition, setMousePosition] = useState<{x: number, y: number} | null>(null);
+    const [dragStart, setDragStart] = useState<{x: number, y: number} | null>(null);
+
 
     useEffect(() => {
         if (msgerChatRef.current) {
@@ -54,6 +56,11 @@ const TalkBox: React.FC = () => {
             setMousePosition({x: e.clientX, y: e.clientY});  // Set mouse position
         }
     };
+    const handleMouseDown = (e: React.MouseEvent) => {
+        console.log("handleMouseDown");
+        setDragStart({x: e.clientX, y: e.clientY});
+    };
+    
 
     return (
         <TalkDiv>
@@ -98,13 +105,13 @@ const TalkBox: React.FC = () => {
                                     {/* <div className="msg-info-time">{formatDate(new Date())}</div> */}
                                 </div>
 
-                                <div className="msg-text" onMouseUp={handleMouseUp}>{message.text}</div>
+                                <div className="msg-text"  onMouseDown={handleMouseDown} onMouseUp={handleMouseUp}>{message.text}</div>
                             </div>
                         </div>
                     ))}
                 </main>
                  {/* Add TranslationBox component here */}
-                 {selectedText && mousePosition && <TranslationBox text={selectedText} position={mousePosition} onOut={() => setSelectedText(null)} />}
+                 {selectedText && dragStart && <TranslationBox text={selectedText} position={dragStart} onOut={() => setSelectedText(null)} />}
                 {/* { */}
                 {/* // </form>} */}
             </section>

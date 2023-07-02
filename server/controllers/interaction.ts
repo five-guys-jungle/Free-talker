@@ -383,11 +383,11 @@ export async function translateText(
             messages: [
                 {
                     role: "system",
-                    content: `transform this sentence '${text}' into form like this '[english word]:[korean word]\n'. `,
+                    content: `transform this sentence '${text}' into form like this '[english word]: [korean word]\n'.`,
                 },
                 {
                     role: "user",
-                    content: `transform this sentence '${text}' into form like this '[english word]:[korean word]\n'.`,
+                    content: `transform this sentence '${text}' into form like this '[english word]: [korean word]\n'.`,
                 },
             ],
             // messages: {`I'm currently at the ${place}, Recommend me three expressions I can reply to the ${previous} without any explanations`,}
@@ -399,8 +399,8 @@ export async function translateText(
         });
         // ChatGPT API의 결과 받기
         translations = response.data.choices[0].message['content'];
-        console.log(response.data.choices[0].message)
-        console.log(`translations:\n${translations}`);
+        // console.log(response.data.choices[0].message)
+        // console.log(`translations:\n${translations}`);
         return translations;
     } catch (error) {
         console.log(error);
