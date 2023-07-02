@@ -1421,10 +1421,10 @@ export default class USAScene extends Phaser.Scene {
         this.npcList.push(interact_sprite1);
 
         let interact_sprite2: npcInfo = {
-            name: "chairMart",
-            x: 2603 - this.offset_x,
-            y: 1362 - this.offset_y,
-            texture: "chairMart",
+            name: "couch_park2",
+            x: 848,
+            y: 901,
+            texture: "couch_park1",
             sprite: null,
             role: "freeTalkingPlace",
             moving: false,

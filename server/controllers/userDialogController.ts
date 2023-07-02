@@ -10,8 +10,7 @@ const maxConnections = 2;
 const roomNum: {
 	[key: string]: number;
 } = {
-	airport_chair1: 0,
-	coach_park: 0,
+	
 	Mart: 0,
 }
 let socketIdList:string[] = [];

@@ -151,12 +151,12 @@ const FreeDialog = () => {
 			}
 		});
 		return () => {
-			console.log("disconnect!!!!!")
-			console.log("disconnect!!!!!", seatPosition, place_name)
-			socket.current!.emit("standup", { 
-				seat_position: seatPosition,
-				place_name: place_name
-			  });
+			// console.log("disconnect!!!!!")
+			// console.log("disconnect!!!!!", seatPosition, place_name)
+			// socket.current!.emit("standup", { 
+			// 	seat_position: seatPosition,
+			// 	place_name: place_name
+			//   });
 			socket.current!.disconnect();
 			
 		}
