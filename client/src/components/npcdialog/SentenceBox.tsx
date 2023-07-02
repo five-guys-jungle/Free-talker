@@ -6,6 +6,10 @@ import { setRecord } from "../../stores/recordSlice";
 import { RecordState } from "../../stores/recordSlice";
 import { TalkBoxState } from "../../stores/talkBoxSlice";
 import { css, keyframes } from 'styled-components';
+import TranslationBox from "../TranslationBox";
+import store from "../../stores";
+import { setText } from "../../stores/translationSlice";
+
 interface SentenceViewProps {
     sentence: Sentence;
 }
@@ -13,14 +17,40 @@ interface SentenceViewProps {
 const SentenceView: React.FC<SentenceViewProps> = ({ sentence }) => {
     const { sentence: sentenceText } = sentence;
 
+    const [selectedText, setSelectedText] = useState<string | null>(null); // Add this state
+    const [mousePosition, setMousePosition] = useState<{ x: number, y: number } | null>(null);
+    const [dragStart, setDragStart] = useState<{ x: number, y: number } | null>(null);
+
+    const handleMouseUp = (e: React.MouseEvent) => {
+        console.log("handleMouseUp");
+        const selection = window.getSelection();
+        if (selection) {
+            const selectedText = selection.toString();
+            console.log(selectedText);
+            setSelectedText(selectedText); // Save selected text to state
+            setMousePosition({ x: e.clientX, y: e.clientY });  // Set mouse position
+        }
+    };
+    const handleMouseDown = (e: React.MouseEvent) => {
+        console.log("handleMouseDown");
+        setSelectedText(null); // Reset selected text
+        store.dispatch(setText("번역 중입니다......")); // Reset translation
+        setDragStart({ x: e.clientX, y: e.clientY });
+    };
+
     return (
         <SentenceDiv>
             <div className="sentence">
                 <div className="field">
                     {/* <span className="label">추천문장: </span> */}
-                    <span className="value">{sentenceText}</span>
+                    <span
+                        className="value"
+                        onMouseDown={handleMouseDown} 
+                        onMouseUp={handleMouseUp}
+                    >{sentenceText}</span>
                 </div>
             </div>
+            {selectedText && dragStart && <TranslationBox text={selectedText} position={dragStart} onOut={() => setSelectedText(null)} />}
         </SentenceDiv>
     );
 };
@@ -54,14 +84,14 @@ const SentenceList: React.FC = () => {
         if (canRequestRecommend) {
             const lastMessage = talkBoxMessages[talkBoxMessages.length - 1].text;
             const clickEvent = new CustomEvent('recomButtonClicked', {
-                detail: { message: sentences.length , lastMessage: lastMessage}
+                detail: { message: sentences.length, lastMessage: lastMessage }
             });
             window.dispatchEvent(clickEvent);
         }
         // if (!isOuterDivVisible && !record) {
         //     // dispatch(setRecord(true));            
         // }
-        
+
     };
 
     useEffect(() => {
@@ -81,15 +111,15 @@ const SentenceList: React.FC = () => {
     ));
 
     return (
-        <div className="container" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100%", fontFamily:"Poppins" }}>
+        <div className="container" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100%", fontFamily: "Poppins" }}>
             <DialogTitle>Try freetalking with NPC</DialogTitle>
-            
+
             {isOuterDivVisible && (
                 <SentenceOuterDiv>{sentenceViews}</SentenceOuterDiv>
             )}
-             <AdditionalText>녹음 시작/끝 : <span style={{ color: "#C70039", fontWeight : "bold"}}>D</span><Space></Space> 대화스킵 : <span style={{ color: "#C70039", fontWeight : "bold"}}>S</span><Space></Space>대화종료 : <span style={{ color: "#C70039", fontWeight : "bold" }}>E</span> </AdditionalText>
+            <AdditionalText>녹음 시작/끝 : <span style={{ color: "#C70039", fontWeight: "bold" }}>D</span><Space></Space> 대화스킵 : <span style={{ color: "#C70039", fontWeight: "bold" }}>S</span><Space></Space>대화종료 : <span style={{ color: "#C70039", fontWeight: "bold" }}>E</span> </AdditionalText>
             {canRequestRecommend && (
-                <Button onClick={handleClick} isOpen={isOuterDivVisible} longPress={isLongPress} style={{position:"absolute"}}>
+                <Button onClick={handleClick} isOpen={isOuterDivVisible} longPress={isLongPress} style={{ position: "absolute" }}>
                     추천 문장 보기
                 </Button>)}
         </div>
