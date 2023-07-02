@@ -367,3 +367,43 @@ export function compareWithCorrectedText(
     const lowercaseCorrectedText = preprocessSentence(correctedText);
     return lowercaseInputText === lowercaseCorrectedText;
 }
+export async function translateText(
+    text: string,
+) {
+    let response: any;
+    let translations: string;
+    try {
+        // ChatGPT API에 요청 보내기
+        // "You are a grammar checker that looks for mistakes and makes sentence’s more fluent. You take all the input and auto correct it. Just reply to user input with the correct grammar, DO NOT reply the context of the question of the user input. If the user input is grammatically correct, just reply “sounds good”:\n\n${inputText}"
+        // Make it correct in grammar and Do not give the reason for this change If it doesn't have grammatical issues, do not give a correction.
+        // If it doesn't have grammatical issues, do not give a correction.
+        // check the following text for spelling and grammar errors
+        response = await openai.createChatCompletion({
+            model: "gpt-3.5-turbo",
+            messages: [
+                {
+                    role: "system",
+                    content: `transform this sentence '${text}' into form like this '[english word]:[korean word]\n'. `,
+                },
+                {
+                    role: "user",
+                    content: `transform this sentence '${text}' into form like this '[english word]:[korean word]\n'.`,
+                },
+            ],
+            // messages: {`I'm currently at the ${place}, Recommend me three expressions I can reply to the ${previous} without any explanations`,}
+            temperature: 0,
+            max_tokens: 300,
+            top_p: 1.0,
+            frequency_penalty: 0.0,
+            presence_penalty: 0.0,
+        });
+        // ChatGPT API의 결과 받기
+        translations = response.data.choices[0].message['content'];
+        console.log(response.data.choices[0].message)
+        console.log(`translations:\n${translations}`);
+        return translations;
+    } catch (error) {
+        console.log(error);
+        return "ChatGPT API Error.";
+    }
+}

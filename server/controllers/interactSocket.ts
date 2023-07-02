@@ -25,6 +25,7 @@ import {
     recommendNextResponses,
     recommendExpressions,
     createChain,
+    translateText,
 } from "./interaction";
 
 export function interactSocketEventHandler(socket: Socket) {
@@ -213,6 +214,12 @@ export function interactSocketEventHandler(socket: Socket) {
             }
         }
     );
+    socket.on("translation", async (text: string) => {
+        console.log("translate start");
+        const translatedText = await translateText(text);
+        // console.log("translatedText: ", translatedText);
+        socket.emit("translatedText", translatedText);
+    });
 
     socket.on("disconnect", (reason: string) => {
         console.log(
