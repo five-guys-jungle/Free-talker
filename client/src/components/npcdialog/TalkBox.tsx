@@ -7,6 +7,8 @@ import {
     TalkBoxState,
 } from "../../stores/talkBoxSlice";
 import TranslationBox from "../TranslationBox";
+import store from "../../stores";
+import { setText } from "../../stores/translationSlice";
 
 const TalkBox: React.FC = () => {
     // const [messages, setMessages] = useState<Message[]>([]);
@@ -19,8 +21,8 @@ const TalkBox: React.FC = () => {
     const msgerInputRef = useRef<HTMLInputElement>(null);
     const msgerChatRef = useRef<HTMLDivElement>(null);
     const [selectedText, setSelectedText] = useState<string | null>(null); // Add this state
-    const [mousePosition, setMousePosition] = useState<{x: number, y: number} | null>(null);
-    const [dragStart, setDragStart] = useState<{x: number, y: number} | null>(null);
+    const [mousePosition, setMousePosition] = useState<{ x: number, y: number } | null>(null);
+    const [dragStart, setDragStart] = useState<{ x: number, y: number } | null>(null);
 
 
     useEffect(() => {
@@ -53,14 +55,16 @@ const TalkBox: React.FC = () => {
             const selectedText = selection.toString();
             console.log(selectedText);
             setSelectedText(selectedText); // Save selected text to state
-            setMousePosition({x: e.clientX, y: e.clientY});  // Set mouse position
+            setMousePosition({ x: e.clientX, y: e.clientY });  // Set mouse position
         }
     };
     const handleMouseDown = (e: React.MouseEvent) => {
         console.log("handleMouseDown");
-        setDragStart({x: e.clientX, y: e.clientY});
+        setSelectedText(null); // Reset selected text
+        store.dispatch(setText("번역 중입니다......")); // Reset translation
+        setDragStart({ x: e.clientX, y: e.clientY });
     };
-    
+
 
     return (
         <TalkDiv>
@@ -81,22 +85,20 @@ const TalkBox: React.FC = () => {
                             <div
                                 className="msg-img"
                                 style={{
-                                    backgroundImage: `url(${
-                                        message.side === "left"
+                                    backgroundImage: `url(${message.side === "left"
                                             ? `./assets/characters/single/${message.img}.png`
                                             : `./assets/characters/single/${message.img}.png`
-                                    })`,
+                                        })`,
                                 }}
                             ></div>
 
                             <div className="msg-bubble">
                                 <div className="msg-info">
                                     <div
-                                        className={`msg-info-name ${
-                                            message.side === "left"
+                                        className={`msg-info-name ${message.side === "left"
                                                 ? "bot-name"
                                                 : ""
-                                        }`}
+                                            }`}
                                     >
                                         {message.side === "left"
                                             ? message.name
@@ -105,13 +107,13 @@ const TalkBox: React.FC = () => {
                                     {/* <div className="msg-info-time">{formatDate(new Date())}</div> */}
                                 </div>
 
-                                <div className="msg-text"  onMouseDown={handleMouseDown} onMouseUp={handleMouseUp}>{message.text}</div>
+                                <div className="msg-text" onMouseDown={handleMouseDown} onMouseUp={handleMouseUp}>{message.text}</div>
                             </div>
                         </div>
                     ))}
                 </main>
-                 {/* Add TranslationBox component here */}
-                 {selectedText && dragStart && <TranslationBox text={selectedText} position={dragStart} onOut={() => setSelectedText(null)} />}
+                {/* Add TranslationBox component here */}
+                {selectedText && dragStart && <TranslationBox text={selectedText} position={dragStart} onOut={() => setSelectedText(null)} />}
                 {/* { */}
                 {/* // </form>} */}
             </section>
