@@ -14,6 +14,7 @@ import userDialogSlice from './userDialogSlice';
 import guiderSlice from "./guiderSlice";
 import bgmOnoffSlice from "./bgmOnoffSlice";
 import levelSlice from './levelSlice';
+import translationBoxSlice  from "./translationSlice";
 
 export const store = configureStore({
     reducer: {
@@ -32,6 +33,7 @@ export const store = configureStore({
         bgmonoff: bgmOnoffSlice,
         presentScene: reportOnoffSlice,
         level: levelSlice,
+        translationBox: translationBoxSlice,
     },
 });
 

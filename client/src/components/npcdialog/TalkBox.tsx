@@ -6,6 +6,7 @@ import {
     appendMessage,
     TalkBoxState,
 } from "../../stores/talkBoxSlice";
+import TranslationBox from "../TranslationBox";
 
 const TalkBox: React.FC = () => {
     // const [messages, setMessages] = useState<Message[]>([]);
@@ -17,6 +18,10 @@ const TalkBox: React.FC = () => {
     const dispatch = useDispatch();
     const msgerInputRef = useRef<HTMLInputElement>(null);
     const msgerChatRef = useRef<HTMLDivElement>(null);
+    const [selectedText, setSelectedText] = useState<string | null>(null); // Add this state
+    const [mousePosition, setMousePosition] = useState<{x: number, y: number} | null>(null);
+    const [dragStart, setDragStart] = useState<{x: number, y: number} | null>(null);
+
 
     useEffect(() => {
         if (msgerChatRef.current) {
@@ -41,6 +46,21 @@ const TalkBox: React.FC = () => {
 
         return `${h.slice(-2)}:${m.slice(-2)}`;
     };
+    const handleMouseUp = (e: React.MouseEvent) => {
+        console.log("handleMouseUp");
+        const selection = window.getSelection();
+        if (selection) {
+            const selectedText = selection.toString();
+            console.log(selectedText);
+            setSelectedText(selectedText); // Save selected text to state
+            setMousePosition({x: e.clientX, y: e.clientY});  // Set mouse position
+        }
+    };
+    const handleMouseDown = (e: React.MouseEvent) => {
+        console.log("handleMouseDown");
+        setDragStart({x: e.clientX, y: e.clientY});
+    };
+    
 
     return (
         <TalkDiv>
@@ -85,11 +105,13 @@ const TalkBox: React.FC = () => {
                                     {/* <div className="msg-info-time">{formatDate(new Date())}</div> */}
                                 </div>
 
-                                <div className="msg-text">{message.text}</div>
+                                <div className="msg-text"  onMouseDown={handleMouseDown} onMouseUp={handleMouseUp}>{message.text}</div>
                             </div>
                         </div>
                     ))}
                 </main>
+                 {/* Add TranslationBox component here */}
+                 {selectedText && dragStart && <TranslationBox text={selectedText} position={dragStart} onOut={() => setSelectedText(null)} />}
                 {/* { */}
                 {/* // </form>} */}
             </section>
@@ -99,7 +121,6 @@ const TalkBox: React.FC = () => {
 export default TalkBox;
 
 const TalkDiv = styled.div`
-    font-family: 'Open Sans', sans-serif;
     :root {
         --body-bg: rgba(
             255,
@@ -155,7 +176,7 @@ const TalkDiv = styled.div`
         // width: 500px;
         // max-width: 500px;
         // max-width: 700px;
-        margin: 0 10px 30px 10px;
+        margin: 25px 10px;
         width: 45vw;
         height: 90vh;
         // height: 700px;
@@ -221,8 +242,8 @@ const TalkDiv = styled.div`
     }
 
     .msg-img {
-        width: 65px;
-        height: 65px;
+        width: 50px;
+        height: 50px;
         margin-right: 10px;
         background: #ddd;
         background-repeat: no-repeat;
