@@ -23,21 +23,20 @@ const SituationBox: React.FC = () => {
 
   return (
     
-    <Box sx={{ width: '70%', height: '70%', pb: 10 }}>
+    <Box sx={{ width: '70%', height: '60%', paddingBottom: '10%' }}>
       <Title>Situation Recommendation</Title>
       <Box 
         sx={{ 
           overflow: 'auto', 
           height: '100%', 
-          backgroundImage: 'linear-gradient(rgba(135,150,235, 0.7), rgba(164,181,235, 0.2))',
+          backgroundColor: 'rgba(255,255,255, 0.5)',
+          // backgroundImage: 'linear-gradient(rgba(0,0,0, 0.2),rgba(255,255,255, 0.8), rgba(0,0,0, 0.2))',
           // padding: '20px',
           borderRadius: '10px',
-          boxShadow: '5px 5px 15px rgba(0, 0, 0, 0.1)',
+          boxShadow: '5px 5px 15px rgba(0, 0, 0, 0.2)',
+          border: '8px solid #0D92C8', // 테두리 추가
           '@media screen and (max-width: 600px)': {
             borderRadius: '0px',
-          },
-          ':hover': {
-            backgroundColor: 'rgba(0, 0, 0, 0.9)',
           }
         }} 
         ref={ref}
@@ -65,9 +64,9 @@ export default SituationBox;
 
 const Title = styled.h2`
   text-align: center;
-  margin-top: 5%;
+  margin-top: 0;
   font-size: 2rem;
-  background: linear-gradient(45deg, rgba(135,150,250, 0.9), rgba(222,188,250, 0.8));
+  background: linear-gradient(45deg, rgba(13, 146, 200, 0.8), rgba(0, 0, 255,0.6) ,rgba(13, 146, 200, 0.8));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   @media (max-width: 768px) {

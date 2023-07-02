@@ -322,7 +322,7 @@ const Container = styled.div`
     width: 100%;
     height: 25vh;
     // margin-top:5%;
-    margin-left:5%;
+    margin-left:9.5%;
     flex-direction: row;
     // gap: 5px;
 
@@ -339,6 +339,6 @@ const Container = styled.div`
 const Instructions = styled.div`
     // font-family: Verdana;
     font-family: 'MaplestoryOTFLight';
-    font-size: 1.6em;
+    font-size: 1.65em;
     font-weight: bold;
 `;

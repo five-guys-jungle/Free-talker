@@ -360,7 +360,7 @@ export default class AirportScene extends Phaser.Scene {
 
                                 store.dispatch(openAirport());
                                 valve_E = true;
-                                this.allPlayers[this.socket!.id].seat = false;
+                                this.allPlayers[this.socket!.id].seat = 0;
                                 this.seatEvent = true;
                             });
                         } else {
@@ -382,7 +382,7 @@ export default class AirportScene extends Phaser.Scene {
 
                             store.dispatch(openAirport());
                             valve_E = true;
-                            this.allPlayers[this.socket!.id].seat = false;
+                            this.allPlayers[this.socket!.id].seat = 0;
                             this.seatEvent = true;
                         }
                     } else if (npcInfo.name === 'gate') {
@@ -1152,7 +1152,7 @@ export default class AirportScene extends Phaser.Scene {
                     y: this.initial_y,
                     scene: "AirportScene",
                     dash: false,
-                    seat: false,
+                    seat: 0,
                 });
                 this.player1!.x = this.beforeSleepX;
                 this.player1!.y = this.beforeSleepY;
