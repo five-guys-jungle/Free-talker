@@ -43,6 +43,7 @@ import {
     appendSocketNamespace,
 } from "../stores/socketSlice";
 import { Pause } from "@material-ui/icons";
+import { setText } from "../stores/translationSlice";
 
 const serverUrl: string = process.env.REACT_APP_SERVER_URL!;
 
@@ -543,6 +544,11 @@ export default class USAScene extends Phaser.Scene {
                             store.dispatch(clearSentences());
                             this.socket2 = io(`${serverUrl}/interaction`);
                             this.socket2.on("connect", () => {
+                                const translationEvent = (e: Event) => {
+                                    const customEvent = e as CustomEvent;
+                                    console.log("translationEvent, customEvent.detail: ", customEvent.detail.message);
+                                    this.socket2!.emit('translation', customEvent.detail.message);
+                                };
                                 const recommendBtnClicked = (e: Event) => {
                                     const customEvent = e as CustomEvent;
                                     store.dispatch(clearSentences());
@@ -572,6 +578,7 @@ export default class USAScene extends Phaser.Scene {
                                 this.socket2!.on("disconnect", () => {
                                     console.log("disconnect, recommendBtnClicked: ", recommendBtnClicked);
                                     window.removeEventListener("recomButtonClicked", recommendBtnClicked);
+                                    window.removeEventListener("translationEvent", translationEvent);
                                 });
                                 this.currNpcName = npcInfo.name;
                                 console.log(
@@ -584,10 +591,17 @@ export default class USAScene extends Phaser.Scene {
                                     "recomButtonClicked",
                                     recommendBtnClicked
                                 );
+                                window.addEventListener(
+                                    "translationEvent", translationEvent
+                                );
 
                                 this.interacting = true;
                                 this.socket2!.emit("dialogStart", npcInfo.name, this.level);
                                 this.isAudioPlaying = true;
+                                this.socket2!.on("translatedText", (translatedText: string) => {
+                                    console.log("translatedText: ", translatedText);
+                                    store.dispatch(setText(translatedText));
+                                });
                                 // TODO : npcFirstResponse 받고, audio 재생하는 동안 E, D키 비활성화 및 '응답중입니다. 잠시만 기다려주세요' 출력
                                 this.socket2!.on("npcFirstResponse", (response: any) => {
                                     console.log("npcFirstResponse event");
