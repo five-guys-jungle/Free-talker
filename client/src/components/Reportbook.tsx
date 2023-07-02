@@ -47,6 +47,16 @@ let dialogsArr: dialogState = {
     dialogs: [],
 };
 
+const CustomNavigationButton: React.FC<{ className?: string; onClick?: () => void; direction: "prev" | "next" }> = ({ className, onClick, direction }) => (
+    <div>
+        {direction === "prev" ? (
+            <img className={className} onClick={onClick} src="./assets/UI/arrowLeft.png" alt="Previous" />
+        ) : (
+            <img className={className} onClick={onClick} src="./assets/UI/arrowRight.png" alt="Next" />
+        )}
+    </div>
+);
+
 const ReportBook = (data: any) => {
     const [openbook, setOpenbook] = useState(false);
 
@@ -237,11 +247,14 @@ const ReportBook = (data: any) => {
             </div>
 
             {openbook == true && (
-                <div style={{ width: "100%", height: "100%", display: "flex" }}>
+                <SwiperDiv style={{ width: "100%", height: "100%", display: "flex" }}>
                     <Swiper
                         style={{ width: "970px" }}
                         modules={[Navigation]}
-                        navigation={true}
+                        navigation={{
+                            nextEl: ".swiper-button-next",
+                            prevEl: ".swiper-button-prev",
+                        }}
                     >
                         {dialogsArr.dialogs.length == 0 && (
                             <SwiperSlide >
@@ -501,7 +514,12 @@ const ReportBook = (data: any) => {
                                                         <Swiper
                                                             style={{ width: "440px", height: "100px", marginTop: "35px" }}
                                                             modules={[Pagination]}
-                                                            pagination={{ clickable: true }}
+                                                            pagination={{
+                                                                clickable: true,
+                                                                renderBullet: function (index, className) {
+                                                                    return `<span class="${className}" style="background-color: #ff0000;"></span>`
+                                                                }
+                                                            }}
                                                         >
                                                             <div className="corrections-list">
                                                                 {dialog.corrections
@@ -609,8 +627,15 @@ const ReportBook = (data: any) => {
                                 }
                             </SwiperSlide>
                         ))}
+                        <div className="swiper-button-next">
+                            <CustomNavigationButton className="custom-next-button" direction="next" />
+                        </div>
+                        <div className="swiper-button-prev">
+                            <CustomNavigationButton className="custom-prev-button" direction="prev" />
+                        </div>
                     </Swiper>
-                </div>
+
+                </SwiperDiv>
             )}
         </div>
     );
@@ -630,6 +655,18 @@ const Orange_p = styled.p`
 const Green_p = styled.p`
     color: Green;
 `;
+
+const SwiperDiv = styled.div`
+    .swiper-button-prev::after {
+        content: none;
+    }
+    .swiper-button-next::after {
+        content: none;
+    }
+    width: 100%;
+    height:100%;
+    display:flex;
+`
 
 const ReportDiv = styled.div`
     box-sizing: border-box;
@@ -966,4 +1003,6 @@ const ReportDiv = styled.div`
         margin: 0 0 0 10px;
     }
 
+    
 `;
+

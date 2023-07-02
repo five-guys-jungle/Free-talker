@@ -87,7 +87,9 @@ export const loadDialog = async (state: Dialog) => {
                     new Date(Date.parse(month + " 1, 2012")).getMonth() + 1; // Convert month name to number
                 const [hour, minute, second] = time.split(":");
                 const convertedHour =
-                    partOfDay === "오후" && +hour !== 12 ? +hour + 12 : +hour; // Convert to 24-hour format
+                    partOfDay === "오후" && +hour !== 12 ? +hour + 12 :
+                        +hour === 12 ? 0 : +hour; // Convert to 24-hour format
+
                 return `${year}-${monthNumber}-${day} ${convertedHour}:${minute}:${second}`;
             };
 
@@ -95,7 +97,6 @@ export const loadDialog = async (state: Dialog) => {
             const convertedTimestampB = convertTimestamp(dialogB.timestamp);
             const timestampA = Date.parse(convertedTimestampA);
             const timestampB = Date.parse(convertedTimestampB);
-
 
 
             if (timestampA > timestampB) {

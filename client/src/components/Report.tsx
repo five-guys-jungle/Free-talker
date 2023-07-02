@@ -262,7 +262,12 @@ const Report = (data: any) => {
               <Swiper
                 style={{ width: "440px", height: "100px", marginTop: "35px" }}
                 modules={[Pagination]}
-                pagination={{ clickable: true }}
+                pagination={{
+                  clickable: true,
+                  renderBullet: function (index, className) {
+                    return `<span class="${className}" style="background-color: #ff0000;"></span>`
+                  }
+                }}
               >
 
                 <div className="corrections-list">

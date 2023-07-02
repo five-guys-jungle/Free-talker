@@ -6,6 +6,10 @@ import { setRecord } from "../../stores/recordSlice";
 import { RecordState } from "../../stores/recordSlice";
 import { TalkBoxState } from "../../stores/talkBoxSlice";
 import { css, keyframes } from 'styled-components';
+import TranslationBox from "../TranslationBox";
+import store from "../../stores";
+import { setText } from "../../stores/translationSlice";
+
 interface SentenceViewProps {
     sentence: Sentence;
 }
@@ -13,14 +17,40 @@ interface SentenceViewProps {
 const SentenceView: React.FC<SentenceViewProps> = ({ sentence }) => {
     const { sentence: sentenceText } = sentence;
 
+    const [selectedText, setSelectedText] = useState<string | null>(null); // Add this state
+    const [mousePosition, setMousePosition] = useState<{ x: number, y: number } | null>(null);
+    const [dragStart, setDragStart] = useState<{ x: number, y: number } | null>(null);
+
+    const handleMouseUp = (e: React.MouseEvent) => {
+        console.log("handleMouseUp");
+        const selection = window.getSelection();
+        if (selection) {
+            const selectedText = selection.toString();
+            console.log(selectedText);
+            setSelectedText(selectedText); // Save selected text to state
+            setMousePosition({ x: e.clientX, y: e.clientY });  // Set mouse position
+        }
+    };
+    const handleMouseDown = (e: React.MouseEvent) => {
+        console.log("handleMouseDown");
+        setSelectedText(null); // Reset selected text
+        store.dispatch(setText("번역 중입니다......")); // Reset translation
+        setDragStart({ x: e.clientX, y: e.clientY });
+    };
+
     return (
         <SentenceDiv>
             <div className="sentence">
                 <div className="field">
                     {/* <span className="label">추천문장: </span> */}
-                    <span className="value">{sentenceText}</span>
+                    <span
+                        className="value"
+                        onMouseDown={handleMouseDown} 
+                        onMouseUp={handleMouseUp}
+                    >{sentenceText}</span>
                 </div>
             </div>
+            {selectedText && dragStart && <TranslationBox text={selectedText} position={dragStart} onOut={() => setSelectedText(null)} />}
         </SentenceDiv>
     );
 };
@@ -54,14 +84,14 @@ const SentenceList: React.FC = () => {
         if (canRequestRecommend) {
             const lastMessage = talkBoxMessages[talkBoxMessages.length - 1].text;
             const clickEvent = new CustomEvent('recomButtonClicked', {
-                detail: { message: sentences.length , lastMessage: lastMessage}
+                detail: { message: sentences.length, lastMessage: lastMessage }
             });
             window.dispatchEvent(clickEvent);
         }
         // if (!isOuterDivVisible && !record) {
         //     // dispatch(setRecord(true));            
         // }
-        
+
     };
 
     useEffect(() => {
@@ -79,17 +109,20 @@ const SentenceList: React.FC = () => {
     const sentenceViews = sentences.map((sentence) => (
         <SentenceView key={sentence._id} sentence={sentence} />
     ));
-
+    const lastMessageName = useSelector(
+        (state: { talkBox: TalkBoxState }) =>
+            state.talkBox.messages[state.talkBox.messages.length - 1]?.name
+    );
     return (
-        <div className="container" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100%", fontFamily:"Poppins" }}>
-            <DialogTitle>Try freetalking with NPC</DialogTitle>
-            
+        <div className="container" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100%", fontFamily: "Poppins" }}>
+            <DialogTitle>freetalk to the {lastMessageName || "NPC"} </DialogTitle>
+
             {isOuterDivVisible && (
                 <SentenceOuterDiv>{sentenceViews}</SentenceOuterDiv>
             )}
-             <AdditionalText>녹음 시작/끝 : <span style={{ color: "#C70039", fontWeight : "bold"}}>D</span><Space></Space> 대화스킵 : <span style={{ color: "#C70039", fontWeight : "bold"}}>S</span><Space></Space>대화종료 : <span style={{ color: "#C70039", fontWeight : "bold" }}>E</span> </AdditionalText>
+            <AdditionalText>녹음 시작/끝 : <span style={{ color: "#C70039", fontWeight: "bold" }}>D</span><Space></Space> 대화스킵 : <span style={{ color: "#C70039", fontWeight: "bold" }}>S</span><Space></Space>대화종료 : <span style={{ color: "#C70039", fontWeight: "bold" }}>E</span> </AdditionalText>
             {canRequestRecommend && (
-                <Button onClick={handleClick} isOpen={isOuterDivVisible} longPress={isLongPress} style={{position:"absolute"}}>
+                <Button onClick={handleClick} isOpen={isOuterDivVisible} longPress={isLongPress} style={{ position: "absolute" }}>
                     추천 문장 보기
                 </Button>)}
         </div>
@@ -103,12 +136,12 @@ const SentenceBox: React.FC = () => {
 export default SentenceBox;
 
 const DialogTitle = styled.h1`
-    font-size: 3vw;
+    font-size: 2.5vw;
     flex: none;
     text-align: center; // This will center the text
     color: #2d3748; // Adjust this as needed
     padding: -10px auto; // Adjust this as needed
-    margin-bottom: 20px; // Adjust this as needed
+    margin-bottom: 15px; // Adjust this as needed
 `;
 
 const blinking = keyframes`
@@ -143,7 +176,7 @@ const SentenceOuterDiv = styled.div`
     flex: 1;
     width: 40vw;
     height: 50vh;
-    margin: 5px auto 10px;
+    margin: 5px auto;
     flex-direction: column; // Add this
     padding: 0 0%; /* 화면 양쪽에 10% 공간을 추가 */
     justify-content: center;
@@ -161,13 +194,13 @@ const SentenceOuterDiv = styled.div`
 `;
 // 추가 텍스트를 위한 styled-component 생성
 const AdditionalText = styled.div`
-    font-size: 1.2rem;  // 원하는 텍스트 크기로 설정하세요.
-    margin-left: -35%;  // 원하는 간격으로 조정하세요.
+    font-size: 1.2rem;  
+    margin: auto;  
     font-family: 'MaplestoryOTFLight';
 
 `;
 const Space = styled.span`
-    margin-left: 25px;  // 원하는 간격으로 조정하세요.
+    margin-left: 25px;  
 
 `;
 const SentenceDiv = styled.div`
@@ -193,9 +226,10 @@ const SentenceDiv = styled.div`
     .sentence {
         background-color: #f7fafc;
         // width: fit-content; // Adjust this
+        display: flex;
         opacity: 1.0;
         // width: 600px;
-        height: 7vh;
+        height: auto;
         width: 32vw;
         margin: 2vh auto;
         // margin: 0 auto; // Adjust this
@@ -210,16 +244,10 @@ const SentenceDiv = styled.div`
     .field {
         display: flex;
         justify-content: flex-start;
+        align-items: center;
         margin-top: 4px;
     }
 
-    // .sentence-outerdiv {
-    //     display: flex; // Add this
-    //     background-color: #c1bdbd;
-    //     align-items: center; // Add this
-    //     flex-direction: column; // Add this
-    //     border-radius: 8px;
-    // }
 
     .label {
         font-weight: bold;
@@ -229,7 +257,7 @@ const SentenceDiv = styled.div`
 
     .value {
         color: #4a5568;
-        font-size: 2.5vh;
+        font-size: 2.2vh;
     }
 
     .text .value {
@@ -237,21 +265,3 @@ const SentenceDiv = styled.div`
     }
 `;
 
-
-// .sentence {
-//     background-color: #f7fafc;
-//     width: 600px;
-//     height: 150px;
-//     margin-top: 20px;
-//     border-top: solid 2px #fff;
-//     border-radius: 8px;
-//     padding: 20px;
-//     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-//         0 4px 6px -2px rgba(0, 0, 0, 0.05);
-// }
-
-// .container {
-//     width: 600px;
-//     height: 150px;
-//     margin: 0 auto;
-// }
