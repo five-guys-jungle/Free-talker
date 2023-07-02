@@ -79,10 +79,13 @@ const SentenceList: React.FC = () => {
     const sentenceViews = sentences.map((sentence) => (
         <SentenceView key={sentence._id} sentence={sentence} />
     ));
-
+    const lastMessageName = useSelector(
+        (state: { talkBox: TalkBoxState }) =>
+            state.talkBox.messages[state.talkBox.messages.length - 1]?.name
+    );
     return (
         <div className="container" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100%", fontFamily:"Poppins" }}>
-            <DialogTitle>Try freetalking with NPC</DialogTitle>
+            <DialogTitle>freetalk to the {lastMessageName || "NPC"} </DialogTitle>
             
             {isOuterDivVisible && (
                 <SentenceOuterDiv>{sentenceViews}</SentenceOuterDiv>
@@ -103,12 +106,12 @@ const SentenceBox: React.FC = () => {
 export default SentenceBox;
 
 const DialogTitle = styled.h1`
-    font-size: 3vw;
+    font-size: 2.5vw;
     flex: none;
     text-align: center; // This will center the text
     color: #2d3748; // Adjust this as needed
     padding: -10px auto; // Adjust this as needed
-    margin-bottom: 20px; // Adjust this as needed
+    margin-bottom: 15px; // Adjust this as needed
 `;
 
 const blinking = keyframes`
@@ -213,13 +216,6 @@ const SentenceDiv = styled.div`
         margin-top: 4px;
     }
 
-    // .sentence-outerdiv {
-    //     display: flex; // Add this
-    //     background-color: #c1bdbd;
-    //     align-items: center; // Add this
-    //     flex-direction: column; // Add this
-    //     border-radius: 8px;
-    // }
 
     .label {
         font-weight: bold;
@@ -237,21 +233,3 @@ const SentenceDiv = styled.div`
     }
 `;
 
-
-// .sentence {
-//     background-color: #f7fafc;
-//     width: 600px;
-//     height: 150px;
-//     margin-top: 20px;
-//     border-top: solid 2px #fff;
-//     border-radius: 8px;
-//     padding: 20px;
-//     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-//         0 4px 6px -2px rgba(0, 0, 0, 0.05);
-// }
-
-// .container {
-//     width: 600px;
-//     height: 150px;
-//     margin: 0 auto;
-// }
