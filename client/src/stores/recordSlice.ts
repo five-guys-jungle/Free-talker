@@ -8,7 +8,7 @@ export interface RecordState {
 
 export const initialState: RecordState = {
     record: true,
-    message: "D키를 눌러 녹음을 시작하세요",
+    message: "D키를 눌러\n녹음을 시작하세요",
     messageColor: "black", // 초기 색상
 };
 

@@ -46,6 +46,7 @@ import {
     appendSocketNamespace,
 } from "../stores/socketSlice";
 import { Pause } from "@material-ui/icons";
+import { setText } from "../stores/translationSlice";
 
 const serverUrl: string = process.env.REACT_APP_SERVER_URL!;
 
@@ -335,7 +336,7 @@ export default class USAScene extends Phaser.Scene {
             color: "black",
             fontSize: "16px",
         });
-        this.userIdText = this.add.text(10, 10, this.userNickname, {
+        this.userIdText = this.add.text(10, 10, "", {
             color: "black",
             fontSize: "16px",
         });
@@ -414,18 +415,17 @@ export default class USAScene extends Phaser.Scene {
                                 this.allPlayers[this.socket!.id].seat = 2;
                                 this.seatEvent = 2;
                                 }
-                                console.log("이게 들어와??")
-                                console.log("뭐가 찍혀" , event.detail.seat_position)
+                                
                                 
                                 if (event.detail.seat_position === 1) {
-                                    console.log("((((((((((((((((((((((((((((((((((((((((((((((((((((((((")
-                                    console.log("x좌표 뭐들어와!!!!!",USA_talkingzone[event.detail.place_name].first_seat.x)
+                                 
+                                    
                                     this.allPlayers[this.socket!.id].x = USA_talkingzone[event.detail.place_name].first_seat.x;
                                     this.allPlayers[this.socket!.id].y = USA_talkingzone[event.detail.place_name].first_seat.y;
                                     this.player1!.setPosition(USA_talkingzone[event.detail.place_name].first_seat.x, USA_talkingzone[event.detail.place_name].first_seat.y);
                                 }
                                 else if (event.detail.seat_position === 2) {
-                                    console.log("x좌표 뭐들어와!!!!!",USA_talkingzone[event.detail.place_name].second_seat.x)
+                                    
                                     this.allPlayers[this.socket!.id].x = USA_talkingzone[event.detail.place_name].second_seat.x;
                                     this.allPlayers[this.socket!.id].y = USA_talkingzone[event.detail.place_name].second_seat.y;
                                     this.player1!.setPosition(USA_talkingzone[event.detail.place_name].second_seat.x, USA_talkingzone[event.detail.place_name].second_seat.y);
@@ -605,6 +605,11 @@ export default class USAScene extends Phaser.Scene {
                             store.dispatch(clearSentences());
                             this.socket2 = io(`${serverUrl}/interaction`);
                             this.socket2.on("connect", () => {
+                                const translationEvent = (e: Event) => {
+                                    const customEvent = e as CustomEvent;
+                                    console.log("translationEvent, customEvent.detail: ", customEvent.detail.message);
+                                    this.socket2!.emit('translation', customEvent.detail.message);
+                                };
                                 const recommendBtnClicked = (e: Event) => {
                                     const customEvent = e as CustomEvent;
                                     store.dispatch(clearSentences());
@@ -634,6 +639,7 @@ export default class USAScene extends Phaser.Scene {
                                 this.socket2!.on("disconnect", () => {
                                     console.log("disconnect, recommendBtnClicked: ", recommendBtnClicked);
                                     window.removeEventListener("recomButtonClicked", recommendBtnClicked);
+                                    window.removeEventListener("translationEvent", translationEvent);
                                 });
                                 this.currNpcName = npcInfo.name;
                                 console.log(
@@ -646,16 +652,23 @@ export default class USAScene extends Phaser.Scene {
                                     "recomButtonClicked",
                                     recommendBtnClicked
                                 );
+                                window.addEventListener(
+                                    "translationEvent", translationEvent
+                                );
 
                                 this.interacting = true;
                                 this.socket2!.emit("dialogStart", npcInfo.name, this.level);
                                 this.isAudioPlaying = true;
+                                this.socket2!.on("translatedText", (translatedText: string) => {
+                                    console.log("translatedText: ", translatedText);
+                                    store.dispatch(setText(translatedText));
+                                });
                                 // TODO : npcFirstResponse 받고, audio 재생하는 동안 E, D키 비활성화 및 '응답중입니다. 잠시만 기다려주세요' 출력
                                 this.socket2!.on("npcFirstResponse", (response: any) => {
                                     console.log("npcFirstResponse event");
                                     store.dispatch(
                                         setMessage(
-                                            "응답중입니다. 잠시만 기다려주세요"
+                                            "응답중입니다\n잠시만 기다려주세요"
                                         )
                                     );
                                     store.dispatch(setCanRequestRecommend(false));
@@ -677,7 +690,7 @@ export default class USAScene extends Phaser.Scene {
                                         this.isAudioPlaying = false;
                                         store.dispatch(
                                             setMessage(
-                                                "D키를 눌러 녹음을 시작하세요"
+                                                "D키를 눌러\n녹음을 시작하세요"
                                             )
                                         );
                                         store.dispatch(
@@ -686,108 +699,108 @@ export default class USAScene extends Phaser.Scene {
                                     };
                                     this.audio.play();
                                 })
-                                console.log(
-                                    "connect, interaction socket.id: ",
-                                    this.socket2!.id
-                                );
-                                this.socket2!.on(
-                                    "speechToText",
-                                    (response: string) => {
-                                        if (
-                                            response === "" ||
-                                            response ===
-                                            "convertSpeechToText Error" ||
-                                            response === "chain call error"
-                                        ) {
-                                            store.dispatch(
-                                                setMessage(
-                                                    "다시 말씀해주세요"
-                                                )
-                                            );
-                                            store.dispatch(
-                                                setMessageColor("red")
-                                            );
-                                            setTimeout(() => {
+                                    console.log(
+                                        "connect, interaction socket.id: ",
+                                        this.socket2!.id
+                                    );
+                                    this.socket2!.on(
+                                        "speechToText",
+                                        (response: string) => {
+                                            if (
+                                                response === "" ||
+                                                response ===
+                                                    "convertSpeechToText Error" ||
+                                                response === "chain call error"
+                                            ) {
                                                 store.dispatch(
                                                     setMessage(
-                                                        "D키를 눌러 녹음을 시작하세요"
+                                                        "다시 말씀해주세요"
                                                     )
                                                 );
                                                 store.dispatch(
-                                                    setMessageColor("black")
+                                                    setMessageColor("red")
                                                 );
-                                            }, 2500);
-                                            store.dispatch(
-                                                setCanRequestRecommend(
-                                                    false
-                                                )
-                                            );
-                                            store.dispatch(setRecord(true));
-                                            this.isAudioPlaying = false;
-                                        } else {
-                                            addCountUserSpeech();
-                                            console.log("USER: ", response);
-                                            console.log(
-                                                "playerTexture",
-                                                this.playerTexture
-                                            );
+                                                setTimeout(() => {
+                                                    store.dispatch(
+                                                        setMessage(
+                                                            "D키를 눌러\n녹음을 시작하세요"
+                                                        )
+                                                    );
+                                                    store.dispatch(
+                                                        setMessageColor("black")
+                                                    );
+                                                }, 2500);
+                                                store.dispatch(
+                                                    setCanRequestRecommend(
+                                                        false
+                                                    )
+                                                );
+                                                store.dispatch(setRecord(true));
+                                                this.isAudioPlaying = false;
+                                            } else {
+                                                addCountUserSpeech();
+                                                console.log("USER: ", response);
+                                                console.log(
+                                                    "playerTexture",
+                                                    this.playerTexture
+                                                );
+                                                store.dispatch(
+                                                    appendMessage({
+                                                        playerId: this.playerId,
+                                                        name: this.userNickname,
+                                                        img: this.playerTexture,
+                                                        // img: "",
+                                                        side: "right",
+                                                        text: response,
+                                                    })
+                                                );
+                                            }
+                                        }
+                                    );
+                                    this.socket2!.on(
+                                        "npcResponse",
+                                        (response: string) => {
+                                            console.log("NPC: ", response);
                                             store.dispatch(
                                                 appendMessage({
                                                     playerId: this.playerId,
-                                                    name: this.userNickname,
-                                                    img: this.playerTexture,
+                                                    name: npcInfo.name,
+                                                    img: npcInfo.texture,
                                                     // img: "",
-                                                    side: "right",
+                                                    side: "left",
                                                     text: response,
                                                 })
                                             );
+                                            store.dispatch(clearSentences());
+                                            this.alreadyRecommended = false;
                                         }
-                                    }
-                                );
-                                this.socket2!.on(
-                                    "npcResponse",
-                                    (response: string) => {
-                                        console.log("NPC: ", response);
-                                        store.dispatch(
-                                            appendMessage({
-                                                playerId: this.playerId,
-                                                name: npcInfo.name,
-                                                img: npcInfo.texture,
-                                                // img: "",
-                                                side: "left",
-                                                text: response,
-                                            })
-                                        );
-                                        store.dispatch(clearSentences());
-                                        this.alreadyRecommended = false;
-                                    }
-                                );
-                                this.socket2!.on(
-                                    "totalResponse",
-                                    (response: any) => {
-                                        console.log(
-                                            "totalResponse event response: ",
-                                            response
-                                        );
-                                        // this.isAudioPlaying = true;
-                                        this.audio = new Audio(
-                                            response.audioUrl
-                                        );
-                                        this.audio.onended = () => {
-                                            console.log("audio.onended");
-                                            this.isAudioPlaying = false;
-                                            store.dispatch(
-                                                setMessage(
-                                                    "D키를 눌러 녹음을 시작하세요"
-                                                )
+                                    );
+                                    this.socket2!.on(
+                                        "totalResponse",
+                                        (response: any) => {
+                                            console.log(
+                                                "totalResponse event response: ",
+                                                response
                                             );
-                                            store.dispatch(
-                                                setCanRequestRecommend(true)
+                                            // this.isAudioPlaying = true;
+                                            this.audio = new Audio(
+                                                response.audioUrl
                                             );
-                                        };
-                                        this.audio.play();
-                                    }
-                                );
+                                            this.audio.onended = () => {
+                                                console.log("audio.onended");
+                                                this.isAudioPlaying = false;
+                                                store.dispatch(
+                                                    setMessage(
+                                                        "D키를 눌러\n녹음을 시작하세요"
+                                                    )
+                                                );
+                                                store.dispatch(
+                                                    setCanRequestRecommend(true)
+                                                );
+                                            };
+                                            this.audio.play();
+                                        }
+                                    );
 
                                 this.socket2!.on(
                                     "grammarCorrection",
@@ -937,7 +950,7 @@ export default class USAScene extends Phaser.Scene {
                         if (this.recorder2.state === "recording") {
                             store.dispatch(setRecord(true));
                             store.dispatch(
-                                setMessage("D키를 눌러 녹음을 시작하세요")
+                                setMessage("D키를 눌러\n녹음을 시작하세요")
                             );
                             this.isAudioPlaying = true;
                             this.recorder2!.stop();
@@ -946,7 +959,7 @@ export default class USAScene extends Phaser.Scene {
                             store.dispatch(setRecord(false));
                             store.dispatch(
                                 setMessage(
-                                    "녹음 중입니다. D키를 눌러 녹음을 종료하세요"
+                                    "녹음 중입니다\nD키를 눌러 녹음을 종료하세요"
                                 )
                             );
                             this.recorder2!.start();
@@ -963,7 +976,7 @@ export default class USAScene extends Phaser.Scene {
             if (this.isAudioPlaying) {
                 this.audio?.pause();
                 this.isAudioPlaying = false;
-                store.dispatch(setMessage("D키를 눌러 녹음을 시작하세요"));
+                store.dispatch(setMessage("D키를 눌러\n녹음을 시작하세요"));
                 store.dispatch(setCanRequestRecommend(true));
                 this.audio = new Audio();
                 this.audio = null
@@ -973,7 +986,7 @@ export default class USAScene extends Phaser.Scene {
     playInteractionAnims() {
         for (let npcInfo of this.npcList) {
             if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y, npcInfo.x, npcInfo.y) < 100) {
-                if (npcInfo.name === 'chairMart' || npcInfo.name === 'coach_park') {
+                if (npcInfo.name === 'Mart' || npcInfo.name === 'coach_park') {
                     return;
                 }
                 this.interactionSprite?.setPosition(npcInfo.x, npcInfo.y - 50);
@@ -1093,8 +1106,6 @@ export default class USAScene extends Phaser.Scene {
 
             this.player1!.setVelocityX(velocityX);
             this.player1!.setVelocityY(velocityY);
-            this.userIdText!.setX(this.player1!.x);
-            this.userIdText!.setY(this.player1!.y - 50);
 
             if (velocityX === 0 && velocityY === 0) {
                 if (this.player1.anims.isPlaying) {
@@ -1213,7 +1224,7 @@ export default class USAScene extends Phaser.Scene {
                     blob.arrayBuffer().then((buffer) => {
                         console.log("buffer: ", buffer);
                         store.dispatch(
-                            setMessage("응답 중입니다. 잠시만 기다려주세요")
+                            setMessage("응답 중입니다\n잠시만 기다려주세요")
                         );
                         this.socket2!.emit("audioSend", {
                             userNickname: this.userNickname,
@@ -1410,10 +1421,10 @@ export default class USAScene extends Phaser.Scene {
         this.npcList.push(interact_sprite1);
 
         let interact_sprite2: npcInfo = {
-            name: "couch_park2",
-            x: 848,
-            y: 920,
-            texture: "couch_park1",
+            name: "chairMart",
+            x: 2603 - this.offset_x,
+            y: 1362 - this.offset_y,
+            texture: "chairMart",
             sprite: null,
             role: "freeTalkingPlace",
             moving: false,
@@ -1495,10 +1506,10 @@ export default class USAScene extends Phaser.Scene {
 
 
         let interact_sprite10: npcInfo = {
-            name: "chairMart",
+            name: "Mart",
             x: 2603 - this.offset_x,
             y: 1362 - this.offset_y,
-            texture: "chairMart",
+            texture: "Mart",
             sprite: null,
             role: "rolePlayingPlace",
             moving: false,
