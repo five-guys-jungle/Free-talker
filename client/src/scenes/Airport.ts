@@ -485,7 +485,12 @@ export default class AirportScene extends Phaser.Scene {
                                 this.isAudioPlaying = true;
                                 this.socket2!.on("translatedText", (translatedText: string) => {
                                     console.log("translatedText: ", translatedText);
-                                    store.dispatch(setText(translatedText));
+                                    if (translatedText === "ChatGPT API Error.") {
+                                        store.dispatch(setText("다시 한번 시도해주세요."));
+                                    }
+                                    else {
+                                        store.dispatch(setText(translatedText));
+                                    }
                                 });
                                 // TODO : npcFirstResponse 받고, audio 재생하는 동안 E, D키 비활성화 및 '응답중입니다. 잠시만 기다려주세요' 출력
                                 this.socket2!.on("npcFirstResponse", (response: any) => {
