@@ -54,14 +54,14 @@ const SentenceList: React.FC = () => {
         if (canRequestRecommend) {
             const lastMessage = talkBoxMessages[talkBoxMessages.length - 1].text;
             const clickEvent = new CustomEvent('recomButtonClicked', {
-                detail: { message: sentences.length , lastMessage: lastMessage}
+                detail: { message: sentences.length, lastMessage: lastMessage }
             });
             window.dispatchEvent(clickEvent);
         }
         // if (!isOuterDivVisible && !record) {
         //     // dispatch(setRecord(true));            
         // }
-        
+
     };
 
     useEffect(() => {
@@ -84,15 +84,15 @@ const SentenceList: React.FC = () => {
             state.talkBox.messages[state.talkBox.messages.length - 1]?.name
     );
     return (
-        <div className="container" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100%", fontFamily:"Poppins" }}>
+        <div className="container" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100%", fontFamily: "Poppins" }}>
             <DialogTitle>freetalk to the {lastMessageName || "NPC"} </DialogTitle>
-            
+
             {isOuterDivVisible && (
                 <SentenceOuterDiv>{sentenceViews}</SentenceOuterDiv>
             )}
-             <AdditionalText>녹음 시작/끝 : <span style={{ color: "#C70039", fontWeight : "bold"}}>D</span><Space></Space> 대화스킵 : <span style={{ color: "#C70039", fontWeight : "bold"}}>S</span><Space></Space>대화종료 : <span style={{ color: "#C70039", fontWeight : "bold" }}>E</span> </AdditionalText>
+            <AdditionalText>녹음 시작/끝 : <span style={{ color: "#C70039", fontWeight: "bold" }}>D</span><Space></Space> 대화스킵 : <span style={{ color: "#C70039", fontWeight: "bold" }}>S</span><Space></Space>대화종료 : <span style={{ color: "#C70039", fontWeight: "bold" }}>E</span> </AdditionalText>
             {canRequestRecommend && (
-                <Button onClick={handleClick} isOpen={isOuterDivVisible} longPress={isLongPress} style={{position:"absolute"}}>
+                <Button onClick={handleClick} isOpen={isOuterDivVisible} longPress={isLongPress} style={{ position: "absolute" }}>
                     추천 문장 보기
                 </Button>)}
         </div>
@@ -146,7 +146,7 @@ const SentenceOuterDiv = styled.div`
     flex: 1;
     width: 40vw;
     height: 50vh;
-    margin: 5px auto 10px;
+    margin: 5px auto;
     flex-direction: column; // Add this
     padding: 0 0%; /* 화면 양쪽에 10% 공간을 추가 */
     justify-content: center;
@@ -164,13 +164,13 @@ const SentenceOuterDiv = styled.div`
 `;
 // 추가 텍스트를 위한 styled-component 생성
 const AdditionalText = styled.div`
-    font-size: 1.2rem;  // 원하는 텍스트 크기로 설정하세요.
-    margin-left: -35%;  // 원하는 간격으로 조정하세요.
+    font-size: 1.2rem;  
+    margin: auto;  
     font-family: 'MaplestoryOTFLight';
 
 `;
 const Space = styled.span`
-    margin-left: 25px;  // 원하는 간격으로 조정하세요.
+    margin-left: 25px;  
 
 `;
 const SentenceDiv = styled.div`
@@ -196,9 +196,10 @@ const SentenceDiv = styled.div`
     .sentence {
         background-color: #f7fafc;
         // width: fit-content; // Adjust this
+        display: flex;
         opacity: 1.0;
         // width: 600px;
-        height: 7vh;
+        height: auto;
         width: 32vw;
         margin: 2vh auto;
         // margin: 0 auto; // Adjust this
@@ -213,6 +214,7 @@ const SentenceDiv = styled.div`
     .field {
         display: flex;
         justify-content: flex-start;
+        align-items: center;
         margin-top: 4px;
     }
 
@@ -225,7 +227,7 @@ const SentenceDiv = styled.div`
 
     .value {
         color: #4a5568;
-        font-size: 2.5vh;
+        font-size: 2.2vh;
     }
 
     .text .value {

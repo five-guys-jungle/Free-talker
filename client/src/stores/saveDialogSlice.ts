@@ -94,7 +94,9 @@ export const loadDialog = async (state: Dialog) => {
                     new Date(Date.parse(month + " 1, 2012")).getMonth() + 1; // Convert month name to number
                 const [hour, minute, second] = time.split(":");
                 const convertedHour =
-                    partOfDay === "오후" && +hour !== 12 ? +hour + 12 : +hour; // Convert to 24-hour format
+                    partOfDay === "오후" && +hour !== 12 ? +hour + 12 :
+                        +hour === 12 ? 0 : +hour; // Convert to 24-hour format
+
                 return `${year}-${monthNumber}-${day} ${convertedHour}:${minute}:${second}`;
             };
 
@@ -103,12 +105,12 @@ export const loadDialog = async (state: Dialog) => {
             const timestampA = Date.parse(convertedTimestampA);
             const timestampB = Date.parse(convertedTimestampB);
 
-            console.log(
-                `Converted timestamp A: ${convertedTimestampA}, parsed: ${timestampA}`
-            );
-            console.log(
-                `Converted timestamp B: ${convertedTimestampB}, parsed: ${timestampB}`
-            );
+            // console.log(
+            //     `Converted timestamp A: ${convertedTimestampA}, parsed: ${timestampA}`
+            // );
+            // console.log(
+            //     `Converted timestamp B: ${convertedTimestampB}, parsed: ${timestampB}`
+            // );
 
             if (timestampA > timestampB) {
                 return -1;
@@ -118,7 +120,7 @@ export const loadDialog = async (state: Dialog) => {
                 return 0;
             }
         });
-        console.log("after sorting: ", existingDialogs);
+        // console.log("after sorting: ", existingDialogs);
         // console.log(existingDialogs)
         return existingDialogs;
     } catch (e) {
