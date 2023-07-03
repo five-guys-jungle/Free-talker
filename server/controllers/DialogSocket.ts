@@ -2,7 +2,7 @@ import { Server as SocketIOServer, Socket } from "socket.io";
 import { userDialogSocketEventHandler } from "./userDialogController"; 
 import { freeDialogSocketEventHandler } from './voiceController';  
 
-let talkingPlaces:string[] = ["airport_chair1", "couch_park1","couch_park2","couch_park3", "couch_park4","couch_park5","couch_park6","couch_park7", "Mart"];
+let talkingPlaces:string[] = ["airport_chair1", "couch_park1","couch_park2","couch_park3", "couch_park4","couch_park5","couch_park6","couch_park7", "Mart", "Restaurant", "Cafe"];
 const maxConnections = 2;
 let currentConnections = 0;
 let socketEndpoint:string;
