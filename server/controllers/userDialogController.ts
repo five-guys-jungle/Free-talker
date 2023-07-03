@@ -12,8 +12,31 @@ const roomNum: {
 } = {
 	
 	Mart: 0,
+	Restaurant: 0,
+	Cafe:0,
 }
 let socketIdList:string[] = [];
+
+class seat_position {
+	first_position: string;
+	second_position: string;
+
+	constructor(first_position: string, second_position: string) {
+		this.first_position = first_position;
+		this.second_position = second_position;
+	}
+}
+const seat_position_list: {
+	[key: string]: seat_position;
+} = {
+	Mart: new seat_position("", ""),
+	Restaurant: new seat_position("", ""),
+	Cafe: new seat_position("", ""),
+	couch_park4: new seat_position("", ""),
+	couch_park5: new seat_position("", ""),
+	couch_park6: new seat_position("", ""),
+	couch_park7: new seat_position("", ""),
+}
 // freedialogsocketEventHandler 함수 수정
 export function userDialogSocketEventHandler(socket: Socket) {
 	console.log(socket.id, "connection---------------------------------");
@@ -34,6 +57,20 @@ export function userDialogSocketEventHandler(socket: Socket) {
 			// console.log("socketIdList: ", socketIdList);
 			console.log("roomNum: ", roomNum[placeName]);
 		}
+
+		if (seat_position_list[placeName].first_position === "" && seat_position_list[placeName].second_position === "") {
+			seat_position_list[placeName].first_position = socket.id;
+			console.log("-111111111111111`11111111111")
+			socket.emit("seat_position", 1);
+		}
+		else if (seat_position_list[placeName].first_position && seat_position_list[placeName].second_position === "") {
+			seat_position_list[placeName].second_position = socket.id;
+			socket.emit("seat_position", 2);
+		}
+		else if (seat_position_list[placeName].first_position === "" && seat_position_list[placeName].second_position) {
+			socket.emit("seat_position", 1);
+		}
+
 		
 		// console.log(`place Name : ${placeName}`);
 		// if (roomNum[placeName] == 1) {
@@ -68,6 +105,16 @@ export function userDialogSocketEventHandler(socket: Socket) {
 		  // console.log("roomNum: ", roomNum[placeName]);
 		  socket.broadcast.emit("outcharacter");
 		//   socket.broadcast.emit("disconnected", roomNum[placeName]);
+		for (const key in seat_position_list) {
+			if (seat_position_list.hasOwnProperty(key)) {
+				const seatPosition = seat_position_list[key];
+				if (seatPosition.first_position === socket.id || seatPosition.second_position === socket.id) {
+					seatPosition.first_position = "";
+					seatPosition.second_position = "";
+				}
+			}
+		}
+		console.log("seat_position_list: ", seat_position_list);
 		});
 	socket.broadcast.emit("userconnected");
 	

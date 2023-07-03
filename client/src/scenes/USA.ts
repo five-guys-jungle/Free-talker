@@ -300,8 +300,8 @@ export default class USAScene extends Phaser.Scene {
                 second_seat: {x: 1727, y: 795}
             },
             "couch_park4": {
-                first_seat: {x: 1048, y: 1272},
-                second_seat: {x: 1108, y: 1272}
+                first_seat: {x: 1048, y: 795},
+                second_seat: {x: 1108, y: 795}
             },
             "couch_park5": {
                 first_seat: {x: 713, y: 1916},
@@ -315,6 +315,19 @@ export default class USAScene extends Phaser.Scene {
                 first_seat: {x: 72, y: 1916},
                 second_seat: {x: 132, y: 1916}
             },
+            "Mart": {
+                first_seat: {x: 2103, y: 1042},
+                second_seat: {x: 2143, y: 1042}
+            },
+            "Restaurant": {
+                first_seat: {x: 2290, y: 350},
+                second_seat: {x: 2330, y: 350}
+            },
+            "Cafe": {
+                first_seat: {x: 1210, y: 380},
+                second_seat: {x: 1250, y: 380}
+            },
+
     }
         createCharacterAnims(this.anims);
         if (this.socket) {
@@ -501,6 +514,44 @@ export default class USAScene extends Phaser.Scene {
                             this.cursors!.up.enabled = false;
                             this.cursors!.down.enabled = false;
                             valve_E = false;
+
+                            window.addEventListener("seat", (event: any) => {
+                                console.log("event.detail: ", event.detail);
+                                console.log("seat event listener");
+                                if (event.detail.place_name === "couch_park1" || event.detail.place_name === "couch_park2") {
+                                    this.player1!.anims.play(
+                                        `${this.player1!.texture.key}_sit_left`,
+                                        true
+                                );
+                                this.allPlayers[this.socket!.id].seat = 1;
+                                this.seatEvent = 1;
+                                }
+                                else {
+                                    this.player1!.anims.play(
+                                        `${this.player1!.texture.key}_idle_down`,
+                                        true
+                                );
+                                this.allPlayers[this.socket!.id].seat = 2;
+                                this.seatEvent = 2;
+                                }
+                                
+                                
+                                if (event.detail.seat_position === 1) {
+                                 
+                                    
+                                    this.allPlayers[this.socket!.id].x = USA_talkingzone[event.detail.place_name].first_seat.x;
+                                    this.allPlayers[this.socket!.id].y = USA_talkingzone[event.detail.place_name].first_seat.y;
+                                    this.player1!.setPosition(USA_talkingzone[event.detail.place_name].first_seat.x, USA_talkingzone[event.detail.place_name].first_seat.y);
+                                }
+                                else if (event.detail.seat_position === 2) {
+                                    
+                                    this.allPlayers[this.socket!.id].x = USA_talkingzone[event.detail.place_name].second_seat.x;
+                                    this.allPlayers[this.socket!.id].y = USA_talkingzone[event.detail.place_name].second_seat.y;
+                                    this.player1!.setPosition(USA_talkingzone[event.detail.place_name].second_seat.x, USA_talkingzone[event.detail.place_name].second_seat.y);
+                                }
+                                
+                                
+                            },false);
 
 
                             window.addEventListener("exitcall", (e: Event) => {
@@ -1516,6 +1567,30 @@ export default class USAScene extends Phaser.Scene {
         };
         interact_sprite10.sprite = this.physics.add.sprite(interact_sprite10.x, interact_sprite10.y, interact_sprite10.texture);
         this.npcList.push(interact_sprite10);
+
+        let interact_sprite11: npcInfo = {
+            name: "Restaurant",
+            x: 2310,
+            y: 350,
+            texture: "Mart",
+            sprite: null,
+            role: "rolePlayingPlace",
+            moving: false,
+        };
+        interact_sprite11.sprite = this.physics.add.sprite(interact_sprite11.x, interact_sprite11.y, interact_sprite11.texture);
+        this.npcList.push(interact_sprite11);
+
+        let interact_sprite12: npcInfo = {
+            name: "Cafe",
+            x: 1230,
+            y: 380,
+            texture: "Mart",
+            sprite: null,
+            role: "rolePlayingPlace",
+            moving: false,
+        };
+        interact_sprite12.sprite = this.physics.add.sprite(interact_sprite12.x, interact_sprite12.y, interact_sprite12.texture);
+        this.npcList.push(interact_sprite12);
 
         let interact_sprite8: npcInfo = {
             name: "taxi",
