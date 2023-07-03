@@ -11,6 +11,7 @@ import MusicOffRoundedIcon from '@mui/icons-material/MusicOffRounded';
 import { bgmOn, bgmOff } from '../stores/bgmOnoffSlice';
 import store from "../stores";
 import styled from 'styled-components';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const audios = Object.entries(bgms).map(([key, audio]) => ({
     name: key,
@@ -18,6 +19,19 @@ const audios = Object.entries(bgms).map(([key, audio]) => ({
 }));
 
 
+
+
+const theme = createTheme({
+    palette: {
+    primary: {
+        // Purple and green play nicely together.
+        main: '#2979ff',
+    },
+      secondary: {
+        main: '#2962ff',
+      },
+    },
+});
 
 const Bgm = () => {
 
@@ -47,8 +61,8 @@ const Bgm = () => {
     return (
         <div style={{ position: "absolute", bottom: '2%', left: '1%', }}>
             {(mode == AIRPORT || mode == USA) &&
-
-                (<Box style={{ position: "relative" }}
+                <ThemeProvider theme={theme}>
+                <Box style={{ position: "relative" }}
                     sx={{
                         position: 'absolute',
                         bottom: 0,
@@ -63,7 +77,9 @@ const Bgm = () => {
                         {bgmonoff && <AudiotrackIcon />}
                         {!bgmonoff && <MusicOffRoundedIcon />}
                     </StyledFab>
-                </Box>)}
+                </Box>
+                </ThemeProvider>
+                }
             {/* {(mode==START || mode==LOGIN) && <>
         {bgmonoff && <audio id="myAudio" src={audios[0].audio} controls autoPlay loop style={{ display: "none" }}/>}
         {!bgmonoff && <audio id="myAudio" src={audios[0].audio} controls autoPlay muted style={{ display: "none" }}/>}

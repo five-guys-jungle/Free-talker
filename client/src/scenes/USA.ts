@@ -288,34 +288,34 @@ export default class USAScene extends Phaser.Scene {
 
         let USA_talkingzone: TalkingZone = {
             "couch_park1": {
-                first_seat: {x: 847, y: 1272},
-                second_seat: {x: 847, y: 1243}
+                first_seat: { x: 847, y: 1272 },
+                second_seat: { x: 847, y: 1243 }
             },
             "couch_park2": {
-                first_seat: {x: 847, y: 913},
-                second_seat: {x: 847, y: 889}
+                first_seat: { x: 847, y: 913 },
+                second_seat: { x: 847, y: 889 }
             },
             "couch_park3": {
-                first_seat: {x: 1667, y: 795},
-                second_seat: {x: 1727, y: 795}
+                first_seat: { x: 1667, y: 795 },
+                second_seat: { x: 1727, y: 795 }
             },
             "couch_park4": {
-                first_seat: {x: 1048, y: 1272},
-                second_seat: {x: 1108, y: 1272}
+                first_seat: { x: 1048, y: 1272 },
+                second_seat: { x: 1108, y: 1272 }
             },
             "couch_park5": {
-                first_seat: {x: 713, y: 1916},
-                second_seat: {x: 773, y: 1916}
+                first_seat: { x: 713, y: 1916 },
+                second_seat: { x: 773, y: 1916 }
             },
             "couch_park6": {
-                first_seat: {x: 374, y: 1916},
-                second_seat: {x: 434, y: 1916}
+                first_seat: { x: 374, y: 1916 },
+                second_seat: { x: 434, y: 1916 }
             },
             "couch_park7": {
-                first_seat: {x: 72, y: 1916},
-                second_seat: {x: 132, y: 1916}
+                first_seat: { x: 72, y: 1916 },
+                second_seat: { x: 132, y: 1916 }
             },
-    }
+        }
         createCharacterAnims(this.anims);
         if (this.socket) {
             this.socket.disconnect();
@@ -403,36 +403,36 @@ export default class USAScene extends Phaser.Scene {
                                     this.player1!.anims.play(
                                         `${this.player1!.texture.key}_sit_left`,
                                         true
-                                );
-                                this.allPlayers[this.socket!.id].seat = 1;
-                                this.seatEvent = 1;
+                                    );
+                                    this.allPlayers[this.socket!.id].seat = 1;
+                                    this.seatEvent = 1;
                                 }
                                 else {
                                     this.player1!.anims.play(
                                         `${this.player1!.texture.key}_idle_down`,
                                         true
-                                );
-                                this.allPlayers[this.socket!.id].seat = 2;
-                                this.seatEvent = 2;
+                                    );
+                                    this.allPlayers[this.socket!.id].seat = 2;
+                                    this.seatEvent = 2;
                                 }
-                                
-                                
+
+
                                 if (event.detail.seat_position === 1) {
-                                 
-                                    
+
+
                                     this.allPlayers[this.socket!.id].x = USA_talkingzone[event.detail.place_name].first_seat.x;
                                     this.allPlayers[this.socket!.id].y = USA_talkingzone[event.detail.place_name].first_seat.y;
                                     this.player1!.setPosition(USA_talkingzone[event.detail.place_name].first_seat.x, USA_talkingzone[event.detail.place_name].first_seat.y);
                                 }
                                 else if (event.detail.seat_position === 2) {
-                                    
+
                                     this.allPlayers[this.socket!.id].x = USA_talkingzone[event.detail.place_name].second_seat.x;
                                     this.allPlayers[this.socket!.id].y = USA_talkingzone[event.detail.place_name].second_seat.y;
                                     this.player1!.setPosition(USA_talkingzone[event.detail.place_name].second_seat.x, USA_talkingzone[event.detail.place_name].second_seat.y);
                                 }
-                                
-                                
-                            },false);
+
+
+                            }, false);
 
                             window.addEventListener("exitcall", (e: Event) => {
                                 console.log("exitcall event listener");
@@ -748,8 +748,8 @@ export default class USAScene extends Phaser.Scene {
                                             store.dispatch(
                                                 appendMessage({
                                                     playerId: this.playerId,
-                                                    name: npcInfo.name,
-                                                    img: npcInfo.texture,
+                                                    name: this.userNickname,
+                                                    img: this.playerTexture,
                                                     // img: "",
                                                     side: "right",
                                                     text: response.transcription,
@@ -811,27 +811,15 @@ export default class USAScene extends Phaser.Scene {
                                             this.isAudioPlaying = false;
                                             store.dispatch(
                                                 setMessage(
-                                                    "D키를 눌러 녹음을 시작하세요"
+                                                    "D키를 눌러\n녹음을 시작하세요"
                                                 )
                                             );
-                                            // this.isAudioPlaying = true;
-                                            this.audio = new Audio(
-                                                response.audioUrl
+                                            store.dispatch(
+                                                setCanRequestRecommend(true)
                                             );
-                                            this.audio.onended = () => {
-                                                console.log("audio.onended");
-                                                this.isAudioPlaying = false;
-                                                store.dispatch(
-                                                    setMessage(
-                                                        "D키를 눌러\n녹음을 시작하세요"
-                                                    )
-                                                );
-                                                store.dispatch(
-                                                    setCanRequestRecommend(true)
-                                                );
-                                            };
-                                            this.audio.play();
-                                        }
+                                        };
+                                        this.audio.play();
+
                                     }
                                 );
 
@@ -1645,7 +1633,7 @@ export default class USAScene extends Phaser.Scene {
                                         `${otherPlayers[key].playerTexture}_sit_left`,
                                         true
                                     );
-                                } else  {
+                                } else {
                                     // console.log("he is not seated")
                                     playerSprite.anims.play(
                                         `${otherPlayers[key].playerTexture}_idle_down`,
