@@ -195,7 +195,7 @@ const Report = (data: any) => {
                     <p>생존영어 가능!</p>
                     <p>말 못해 죽진 않을 거 같아요!</p>
                     <div className="highlighted">
-                      <div className="text" style={{color: "coral"}}> <span>You can survive!</span></div>
+                      <div className="text" style={{color: "orangered"}}> <span>You can survive!</span></div>
                     </div></>)
                   }
                 </div>

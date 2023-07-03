@@ -408,7 +408,7 @@ const ReportBook = (data: any) => {
                                                                             같아요!
                                                                         </p>
                                                                         <div className="highlighted">
-                                                                            <div className="text" style={{color: "coral"}}>
+                                                                            <div className="text" style={{color: "orangered"}}>
                                                                                 <span>
                                                                                     You
                                                                                     can
