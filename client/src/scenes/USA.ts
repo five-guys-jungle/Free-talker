@@ -1611,23 +1611,113 @@ export default class USAScene extends Phaser.Scene {
         temp1.setDepth(100);
         temp1.play('arrowDownAnim', true);
 
+        const temp21: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite1.x + 30, interact_sprite1.y - 50, "E_keyboard");
+        temp21.setVisible(true);
+        temp21.setScale(0.5);
+        temp21.setDepth(100);
 
-        const temp2: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite1.x + 30, interact_sprite1.y - 50, "E_keyboard");
+
+        const temp2: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite2.x, interact_sprite2.y - 50, "arrowDown");
         temp2.setVisible(true);
-        temp2.setScale(0.5);
+        temp2.setScale(1.3);
         temp2.setDepth(100);
+        temp2.play('arrowDownAnim', true);
 
-        const temp3: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite2.x, interact_sprite2.y - 50, "arrowDown");
+        const temp22: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite2.x + 30, interact_sprite2.y - 50, "E_keyboard");
+        temp22.setVisible(true);
+        temp22.setScale(0.5);
+        temp22.setDepth(100);
+
+        const temp3: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite3.x, interact_sprite3.y - 50, "arrowDown");
         temp3.setVisible(true);
         temp3.setScale(1.3);
         temp3.setDepth(100);
         temp3.play('arrowDownAnim', true);
 
+        const temp23: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite3.x+30, interact_sprite3.y - 50, "E_keyboard");
+        temp23.setVisible(true);
+        temp23.setScale(0.5);
+        temp23.setDepth(100);
 
-        const temp4: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite2.x + 30, interact_sprite2.y - 50, "E_keyboard");
+        const temp4: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite4.x, interact_sprite4.y - 50, "arrowDown");
         temp4.setVisible(true);
-        temp4.setScale(0.5);
+        temp4.setScale(1.3);
         temp4.setDepth(100);
+        temp4.play('arrowDownAnim', true);
+
+
+        const temp24: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite4.x+30, interact_sprite4.y - 50, "E_keyboard");
+        temp24.setVisible(true);
+        temp24.setScale(0.5);
+        temp24.setDepth(100);
+
+        const temp5: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite5.x, interact_sprite5.y - 50, "arrowDown");
+        temp5.setVisible(true);
+        temp5.setScale(1.3);
+        temp5.setDepth(100);
+        temp5.play('arrowDownAnim', true);
+
+        const temp25: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite5.x+30, interact_sprite5.y - 50, "E_keyboard");
+        temp25.setVisible(true);
+        temp25.setScale(0.5);
+        temp25.setDepth(100);
+
+        const temp6: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite6.x, interact_sprite6.y - 50, "arrowDown");
+        temp6.setVisible(true);
+        temp6.setScale(1.3);
+        temp6.setDepth(100);
+        temp6.play('arrowDownAnim', true);
+
+        const temp26: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite6.x+30, interact_sprite6.y - 50, "E_keyboard");
+        temp26.setVisible(true);
+        temp26.setScale(0.5);
+        temp26.setDepth(100);
+
+        const temp7: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite7.x, interact_sprite7.y - 50, "arrowDown");
+        temp7.setVisible(true);
+        temp7.setScale(1.3);
+        temp7.setDepth(100);
+        temp7.play('arrowDownAnim', true);
+
+        const temp27: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite7.x+30, interact_sprite7.y - 50, "E_keyboard");
+        temp27.setVisible(true);
+        temp27.setScale(0.5);
+        temp27.setDepth(100);
+
+        const temp10: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite10.x, interact_sprite10.y - 50, "arrowDown");
+        temp10.setVisible(true);
+        temp10.setScale(1.3);
+        temp10.setDepth(100);
+        temp10.play('arrowDownAnim', true);
+
+        const temp30: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite10.x+30, interact_sprite10.y - 50, "E_keyboard");
+        temp30.setVisible(true);
+        temp30.setScale(0.5);
+        temp30.setDepth(100);
+        
+        const temp11: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite11.x, interact_sprite11.y - 50, "arrowDown");
+        temp11.setVisible(true);
+        temp11.setScale(1.3);
+        temp11.setDepth(100);
+        temp11.play('arrowDownAnim', true);
+
+        const temp31: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite11.x+30, interact_sprite11.y - 50, "E_keyboard");
+        temp31.setVisible(true);
+        temp31.setScale(0.5);
+        temp31.setDepth(100);
+
+        const temp12: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite12.x, interact_sprite12.y - 50, "arrowDown");
+        temp12.setVisible(true);
+        temp12.setScale(1.3);
+        temp12.setDepth(100);
+        temp12.play('arrowDownAnim', true);
+
+        const temp32: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite12.x+30, interact_sprite12.y - 50, "E_keyboard");
+        temp32.setVisible(true);
+        temp32.setScale(0.5);
+        temp32.setDepth(100);
+
+
     }
     gameSocketEventHandler(initial: boolean = true) {
         this.socket = io(serverUrl);
