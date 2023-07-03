@@ -181,21 +181,21 @@ const Report = (data: any) => {
                     <p>원어민 수준이에요!</p>
                     <p>영어로 대화가 자연스러워요!</p>
                     <div className="highlighted">
-                      <div className="text"> <span>Perfect!</span></div>
+                      <div className="text" style={{color: "blue"}}> <span>Perfect!</span></div>
                     </div></>)
                   }
                   {(score >= 80 && score < 100) && (<>
                     <p>대화에 무리 없는 수준이에요!</p>
                     <p>상황에 따라 알맞은 대화를 할 수 있어요!</p>
                     <div className="highlighted">
-                      <div className="text"> <span>Good!</span></div>
+                      <div className="text" style={{color: "green"}}> <span>Good!</span></div>
                     </div></>)
                   }
                   {score < 80 && (<>
                     <p>생존영어 가능!</p>
                     <p>말 못해 죽진 않을 거 같아요!</p>
                     <div className="highlighted">
-                      <div className="text"> <span>You can survive!</span></div>
+                      <div className="text" style={{color: "coral"}}> <span>You can survive!</span></div>
                     </div></>)
                   }
                 </div>
@@ -240,8 +240,9 @@ const Report = (data: any) => {
                         style={{ width: "440px" , height:"100px", marginTop:"35px"}}
                         modules={[Pagination]}
                         pagination={{clickable:true,
+                        dynamicBullets: true,
                         renderBullet: function(index, className){
-                            return `<span class="${className}" style="background-color: #ff0000;"></span>`
+                            return `<span class="${className}"width: 10px; height: 10px; style="background-color: #ff0000;"></span>`
                         }
                         }}
                         >
@@ -252,8 +253,8 @@ const Report = (data: any) => {
                                   <SwiperSlide key={index}>
                                   {
                                   <div className="correction-div" style={{marginLeft:"25px"}}>
-                                    <p>User Sentence : {correction.original}</p>
-                                    <p>Corrected Sentence: {correction.correction}</p>
+                                    <p style={{color:"crimson", fontWeight:"bold"}}>User Sentence : {correction.original}</p>
+                                    <p style={{color:"forestgreen", fontWeight:"bold"}}>Corrected Sentence: {correction.correction}</p>
                                   </div>
                                   }
                                   </SwiperSlide>
@@ -482,6 +483,10 @@ const ReportDiv = styled.div`
     margin: 35px 20px 0 0;
     position: relative;
     font-family: Open Sans;
+  }
+  .corrections .swiper-pagination-bullet {
+    display: inline-block;
+    margin: 0 5px; /* 불렛 간의 간격 설정 */
   }
   .corrections span {
     display: block;

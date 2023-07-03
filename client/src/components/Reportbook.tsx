@@ -27,6 +27,7 @@ import { GAME_STATUS } from "../stores/gameSlice";
 //     onClose: () => void;
 // }
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { orange } from "@mui/material/colors";
 
 const theme = createTheme({
     palette: {
@@ -354,8 +355,7 @@ const ReportBook = (data: any) => {
                                                                             자연스러워요!
                                                                         </p>
                                                                         <div className="highlighted">
-                                                                            <div className="text">
-                                                                                {" "}
+                                                                            <div className="text" style={{color: "blue"}}>
                                                                                 <span>
                                                                                     Perfect!
                                                                                 </span>
@@ -384,8 +384,7 @@ const ReportBook = (data: any) => {
                                                                                 있어요!
                                                                             </p>
                                                                             <div className="highlighted">
-                                                                                <div className="text">
-                                                                                    {" "}
+                                                                                <div className="text" style={{color: "green"}}>
                                                                                     <span>
                                                                                         Good!
                                                                                     </span>
@@ -409,8 +408,7 @@ const ReportBook = (data: any) => {
                                                                             같아요!
                                                                         </p>
                                                                         <div className="highlighted">
-                                                                            <div className="text">
-                                                                                {" "}
+                                                                            <div className="text" style={{color: "coral"}}>
                                                                                 <span>
                                                                                     You
                                                                                     can
@@ -491,8 +489,9 @@ const ReportBook = (data: any) => {
                                                         style={{ width: "440px" , height:"100px", marginTop:"35px"}}
                                                         modules={[Pagination]}
                                                         pagination={{clickable:true,
+                                                        dynamicBullets: true,
                                                         renderBullet: function(index, className){
-                                                            return `<span class="${className}" style="background-color: #ff0000;"></span>`
+                                                            return `<span class="${className}"width: 10px; height: 10px; style="background-color: #ff0000;"></span>`
                                                         }}}
                                                         >
                                                         <div className="corrections-list">
@@ -508,7 +507,7 @@ const ReportBook = (data: any) => {
                                                                         <div
                                                                             className="correction-div" style={{marginLeft:"25px"}}
                                                                         >
-                                                                            <p>
+                                                                            <p style={{color:"crimson", fontWeight:"bold"}}>
                                                                                 User
                                                                                 Sentence
                                                                                 :{" "}
@@ -516,7 +515,7 @@ const ReportBook = (data: any) => {
                                                                                     correction.original
                                                                                 }
                                                                             </p>
-                                                                            <p>
+                                                                            <p style={{color:"forestgreen", fontWeight:"bold"}}>
                                                                                 Corrected
                                                                                 Sentence:{" "}
                                                                                 {
@@ -805,6 +804,10 @@ const ReportDiv = styled.div`
     margin: 35px 20px 0 0;
     position: relative;
     font-family: Open Sans;
+  }
+  .corrections .swiper-pagination-bullet {
+    display: inline-block;
+    margin: 0 5px; /* 불렛 간의 간격 설정 */
   }
   .corrections span {
     display: block;
