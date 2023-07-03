@@ -205,10 +205,20 @@ export async function textCompletion(
 export async function convertTexttoSpeech(
     inputText: string,
     outputText: string,
-    npcName: string = "ImmigrationOfficer"
+    npcName: string = "ImmigrationOfficer",
+    level: string = "intermediate"
 ): Promise<Object> {
+    console.log("convertTexttoSpeech, level: ", level);
     try {
-        const ssmlText: string = `<speak><prosody rate="low" pitch="low">${outputText}</prosody></speak> `;
+        let rate: number = 1.0;
+        if (level === "beginner") {
+            rate = 1.0;
+        } else if (level === "intermediate") {
+            rate = 1.2;
+        } else if (level === "advanced") {
+            rate = 1.45;
+        }
+
         console.log(`convertTexttoSpeech, inputText: ${inputText}, outputText: ${outputText}`);
         const request: any = {
             // input: { ssml: ssmlText },
@@ -217,7 +227,10 @@ export async function convertTexttoSpeech(
                 languageCode: "en-US",
                 name: preDefinedVoiceType[npcName].voiceType,
             },
-            audioConfig: { audioEncoding: "MP3" },
+            audioConfig: {
+                audioEncoding: "MP3",
+                speakingRate: rate,
+            },
         };
         const [response_audio]: any = await client.synthesizeSpeech(request);
         const audioFileName = `${uuidv4()}.mp3`;
