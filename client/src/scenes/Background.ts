@@ -123,6 +123,10 @@ export default class Background extends Phaser.Scene {
             frameWidth: 32,
             frameHeight: 48,
         });
+        this.load.spritesheet("soobin", "assets/characters/soobin.png", {
+            frameWidth: 32,
+            frameHeight: 48,
+        });
 
         this.load.spritesheet('gate', 'assets/gate.png', {
             frameWidth: 64,
