@@ -28,7 +28,7 @@ export const handleScene = async (statusTo: string, data: any = {}) => {
                 if (phaserGame.scene.isActive(sceneKey)) {
                     phaserGame.scene.sleep(sceneKey);
                     if (phaserGame.scene.isSleeping("AirportScene")) {
-                        phaserGame.scene.wake("AirportScene");
+                        phaserGame.scene.wake("AirportScene", data);
                         break;
                     } else {
                         phaserGame.scene.start("AirportScene", data);
@@ -49,10 +49,10 @@ export const handleScene = async (statusTo: string, data: any = {}) => {
             store.dispatch(openUSA());
             for (let scene of phaserGame.scene.getScenes()) {
                 const sceneKey = scene.scene.key;
-                if (phaserGame.scene.isActive(sceneKey)){
+                if (phaserGame.scene.isActive(sceneKey)) {
                     phaserGame.scene.sleep(sceneKey);
                     if (phaserGame.scene.isSleeping("USAScene")) {
-                        phaserGame.scene.wake("USAScene");
+                        phaserGame.scene.wake("USAScene", data);
                         break;
                     } else {
                         phaserGame.scene.start("USAScene", data);
