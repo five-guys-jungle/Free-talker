@@ -93,7 +93,10 @@ const SentenceList: React.FC = () => {
             )}
             <AdditionalText>녹음 시작/끝 : <span style={{ color: "#C70039", fontWeight: "bold" }}>D</span><Space></Space> 대화스킵 : <span style={{ color: "#C70039", fontWeight: "bold" }}>S</span><Space></Space>대화종료 : <span style={{ color: "#C70039", fontWeight: "bold" }}>E</span> </AdditionalText>
             {canRequestRecommend && (
-                <Button onClick={handleClick} isOpen={isOuterDivVisible} longPress={isLongPress} style={{ position: "absolute" }}>
+                <Button
+                    onMouseDown={handleMouseDown}
+                    onMouseUp={handleMouseUp}
+                    onClick={handleClick} isOpen={isOuterDivVisible} longPress={isLongPress} style={{ position: "absolute" }}>
                     추천 문장 보기
                 </Button>)}
         </div>
@@ -103,6 +106,17 @@ const SentenceList: React.FC = () => {
 const SentenceBox: React.FC = () => {
     return <SentenceList />;
 };
+
+const handleMouseDown = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.stopPropagation();
+    // 여기에 추가적인 로직을 넣을 수 있습니다.
+};
+
+const handleMouseUp = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.stopPropagation();
+    // 여기에 추가적인 로직을 넣을 수 있습니다.
+};
+
 
 export default SentenceBox;
 

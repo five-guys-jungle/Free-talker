@@ -102,8 +102,11 @@ export function freeDialogSocketEventHandler(socket: Socket) {
 		for (const key in seat_position_list) {
 			if (seat_position_list.hasOwnProperty(key)) {
 				const seatPosition = seat_position_list[key];
-				if (seatPosition.first_position === socket.id || seatPosition.second_position === socket.id) {
+				if (seatPosition.first_position === socket.id) {
 					seatPosition.first_position = "";
+					
+				}
+				else if (seatPosition.second_position === socket.id) {
 					seatPosition.second_position = "";
 				}
 			}
