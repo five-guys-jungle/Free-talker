@@ -230,6 +230,7 @@ export async function convertTexttoSpeech(
             audioConfig: {
                 audioEncoding: "MP3",
                 speakingRate: rate,
+                pitch: preDefinedVoiceType[npcName].pitch,
             },
         };
         const [response_audio]: any = await client.synthesizeSpeech(request);
