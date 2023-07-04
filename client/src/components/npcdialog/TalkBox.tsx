@@ -135,9 +135,9 @@ const TalkDiv = styled.div`
         // width: 500px;
         // max-width: 500px;
         // max-width: 700px;
-        margin: 25px 10px;
+        margin: 0px 10px 7vh;
         width: 45vw;
-        height: 90vh;
+        height: 83vh;
         // height: 700px;
         border: 2px solid #ddd;
         border-radius: 5px;
