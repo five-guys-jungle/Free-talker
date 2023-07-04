@@ -6,9 +6,6 @@ import { setRecord } from "../../stores/recordSlice";
 import { RecordState } from "../../stores/recordSlice";
 import { TalkBoxState } from "../../stores/talkBoxSlice";
 import { css, keyframes } from 'styled-components';
-import TranslationBox from "../TranslationBox";
-import store from "../../stores";
-import { setText } from "../../stores/translationSlice";
 
 interface SentenceViewProps {
     sentence: Sentence;
@@ -17,40 +14,15 @@ interface SentenceViewProps {
 const SentenceView: React.FC<SentenceViewProps> = ({ sentence }) => {
     const { sentence: sentenceText } = sentence;
 
-    const [selectedText, setSelectedText] = useState<string | null>(null); // Add this state
-    const [mousePosition, setMousePosition] = useState<{ x: number, y: number } | null>(null);
-    const [dragStart, setDragStart] = useState<{ x: number, y: number } | null>(null);
-
-    const handleMouseUp = (e: React.MouseEvent) => {
-        console.log("handleMouseUp");
-        const selection = window.getSelection();
-        if (selection) {
-            const selectedText = selection.toString();
-            console.log(selectedText);
-            setSelectedText(selectedText); // Save selected text to state
-            setMousePosition({ x: e.clientX, y: e.clientY });  // Set mouse position
-        }
-    };
-    const handleMouseDown = (e: React.MouseEvent) => {
-        console.log("handleMouseDown");
-        setSelectedText(null); // Reset selected text
-        store.dispatch(setText("번역 중입니다......")); // Reset translation
-        setDragStart({ x: e.clientX, y: e.clientY });
-    };
-
     return (
         <SentenceDiv>
             <div className="sentence">
                 <div className="field">
                     {/* <span className="label">추천문장: </span> */}
                     <span
-                        className="value"
-                        onMouseDown={handleMouseDown} 
-                        onMouseUp={handleMouseUp}
-                    >{sentenceText}</span>
+                        className="value">{sentenceText}</span>
                 </div>
             </div>
-            {selectedText && dragStart && <TranslationBox text={selectedText} position={dragStart} onOut={() => setSelectedText(null)} />}
         </SentenceDiv>
     );
 };
@@ -93,7 +65,6 @@ const SentenceList: React.FC = () => {
         // }
 
     };
-
     useEffect(() => {
         if (record) {
             const timer = setTimeout(() => {

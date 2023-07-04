@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import styled, { css } from 'styled-components';
 import store from "../stores";
 import { setText } from "../stores/translationSlice";

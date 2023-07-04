@@ -260,7 +260,7 @@ const Report = (data: any) => {
 
             <div className="corrections"><span>✔︎ Corrections</span>
               <Swiper
-                style={{ width: "440px", height: "100px", marginTop: "35px" }}
+                style={{ width: "102%", height: "90px", marginTop: "35px" }}
                 modules={[Pagination]}
                 pagination={{
                   clickable: true,
@@ -274,11 +274,11 @@ const Report = (data: any) => {
                 <div className="corrections-list">
                   {corrections.length !== 0 &&
                     corrections.map((correction, index) => (
-                      <SwiperSlide key={index}>
+                      <SwiperSlide key={index} style={{ width: "102%", height: "66px", overflow: "auto" }}>
                         {
                           <div className="correction-div" style={{ marginLeft: "25px" }}>
-                            <p style={{ color: "crimson", fontWeight: "bold" }}>User Sentence : {correction.original}</p>
-                            <p style={{ color: "forestgreen", fontWeight: "bold" }}>Corrected Sentence: {correction.correction}</p>
+                            <p style={{ color: "crimson", fontWeight: "bold", marginTop: "0px", marginBottom: "4px" }}>User Sentence : {correction.original}</p>
+                            <p style={{ color: "forestgreen", fontWeight: "bold", marginTop: "0px", marginBottom: "4px" }}>Corrected Sentence: {correction.correction}</p>
                           </div>
                         }
                       </SwiperSlide>

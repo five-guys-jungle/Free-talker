@@ -390,6 +390,7 @@ export default class USAScene extends Phaser.Scene {
 
 
         this.input.keyboard!.on("keydown-E", async () => {
+            this.player1!.setVelocity(0, 0);
             if (this.player1 === null || this.player1 === undefined) {
                 return;
             }
@@ -403,6 +404,7 @@ export default class USAScene extends Phaser.Scene {
                         npcInfo.y
                     ) < 100
                 ) {
+                    this.player1!.setVelocity(0, 0);
                     console.log("npcInfo: ", npcInfo);
                     if (npcInfo.role === "freeTalkingPlace") {
                         console.log("chair");
@@ -511,7 +513,7 @@ export default class USAScene extends Phaser.Scene {
 
                     else if (npcInfo.role === "rolePlayingPlace") {
                         console.log("chair");
-
+                        this.player1!.setVelocity(0, 0);
                         if (valve_E === true) {
                             store.dispatch(
                                 setSocketNamespace({
@@ -584,7 +586,7 @@ export default class USAScene extends Phaser.Scene {
                                 this.cursors!.right.enabled = true;
                                 this.cursors!.up.enabled = true;
                                 this.cursors!.down.enabled = true;
-
+                                    
 
                                 valve_E = true;
 

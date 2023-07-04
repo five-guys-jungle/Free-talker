@@ -153,7 +153,7 @@ export default class AirportScene extends Phaser.Scene {
     create() {
         window.onbeforeunload = async () => {
             console.log("beforeunload");
-            const body = JSON.stringify({ userId: this.playerId })
+            const body = { userId: this.playerId }
             axios.post(`${DB_URL}/auth/logout`, body);
         };
 

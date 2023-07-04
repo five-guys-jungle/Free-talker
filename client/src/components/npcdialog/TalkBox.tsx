@@ -9,9 +9,6 @@ import {
     appendMessage,
     TalkBoxState,
 } from "../../stores/talkBoxSlice";
-import TranslationBox from "../TranslationBox";
-import store from "../../stores";
-import { setText } from "../../stores/translationSlice";
 
 const TalkBox: React.FC = () => {
     // const [messages, setMessages] = useState<Message[]>([]);
@@ -23,10 +20,6 @@ const TalkBox: React.FC = () => {
     const dispatch = useDispatch();
     const msgerInputRef = useRef<HTMLInputElement>(null);
     const msgerChatRef = useRef<HTMLDivElement>(null);
-    const [selectedText, setSelectedText] = useState<string | null>(null); // Add this state
-    const [mousePosition, setMousePosition] = useState<{ x: number, y: number } | null>(null);
-    const [dragStart, setDragStart] = useState<{ x: number, y: number } | null>(null);
-
 
     const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
 
@@ -54,41 +47,6 @@ const TalkBox: React.FC = () => {
             msgerChatRef.current.scrollTop = msgerChatRef.current.scrollHeight;
         }
     }, [messages]);
-
-    // const appendMessageToState = (
-    //     playerId: string,
-    //     name: string,
-    //     img: string,
-    //     side: string,
-    //     text: string
-    // ) => {
-    //     const newMessage: Message = { playerId, name, img, side, text };
-    //     dispatch(appendMessage(newMessage)); // Redux action
-    // };
-
-    const formatDate = (date: Date) => {
-        const h = "0" + date.getHours();
-        const m = "0" + date.getMinutes();
-
-        return `${h.slice(-2)}:${m.slice(-2)}`;
-    };
-    const handleMouseUp = (e: React.MouseEvent) => {
-        console.log("handleMouseUp");
-        const selection = window.getSelection();
-        if (selection) {
-            const selectedText = selection.toString();
-            console.log(selectedText);
-            setSelectedText(selectedText); // Save selected text to state
-            setMousePosition({ x: e.clientX, y: e.clientY });  // Set mouse position
-        }
-    };
-    const handleMouseDown = (e: React.MouseEvent) => {
-        console.log("handleMouseDown");
-        setSelectedText(null); // Reset selected text
-        store.dispatch(setText("번역 중입니다......")); // Reset translation
-        setDragStart({ x: e.clientX, y: e.clientY });
-    };
-
 
     return (
         <TalkDiv>
@@ -121,7 +79,7 @@ const TalkBox: React.FC = () => {
                                     {/* <div className="msg-info-time">{formatDate(new Date())}</div> */}
                                 </div>
 
-                                <div className="msg-text" onMouseDown={handleMouseDown} onMouseUp={handleMouseUp}>{message.text}</div>
+                                <div className="msg-text">{message.text}</div>
                                 {message.audioUrl && (
                                     currentAudio && currentAudio.src === message.audioUrl ?
                                         <PauseIcon onClick={pauseAudio} /> :
@@ -132,7 +90,6 @@ const TalkBox: React.FC = () => {
                     ))}
                 </main>
                 {/* Add TranslationBox component here */}
-                {selectedText && dragStart && <TranslationBox text={selectedText} position={dragStart} onOut={() => setSelectedText(null)} />}
                 {/* { */}
                 {/* // </form>} */}
             </section>

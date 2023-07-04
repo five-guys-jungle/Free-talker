@@ -120,7 +120,7 @@ function LoginDialog() {
                 if (e instanceof AxiosError && e.response?.status === 420) {
                     setLoginFailMsg("이미 접속중인 유저입니다.");
                 }
-                else if (e instanceof AxiosError && e.response?.status === 401) {
+                else if (e instanceof AxiosError && e.response?.status === 403) {
                     setLoginFailMsg("이미 접속중인 유저입니다.");
                 }
                 else {

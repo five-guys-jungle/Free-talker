@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
-import jwt from "jsonwebtoken";
+import jwt, { decode, sign, verify } from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import "dotenv/config";
 import {
@@ -10,6 +10,7 @@ import {
     QueryCommand,
     DynamoDBClient,
 } from "@aws-sdk/client-dynamodb";
+// import { verify } from 'crypto';
 
 const tableName = process.env.DYNAMODB_TABLE_NAME;
 const client = new DynamoDBClient({ region: "ap-northeast-2" });
@@ -96,6 +97,7 @@ export const signup = async (req: Request, res: Response) => {
                     userId: { S: userId },
                     userPw: { S: hashedPw },
                     userNickname: { S: userNickname },
+                    accessToken: { S: "" }
                 },
             };
 
@@ -153,7 +155,9 @@ export const login = async (req: Request, res: Response) => {
             } else {
                 // when found user
                 // console.log("login data: ", foundUser.Item);
+                let accessToken;
                 const userPwAttribute = foundUser.Item.userPw;
+                const accessTokenAttribute = foundUser.Item.accessToken;
                 if (typeof userPwAttribute === "undefined") {
                     console.log("User not found");
                     return res.json({
@@ -166,51 +170,100 @@ export const login = async (req: Request, res: Response) => {
                         userPw,
                         userPwAttribute?.S || ""
                     );
-                    if (typeof jwtKey === "string" && match) {
-                        const accessToken = jwt.sign(
-                            {
+                    console.log(`accessTokenAtrribute.S: ${JSON.stringify(accessTokenAttribute)}`);
+                    if (match) {
+                        if (accessTokenAttribute.S !== undefined && typeof jwtKey === "string" && accessTokenAttribute.S !== "") {
+                            try {
+                                jwt.verify(accessTokenAttribute.S, jwtKey);
+                                console.log("token verified. Already logged in");
+                                return res.status(403).json({
+                                    status: 403,
+                                    success: false,
+                                    message: "Already logged in",
+                                });
+                            } catch (error) {
+                                // Token verification faild, likely because the token has expired
+                                // Ignore and proceed to generate a new token
+                                if (error instanceof jwt.TokenExpiredError) {
+                                    console.log("Token expired, generate a new token");
+
+                                    accessToken = sign(
+                                        {
+                                            userId: foundUser.Item.userId.S,
+                                            userNickname: foundUser.Item.userNickname.S,
+                                            uuid: uuidv4(),
+                                        },
+                                        jwtKey,
+                                        {
+                                            expiresIn: "2h",
+                                        }
+                                    );
+                                } else {
+                                    // jwt token error
+                                    return res.json({
+                                        status: 403,
+                                        success: false,
+                                        message: "Invalid token",
+                                    });
+                                }
+
+                            }
+                        } else {
+                            if (typeof jwtKey === "string") {
+                                // No token, proceed to generate a new one
+                                // the code to generate a new token
+                                accessToken = sign(
+                                    {
+                                        userId: foundUser.Item.userId.S,
+                                        userNickname: foundUser.Item.userNickname.S,
+                                        uuid: uuidv4(),
+                                    },
+                                    jwtKey,
+                                    {
+                                        expiresIn: "2h",
+                                    }
+                                );
+                            }
+
+                        }
+                        console.log(`accessToken : ${accessToken}`);
+                        if (accessToken !== undefined) {
+                            const updateParams = {
+                                ExpressionAttributeNames: {
+                                    "#JWT": "accessToken"
+                                },
+                                ExpressionAttributeValues: {
+                                    ":t": {
+                                        S: accessToken,
+                                    }
+                                },
+                                Key: {
+                                    userId: { S: userId }
+                                },
+                                ReturnValues: "ALL_NEW",
+                                TableName: tableName,
+                                UpdateExpression: "SET #JWT = :t"
+                            };
+
+                            const response = await client.send(new UpdateItemCommand(updateParams));
+                            console.log(`Update complete! response : ${JSON.stringify(response)}`);
+
+                            return res.json({
+                                status: 200,
+                                success: true,
+                                message: "Login success",
+                                data: accessToken,
                                 userId: foundUser.Item.userId.S,
                                 userNickname: foundUser.Item.userNickname.S,
-                                uuid: uuidv4(),
-                            },
-                            jwtKey,
-                            {
-                                expiresIn: "2h",
-                            }
-                        );
-
-                        if (foundUser.Item.accessToken.S !== "") {
-                            console.log("Invalid accessToken: ", foundUser.Item.accessToken.S);
-                            return res.status(401).send("Invalid accessToken");
+                            });
+                        } else {
+                            // jwt token error
+                            return res.json({
+                                status: 500,
+                                success: false,
+                                message: "Internal Server Error",
+                            });
                         }
-
-                        const updateParams = {
-                            ExpressionAttributeNames: {
-                                "#JWT": "AccessToken"
-                            },
-                            ExpressionAttributeValues: {
-                                ":t": {
-                                    "S": accessToken
-                                }
-                            },
-                            Key: {
-                                userId: { S: userId }
-                            },
-                            ReturnValues: "ALL_NEW",
-                            TableName: tableName,
-                            UpdateExpression: "SET #JWT = :t"
-                        };
-
-                        const response = await client.send(new UpdateItemCommand(updateParams));
-                        console.log(`Update complete! response : ${response}`);
-                        return res.json({
-                            status: 200,
-                            success: true,
-                            message: "Login success",
-                            data: accessToken,
-                            userId: foundUser.Item.userId.S,
-                            userNickname: foundUser.Item.userNickname.S,
-                        });
                     } else {
                         return res.json({
                             status: 400,
@@ -235,7 +288,7 @@ export const logout = async (req: Request, res: Response) => {
 
         const updateParams = {
             ExpressionAttributeNames: {
-                "#JWT": "AccessToken"
+                "#JWT": "accessToken"
             },
             ExpressionAttributeValues: {
                 ":t": {
@@ -251,7 +304,8 @@ export const logout = async (req: Request, res: Response) => {
         };
 
         const response = await client.send(new UpdateItemCommand(updateParams));
-        console.log(`Logout Success!! response: ${response}`);
+        console.log(`Logout Success!! response: ${JSON.stringify(response)}`);
+        // console.log(JSON.stringify(item, null, 2));
 
         return res.json({
             status: 200,

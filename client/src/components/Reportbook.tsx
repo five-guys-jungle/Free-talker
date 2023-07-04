@@ -348,7 +348,7 @@ const ReportBook = (data: any) => {
                                                                 height: "25px",
                                                             }}
                                                         >
-                                                            <DisabledByDefaultIcon/>
+                                                            <DisabledByDefaultIcon />
                                                         </IconButton>
                                                         <IconButton
                                                             color="secondary"
@@ -526,7 +526,7 @@ const ReportBook = (data: any) => {
                                                         <span>✔︎ Corrections</span>
 
                                                         <Swiper
-                                                            style={{ width: "440px", height: "100px", marginTop: "35px" }}
+                                                            style={{ width: "102%", height: "90px", marginTop: "35px" }}
                                                             modules={[Pagination]}
                                                             pagination={{
                                                                 clickable: true,
@@ -544,12 +544,12 @@ const ReportBook = (data: any) => {
                                                                             correction,
                                                                             index
                                                                         ) => (
-                                                                            <SwiperSlide key={index}>
+                                                                            <SwiperSlide key={index} style={{ width: "102%", height: "66px", overflow: "auto" }}>
                                                                                 {
                                                                                     <div
                                                                                         className="correction-div" style={{ marginLeft: "25px" }}
                                                                                     >
-                                                                                        <p style={{ color: "crimson", fontWeight: "bold" }}>
+                                                                                        <p style={{ color: "crimson", fontWeight: "bold", marginTop: "0px", marginBottom: "4px" }}>
                                                                                             User
                                                                                             Sentence
                                                                                             :{" "}
@@ -557,12 +557,10 @@ const ReportBook = (data: any) => {
                                                                                                 correction.original
                                                                                             }
                                                                                         </p>
-                                                                                        <p style={{ color: "forestgreen", fontWeight: "bold" }}>
+                                                                                        <p style={{ color: "forestgreen", fontWeight: "bold", marginTop: "0px", marginBottom: "4px" }}>
                                                                                             Corrected
                                                                                             Sentence:{" "}
-                                                                                            {
-                                                                                                correction.correction
-                                                                                            }
+
                                                                                         </p>
                                                                                     </div>
                                                                                 }
