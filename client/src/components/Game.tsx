@@ -45,13 +45,13 @@ const Game = () => {
         {mode === FREEDIALOG && <FreeDialog />}
         {mode === REPORT && <Report />}
         {(mode === AIRPORT || mode === USA) && <ReportBook />}
-        {mode !== NPCDIALOG && mode !== USERDIALOG && mode !== FREEDIALOG && (
+        {/* {mode !== NPCDIALOG && mode !== USERDIALOG && mode !== FREEDIALOG && ( */}
             <ButtonContainer>
                 <LevelButton />
                 <Guider />
                 <KeyGuider />
             </ButtonContainer>
-        )}
+        {/* )} */}
 
     </BackgroundDiv>;
 };
@@ -72,4 +72,5 @@ const ButtonContainer = styled.div`
   display: flex;
   flex-direction: row;
   gap: 10px; /* Add gap to separate the buttons */
+  z-index:3;
 `;
