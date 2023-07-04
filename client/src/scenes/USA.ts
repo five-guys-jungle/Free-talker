@@ -80,6 +80,7 @@ export default class USAScene extends Phaser.Scene {
     recorder2: MediaRecorder | null = null;
     seatEvent: number = 0;
     isAudioPlaying: boolean = false;
+    isAudioTransfered: boolean = false;
     isNpcSocketConnected: boolean = false;
     npcList: npcInfo[] = [];
     alreadyRecommended: boolean = false;
@@ -661,6 +662,7 @@ export default class USAScene extends Phaser.Scene {
                             store.dispatch(clearSentences());
                             this.socket2 = io(`${serverUrl}/interaction`);
                             this.socket2.on("connect", () => {
+                                this.isAudioTransfered = false;
                                 const translationEvent = (e: Event) => {
                                     const customEvent = e as CustomEvent;
                                     console.log("translationEvent, customEvent.detail: ", customEvent.detail.message);
@@ -744,6 +746,7 @@ export default class USAScene extends Phaser.Scene {
                                     this.audio.onended = () => {
                                         console.log("audio.onended");
                                         this.isAudioPlaying = false;
+                                        this.isAudioTransfered = false;
                                         store.dispatch(
                                             setMessage(
                                                 "D키를 눌러\n녹음을 시작하세요"
@@ -754,6 +757,7 @@ export default class USAScene extends Phaser.Scene {
                                         );
                                     };
                                     this.audio.play();
+                                    this.isAudioTransfered = true;
                                 })
                                     console.log(
                                         "connect, interaction socket.id: ",
@@ -845,6 +849,7 @@ export default class USAScene extends Phaser.Scene {
                                             this.audio.onended = () => {
                                                 console.log("audio.onended");
                                                 this.isAudioPlaying = false;
+                                                this.isAudioTransfered = false;
                                                 store.dispatch(
                                                     setMessage(
                                                         "D키를 눌러\n녹음을 시작하세요"
@@ -855,6 +860,7 @@ export default class USAScene extends Phaser.Scene {
                                                 );
                                             };
                                             this.audio.play();
+                                            this.isAudioTransfered = true;
                                         }
                                     );
 
@@ -905,6 +911,7 @@ export default class USAScene extends Phaser.Scene {
                                 );
                             });
                         } else {
+                            this.isAudioTransfered = false;
                             // 이미 소켓이 연결되어 있는데 다시 한번 E키를 누른 경우 -> 대화 종료 상황
                             if(npcInfo.moving){
                                 npcInfo.sprite!.anims.resume();
@@ -1029,9 +1036,10 @@ export default class USAScene extends Phaser.Scene {
         // NPC의 음성 재생을 스킵하는 기능
         this.input.keyboard!.on("keydown-S", async () => {
             console.log("S key pressed, isAudioPlaying: ", this.isAudioPlaying);
-            if (this.isAudioPlaying) {
+            if (this.isAudioPlaying && this.isAudioTransfered) {
                 this.audio?.pause();
                 this.isAudioPlaying = false;
+                this.isAudioTransfered = false;
                 store.dispatch(setMessage("D키를 눌러\n녹음을 시작하세요"));
                 store.dispatch(setCanRequestRecommend(true));
                 this.audio = new Audio();
@@ -1410,7 +1418,7 @@ export default class USAScene extends Phaser.Scene {
 
         //moving npc-----------------------------------------------------------------------------
         let npc9: npcInfo = {
-            name: "Barista",
+            name: "Minsook",
             x: 1155,
             y: 859,
             texture: "minsook",
@@ -1459,6 +1467,61 @@ export default class USAScene extends Phaser.Scene {
         }
 
         tweens[0].resume(); // Start the first animation
+        //-----------------------------------------------------------------------------
+        //moving npc-----------------------------------------------------------------------------
+        let npc10: npcInfo = {
+            name: "Doyoungboy",
+            x: 202,
+            y: 336,
+            texture: "doyoungboy",
+            sprite: null,
+            role: "npc",
+            moving: true,
+        };
+        npc10.sprite = this.physics.add.sprite(npc10.x, npc10.y, npc10.texture);
+        this.npcList.push(npc10);
+
+        let points2 = [
+            { x: 386, y: 480, anim: `${npc10.texture}_run_down` },
+            { x: 500, y: 370, anim: `${npc10.texture}_run_right` },
+            { x: 507, y: 660, anim: `${npc10.texture}_run_down` },
+            { x: 253, y: 530, anim: `${npc10.texture}_run_left` },
+            { x: 202, y: 336, anim: `${npc10.texture}_run_up` },
+        ];
+
+        let tweens2 = points2.map((point, index) =>
+            this.tweens.add({
+                targets: npc10.sprite,
+                x: point.x,
+                y: point.y,
+                ease: 'Linear',
+                duration: 5000,
+                repeat: -1,
+                onStart: () => {
+                    npc10.sprite!.anims.play(point.anim);
+                    // console.log("start, anim: ", point.anim);
+                },
+                onComplete: () => {
+                    console.log("complete");
+                },
+                onRepeat: () => {
+                    console.log("repeat");
+                    npc10.sprite!.anims.play(points2[(index + 1) % points2.length].anim, true);
+                    // console.log("repeat, anim: ", points[(index+1)%points.length].anim);
+                },
+                paused: index !== 0, // Only pause the animations that are not the first one
+            }));
+        this.tweenDict[npc10.name] = tweens2;
+
+        for (let i = 0; i < tweens2.length; i++) {
+            tweens2[i].on('repeat', () => {
+                tweens2[i].pause();
+                let nextTween = tweens2[(i + 1) % tweens2.length];
+                nextTween.resume(); // Resume the next animation
+            })
+        }
+
+        tweens2[0].resume(); // Start the first animation
         //-----------------------------------------------------------------------------
 
 

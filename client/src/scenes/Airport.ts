@@ -75,6 +75,7 @@ export default class AirportScene extends Phaser.Scene {
     recorder2: MediaRecorder | null = null;
     seatEvent: boolean = false;
     isAudioPlaying: boolean = false;
+    isAudioTransfered: boolean = false;
     isNpcSocketConnected: boolean = false;
     npcList: npcInfo[] = [];
     alreadyRecommended: boolean = false;
@@ -436,6 +437,7 @@ export default class AirportScene extends Phaser.Scene {
                             store.dispatch(clearSentences());
                             this.socket2 = io(`${serverUrl}/interaction`);
                             this.socket2.on("connect", () => {
+                                this.isAudioTransfered = false;
                                 const translationEvent = (e: Event) => {
                                     const customEvent = e as CustomEvent;
                                     console.log("translationEvent, customEvent.detail: ", customEvent.detail.message);
@@ -517,6 +519,7 @@ export default class AirportScene extends Phaser.Scene {
                                     this.audio.onended = () => {
                                         console.log("audio.onended");
                                         this.isAudioPlaying = false;
+                                        this.isAudioTransfered = false;
                                         store.dispatch(
                                             setMessage(
                                                 "D키를 눌러\n녹음을 시작하세요"
@@ -527,6 +530,7 @@ export default class AirportScene extends Phaser.Scene {
                                         );
                                     };
                                     this.audio.play();
+                                    this.isAudioTransfered = true;
                                 })
 
                                 window.addEventListener(
@@ -626,6 +630,7 @@ export default class AirportScene extends Phaser.Scene {
                                         this.audio.onended = () => {
                                             console.log("audio.onended");
                                             this.isAudioPlaying = false;
+                                            this.isAudioTransfered = false;
                                             store.dispatch(
                                                 setMessage(
                                                     "D키를 눌러\n녹음을 시작하세요"
@@ -636,6 +641,7 @@ export default class AirportScene extends Phaser.Scene {
                                             );
                                         };
                                         this.audio.play();
+                                        this.isAudioTransfered = true;
                                     }
                                 );
 
@@ -681,6 +687,7 @@ export default class AirportScene extends Phaser.Scene {
                                 );
                             });
                         } else {
+                            this.isAudioTransfered = false;
                             this.currNpcName = "";
                             // 이미 소켓이 연결되어 있는데 다시 한번 E키를 누른 경우 -> 대화 종료 상황
                             this.isNpcSocketConnected = false;
@@ -742,6 +749,7 @@ export default class AirportScene extends Phaser.Scene {
                 return;
             }
             if (this.isAudioPlaying) {
+                console.log("음성 재생중입니다.")
                 return;
             }
             for (let npcInfo of this.npcList) {
@@ -792,9 +800,10 @@ export default class AirportScene extends Phaser.Scene {
         // NPC의 음성 재생을 스킵하는 기능
         this.input.keyboard!.on("keydown-S", async () => {
             console.log("S key pressed, isAudioPlaying: ", this.isAudioPlaying);
-            if (this.isAudioPlaying) {
+            if (this.isAudioPlaying && this.isAudioTransfered) {
                 this.audio?.pause();
                 this.isAudioPlaying = false;
+                this.isAudioTransfered = false;
                 store.dispatch(setMessage("D키를 눌러\n녹음을 시작하세요"));
                 store.dispatch(setCanRequestRecommend(true));
                 this.audio = new Audio();
