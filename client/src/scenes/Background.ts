@@ -20,8 +20,10 @@ export default class Background extends Phaser.Scene {
             "statueOfLiberty",
             "assets/characters/statue-of-liberty.png"
         );
-        this.load.image("coach_park", "assets/characters/coach_sprite.png");
-        this.load.image("chairMart", "assets/characters/chairMart.png");
+        this.load.image("couch_park1", "assets/characters/couch_sprite1.png");
+        this.load.image("couch_park2", "assets/characters/couch_sprite2.png");
+        this.load.image("taxi", "assets/characters/taxi.png");
+        this.load.image("Mart", "assets/characters/Mart.png");
         this.load.spritesheet(
             "ImmigrationOfficer",
             "assets/characters/ImmigrationOfficer.png",
@@ -64,7 +66,7 @@ export default class Background extends Phaser.Scene {
             "assets/characters/ClothingShopStaff.png",
             {
                 frameWidth: 32,
-                frameHeight: 48,
+                frameHeight: 40,
             }
         );
 
@@ -80,7 +82,7 @@ export default class Background extends Phaser.Scene {
 
         this.load.spritesheet("Barista", "assets/characters/Barista.png", {
             frameWidth: 32,
-            frameHeight: 48,
+            frameHeight: 40,
         });
 
         // this.load.image("background", "assets/backgrounds/space.png");
@@ -118,6 +120,10 @@ export default class Background extends Phaser.Scene {
             frameHeight: 48,
         });
         this.load.spritesheet("minsik", "assets/characters/minsik.png", {
+            frameWidth: 32,
+            frameHeight: 48,
+        });
+        this.load.spritesheet("soobin", "assets/characters/soobin.png", {
             frameWidth: 32,
             frameHeight: 48,
         });

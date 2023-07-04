@@ -49,21 +49,12 @@ const UserBox: React.FC = () => {
 	const socketNamespace = useSelector(
 		(state: { rtc: { socketNamespace: string } }) => state.rtc.socketNamespace
 	);
-  let placeName = socketNamespace.substring(socketNamespace.lastIndexOf("/") + 1);
-  switch (placeName) {
-    case "chairMart":
-      placeName = "MART";
-      break;
-    // Add more cases if needed
-  }
-  // useEffect(() => {
-  //     console.log(playerId)
-  //     console.log(playerNickname)
-  //     console.log(playerTexture)
-  //   return () => {
-  //     dispatch(clearcharacters());
-  //   }
-  // }, [playerId, playerNickname, playerTexture]);
+  // let placeName = socketNamespace.substring(socketNamespace.lastIndexOf("/") + 1);
+  // switch (placeName) {
+  //   case "Mart":
+  //     placeName = "MART";
+  //     break;
+  // }
 
   
   useEffect(() => {
@@ -75,25 +66,8 @@ const UserBox: React.FC = () => {
     }
 }, [playerId, playerNickname, playerTexture]);
 
-  
-  
-  // const messages = useSelector(
-  //     (state: { talkBox: TalkBoxState }) => state.talkBox.messages
-  // );
-
-
-  // const messages = useSelector(
-  //     (state: { talkBox: TalkBoxState }) => state.talkBox.messages
-  // );
 
   let fix_playerTexture=playerTexture;
-
-  // useEffect(() => {
-  //   console.log("char~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-  //   return () => {
-  //     dispatch(clearcharacters());
-  //   }
-  // }, [otherNickname, otherTexture]);
 
   useEffect(() => {
     console.log("char~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
@@ -112,30 +86,42 @@ const UserBox: React.FC = () => {
 
   const renderOtherNickname = () => {
     if (otherNickname) {
-      return <Typography variant="h4" align="center">{otherNickname}</Typography>;
+      return <Typography variant="h4" align="center" fontFamily={"MaplestoryOTFLight"}>{otherNickname}</Typography>
     } else {
-      return <Typography variant="h5" align="center">대화 상대를 <div></div> 기다려 주세요</Typography>;
+      return <Typography variant="h5" align="center" fontFamily={"MaplestoryOTFLight"}>대화 상대를 <div></div> 기다려 주세요</Typography>
     }
   };
 
   return (
     <UserBoxWrapper>
-      <UserBoxContainer>
-        <Typography variant="h4"><span style={{ color: "#C70039" }}>{placeName}</span>에서 대화를 시작해 보세요</Typography>
-      </UserBoxContainer>
+      {/* <UserBoxContainer>
+        <Typography variant="h4">Place : <span style={{ color: "#C70039" }}>{placeName}</span></Typography>
+      </UserBoxContainer> */}
 
       <Box display="flex" flexDirection="row" >
         <AvatarContainer>
           <Image src={`../assets/characters/single/${playerTexture}.png`} alt={fix_playerTexture} />
-          <Typography variant="h4" align="center">{playerNickname}</Typography>
+          <Typography variant="h4" align="center" fontFamily={"MaplestoryOTFLight"}>{playerNickname}</Typography>
         </AvatarContainer>
         <AvatarContainer>
-          {/* <Image src={`../assets/characters/single/${otherTexture}.png`} alt="User Avatar" /> */}
-          {/* <Typography variant="body1" align="center">{otherNickname}</Typography> */}
           {renderUserAvatar()}
           {renderOtherNickname()}
         </AvatarContainer>
       </Box>
+      <Typography 
+        variant="h6" 
+        sx={{ 
+          position: 'absolute',
+          bottom: 10, 
+          left: 10, 
+          color: '#000',
+          padding: '5px',
+          borderRadius: '5px'
+        }}
+        fontFamily={"MaplestoryOTFLight"}
+      >
+        EXIT : <span style={{ color: "#C70039" }}>(E)</span><div></div>통화 중 E키를 누르면 맵으로 돌아갑니다.
+      </Typography>
     </UserBoxWrapper>
   );
 };

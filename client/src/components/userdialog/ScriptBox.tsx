@@ -19,16 +19,45 @@ const ScriptBox: React.FC = () => {
   }, []);
 
   return (
-    <Box sx={{ width: '70%', height: '70%', pb: 20 }}>
-      <Title>많이 사용하는 문장</Title>
-      <Box sx={{ overflow: 'auto', height: '100%', backgroundColor: '#e3f2fd' }} ref={ref}>
+    <Box sx={{ width: '70%', height: '70%', marginTop: '1%'}}>
+      <Title>Sentence Recommendation</Title>
+      <Box 
+        sx={{ 
+          overflow: 'auto', 
+          height: '60%', 
+          backgroundColor: 'rgba(255,255,255, 0.5)',
+          // backgroundImage: 'linear-gradient(rgba(0,0,0, 0.2),rgba(255,255,255, 0.8), rgba(0,0,0, 0.2))',
+          padding: '20px',
+          borderRadius: '10px',
+          boxShadow: '5px 5px 15px rgba(0, 0, 0, 0.2)',
+          border: '8px solid #0D92C8', // 테두리 추가
+
+        }} 
+        ref={ref}
+      >
         <List>
-          {recommendations.map((recommendation: Recommendation) => (
-            <ListItem key={recommendation._id}>
-              <ListItemText primary={recommendation.recommendation} 
-              style={{ fontFamily: "Arial", fontWeight: "bold", wordBreak: "break-word" }}/>
+          <ListItem>
+              {/* <span font-size={"18px"} style={{ fontWeight: "bold", wordBreak: "break-word" }}>afsdfdddd
+              asdddddddddfdsfasdfsda asdf sdfasdf sdafsdafsadafsdfdd
+              ddasdddddddddfdsfasdfsdaafsdfddddasdddddddddfdsfasdfsdaafsdfddddasdddddddddfdsfasdfsda
+              afsdfddddasdddddddddfdsfas
+              dfsdaafsdfddddasdddddddddfdsfasdfsda
+              afsdfddddasdddddddddfdsfasdfsdaafsdfddddasdddddddddfdsfasdfsdaafsdfd
+              dddasdddddddddfdsfasdfsdaafsdfddddasdddddddddfdsfasdfsdaafsdfdddd
+              asdddddddddfdsfasdfsdaaf
+              sdfddddasdddddddddfdsfasdfsda 
+              afsdfddddasdddddddddfdsfasdfsda
+              afsdfddddasdddddddddfdsfasdfsda
+              afsdfddddasdddddddddfdsfasdfsda
+              afsdfddddasdddddddddfdsfasdfsda
+              fdsddd</span> */}
+            </ListItem>
+          {recommendations.map((recommendation: Recommendation, index) => (
+            <ListItem key={recommendation._id} style={{fontFamily: "Open Sans"}}>
+              <span font-size={"18px"} style={{ fontWeight: "bold", wordBreak: "break-word" }}>{index+1} : {recommendation.recommendation}</span>
             </ListItem>
           ))}
+          
         </List>
       </Box>
     </Box>
@@ -37,63 +66,22 @@ const ScriptBox: React.FC = () => {
 
 export default ScriptBox;
 
-interface ScriptExample {
-  primary: string;
-  secondary: string;
-}
 
-// const messageExamples: RecommendedExample[] = [
-//   {
-//     primary: 'Voca',
-//     secondary: 'chronic: 만성적인\npersistent: 지속적인\naccumulate: 축적하다'
-//   },
-//   {
-//     primary: 'Idium',
-//     secondary: 'come about : 발생하다\nqualify for : ~의 자격을 얻다'
-//   }
-  
-// ];
 
-const messageExamples: ScriptExample[] = [
-  {
-    primary: 'chronic',
-    secondary: '만성적인'
-  },
-  {
-    primary: 'persistent',
-    secondary: '지속적인'
-  },
-  {
-    primary: 'accumulate',
-    secondary: '축적하다'
-  },
-  {
-    primary: 'come about',
-    secondary: '발생하다'
-  },
-  {
-    primary: 'qualify for',
-    secondary: '~의 자격을 얻다'
-  }
-  
-];
-
-// 랜덤으로 스크립트 추천
-function refreshMessages(): ScriptExample[] {
-  const shuffledExamples = [...messageExamples].sort(() => 0.5 - Math.random());
-  return shuffledExamples.slice(0, 3);
-}
 
 
 const Title = styled.h2`
   text-align: center;
-  margin-top: 5%;
-  font-size: 2rem; // 기본 글자 크기
+  margin-top: 0;
+  font-size: 2rem;
+  background: linear-gradient(45deg, rgba(13, 146, 200, 0.8), rgba(0, 0, 255,0.6) ,rgba(13, 146, 200, 0.8));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   @media (max-width: 768px) {
-    font-size: 1.5rem; // 창 너비가 768px 이하일 때 글자 크기 조정
+    font-size: 1.5rem;
   }
   @media (max-width: 480px) {
-    font-size: 1rem; // 창 너비가 480px 이하일 때 글자 크기 조정
+    font-size: 1rem;
   }
+  font-family: Poppins;
 `;
-;

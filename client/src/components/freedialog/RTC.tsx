@@ -43,7 +43,8 @@ const FreeDialog = () => {
 
 	
 	const {playerNickname, playerTexture} = useSelector((state: RootState) => {return {...state.user}});
-
+	let seatPosition : number
+	let place_name : string
     useEffect(() => {
 		socket.current = io(socketNamespace);
 		// socket.current = io("http://localhost:5000/freedialog/airport_chair1");
@@ -55,8 +56,9 @@ const FreeDialog = () => {
             }
         })
 		
-		const place_name = socketNamespace.substring(socketNamespace.lastIndexOf("/") + 1);
+		let place_name = socketNamespace.substring(socketNamespace.lastIndexOf("/") + 1);
 		console.log("place_name:::", place_name);
+		place_name = place_name;
 		// socket.current!.emit("join", { place_name });
 
 		socket.current!.emit("join", { place_name });
@@ -76,17 +78,22 @@ const FreeDialog = () => {
 			});
 			window.dispatchEvent(clickEvent);
 		})
+		
 
-		socket.current!.on("joined", () => {
-			console.log("joined!!!!!!!!!!!!!!!!")
+		socket.current!.on("seat_position", (seat_position: number) => {
+			console.log("seat_position:::", seat_position);
+			seatPosition = seat_position;
 			const seatEvent = new CustomEvent('seat', {
-				detail: { message: "seat"}
+				detail: { 
+					message: "seat",
+					seat_position: seat_position,
+					place_name: place_name
+				}
 			});
 			window.dispatchEvent(seatEvent);
 		}
 			)
 
-		console.log("socket is connected: ", socket.current!.id);
 		
 			
 			socket.current!.emit("otherchar", {playerNickname: playerNickname, playerTexture:playerTexture});
@@ -144,7 +151,14 @@ const FreeDialog = () => {
 			}
 		});
 		return () => {
+			// console.log("disconnect!!!!!")
+			// console.log("disconnect!!!!!", seatPosition, place_name)
+			// socket.current!.emit("standup", { 
+			// 	seat_position: seatPosition,
+			// 	place_name: place_name
+			//   });
 			socket.current!.disconnect();
+			
 		}
 	  
 	
@@ -206,6 +220,10 @@ const FreeDialog = () => {
 			connectionRef.current.destroy();
 			socket.current!.emit("callEnded"); // 서버로 callEnded 이벤트 전송
 			socket.current!.emit("leaveCallEvent", { to: caller });
+			socket.current!.emit("standup", { 
+				seatPosition,
+				place_name
+			  });
 			// Airport 씬으로 이벤트 전달
 			window.dispatchEvent(new Event("exitcall"));
 			socket.current!.disconnect();
@@ -214,6 +232,19 @@ const FreeDialog = () => {
 			
 		}
 	  };
+	  useEffect(() => {
+		const handleKeyDown = (event: KeyboardEvent) => {
+			if (event.key === 'e' || event.key === 'E') {
+				leaveCall();
+			}
+		};
+	
+		window.addEventListener('keydown', handleKeyDown);
+	
+		return () => {
+			window.removeEventListener('keydown', handleKeyDown);
+		};
+	}, []);
 
 		return (
 			<>
@@ -225,32 +256,31 @@ const FreeDialog = () => {
 					
 					<div 
 						className="call-button" 
-						style={{ position: 'fixed', textAlign: 'center', top: '5px'}}>
+						style={{ position: 'fixed', textAlign: 'center', top: '1.5%'}}>
 						
 						{callAccepted && !callEnded ? (
-							<div 
+						<div 
 							className="caller" 
 							style={{ 
 								display: 'inline-flex',
-								 alignItems: 'center', 
-								 bottom : '5px' 
-								 }}>
+								alignItems: 'center', 
+						}}>
 
 							<IconButton 
 								color="secondary" 
 								aria-label="endcall" 
 								onClick={leaveCall}>
-								<PhoneIcon fontSize="large" /> 
+								<PhoneIcon style={{ fontSize: "2em" }} /> 
 							</IconButton>
-							<Typography variant="h5" align="center" style={{ fontFamily: "Arial", fontWeight: "bold" }}>통화가 종료되면 맵으로 돌아갑니다.</Typography>
+							<Typography variant="h5" align="center" style={{ fontFamily: "MaplestoryOTFLight", fontWeight: "bold" }}>통화를 종료하면 맵으로 돌아갑니다.</Typography>
 							</div>
 						) : receivingCall && !callAccepted ? null : (
 							<div
 								className="caller"
 								style={{ 
-								display: "inline-flex",
-								alignItems: "center", 
-								bottom: "5px" 
+									display: "inline-flex",
+									alignItems: "center", 
+									bottom: "5px" 
 							}}>
 								<IconButton
 									className="call-btn"
@@ -259,14 +289,14 @@ const FreeDialog = () => {
 									onClick={() => callUser(idToCall)}>
 									<PhoneIcon style={{ fontSize: "2em" }} />
 								</IconButton>
-								<Typography variant="h5" align="center" style={{ fontFamily: "Arial", fontWeight: "bold" }}>전화를 걸면 화상 통화가 시작됩니다</Typography>;
+								<Typography variant="h5" align="center" style={{ fontFamily: "Poppins", fontWeight: "bold" }}>Make a call</Typography>
 							</div>
 						  )}
 						  
 						{receivingCall && !callAccepted && (
 							<div className="caller" style={{ display: 'inline-flex', alignItems: 'center', bottom : '5px' }}>
-								<Typography variant="h5" align="center" style={{ fontFamily: "Arial", fontWeight: "bold" }}> 전화를 받아주세요 ... </Typography>;
-								<Button variant="contained" color="primary" onClick={answerCall} style={{marginLeft: '10px'}}>
+								<Typography variant="h5" align="center" style={{ fontFamily: "Poppins", fontWeight: "bold" }}> Please answer the call ... </Typography>
+								<Button variant="contained" color="primary" onClick={answerCall} style={{marginLeft: '10px', fontFamily: "Poppins"}}>
 									Answer
 								</Button>
 							</div>

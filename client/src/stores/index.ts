@@ -5,13 +5,17 @@ import talkBoxSlice from "./talkBoxSlice";
 import recordSlice from "./recordSlice";
 import sentenceBoxSlice from "./sentenceBoxSlice";
 import correctionSlice from "./reportSlice";
-import scoreSlice  from "./scoreSlice";
+import scoreSlice from "./scoreSlice";
 import rtcSlice from "./socketSlice";
 import { useDispatch } from "react-redux";
 import userboxSlice from "./userboxslice";
 import reportOnoffSlice from "./reportOnoffSlice";
 import userDialogSlice from './userDialogSlice';
 import guiderSlice from "./guiderSlice";
+import bgmOnoffSlice from "./bgmOnoffSlice";
+import levelSlice from './levelSlice';
+import translationBoxSlice from "./translationSlice";
+import keyGuiderSlice from './keyGuiderSlice';
 
 export const store = configureStore({
     reducer: {
@@ -27,6 +31,11 @@ export const store = configureStore({
         reportonoff: reportOnoffSlice,
         userDialog: userDialogSlice,
         guider: guiderSlice,
+        keyGuider: keyGuiderSlice,
+        bgmonoff: bgmOnoffSlice,
+        presentScene: reportOnoffSlice,
+        level: levelSlice,
+        translationBox: translationBoxSlice,
     },
 });
 

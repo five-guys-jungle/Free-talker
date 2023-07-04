@@ -119,7 +119,11 @@ function LoginDialog() {
             } catch (e) {
                 if (e instanceof AxiosError && e.response?.status === 420) {
                     setLoginFailMsg("이미 접속중인 유저입니다.");
-                } else {
+                }
+                else if (e instanceof AxiosError && e.response?.status === 403) {
+                    setLoginFailMsg("이미 접속중인 유저입니다.");
+                }
+                else {
                     setLoginFailMsg(
                         "아이디 혹은 비밀번호가 일치하지 않습니다."
                     );
@@ -229,7 +233,7 @@ const Wrapper = styled.div`
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: rgba(255, 255, 255, 0);
+    background-color: rgba(255, 255, 255, 0.35);
     border-radius: 16px;
     padding: 36px 45px;
     img {

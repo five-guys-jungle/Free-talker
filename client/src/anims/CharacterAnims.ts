@@ -6,7 +6,8 @@ const textureNameList: string[] = [
     "seunghun",
     "doyoungboy",
     "minsook",
-    "minsik"
+    "minsik",
+    "soobin"
 ];
 
 export const createCharacterAnims = (

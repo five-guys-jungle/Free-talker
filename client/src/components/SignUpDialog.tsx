@@ -75,6 +75,8 @@ export default function SignUpDialog() {
     const [existingId, setExistingId] = useState(false);
     const [existingNick, setExistingNick] = useState(false);
     const [wrongId, setWrongId] = useState(false);
+    const [wrongNick, setWrongNick] = useState(false);
+    const [wrongPw, setWrongPw] = useState(false);
 
     const handleClickOpen = (): void => {
         setOpen(true);
@@ -104,9 +106,7 @@ export default function SignUpDialog() {
         };
         console.log("body : ", body);
         try {
-            console.log("try sign up!");
             const response = await axios.post(`${DB_URL}/auth/signup`, body);
-            console.log(response);
             if (response.data.status === 200) {
                 console.log("Success!!");
                 handleClose();
@@ -121,8 +121,18 @@ export default function SignUpDialog() {
                     setExistingNick(true); // 이미 존재하는 닉네임일 경우 상태 업데이트
             }
             else if (e instanceof AxiosError && e.response?.status === 400) {
-                setWrongId(true);
-                console.log("ID must be english and number.");
+                if (e.response?.data.message === "Invalid userId") {
+                    setWrongId(true);
+                    console.log("Invalid userId");
+                }
+                if (e.response?.data.message === "Invalid userNickname") {
+                    setWrongNick(true);
+                    console.log("Invalid userNickname");
+                }
+                if (e.response?.data.message === "Invalid userPw") {
+                    setWrongPw(true);
+                    console.log("Invalid userPw");
+                }
             }
         }
     };
@@ -165,10 +175,10 @@ export default function SignUpDialog() {
                             formErrors.userId
                                 ? "빈칸을 채워주세요"
                                 : existingId
-                                ? "이미 존재하는 아이디 입니다"
-                                : wrongId
-                                ? "아이디는 영어와 숫자만 가능합니다"
-                                : ""
+                                    ? "이미 존재하는 아이디 입니다"
+                                    : wrongId
+                                        ? "잘못된 형식의 아이디 입니다."
+                                        : ""
                         }
                     />
                     <TextField
@@ -178,9 +188,9 @@ export default function SignUpDialog() {
                         margin="normal"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        error={formErrors.password}
+                        error={formErrors.password || wrongPw}
                         helperText={
-                            formErrors.password ? "빈칸을 채워주세요" : ""
+                            formErrors.password ? "빈칸을 채워주세요" : wrongPw ? "잘못된 형식의 비밀번호 입니다." : ""
                         }
                     />
                     <TextField
@@ -190,13 +200,13 @@ export default function SignUpDialog() {
                         margin="normal"
                         value={nickname}
                         onChange={(e) => setNickname(e.target.value)}
-                        error={formErrors.nickname || existingNick}
+                        error={formErrors.nickname || existingNick || wrongNick}
                         helperText={
                             formErrors.nickname
                                 ? "빈칸을 채워주세요"
                                 : existingNick
-                                ? "이미 존재하는 닉네임 입니다"
-                                : ""
+                                    ? "이미 존재하는 닉네임 입니다"
+                                    : wrongNick ? "잘못된 형식의 닉네임 입니다." : ""
                         }
                     />
                 </DialogContent>

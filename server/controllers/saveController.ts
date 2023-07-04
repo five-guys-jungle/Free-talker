@@ -29,7 +29,7 @@ export const saveDialog = async (req: Request, res: Response) => {
             corrections,
             messages,
         } = req.body;
-        console.log(`messages: ${JSON.stringify(messages)}`);
+        // console.log(`messages: ${JSON.stringify(messages)}`);
 
         const item = {
             userId: { S: userId },
@@ -43,37 +43,39 @@ export const saveDialog = async (req: Request, res: Response) => {
                 corrections === undefined
                     ? { L: [] }
                     : {
-                          L: corrections.map(
-                              ({ original, correction }: Correction) => ({
-                                  M: {
-                                      original: { S: original },
-                                      correction: { S: correction },
-                                  },
-                              })
-                          ),
-                      },
+                        L: corrections.map(
+                            ({ original, correction }: Correction) => ({
+                                M: {
+                                    original: { S: original },
+                                    correction: { S: correction },
+                                },
+                            })
+                        ),
+                    },
             messages:
                 messages === undefined
                     ? { L: [] }
                     : {
-                          L: messages.map(
-                              ({
-                                  playerId,
-                                  name,
-                                  img,
-                                  side,
-                                  text,
-                              }: Message) => ({
-                                  M: {
-                                      playerId: { S: playerId },
-                                      name: { S: name },
-                                      img: { S: img },
-                                      side: { S: side },
-                                      text: { S: text },
-                                  },
-                              })
-                          ),
-                      },
+                        L: messages.map(
+                            ({
+                                playerId,
+                                name,
+                                img,
+                                side,
+                                text,
+                                audioUrl
+                            }: Message) => ({
+                                M: {
+                                    playerId: { S: playerId },
+                                    name: { S: name },
+                                    img: { S: img },
+                                    side: { S: side },
+                                    text: { S: text },
+                                    audioUrl: { S: audioUrl },
+                                },
+                            })
+                        ),
+                    },
         };
 
         // console.log(JSON.stringify(item, null, 2));
@@ -116,9 +118,13 @@ export const deleteDialog = async (req: Request, res: Response) => {
                 userId: { S: userId },
                 timestamp: { S: timestamp },
             },
+            ReturnValues: "ALL_OLD",
         };
 
         const deleteItem = new DeleteItemCommand(deleteParams);
+        // console.log(deleteItem);
+
+        // TODO : deleteItem에서 오디오 URL 받아서, S3 Audio 파일 지우기
         await client.send(deleteItem);
 
         console.log("Successfully deleted dialog");
@@ -155,7 +161,7 @@ export const loadDialog = async (req: Request, res: Response) => {
             const existingDialogs = queryResult.Items.map((item) =>
                 unmarshall(item)
             );
-            console.log(existingDialogs);
+            // console.log(existingDialogs);
             return res.json({ existingDialogs });
         } else {
             const emptyArray: any = [];

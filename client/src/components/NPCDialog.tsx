@@ -5,6 +5,10 @@ import Box from "@mui/material/Box";
 import TalkBox from "./npcdialog/TalkBox";
 import SentenceBox from "./npcdialog/SentenceBox";
 import Record from "./npcdialog/Record";
+import store from "../stores";
+import { setText } from "../stores/translationSlice";
+import TranslationBox from "./TranslationBox";
+
 
 const TalkContainer = styled.div`
     display: flex;
@@ -30,12 +34,12 @@ const LeftSection = styled.section`
         255,
         255,
         255,
-        0.5
+        0.8
     ); // Semi-transparent white background
 `;
 
 const UpperSection = styled.div`
-    flex: 6;
+    flex: 7;
     height:100%;
     
     // padding: 0 5%; /* 화면 양쪽에 5% 공간을 추가 */
@@ -52,18 +56,18 @@ const UpperSection = styled.div`
         255,
         255,
         255,
-        0.5
+        0.8
     // border-bottom: 1px solid #ddd;
 `;
 
 const LowerSection = styled.div`
-    flex: 4;
-    
+    flex: 3;
+    height:100%;
     rgba(
         255,
         255,
         255,
-        0.5
+        0.8
     // border-top: 1px solid #ddd;
 `;
 
@@ -79,13 +83,35 @@ const RightSection = styled.section`
         255,
         255,
         255,
-        0.5
+        0.8
     ); // Semi-transparent white background
 `;
 
 const NPCDialog: React.FC = () => {
     const [messages, setMessages] = useState<string[]>([]);
     const [inputValue, setInputValue] = useState("");
+
+    const [selectedText, setSelectedText] = useState<string | null>(null); // Add this state
+    const [mousePosition, setMousePosition] = useState<{ x: number, y: number } | null>(null);
+    const [dragStart, setDragStart] = useState<{ x: number, y: number } | null>(null);
+
+    const handleMouseUp = (e: React.MouseEvent) => {
+        console.log("handleMouseUp");
+        const selection = window.getSelection();
+        if (selection) {
+            const selectedText = selection.toString();
+            console.log(selectedText);
+            setSelectedText(selectedText); // Save selected text to state
+            setMousePosition({ x: e.clientX, y: e.clientY });  // Set mouse position
+        }
+    };
+    const handleMouseDown = (e: React.MouseEvent) => {
+        console.log("handleMouseDown");
+        setSelectedText(null); // Reset selected text
+        store.dispatch(setText("번역 중입니다......")); // Reset translation
+        setDragStart({ x: e.clientX, y: e.clientY });
+    };
+
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setInputValue(event.target.value);
@@ -99,7 +125,10 @@ const NPCDialog: React.FC = () => {
     };
 
     return (
-        <TalkContainer>
+        <TalkContainer
+            onMouseDown={handleMouseDown}
+            onMouseUp={handleMouseUp}
+        >
             <LeftSection>
                 <UpperSection>
                     <SentenceBox />
@@ -111,6 +140,7 @@ const NPCDialog: React.FC = () => {
             <RightSection>
                 <TalkBox />
             </RightSection>
+            {selectedText && dragStart && <TranslationBox text={selectedText} position={dragStart} onOut={() => setSelectedText(null)} />}
         </TalkContainer>
     );
 };

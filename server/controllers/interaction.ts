@@ -1,13 +1,14 @@
 import { Request, Response } from "express";
 import { OpenAIApi, Configuration } from "openai";
-import multer from "multer";
-import util from "util";
-import fs from "fs";
+import toArray from 'stream-to-array';
 import { v4 as uuidv4 } from "uuid";
 import texttoSpeech from "@google-cloud/text-to-speech";
 import FormData from "form-data";
 import axios from "axios";
 import dotenv from "dotenv";
+import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+import { Readable } from "stream";
+import { createWriteStream } from "fs";
 import { preDefinedPrompt } from "../models/Prompt";
 import { ConversationChain } from "langchain/chains";
 import { ChatOpenAI } from "langchain/chat_models/openai";
@@ -42,48 +43,50 @@ const client = new texttoSpeech.TextToSpeechClient({
     keyFilename: keyPath,
 });
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, __dirname + "/../audio/user_audio"); // 음성 파일을 저장할 폴더 경로 지정
-    },
-    filename: (req, file, cb) => {
-        cb(null, `${Date.now()}_${file.originalname}.mp3`); // 음성 파일 이름 지정
-    },
-});
-export const upload = multer({ storage });
+const s3Client = new S3Client({ region: "ap-northeast-2" });
+
+// const storage = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//         cb(null, __dirname + "/../audio/user_audio"); // 음성 파일을 저장할 폴더 경로 지정
+//     },
+//     filename: (req, file, cb) => {
+//         cb(null, `${Date.now()}_${file.originalname}.mp3`); // 음성 파일 이름 지정
+//     },
+// });
+// export const upload = multer({ storage });
 
 // Function to process the user's voice input
-export async function interact(req: Request, res: Response): Promise<void> {
-    console.log("NPC Interaction Start.");
-    const voiceFile = req.file;
-    const chain = await createChain("ImmigrationOfficer");
-    if (voiceFile && voiceFile.size > 0) {
-        // Convert speech to text
-        const audioFilePath = voiceFile.path;
-        console.log(audioFilePath);
-        let inputText: string;
-        let outputText: string;
+// export async function interact(req: Request, res: Response): Promise<void> {
+//     console.log("NPC Interaction Start.");
+//     const voiceFile = req.file;
+//     const chain = await createChain("ImmigrationOfficer", "intermediate");
+//     if (voiceFile && voiceFile.size > 0) {
+//         // Convert speech to text
+//         const audioFilePath = voiceFile.path;
+//         console.log(audioFilePath);
+//         let inputText: string;
+//         let outputText: string;
 
-        inputText = await convertSpeechToText(audioFilePath);
-        const correctedText = await grammarCorrection(inputText);
+//         inputText = await convertSpeechToText(audioFilePath);
+//         const correctedText = await grammarCorrection(inputText);
 
-        console.log(`correctedText: ${correctedText}, inputText: ${inputText}`);
+//         console.log(`correctedText: ${correctedText}, inputText: ${inputText}`);
 
-        outputText = await textCompletion(inputText, chain);
-        const response = await convertTexttoSpeech(inputText, outputText);
-        // console.log("response: ", response);
-        res.json(response);
+//         outputText = await textCompletion(inputText, chain);
+//         const response = await convertTexttoSpeech(inputText, outputText);
+//         // console.log("response: ", response);
+//         res.json(response);
 
-        // Call the ChatGPT API with the extracted text and process the response
-        // Implement your logic to interact with the ChatGPT API
+//         // Call the ChatGPT API with the extracted text and process the response
+//         // Implement your logic to interact with the ChatGPT API
 
-        // Call the Text to Speech API to generate the response audio
-        // Implement your logic to convert text to speech using the appropriate libraries or APIs
-        // Return the response to the user
-    } else {
-        res.status(400).json({ error: "NPC Interaction Fail." });
-    }
-}
+//         // Call the Text to Speech API to generate the response audio
+//         // Implement your logic to convert text to speech using the appropriate libraries or APIs
+//         // Return the response to the user
+//     } else {
+//         res.status(400).json({ error: "NPC Interaction Fail." });
+//     }
+// }
 
 // Function to convert speech to text
 export async function convertSpeechToText(
@@ -93,8 +96,29 @@ export async function convertSpeechToText(
         const data: FormData = new FormData();
         let response_STT: any;
         let transcription: string;
+        let result: any;
 
-        data.append("file", fs.createReadStream(audioFilePath));
+        let fileName = audioFilePath.split('/').pop();
+
+        const getParams = {
+            Bucket: process.env.S3_BUCKET_NAME,
+            Key: fileName
+        }
+
+        const command = new GetObjectCommand(getParams);
+        const item = await s3Client.send(command);
+
+        // We will convert the stream into a Buffer, because axios can't handle the stream directly
+
+        if (item.Body instanceof Readable) {
+            const parts = await toArray(item.Body);
+            const audioBuffer = Buffer.concat(parts);
+
+            data.append("file", audioBuffer, {
+                filename: fileName, // You need to specify filename
+                contentType: 'audio/wav', // And content type, adjusted for .wav audio files
+            });
+        }
         data.append("model", "whisper-1");
         data.append("language", "en");
         response_STT = await axios.post(
@@ -108,7 +132,16 @@ export async function convertSpeechToText(
             }
         );
         transcription = response_STT.data.text;
-        return transcription;
+
+        const audioUrl: string = audioFilePath.replace('https://bucket-fiveguys-audio.s3.ap-northeast-2.amazonaws.com', 'https://freetalker.site/s3bucket');
+
+        console.log("temp, audioUrl : ", audioUrl);
+        result = {
+            transcription: transcription,
+            audioUrl: audioUrl,
+        }
+
+        return result;
     } catch (err) {
         console.log("음성 파일 변환 실패");
         console.log(err);
@@ -117,12 +150,12 @@ export async function convertSpeechToText(
     // Implement your logic to convert speech to text using the appropriate libraries or APIs
 }
 
-export async function createChain(npcName: string): Promise<ConversationChain> {
+export async function createChain(npcName: string, level: string): Promise<ConversationChain> {
     const chat = new ChatOpenAI({
         modelName: "gpt-3.5-turbo",
         temperature: 0,
         timeout: 11000,
-        maxTokens: 100,
+        maxTokens: 120,
     });
 
     try {
@@ -131,7 +164,7 @@ export async function createChain(npcName: string): Promise<ConversationChain> {
         }
         const chatPrompt = ChatPromptTemplate.fromPromptMessages([
             SystemMessagePromptTemplate.fromTemplate(
-                preDefinedPrompt[npcName].message
+                preDefinedPrompt[npcName].message(level)
             ),
             new MessagesPlaceholder("history"),
             HumanMessagePromptTemplate.fromTemplate("{input}"),
@@ -139,23 +172,15 @@ export async function createChain(npcName: string): Promise<ConversationChain> {
 
         const memory = new BufferMemory({
             returnMessages: true,
-            // memoryKey: "history",
             chatHistory: new RedisChatMessageHistory({
                 sessionId: new Date().toISOString(),
-                sessionTTL: 300,
+                sessionTTL: 180,
                 config: {
                     url: "redis://localhost:6379",
                 },
             }),
         });
-        // const chain: ConversationChain = new ConversationChain({
-        //     memory: new BufferMemory({
-        //         returnMessages: true,
-        //         memoryKey: "history",
-        //     }),
-        //     prompt: chatPrompt,
-        //     llm: chat,
-        // });
+
         return new ConversationChain({
             memory: memory,
             prompt: chatPrompt,
@@ -169,7 +194,6 @@ export async function createChain(npcName: string): Promise<ConversationChain> {
 // TODO: 인자로 NPC 이름을 받아서 preDefindPrompt에서 해당 NPC의 prompt를 가져오도록 수정 필요
 export async function textCompletion(
     inputText: string,
-    // npcName: string = "ImmigrationOfficer",
     chain: ConversationChain
 ): Promise<string> {
     let completion: any;
@@ -181,20 +205,6 @@ export async function textCompletion(
         });
 
         console.log(`LLM response : ${response.response}`);
-        // ChatGPT API에 요청 보내기
-        // console.log("preDefindPrompt: ",
-        // preDefindPrompt['Immigration Officer'].messages.
-        // concat([{ role: "user", content: inputText }]));
-
-        // completion = await openai.createChatCompletion({
-        //     model: "gpt-3.5-turbo",
-        //     messages: preDefinedPrompt[npcName].messages.concat([
-        //         { role: "user", content: inputText },
-        //     ]),
-        // });
-        // ChatGPT API의 결과 받기
-        // role_answer = completion.data.choices[0].message["content"];
-        // console.log("NPC: ", role_answer);
         return response.response;
     } catch (error) {
         console.log(error);
@@ -206,31 +216,67 @@ export async function convertTexttoSpeech(
     inputText: string,
     outputText: string,
     npcName: string = "ImmigrationOfficer",
+    level: string = "intermediate"
 ): Promise<Object> {
+    console.log("convertTexttoSpeech, level: ", level);
     try {
+        let rate: number = 1.0;
+        if (level === "beginner") {
+            rate = 1.0;
+        } else if (level === "intermediate") {
+            rate = 1.2;
+        } else if (level === "advanced") {
+            rate = 1.45;
+        }
+
+        console.log(`convertTexttoSpeech, inputText: ${inputText}, outputText: ${outputText}`);
         const request: any = {
+            // input: { ssml: ssmlText },
             input: { text: outputText },
-            voice: { languageCode: "en-US", name: preDefinedVoiceType[npcName].voiceType },
-            audioConfig: { audioEncoding: "MP3" },
+            voice: {
+                languageCode: "en-US",
+                name: preDefinedVoiceType[npcName].voiceType,
+            },
+            audioConfig: {
+                audioEncoding: "MP3",
+                speakingRate: rate,
+            },
         };
         const [response_audio]: any = await client.synthesizeSpeech(request);
-        const audioFileName = `${uuidv4()}.mp3`;
-        const writeFile = util.promisify(fs.writeFile);
 
-        await writeFile(
-            `audio/npc_audio/${audioFileName}`,
-            response_audio.audioContent,
-            "binary"
-        );
-        const audioFileUrl: string = `${serverUrl}/audio/npc_audio/${audioFileName}`;
+        // Convert audio content to a stream
+
+
+        // const audioStream = new Readable();
+        // audioStream.push(response_audio.audioContent);
+        // audioStream.push(null); // indicates end of file 
+
+        // Define the bucket name and file name
+        const bucketName = process.env.S3_BUCKET_NAME;
+        const audioFileName = `${uuidv4()}.mp3`;
+
+
+        const uploadParams = {
+            Bucket: bucketName,
+            Key: audioFileName,
+            Body: Buffer.from(response_audio.audioContent),
+            ContentType: 'audio/mpeg',
+        };
+
+        await s3Client.send(new PutObjectCommand(uploadParams));
+        const s3Url: string = `https://${bucketName}.s3.amazonaws.com/${audioFileName}`;
+        const audioUrl: string = s3Url.replace(`https://${bucketName}.s3.ap-northeast-2.amazonaws.com`, 'https://freetalker.site/s3bucket');
 
         let result = {
             user: inputText,
             assistant: outputText,
-            audioUrl: audioFileUrl,
+            audioUrl: audioUrl,
         };
-        // console.log("result: ", result);
+
+        console.log("result: ", result);
         return result;
+
+
     } catch (error) {
         console.log(error);
         return { error: "text-to-speech request failed." };
@@ -301,11 +347,11 @@ export async function recommendNextResponses(
             messages: [
                 {
                     role: "system",
-                    content: `I'm currently talking with the ${npcName}, Recommend me three expressions I can reply to the sentence that ${previous} without any explanations`,
+                    content: `I'm currently talking with the ${npcName}. Recommend me three expressions, one positive, one neutral, and one negative, that I can use to respond to the sentence that ${previous} without any explanations`,
                 },
                 {
                     role: "user",
-                    content: `I'm currently talking with the ${npcName}, Recommend me three expressions I can reply to the sentence that ${previous} without any explanations`,
+                    content: `I'm currently talking with the ${npcName}. Recommend me three expressions, one positive, one neutral, and one negative, that I can use to respond to the sentence that ${previous} without any explanations`,
                 },
                 {
                     role: "user",
@@ -319,10 +365,11 @@ export async function recommendNextResponses(
             frequency_penalty: 0.0,
             presence_penalty: 0.0,
         });
+        console.log(response.data.choices[0].message["content"]);
         recommendations = response.data.choices[0].message["content"]
-            .trim()
-            .split("\n")
-            .map((sentence: string) => sentence.trim());
+            .split("\n\n")
+            .filter(Boolean)
+            .map((sentence: string) => sentence.split(": ")[1]);
         return recommendations;
     } catch (error) {
         console.log(error);
@@ -359,4 +406,46 @@ export function compareWithCorrectedText(
     const lowercaseInputText = preprocessSentence(inputText);
     const lowercaseCorrectedText = preprocessSentence(correctedText);
     return lowercaseInputText === lowercaseCorrectedText;
+}
+export async function translateText(
+    text: string,
+) {
+    let response: any;
+    let translations: string;
+    try {
+        // ChatGPT API에 요청 보내기
+        // "You are a grammar checker that looks for mistakes and makes sentence’s more fluent. You take all the input and auto correct it. Just reply to user input with the correct grammar, DO NOT reply the context of the question of the user input. If the user input is grammatically correct, just reply “sounds good”:\n\n${inputText}"
+        // Make it correct in grammar and Do not give the reason for this change If it doesn't have grammatical issues, do not give a correction.
+        // If it doesn't have grammatical issues, do not give a correction.
+        // check the following text for spelling and grammar errors
+        response = await openai.createChatCompletion({
+            model: "gpt-3.5-turbo",
+            messages: [
+                {
+                    role: "system",
+                    // content: `transform this sentence '${text}' into form like this '[english word]: [korean word]\n'.`,
+                    content: `Translate this sentence '${text}' into korean without korean pronunciation.`,
+                },
+                {
+                    role: "user",
+                    // content: `transform this sentence '${text}' into form like this '[english word]: [korean word]\n'.`,
+                    content: `Translate this sentence '${text}' into korean without pronunciation.`,
+                },
+            ],
+            // messages: {`I'm currently at the ${place}, Recommend me three expressions I can reply to the ${previous} without any explanations`,}
+            temperature: 0,
+            max_tokens: 300,
+            top_p: 1.0,
+            frequency_penalty: 0.0,
+            presence_penalty: 0.0,
+        });
+        // ChatGPT API의 결과 받기
+        translations = response.data.choices[0].message['content'];
+        // console.log(response.data.choices[0].message)
+        console.log(`translations:\n${translations}`);
+        return translations;
+    } catch (error) {
+        console.log(error);
+        return "ChatGPT API Error.";
+    }
 }
