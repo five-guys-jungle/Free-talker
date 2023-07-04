@@ -37,8 +37,7 @@ export function interactSocketEventHandler(socket: Socket) {
     const s3Client = new S3Client({ region: "ap-northeast-2" });
     socket.on("dialogStart", async (npcName: string, level: string) => {
         console.log("dialogStart");
-
-
+        console.log("level: ", level);
         // 소켓이 연결되면, 유저와 NPC 간의 Conversation Chain을 생성한다.
         await createChain(npcName, level)
             .then((res) => {
@@ -56,7 +55,7 @@ export function interactSocketEventHandler(socket: Socket) {
                 npcSentence = res.response;
                 // socket.emit("npcFirstResponse", npcSentence);
 
-                await convertTexttoSpeech(prompt, npcSentence, npcName)
+                await convertTexttoSpeech(prompt, npcSentence, npcName, level)
                     .then((res) => {
                         socket.emit("npcFirstResponse", res);
                         console.log("npcFirstResponse response: ", res);
@@ -67,7 +66,7 @@ export function interactSocketEventHandler(socket: Socket) {
             })
             .catch((err) => {
                 npcSentence = "Hello, How can I assist you today?"
-                convertTexttoSpeech(prompt, npcSentence, npcName)
+                convertTexttoSpeech(prompt, npcSentence, npcName, level)
                     .then((res) => {
                         socket.emit("npcFirstResponse", res);
                         console.log("npcFirstResponse response: ", res);

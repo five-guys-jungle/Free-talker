@@ -15,6 +15,7 @@ import {
 import Button from "@mui/material/Button";
 import SaveIcon from "@material-ui/icons/Save";
 import DeleteIcon from "@material-ui/icons/Delete";
+import DisabledByDefaultIcon from '@mui/icons-material/DisabledByDefault';
 import { IconButton } from "@material-ui/core";
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import PauseIcon from '@material-ui/icons/Pause';
@@ -335,6 +336,21 @@ const ReportBook = (data: any) => {
                                                     <div className="title">
                                                         <h1>REPORT</h1>
                                                         <IconButton
+                                                            color="primary"
+                                                            onClick={handleBook}
+                                                            style={{
+                                                                gridArea: "s3",
+                                                                marginLeft:
+                                                                    "auto",
+                                                                marginTop:
+                                                                    "8px",
+                                                                width: "50px",
+                                                                height: "25px",
+                                                            }}
+                                                        >
+                                                            <DisabledByDefaultIcon/>
+                                                        </IconButton>
+                                                        <IconButton
                                                             color="secondary"
                                                             onClick={() =>
                                                                 handleDelete(
@@ -347,7 +363,7 @@ const ReportBook = (data: any) => {
                                                                 marginLeft:
                                                                     "auto",
                                                                 marginTop:
-                                                                    "19px",
+                                                                    "32px",
                                                                 width: "50px",
                                                                 height: "25px",
                                                             }}
