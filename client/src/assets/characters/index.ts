@@ -4,16 +4,18 @@ import seunghun from "./seunghun.png"
 import doyoungboy from "./doyoungboy.png";
 import minsook from "./minsook.png";
 import minsik from "./minsik.png";
+import soobin from "./soobin.png";
 type Characters = {
     [key: string]: string;
 };
 
 const characters: Characters = {
     jinhoman,
-    jinhogirl,
+    minsook,
+    soobin,
     seunghun,
     doyoungboy,
-    minsook,
+    jinhogirl,
     minsik
 };
 
