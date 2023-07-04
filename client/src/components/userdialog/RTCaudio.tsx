@@ -280,18 +280,8 @@ const RTCaudio = () => {
 		store.dispatch(clearRecommendations());
 		const handleKeyDown = (event: KeyboardEvent) => {
 			if (event.key === 'e' || event.key === 'E') {
-				setCallEnded(true);
-
-				if (connectionRef.current) {
-					connectionRef.current.destroy();
-					socket.current!.emit("callEnded"); // 서버로 callEnded 이벤트 전송
-					// socket.current!.emit("out_Role2" , {playerRole: playerRole});
-					socket.current!.emit("leaveCallEvent", { to: caller });
-					// Airport 씬으로 이벤트 전달
-					socket.current!.emit("userExit", socket.current!.id);
-					window.dispatchEvent(new Event("exitcall"));
-					socket.current!.disconnect();
-				}
+				leaveCall();      
+				
 			}
 		};
 

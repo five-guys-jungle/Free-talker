@@ -375,6 +375,8 @@ export default class USAScene extends Phaser.Scene {
             this.isReportOn = false;
         });
 
+        
+
 
         this.input.keyboard!.on("keydown-E", async () => {
             this.player1!.setVelocity(0, 0);
@@ -469,8 +471,8 @@ export default class USAScene extends Phaser.Scene {
 
 
                                 valve_E = true;
-                                this.allPlayers[this.socket!.id].seat = 0;
-                                this.seatEvent = 3;
+                                // this.allPlayers[this.socket!.id].seat = 0;
+                                // this.seatEvent = 3;
                                 store.dispatch(openUSA());
                             });
                         } else {
@@ -598,7 +600,8 @@ export default class USAScene extends Phaser.Scene {
 
 
                             valve_E = true;
-
+                            this.allPlayers[this.socket!.id].seat = 0;
+                            this.seatEvent = 3;
                             store.dispatch(openUSA());
                         }
                     } else if (npcInfo.name.includes("gate")) {

@@ -195,14 +195,13 @@ const FreeDialog = () => {
 
 	const leaveCall = () => {
 		setCallEnded(true);
+		console.log("leaveCall");
 		if (connectionRef.current) {
 			connectionRef.current.destroy();
 			socket.current!.emit("callEnded"); // 서버로 callEnded 이벤트 전송
 			socket.current!.emit("leaveCallEvent", { to: caller });
-			socket.current!.emit("standup", {
-				seatPosition,
-				place_name
-			});
+			console.log("leaveCallEvent");
+			
 			// Airport 씬으로 이벤트 전달
 			window.dispatchEvent(new Event("exitcall"));
 			socket.current!.disconnect();
