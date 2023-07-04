@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from "uuid";
 import { Server as SocketIOServer, Socket } from "socket.io";
 import { Player, PlayerDictionary } from "../models/Player";
 
@@ -24,9 +23,9 @@ export function socketEventHandler(socket: Socket) {
             }
         }
     });
-    socket.on("seat", (data : Player) => {
+    socket.on("seat", (data: Player) => {
         // console.log("seat, data: ", data);   
-        
+
         players_usa[data.socketId] = data;
         socket.broadcast.emit("otherseat", data);
     })
@@ -37,7 +36,7 @@ export function socketEventHandler(socket: Socket) {
             players_airport[socket.id] = data;
             socket.broadcast.emit("playerMoved", players_airport[socket.id]);
         } else if (data.scene === "USAScene") {
-            console.log("playerMovement, data: ", data);
+            // console.log("playerMovement, data: ", data);
             data.socketId = socket.id;
             players_usa[socket.id] = data;
             socket.broadcast.emit("playerMoved", players_usa[socket.id]);

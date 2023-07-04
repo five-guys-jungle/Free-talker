@@ -1,6 +1,6 @@
 import express from "express";
 
-import { signup, login } from "../controllers/userController";
+import { signup, login, logout } from "../controllers/userController";
 import { signupLocal, loginLocal, logoutLocal } from "../controllers/userControllerLocal";
 
 const router = express.Router();
@@ -8,6 +8,7 @@ const router = express.Router();
 if (process.env.NODE_ENV === "production") {
     router.post("/signup", signup);
     router.post("/login", login);
+    router.post("/logout", logout);
 }
 else {
     router.post("/signup", signupLocal);

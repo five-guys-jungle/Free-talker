@@ -6,6 +6,7 @@ import "dotenv/config";
 import {
     GetItemCommand,
     PutItemCommand,
+    UpdateItemCommand,
     QueryCommand,
     DynamoDBClient,
 } from "@aws-sdk/client-dynamodb";
@@ -165,8 +166,6 @@ export const login = async (req: Request, res: Response) => {
                         userPw,
                         userPwAttribute?.S || ""
                     );
-                    // console.log(`userPw : ${userPw}`);
-                    // console.log(`userPwAttribute : ${userPwAttribute.S}`);
                     if (typeof jwtKey === "string" && match) {
                         const accessToken = jwt.sign(
                             {
@@ -179,7 +178,31 @@ export const login = async (req: Request, res: Response) => {
                                 expiresIn: "2h",
                             }
                         );
-                        console.log("accessToken:", accessToken);
+
+                        if (foundUser.Item.accessToken.S !== "") {
+                            console.log("Invalid accessToken: ", foundUser.Item.accessToken.S);
+                            return res.status(401).send("Invalid accessToken");
+                        }
+
+                        const updateParams = {
+                            ExpressionAttributeNames: {
+                                "#JWT": "AccessToken"
+                            },
+                            ExpressionAttributeValues: {
+                                ":t": {
+                                    "S": accessToken
+                                }
+                            },
+                            Key: {
+                                userId: { S: userId }
+                            },
+                            ReturnValues: "ALL_NEW",
+                            TableName: tableName,
+                            UpdateExpression: "SET #JWT = :t"
+                        };
+
+                        const response = await client.send(new UpdateItemCommand(updateParams));
+                        console.log(`Update complete! response : ${response}`);
                         return res.json({
                             status: 200,
                             success: true,
@@ -204,3 +227,39 @@ export const login = async (req: Request, res: Response) => {
     }
 };
 
+export const logout = async (req: Request, res: Response) => {
+    try {
+        const { userId } = req.body;
+
+        console.log("userId:", userId);
+
+        const updateParams = {
+            ExpressionAttributeNames: {
+                "#JWT": "AccessToken"
+            },
+            ExpressionAttributeValues: {
+                ":t": {
+                    "S": ""
+                }
+            },
+            Key: {
+                userId: { S: userId }
+            },
+            ReturnValues: "ALL_NEW",
+            TableName: tableName,
+            UpdateExpression: "SET #JWT = :t"
+        };
+
+        const response = await client.send(new UpdateItemCommand(updateParams));
+        console.log(`Logout Success!! response: ${response}`);
+
+        return res.json({
+            status: 200,
+            success: true,
+            message: "Logout success",
+        })
+    }
+    catch (err) {
+        console.log(err);
+    }
+}

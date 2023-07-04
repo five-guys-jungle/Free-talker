@@ -153,22 +153,8 @@ export default class AirportScene extends Phaser.Scene {
     create() {
         window.onbeforeunload = async () => {
             console.log("beforeunload");
-            const body = JSON.stringify({ userNickname: this.userNickname })
-            fetch(`${DB_URL}/auth/logout`, {
-                method: 'POST', // or 'DELETE' based on your endpoint
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: body
-            }).then((response) => {
-                if (!response.ok) {
-                    throw new Error("Network response was not ok");
-                }
-                console.log("Successful logout");
-            }).catch((error) => {
-                console.error("Error:", error);
-            });
-
+            const body = JSON.stringify({ userId: this.playerId })
+            axios.post(`${DB_URL}/auth/logout`, body);
         };
 
         this.background = this.add
@@ -292,10 +278,8 @@ export default class AirportScene extends Phaser.Scene {
         window.addEventListener('levelChanged', (event) => {
             if (this.level === "intermediate") {
                 this.level = "advanced";
-                // store.dispatch(changeLevel())
             } else if (this.level === "advanced") {
                 this.level = "beginner";
-                // store.dispatch(changeLevel())
             } else if (this.level === "beginner") {
                 this.level = "intermediate";
             }
