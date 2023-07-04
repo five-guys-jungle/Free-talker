@@ -1415,7 +1415,7 @@ export default class USAScene extends Phaser.Scene {
 
         //moving npc-----------------------------------------------------------------------------
         let npc9: npcInfo = {
-            name: "Barista",
+            name: "Minsook",
             x: 1155,
             y: 859,
             texture: "minsook",
@@ -1464,6 +1464,61 @@ export default class USAScene extends Phaser.Scene {
         }
 
         tweens[0].resume(); // Start the first animation
+        //-----------------------------------------------------------------------------
+        //moving npc-----------------------------------------------------------------------------
+        let npc10: npcInfo = {
+            name: "Doyoungboy",
+            x: 202,
+            y: 336,
+            texture: "doyoungboy",
+            sprite: null,
+            role: "npc",
+            moving: true,
+        };
+        npc10.sprite = this.physics.add.sprite(npc10.x, npc10.y, npc10.texture);
+        this.npcList.push(npc10);
+
+        let points2 = [
+            { x: 386, y: 480, anim: `${npc10.texture}_run_down` },
+            { x: 500, y: 370, anim: `${npc10.texture}_run_right` },
+            { x: 507, y: 660, anim: `${npc10.texture}_run_down` },
+            { x: 253, y: 530, anim: `${npc10.texture}_run_left` },
+            { x: 202, y: 336, anim: `${npc10.texture}_run_up` },
+        ];
+
+        let tweens2 = points2.map((point, index) =>
+            this.tweens.add({
+                targets: npc10.sprite,
+                x: point.x,
+                y: point.y,
+                ease: 'Linear',
+                duration: 5000,
+                repeat: -1,
+                onStart: () => {
+                    npc10.sprite!.anims.play(point.anim);
+                    // console.log("start, anim: ", point.anim);
+                },
+                onComplete: () => {
+                    console.log("complete");
+                },
+                onRepeat: () => {
+                    console.log("repeat");
+                    npc10.sprite!.anims.play(points2[(index + 1) % points2.length].anim, true);
+                    // console.log("repeat, anim: ", points[(index+1)%points.length].anim);
+                },
+                paused: index !== 0, // Only pause the animations that are not the first one
+            }));
+        this.tweenDict[npc10.name] = tweens2;
+
+        for (let i = 0; i < tweens2.length; i++) {
+            tweens2[i].on('repeat', () => {
+                tweens2[i].pause();
+                let nextTween = tweens2[(i + 1) % tweens2.length];
+                nextTween.resume(); // Resume the next animation
+            })
+        }
+
+        tweens2[0].resume(); // Start the first animation
         //-----------------------------------------------------------------------------
 
 
