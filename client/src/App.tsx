@@ -26,6 +26,8 @@ function App() {
 
     const dispatch = useDispatch();
     const [logined, setLogined] = useState(false);
+    // const isClicked = useSelector((state: { guider: { isClicked: boolean } }) => state.guider.isClicked);
+    // const backgroundOpacity = useSelector((state: { guider: { backgroundOpacity: number } }) => state.guider.backgroundOpacity);
     useEffect(() => {
         if (mode !== START && mode !== LOGIN) {
             if (logined) return;
@@ -36,22 +38,23 @@ function App() {
     return (
         <HoverDiv>
             {/* <Bgm/> */}
+            {/* {isClicked && <Overlay style={{ opacity: backgroundOpacity }} />} */}
             {mode === START || mode === LOGIN ? (
                 <>
-                {<Bgm/>}
-                {!logined && <Start />}
+                    {<Bgm />}
+                    {!logined && <Start />}
                 </>
             ) : mode === AIRPORT ||
-              mode === USA ||
-              mode === NPCDIALOG ||
-              mode === USERDIALOG ||
-              mode === REPORT || 
-              mode === FREEDIALOG ? (
+                mode === USA ||
+                mode === NPCDIALOG ||
+                mode === USERDIALOG ||
+                mode === REPORT ||
+                mode === FREEDIALOG ? (
                 <>
-                <Game />
-                <Bgm/>
+                    <Game />
+                    <Bgm />
                 </>
-                
+
 
             ) : (
                 <></>
@@ -59,8 +62,8 @@ function App() {
             {/* <NPCDialog/> */}
             {/* <UserDialog /> */}
             {/* <FreeDialog /> */}
-            
-            
+
+
         </HoverDiv>
     );
 }
@@ -73,3 +76,14 @@ const HoverDiv = styled.div`
     width: 100%;
     // overflow: hidden;
 `;
+
+
+// const Overlay = styled.div`
+//     position: fixed;
+//     top: 0;
+//     left: 0;
+//     width: 100%;
+//     height: 100%;
+//     background: rgba(0, 0, 0, 0.5);
+//     z-index: 999;
+// `;

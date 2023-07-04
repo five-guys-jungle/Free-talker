@@ -371,6 +371,25 @@ export default class AirportScene extends Phaser.Scene {
                             this.seatEvent = true;
                         }
                     } else if (npcInfo.name === 'gate') {
+                        this.cursors!.left.isDown = false;
+                        this.cursors!.right.isDown = false;
+                        this.cursors!.up.isDown = false;
+                        this.cursors!.down.isDown = false;
+                        this.cursors!.left.enabled = false;
+                        this.cursors!.right.enabled = false;
+                        this.cursors!.up.enabled = false;
+                        this.cursors!.down.enabled = false;
+                        this.player1!.setVelocity(0, 0);
+                        this.player1!.setPosition(
+                            this.player1!.x,
+                            this.player1!.y)
+
+                        setTimeout(() => {
+                            this.cursors!.left.enabled = true;
+                            this.cursors!.right.enabled = true;
+                            this.cursors!.up.enabled = true;
+                            this.cursors!.down.enabled = true;
+                        }, 1500);
                         let gate: Phaser.Physics.Arcade.Sprite = npcInfo.sprite!;
                         gate.on('animationcomplete', () => {
                             // 여기서 애니메이션이 완료된 후 수행할 로직을 작성합니다.

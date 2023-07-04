@@ -118,6 +118,7 @@ const DescriptionModal = styled.div`
   align-items: center;
   justify-content: center;
   transition: all 0.5s ease;
+  z-index: 1000;  // 높은 z-index
   /* Add other styles if necessary */
 `;
 

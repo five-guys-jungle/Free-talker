@@ -1,71 +1,76 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import styled, { css } from 'styled-components';
+import { useSelector, useDispatch } from 'react-redux';
+import { toggleIsClicked } from '../stores/keyGuiderSlice';
+
 
 const KeyGuider = () => {
-    const [isClicked, setIsClicked] = useState(false);
+  const dispatch = useDispatch();
+  const isClicked = useSelector((state: { keyGuider: { isClicked: boolean } }) => state.keyGuider.isClicked);
+  const modalRef = useRef<HTMLDivElement>(null);
 
-    const handleClick = () => {
-        setIsClicked(!isClicked);
+  const handleClick = () => {
+    dispatch(toggleIsClicked());
+  };
+
+  const handleModalClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // 모달 클릭 시 버블링 방지
+  };
+
+  const handleOutsideClick = (e: MouseEvent) => {
+    if (isClicked && modalRef.current && !modalRef.current.contains(e.target as Node)) {
+      dispatch(toggleIsClicked());
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
     };
+  }, []);
+  return (
+    <>
+      <StyledButton isClicked={isClicked} onClick={handleClick}>
+        도움말
+      </StyledButton>
 
-    const handleModalClick = (e: any) => {
-        e.stopPropagation(); // 모달 클릭 시 버블링 방지
-    };
-
-    return (
-        <>
-            <StyledButton isClicked={isClicked} onClick={handleClick}>
-                도움말
-            </StyledButton>
-            {isClicked && (
-                <Modal onClick={handleClick}>
-                    <ModalContent onClick={handleModalClick}>
-                        <CloseButton onClick={handleClick}>X</CloseButton>
-                        <DescriptionContainer>
-                            <ImageDescription src="./assets/UI/Keyboard_Up.png" alt="Up keyboard" description="위쪽 이동" />
-                            <ImageDescription src="./assets/UI/Keyboard_Down.png" alt="Down keyboard" description="아래쪽 이동" />
-                            <ImageDescription src="./assets/UI/Keyboard_Left.png" alt="Left keyboard" description="왼쪽 이동" />
-                            <ImageDescription src="./assets/UI/Keyboard_Right.png" alt="Right keyboard" description="오른쪽 이동" />
-                            <ImageDescription src="./assets/UI/Keyboard_E.png" alt="E keyboard" description="상호작용" />
-                        </DescriptionContainer>
-                    </ModalContent>
-                </Modal>
-            )}
-        </>
-    );
+      {isClicked && (
+        <Modal onClick={handleClick}>
+          <ModalContent onClick={handleModalClick}>
+            <CloseButton onClick={handleClick}>X</CloseButton>
+            <DescriptionContainer>
+              <ImageDescription src="./assets/UI/Keyboard_Up.png" alt="Up keyboard" description="위쪽 이동" />
+              <ImageDescription src="./assets/UI/Keyboard_Down.png" alt="Down keyboard" description="아래쪽 이동" />
+              <ImageDescription src="./assets/UI/Keyboard_Left.png" alt="Left keyboard" description="왼쪽 이동" />
+              <ImageDescription src="./assets/UI/Keyboard_Right.png" alt="Right keyboard" description="오른쪽 이동" />
+              <ImageDescription src="./assets/UI/Keyboard_E.png" alt="E keyboard" description="상호작용" />
+            </DescriptionContainer>
+          </ModalContent>
+        </Modal>
+      )}
+    </>
+  );
 };
 
 export default KeyGuider;
 
 interface ImageDescriptionProps {
-    src: string;
-    alt: string;
-    description: string;
+  src: string;
+  alt: string;
+  description: string;
 }
 
 const ImageDescription: React.FC<ImageDescriptionProps> = ({ src, alt, description }) => (
-    <ItemContainer>
-        <Image src={src} alt={alt} />
-        <Description>{description}</Description>
-    </ItemContainer>
+  <ItemContainer>
+    <Image src={src} alt={alt} />
+    <Description>{description}</Description>
+  </ItemContainer>
 );
 
 interface StyledButtonProps {
-    isClicked: boolean;
+  isClicked: boolean;
 }
-
-// const StyledButton = styled.button<StyledButtonProps>`
-//   padding: 10px;
-//   border-radius: 20px;
-//   background-color: ${props => (props.isClicked ? 'lightskyblue' : 'skyblue')};
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-//   transition: all 0.5s ease;
-//   cursor: pointer;
-//   border: none; // 테두리 제거
-//   outline: none; // 아웃라인 제거
-// `;
 
 const StyledButton = styled.button<StyledButtonProps>`
   padding: 10px;
@@ -93,6 +98,7 @@ const Modal = styled.div`
   width: 100%;
   height: 100%;
 //   background-color: rgba(0, 0, 0, 0);
+  z-index: 1000;  // 높은 z-index
   display: flex;
   align-items: center;
   justify-content: center;

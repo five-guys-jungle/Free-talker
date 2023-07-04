@@ -122,7 +122,7 @@ export const deleteDialog = async (req: Request, res: Response) => {
         };
 
         const deleteItem = new DeleteItemCommand(deleteParams);
-        console.log(deleteItem);
+        // console.log(deleteItem);
 
         // TODO : deleteItem에서 오디오 URL 받아서, S3 Audio 파일 지우기
         await client.send(deleteItem);
@@ -161,7 +161,7 @@ export const loadDialog = async (req: Request, res: Response) => {
             const existingDialogs = queryResult.Items.map((item) =>
                 unmarshall(item)
             );
-            console.log(existingDialogs);
+            // console.log(existingDialogs);
             return res.json({ existingDialogs });
         } else {
             const emptyArray: any = [];

@@ -34,6 +34,13 @@ const Game = () => {
         return { ...state.mode };
     });
 
+    const isClicked = useSelector((state: { guider: { isClicked: boolean } }) => state.guider.isClicked);
+    const keyGuideClicked = useSelector((state: { keyGuider: { isClicked: boolean } }) => state.keyGuider.isClicked);
+    const backgroundOpacityForGuide = useSelector((state: { guider: { backgroundOpacity: number } }) => state.guider.backgroundOpacity);
+    const backgroundOpacityForKeyGuide = useSelector((state: { keyGuider: { backgroundOpacity: number } }) => state.keyGuider.backgroundOpacity);
+
+    const backgroundOpacity = isClicked ? backgroundOpacityForGuide : backgroundOpacityForKeyGuide;
+
     const { reportonoff } = useSelector((state: RootState) => {
         return { ...state.reportonoff };
     });
@@ -47,6 +54,7 @@ const Game = () => {
         {(mode === AIRPORT || mode === USA) && <ReportBook />}
         {mode !== NPCDIALOG && mode !== USERDIALOG && mode !== FREEDIALOG && (
             <ButtonContainer>
+                {(isClicked || keyGuideClicked) && <Overlay style={{ opacity: backgroundOpacity }} />}
                 <LevelButton />
                 <Guider />
                 <KeyGuider />
@@ -72,4 +80,14 @@ const ButtonContainer = styled.div`
   display: flex;
   flex-direction: row;
   gap: 10px; /* Add gap to separate the buttons */
+`;
+
+const Overlay = styled.div`
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
 `;
