@@ -775,11 +775,11 @@ export default class USAScene extends Phaser.Scene {
                                             setTimeout(() => {
                                                 store.dispatch(
                                                     setMessage(
-                                                        "다시 말씀해주세요"
+                                                        "D키를 눌러\n녹음을 시작하세요"
                                                     )
                                                 );
                                                 store.dispatch(
-                                                    setMessageColor("red")
+                                                    setMessageColor("black")
                                                 );
                                             }, 2500);
                                             store.dispatch(

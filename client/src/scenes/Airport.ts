@@ -549,14 +549,12 @@ export default class AirportScene extends Phaser.Scene {
                                         ) {
                                             store.dispatch(
                                                 setMessage(
-                                                    "잠시 후 다시 시도해주세요"
+                                                    "다시 말씀해주세요"
                                                 )
                                             );
                                             store.dispatch(
                                                 setMessageColor("red")
                                             );
-                                            store.dispatch(setRecord(true));
-                                            this.isAudioPlaying = true;
                                             setTimeout(() => {
                                                 store.dispatch(
                                                     setMessage(
@@ -564,17 +562,16 @@ export default class AirportScene extends Phaser.Scene {
                                                     )
                                                 );
                                                 store.dispatch(
-                                                    setRecord(false)
-                                                );
-                                                this.isAudioPlaying = false;
-                                                store.dispatch(
                                                     setMessageColor("black")
                                                 );
                                             }, 2500);
-
                                             store.dispatch(
-                                                setCanRequestRecommend(false)
+                                                setCanRequestRecommend(
+                                                    false
+                                                )
                                             );
+                                            store.dispatch(setRecord(true));
+                                            this.isAudioPlaying = false;
                                         } else {
                                             addCountUserSpeech();
                                             console.log("USER: ", response.transcription);

@@ -411,12 +411,12 @@ export async function translateText(
                 {
                     role: "system",
                     // content: `transform this sentence '${text}' into form like this '[english word]: [korean word]\n'.`,
-                    content: `Translate this sentence '${text}' into korean.`,
+                    content: `Translate this sentence '${text}' into korean without korean pronunciation.`,
                 },
                 {
                     role: "user",
                     // content: `transform this sentence '${text}' into form like this '[english word]: [korean word]\n'.`,
-                    content: `Translate this sentence '${text}' into korean.`,
+                    content: `Translate this sentence '${text}' into korean without pronunciation.`,
                 },
             ],
             // messages: {`I'm currently at the ${place}, Recommend me three expressions I can reply to the ${previous} without any explanations`,}
