@@ -132,7 +132,7 @@ const RTCaudio = () => {
 		console.log("socket is connected: ", socket.current!.id);
 
 
-		socket.current!.emit("otherchar", { playerNickname: playerNickname, playerTexture: playerTexture });
+		
 		socket.current!.on("otherusercharacter", ({ playerNickname: playerNickname, playerTexture: playerTexture }) => {
 			console.log(playerNickname, playerTexture)
 			dispatch(setUserCharacter({ playerNickname, playerTexture }));
@@ -147,9 +147,8 @@ const RTCaudio = () => {
 		socket.current!.on("userconnected", () => {
 			console.log("connected~~~~~~~~~~~~~~~~~~~~~~~~~~!!!!!!!!!!!!");
 			socket.current!.emit("mychar", { otherNickname: playerNickname, otherTexture: playerTexture });
-			// callUser(idToCall);
-			// document.getElementById("call-btn")?.click();
-			// console.log("clickclickclick!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+			socket.current!.emit("otherchar", { playerNickname: playerNickname, playerTexture: playerTexture });
+			
 		})
 		socket.current!.on("usercharacter", ({ otherNickname: playerNickname, otherTexture: playerTexture }) => {
 			console.log(playerNickname, playerTexture);
@@ -187,7 +186,7 @@ const RTCaudio = () => {
 			}
 		});
 		return () => {
-			// socket.current!.emit("out_Role" , {playerRole: playerRole, placeName: placeName});
+			
 			socket.current!.emit("userExit", socket.current!.id);
 			socket.current!.disconnect();
 			store.dispatch(clearRecommendations());
@@ -230,31 +229,11 @@ const RTCaudio = () => {
 			peer.signal(signal)
 			// fetchData();
 		});
-		// try {
-		// 	const response = await axios.get(`${DB_URL}/userdialog/place`, {
-		// 		params: {
-		// 			placeName: placeName // placeName you want to send
-		// 		}
-		// 	});
-		// 	console.log(response.data);
-		// } catch (error) {
-		// 	console.error(`Error in sending placeName: ${error}`);
-		// }
+		
 		connectionRef.current = peer
 	}
 
-	// const fetchData = async () => {
-	// 	try {
-	// 		const response = await axios.get(`${DB_URL}/userdialog/place`, {
-	// 			params: {
-	// 				placeName: placeName // placeName you want to send
-	// 			}
-	// 		});
-	// 		console.log(response.data); // martChair -> 
-	// 	} catch (error) {
-	// 		console.error(`Error in sending placeName: ${error}`);
-	// 	}
-	// };
+	
 
 	const answerCall = async () => {
 		setCallAccepted(true)
