@@ -114,6 +114,7 @@ const RTCaudio = () => {
 		socket.current!.on("role", (data: any) => {
 			console.log("role : ", data);
 			dispatch(clearSituation());
+			dispatch(clearRole());
 			dispatch(clearRecommendations());
 			dispatch(setSituation({ situation: data.situation }));
 			dispatch(setRole({ role: data.role }));
@@ -193,6 +194,7 @@ const RTCaudio = () => {
 			socket.current!.emit("userExit", socket.current!.id);
 			socket.current!.disconnect();
 			store.dispatch(clearSituation());
+			dispatch(clearRole());
 			store.dispatch(clearRecommendations());
 
 		}
@@ -288,6 +290,7 @@ const RTCaudio = () => {
 	const leaveCall = () => {
 		setCallEnded(true);
 		store.dispatch(clearSituation());
+		dispatch(clearRole());
 		store.dispatch(clearRecommendations());
 		if (connectionRef.current) {
 			connectionRef.current.destroy();
