@@ -86,7 +86,7 @@ export default class USAScene extends Phaser.Scene {
     npcList: npcInfo[] = [];
     alreadyRecommended: boolean = false;
     speed: number = 200;
-    dashSpeed: number = 600;
+    dashSpeed: number = 400;
     tilemapLayerList: Phaser.Tilemaps.TilemapLayer[] = [];
     currNpcName: string = "";
     beforeSleepX: number = this.initial_x;
@@ -212,6 +212,8 @@ export default class USAScene extends Phaser.Scene {
             "layer1/Exteriors",
             tileset_exteriors
         )!;
+        const logo = map1.createLayer("logo/logo", tileset_logo)!;
+
         const exteriors_2 = map1.createLayer(
             "layer2/Exteriors",
             tileset_exteriors
@@ -220,7 +222,7 @@ export default class USAScene extends Phaser.Scene {
             "layer3/Exteriors",
             tileset_exteriors
         )!;
-        const logo = map1.createLayer("logo/logo", tileset_logo)!;
+
         const interiors_11 = map1.createLayer(
             "layer1/Interiors1",
             tileset_interiors_1
@@ -351,10 +353,14 @@ export default class USAScene extends Phaser.Scene {
             color: "black",
             fontSize: "16px",
         });
-        this.userIdText = this.add.text(10, 10, "", {
+        this.userIdText = this.add.text(10, 10, this.userNickname, {
             color: "black",
             fontSize: "16px",
+            stroke: "black",
+            strokeThickness: 0.5,
         });
+        this.userIdText!.setOrigin(0.5, 0);
+        this.userIdText!.setPadding({ top: 10, bottom: 10 })
 
         let valve_E = true;
         // npc 와의 대화를 위한 키 설정
@@ -437,6 +443,8 @@ export default class USAScene extends Phaser.Scene {
                                     this.allPlayers[this.socket!.id].seat = 1;
                                     this.seatEvent = 1;
                                 }
+
+
                                 else {
                                     this.player1!.anims.play(
                                         `${this.player1!.texture.key}_idle_down`,
@@ -488,6 +496,32 @@ export default class USAScene extends Phaser.Scene {
                                 // this.seatEvent = 3;
                                 store.dispatch(openUSA());
                             });
+                            window.addEventListener("roomfull", (e: Event) => {
+                                console.log("roomfull event listener");
+                                const camera = this.cameras.main;
+                                const messageText = '이미 다른 플레이가 이용중입니다';
+                                const message = this.add.text(0, 0, messageText, { color: 'e', fontSize: '20px' });
+                                message.setOrigin(0.5, 0.5);
+
+                                const padding = 10;  // 텍스트 주변에 더할 패딩 크기
+                                const boxWidth = message.width + (2 * padding);
+                                const boxHeight = message.height + (2 * padding);
+
+                                const box = this.add.rectangle(0, 0, boxWidth, boxHeight, 0xA7EEFF);  // 하늘색 배경 박스
+                                box.setOrigin(0.5, 0.5);
+
+                                // 배경 박스를 텍스트 아래에 두기
+                                message.setDepth(1);
+                                box.setDepth(0);
+
+                                const container = this.add.container(camera.scrollX + camera.width / 2, camera.scrollY + camera.height / 2, [box, message]);
+
+                                setTimeout(() => {
+                                    container.destroy();
+                                }, 2000);
+
+
+                            });
                         } else {
                             this.player1!.setVelocity(0, 0);
                             this.player1!.setPosition(
@@ -513,6 +547,7 @@ export default class USAScene extends Phaser.Scene {
                         }
                     }
 
+
                     else if (npcInfo.role === "rolePlayingPlace") {
                         console.log("chair");
                         this.player1!.setVelocity(0, 0);
@@ -535,13 +570,23 @@ export default class USAScene extends Phaser.Scene {
                             window.addEventListener("seat", (event: any) => {
                                 console.log("event.detail: ", event.detail);
                                 console.log("seat event listener");
-                                if (event.detail.place_name === "couch_park1" || event.detail.place_name === "couch_park2") {
-                                    this.player1!.anims.play(
-                                        `${this.player1!.texture.key}_sit_left`,
-                                        true
-                                    );
-                                    this.allPlayers[this.socket!.id].seat = 1;
-                                    this.seatEvent = 1;
+                                if (event.detail.place_name === "Restaurant" || event.detail.place_name === "Cafe") {
+                                    if (event.detail.seat_position === 1) {
+                                        this.player1!.anims.play(
+                                            `${this.player1!.texture.key}_sit_left`,
+                                            true
+                                        );
+                                        this.allPlayers[this.socket!.id].seat = 1;
+                                        this.seatEvent = 1;
+                                    }
+                                    else if (event.detail.seat_position === 2) {
+                                        this.player1!.anims.play(
+                                            `${this.player1!.texture.key}_sit_right`,
+                                            true
+                                        );
+                                        this.allPlayers[this.socket!.id].seat = 4;
+                                        this.seatEvent = 4;
+                                    }
                                 }
                                 else {
                                     this.player1!.anims.play(
@@ -886,12 +931,10 @@ export default class USAScene extends Phaser.Scene {
                                         );
                                         store.dispatch(clearSentences());
                                         this.alreadyRecommended = false;
-
                                         // this.isAudioPlaying = true;
                                         this.audio = new Audio(
                                             response.audioUrl
                                         );
-
                                         this.audio.onended = () => {
                                             console.log("audio.onended");
                                             this.isAudioPlaying = false;
@@ -1902,6 +1945,13 @@ export default class USAScene extends Phaser.Scene {
                                     //     `${otherPlayers[key].playerTexture}_idle_down`;
                                     playerSprite.anims.play(
                                         `${otherPlayers[key].playerTexture}_sit_left`,
+                                        true
+                                    );
+                                } else if (otherPlayers[key].seat == 4) {
+                                    console.log("he is seated")
+                                    //     `${otherPlayers[key].playerTexture}_idle_down`;
+                                    playerSprite.anims.play(
+                                        `${otherPlayers[key].playerTexture}_sit_right`,
                                         true
                                     );
                                 } else {
