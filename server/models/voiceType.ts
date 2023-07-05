@@ -65,6 +65,6 @@ preDefinedVoiceType["Minsook"] = {
     pitch: 0.8,
 };
 preDefinedVoiceType["Doyoungboy"] = {
-    voiceType: "en-US-Wavenet-D", // 후보 1
+    voiceType: "en-US-Studio-M", // 후보 1
     pitch: 2.5,
 };
