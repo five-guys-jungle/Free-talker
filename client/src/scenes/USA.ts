@@ -485,8 +485,8 @@ export default class USAScene extends Phaser.Scene {
 
 
                                 valve_E = true;
-                                // this.allPlayers[this.socket!.id].seat = 0;
-                                // this.seatEvent = 3;
+                                this.allPlayers[this.socket!.id].seat = 0;
+                                this.seatEvent = 3;
                                 store.dispatch(openUSA());
                             });
                             window.addEventListener("roomfull", (e: Event) => {
@@ -564,15 +564,15 @@ export default class USAScene extends Phaser.Scene {
                                 console.log("event.detail: ", event.detail);
                                 console.log("seat event listener");
                                 if (event.detail.place_name === "Restaurant" || event.detail.place_name === "Cafe" || event.detail.place_name === "Cafe2") {
-                                    if(event.detail.seat_position === 1){
-                                    this.player1!.anims.play(
-                                        `${this.player1!.texture.key}_sit_left`,
-                                        true
-                                    );
-                                    this.allPlayers[this.socket!.id].seat = 1;
-                                    this.seatEvent = 1;
+                                    if (event.detail.seat_position === 1) {
+                                        this.player1!.anims.play(
+                                            `${this.player1!.texture.key}_sit_left`,
+                                            true
+                                        );
+                                        this.allPlayers[this.socket!.id].seat = 1;
+                                        this.seatEvent = 1;
                                     }
-                                    else if(event.detail.seat_position === 2){
+                                    else if (event.detail.seat_position === 2) {
                                         this.player1!.anims.play(
                                             `${this.player1!.texture.key}_sit_right`,
                                             true
@@ -629,6 +629,8 @@ export default class USAScene extends Phaser.Scene {
 
 
                                 valve_E = true;
+                                this.allPlayers[this.socket!.id].seat = 0;
+                                this.seatEvent = 3;
 
                                 store.dispatch(openUSA());
                             });
@@ -1100,7 +1102,7 @@ export default class USAScene extends Phaser.Scene {
     playInteractionAnims() {
         for (let npcInfo of this.npcList) {
             if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y, npcInfo.x, npcInfo.y) < 100) {
-                if (npcInfo.name === 'Mart' || npcInfo.name === 'coach_park'|| npcInfo.name === 'Cafe' || npcInfo.name === 'Cafe2') {
+                if (npcInfo.name === 'Mart' || npcInfo.name === 'coach_park' || npcInfo.name === 'Cafe' || npcInfo.name === 'Cafe2') {
                     return;
                 }
                 this.interactionSprite?.setPosition(npcInfo.x, npcInfo.y - 50);
@@ -1836,7 +1838,7 @@ export default class USAScene extends Phaser.Scene {
         temp31.setScale(0.5);
         temp31.setDepth(100);
 
-        const temp12: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite12.x-20, interact_sprite12.y - 50, "arrowDown");
+        const temp12: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite12.x - 20, interact_sprite12.y - 50, "arrowDown");
         temp12.setVisible(true);
         temp12.setScale(1.3);
         temp12.setDepth(100);
@@ -1847,7 +1849,7 @@ export default class USAScene extends Phaser.Scene {
         temp32.setScale(0.5);
         temp32.setDepth(100);
 
-        const temp13: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite13.x-20, interact_sprite13.y - 50, "arrowDown");
+        const temp13: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite13.x - 20, interact_sprite13.y - 50, "arrowDown");
         temp13.setVisible(true);
         temp13.setScale(1.3);
         temp13.setDepth(100);
