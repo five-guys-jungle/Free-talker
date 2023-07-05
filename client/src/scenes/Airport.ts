@@ -81,7 +81,7 @@ export default class AirportScene extends Phaser.Scene {
     alreadyRecommended: boolean = false;
     level: string = "intermediate";
     speed: number = 200;
-    dashSpeed: number = 600;
+    dashSpeed: number = 400;
     tilemapLayerList: Phaser.Tilemaps.TilemapLayer[] = [];
     currNpcName: string = "";
     beforeSleepX: number = this.initial_x;

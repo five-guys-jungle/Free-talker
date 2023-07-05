@@ -85,7 +85,7 @@ export default class USAScene extends Phaser.Scene {
     npcList: npcInfo[] = [];
     alreadyRecommended: boolean = false;
     speed: number = 200;
-    dashSpeed: number = 600;
+    dashSpeed: number = 400;
     tilemapLayerList: Phaser.Tilemaps.TilemapLayer[] = [];
     currNpcName: string = "";
     beforeSleepX: number = this.initial_x;
