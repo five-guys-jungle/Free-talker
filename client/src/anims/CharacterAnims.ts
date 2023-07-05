@@ -15,8 +15,8 @@ export const createCharacterAnims = (
 ) => {
     const animsFrameRate = 15;
 
-    for(let texturename of textureNameList){
-        console.log("texturename: ", texturename);
+    for (let texturename of textureNameList) {
+        // console.log("texturename: ", texturename);
         anims.create({
             key: `${texturename}_idle_right`,
             frames: anims.generateFrameNames(`${texturename}`, {
@@ -26,7 +26,7 @@ export const createCharacterAnims = (
             repeat: -1,
             frameRate: animsFrameRate * 0.6,
         });
-    
+
         anims.create({
             key: `${texturename}_idle_up`,
             frames: anims.generateFrameNames(`${texturename}`, {
@@ -36,7 +36,7 @@ export const createCharacterAnims = (
             repeat: -1,
             frameRate: animsFrameRate * 0.6,
         });
-    
+
         anims.create({
             key: `${texturename}_idle_left`,
             frames: anims.generateFrameNames(`${texturename}`, {
@@ -46,7 +46,7 @@ export const createCharacterAnims = (
             repeat: -1,
             frameRate: animsFrameRate * 0.6,
         });
-    
+
         anims.create({
             key: `${texturename}_idle_down`,
             frames: anims.generateFrameNames(`${texturename}`, {
@@ -56,7 +56,7 @@ export const createCharacterAnims = (
             repeat: -1,
             frameRate: animsFrameRate * 0.6,
         });
-    
+
         anims.create({
             key: `${texturename}_run_right`,
             frames: anims.generateFrameNames(`${texturename}`, {
@@ -66,7 +66,7 @@ export const createCharacterAnims = (
             repeat: -1,
             frameRate: animsFrameRate,
         });
-    
+
         anims.create({
             key: `${texturename}_run_up`,
             frames: anims.generateFrameNames(`${texturename}`, {
@@ -76,7 +76,7 @@ export const createCharacterAnims = (
             repeat: -1,
             frameRate: animsFrameRate,
         });
-    
+
         anims.create({
             key: `${texturename}_run_left`,
             frames: anims.generateFrameNames(`${texturename}`, {
@@ -86,7 +86,7 @@ export const createCharacterAnims = (
             repeat: -1,
             frameRate: animsFrameRate,
         });
-    
+
         anims.create({
             key: `${texturename}_run_down`,
             frames: anims.generateFrameNames(`${texturename}`, {
@@ -96,7 +96,7 @@ export const createCharacterAnims = (
             repeat: -1,
             frameRate: animsFrameRate,
         });
-    
+
         anims.create({
             key: `${texturename}_sit_left`,
             frames: anims.generateFrameNames(`${texturename}`, {
@@ -106,7 +106,7 @@ export const createCharacterAnims = (
             repeat: -1,
             frameRate: animsFrameRate,
         });
-    
+
         anims.create({
             key: `${texturename}_sit_right`,
             frames: anims.generateFrameNames(`${texturename}`, {

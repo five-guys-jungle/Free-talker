@@ -88,18 +88,18 @@ function LoginDialog() {
             };
 
             try {
-                console.log("try");
+                // console.log("try");
                 const response = await axios.post(`${DB_URL}/auth/login`, body);
-                console.log(response.data);
+                // console.log(response.data);
                 if (response.data.status === 200) {
                     const payload = response.data;
                     // console.log(`response: ${response}`);
-                    console.log(`payload : ${payload}`);
+                    // console.log(`payload : ${payload}`);
 
                     const userId = payload.userId;
                     const userNickname = payload.userNickname;
                     const userAvatar = avatars[avatarIndex].name;
-                    console.log(`"userAvatar: , ${userAvatar}"`);
+                    // console.log(`"userAvatar: , ${userAvatar}"`);
                     // console.log(`"userID: , ${userId}"`);
 
                     dispatch(openAirport());
@@ -111,7 +111,7 @@ function LoginDialog() {
                         playerNickname: payload.userNickname,
                         playerTexture: avatars[avatarIndex].name,
                     });
-                    console.log("handleScene");
+                    // console.log("handleScene");
 
                     // playerId: payload.userNickname,
                     // playerTexture: avatars[avatarIndex].name,

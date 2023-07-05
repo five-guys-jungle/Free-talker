@@ -33,12 +33,12 @@ import {
 export function interactSocketEventHandler(socket: Socket) {
     let chain: ConversationChain;
     let npcSentence: string;
-    console.log("Interaction socket connected, socketid: ", socket.id);
+    // console.log("Interaction socket connected, socketid: ", socket.id);
 
     const s3Client = new S3Client({ region: "ap-northeast-2" });
     socket.on("dialogStart", async (npcName: string, level: string) => {
         console.log("dialogStart");
-        console.log("level: ", level);
+        // console.log("level: ", level);
         // 소켓이 연결되면, 유저와 NPC 간의 Conversation Chain을 생성한다.
         await createChain(npcName, level)
             .then((res) => {
@@ -206,11 +206,12 @@ export function interactSocketEventHandler(socket: Socket) {
         async (
             npcName: string,
             alreadyRecommended: boolean,
-            outputText: string
+            outputText: string,
+            level: string
         ) => {
             if (!alreadyRecommended) {
                 console.log("getRecommendedResponses start");
-                await recommendNextResponses(outputText, npcName)
+                await recommendNextResponses(outputText, npcName, level)
                     .then((res) => {
                         if (res === "ChatGPT API Error.") {
                             socket.emit("recommendedResponses", [outputText]);

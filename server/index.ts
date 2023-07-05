@@ -99,8 +99,8 @@ app.use("/save", saveRouter);
 
 if (process.env.NODE_ENV === "production") {
     console.log("Production Mode");
-    console.log("S3_BUCKET_NAME:", process.env.S3_BUCKET_NAME);
     createBucket(process.env.S3_BUCKET_NAME);
+    console.log("S3_BUCKET_NAME:", process.env.S3_BUCKET_NAME);
     connectDB()
         .then((db) => {
             server.listen(port);

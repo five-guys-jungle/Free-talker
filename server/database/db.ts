@@ -20,7 +20,7 @@ export async function connectDB() {
     try {
         if (typeof tableName === "string") {
             await createTable(tableName); // 테이블 생성 함수 호출
-            
+
             // await createTable("dialogs");
             await createReportTable("dialogs");
             console.log("DynamoDB에 연결되었습니다.");
@@ -36,7 +36,7 @@ export async function connectDB() {
 async function createTable(tableName: string) {
     try {
         const tableExists = await doesTableExist(tableName);
-        console.log(`Table Exists: ${tableExists}`);
+        // console.log(`Table Exists: ${tableExists}`);
         if (!tableExists) {
             await createTableIfNotExists(tableName);
         } else {
@@ -50,16 +50,16 @@ async function createTable(tableName: string) {
 async function doesTableExist(tableName: string) {
     const command = new ListTablesCommand({});
     const response = await client.send(command);
-    console.log("List Tables : ", response);
+    // console.log("List Tables : ", response);
     return response.TableNames?.includes(tableName);
 
-    
+
 }
 
-async function createReportTable(tableName: string="dialogs"){
+async function createReportTable(tableName: string = "dialogs") {
     try {
         const tableExists = await doesTableExist(tableName);
-        console.log(`Table Exists: ${tableExists}`);
+        // console.log(`Table Exists: ${tableExists}`);
         if (!tableExists) {
             await createReportTableIfNotExists(tableName);
         } else {
@@ -70,21 +70,21 @@ async function createReportTable(tableName: string="dialogs"){
     }
 }
 
-async function createReportTableIfNotExists(tableName: string="dialogs") {
+async function createReportTableIfNotExists(tableName: string = "dialogs") {
     const params = {
         TableName: tableName,
         AttributeDefinitions: [
             { AttributeName: 'userId', AttributeType: 'S' }, // String data type
             { AttributeName: 'timestamp', AttributeType: 'S' }, // String data type
-          ],
+        ],
         KeySchema: [
             { AttributeName: 'userId', KeyType: 'HASH' }, // Partition key
             { AttributeName: 'timestamp', KeyType: 'RANGE' } // Sort key
-          ],
-          ProvisionedThroughput: {
+        ],
+        ProvisionedThroughput: {
             ReadCapacityUnits: 5, // Adjust the read capacity units as per your requirements
             WriteCapacityUnits: 5 // Adjust the write capacity units as per your requirements
-          }
+        }
     };
     const command = new CreateTableCommand(params);
     const response = await client.send(command);

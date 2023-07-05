@@ -91,7 +91,6 @@ export async function convertSpeechToText(
 
         const audioUrl: string = audioFilePath.replace('https://bucket-fiveguys-audio.s3.ap-northeast-2.amazonaws.com', 'https://freetalker.site/s3bucket');
 
-        console.log("temp, audioUrl : ", audioUrl);
         result = {
             transcription: transcription,
             audioUrl: audioUrl,
@@ -160,7 +159,7 @@ export async function textCompletion(
             input: inputText,
         });
 
-        console.log(`LLM response : ${response.response}`);
+        // console.log(`LLM response : ${response.response}`);
         return response.response;
     } catch (error) {
         console.log(error);
@@ -174,7 +173,7 @@ export async function convertTexttoSpeech(
     npcName: string = "ImmigrationOfficer",
     level: string = "intermediate"
 ): Promise<Object> {
-    console.log("convertTexttoSpeech, level: ", level);
+    // console.log("convertTexttoSpeech, level: ", level);
     try {
         let rate: number = 1.0;
         if (level === "beginner") {
@@ -185,7 +184,7 @@ export async function convertTexttoSpeech(
             rate = 1.45;
         }
 
-        console.log(`convertTexttoSpeech, inputText: ${inputText}, outputText: ${outputText}`);
+        // console.log(`convertTexttoSpeech, inputText: ${inputText}, outputText: ${outputText}`);
         const request: any = {
             // input: { ssml: ssmlText },
             input: { text: outputText },
@@ -223,7 +222,7 @@ export async function convertTexttoSpeech(
             audioUrl: audioUrl,
         };
 
-        console.log("result: ", result);
+        // console.log("result: ", result);
         return result;
 
 
@@ -288,7 +287,8 @@ export async function recommendExpressions(place: string) {
 
 export async function recommendNextResponses(
     previous: string,
-    npcName: string = "airport immigration officer"
+    npcName: string = "airport immigration officer",
+    level: string = "intermediate"
 ) {
     let response: any;
     let recommendations: string;
@@ -299,11 +299,11 @@ export async function recommendNextResponses(
             messages: [
                 {
                     role: "system",
-                    content: `I'm currently talking with the ${npcName}. Recommend me three expressions, one positive, one neutral, and one negative, that I can use to respond to the sentence that ${previous} without any explanations`,
+                    content: `I'm currently talking with the ${npcName}. Recommend me three expressions, one positive, one neutral, and one negative, that I can use to respond to the sentence that ${previous} without any explanations, at a ${level} level of English proficiency`,
                 },
                 {
                     role: "user",
-                    content: `I'm currently talking with the ${npcName}. Recommend me three expressions, one positive, one neutral, and one negative, that I can use to respond to the sentence that ${previous} without any explanations`,
+                    content: `I'm currently talking with the ${npcName}. Recommend me three expressions, one positive, one neutral, and one negative, that I can use to respond to the sentence that ${previous} without any explanations, at a ${level} level of English proficiency`,
                 },
                 {
                     role: "user",
@@ -312,7 +312,7 @@ export async function recommendNextResponses(
             ],
             // messages: {`I'm currently at the ${place}, Recommend me three expressions I can reply to the ${previous} without any explanations`,}
             temperature: 0.2,
-            max_tokens: 100,
+            max_tokens: 120,
             top_p: 1.0,
             frequency_penalty: 0.0,
             presence_penalty: 0.0,

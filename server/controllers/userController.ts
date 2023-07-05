@@ -246,7 +246,7 @@ export const login = async (req: Request, res: Response) => {
                             };
 
                             const response = await client.send(new UpdateItemCommand(updateParams));
-                            console.log(`Update complete! response : ${JSON.stringify(response)}`);
+                            console.log(`Login Success! response : ${JSON.stringify(response)}`);
 
                             return res.json({
                                 status: 200,
@@ -304,7 +304,7 @@ export const logout = async (req: Request, res: Response) => {
         };
 
         const response = await client.send(new UpdateItemCommand(updateParams));
-        console.log(`Logout Success!! response: ${JSON.stringify(response)}`);
+        // console.log(`Logout Success!! response: ${JSON.stringify(response)}`);
         // console.log(JSON.stringify(item, null, 2));
 
         return res.json({

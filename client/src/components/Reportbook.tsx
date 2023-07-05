@@ -100,9 +100,9 @@ const ReportBook = (data: any) => {
 
 
     useEffect(() => {
-        console.log(playerId);
-        console.log(playerNickname);
-        console.log(playerTexture);
+        // console.log(playerId);
+        // console.log(playerNickname);
+        // console.log(playerTexture);
     }, [playerId, playerNickname, playerTexture]);
 
     const corrections = useSelector(
@@ -126,7 +126,7 @@ const ReportBook = (data: any) => {
     // console.log(fix_playerTexture)
 
     const imgUrl = "./assets/characters/single/" + fix_playerTexture + ".png";
-    console.log(imgUrl);
+    // console.log(imgUrl);
 
     const handleSave = () => {
         // saveDialog({

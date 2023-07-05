@@ -23,13 +23,13 @@ const audios = Object.entries(bgms).map(([key, audio]) => ({
 
 const theme = createTheme({
     palette: {
-    primary: {
-        // Purple and green play nicely together.
-        main: '#2979ff',
-    },
-      secondary: {
-        main: '#2962ff',
-      },
+        primary: {
+            // Purple and green play nicely together.
+            main: '#2979ff',
+        },
+        secondary: {
+            main: '#2962ff',
+        },
     },
 });
 
@@ -49,11 +49,11 @@ const Bgm = () => {
     useEffect(() => {
     }, [mode]);
     useEffect(() => {
-        console.log(bgmonoff);
+        // console.log(bgmonoff);
     }, [bgmonoff]);
 
     const handleClick = () => {
-        console.log(bgmonoff);
+        // console.log(bgmonoff);
         if (bgmonoff == true) { store.dispatch(bgmOff()); }
         else { store.dispatch(bgmOn()); }
     }
@@ -62,24 +62,24 @@ const Bgm = () => {
         <div style={{ position: "absolute", bottom: '2%', left: '1%', }}>
             {(mode == AIRPORT || mode == USA) &&
                 <ThemeProvider theme={theme}>
-                <Box style={{ position: "relative" }}
-                    sx={{
-                        position: 'absolute',
-                        bottom: 0,
-                        right: 0,
-                        top: 0,
-                    }}
-                >
-                    <StyledFab
-                        color="primary"
-                        onClick={handleClick}
+                    <Box style={{ position: "relative" }}
+                        sx={{
+                            position: 'absolute',
+                            bottom: 0,
+                            right: 0,
+                            top: 0,
+                        }}
                     >
-                        {bgmonoff && <AudiotrackIcon />}
-                        {!bgmonoff && <MusicOffRoundedIcon />}
-                    </StyledFab>
-                </Box>
+                        <StyledFab
+                            color="primary"
+                            onClick={handleClick}
+                        >
+                            {bgmonoff && <AudiotrackIcon />}
+                            {!bgmonoff && <MusicOffRoundedIcon />}
+                        </StyledFab>
+                    </Box>
                 </ThemeProvider>
-                }
+            }
             {/* {(mode==START || mode==LOGIN) && <>
         {bgmonoff && <audio id="myAudio" src={audios[0].audio} controls autoPlay loop style={{ display: "none" }}/>}
         {!bgmonoff && <audio id="myAudio" src={audios[0].audio} controls autoPlay muted style={{ display: "none" }}/>}
