@@ -111,7 +111,7 @@ export async function createChain(npcName: string, level: string): Promise<Conve
         modelName: "gpt-3.5-turbo",
         temperature: 0,
         timeout: 11000,
-        maxTokens: 120,
+        maxTokens: 1200,
     });
 
     try {
@@ -319,7 +319,7 @@ export async function recommendNextResponses(
         });
         console.log(response.data.choices[0].message["content"]);
         recommendations = response.data.choices[0].message["content"]
-            .split("\n\n")
+            .split("\n")
             .filter(Boolean)
             .map((sentence: string) => sentence.split(": ")[1]);
         return recommendations;

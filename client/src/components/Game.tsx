@@ -80,6 +80,7 @@ const ButtonContainer = styled.div`
   display: flex;
   flex-direction: row;
   gap: 10px; /* Add gap to separate the buttons */
+  z-index:3;
 `;
 
 const Overlay = styled.div`

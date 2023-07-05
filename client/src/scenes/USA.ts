@@ -331,7 +331,7 @@ export default class USAScene extends Phaser.Scene {
             },
 
         }
-        createCharacterAnims(this.anims);
+        // createCharacterAnims(this.anims);
         if (this.socket) {
             this.socket.disconnect();
         }
