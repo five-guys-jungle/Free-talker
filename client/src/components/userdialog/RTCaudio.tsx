@@ -89,6 +89,10 @@ const RTCaudio = () => {
 				detail: { message: "exitcall" }
 			});
 			window.dispatchEvent(clickEvent);
+			const fullEvent = new CustomEvent('roomfull', {
+				detail: { message: "roomfull" }
+			});
+			window.dispatchEvent(fullEvent);
 		})
 
 		socket.current!.on("joined", () => {
