@@ -46,7 +46,7 @@ export function userDialogSocketEventHandler(socket: Socket) {
   		console.log("join: ", placeName);
 
 		if (roomNum[placeName] == maxConnections) {
-			// roomNum[placeName]++;
+			roomNum[placeName]++;
 			socket.emit("roomFull");
 			return;
 		}
@@ -62,34 +62,21 @@ export function userDialogSocketEventHandler(socket: Socket) {
 			seat_position_list[placeName].first_position = socket.id;
 			console.log("-111111111111111`11111111111")
 			socket.emit("seat_position", 1);
+			socket.emit("userconnected");
+			socket.broadcast.emit("userconnected");
 		}
 		else if (seat_position_list[placeName].first_position && seat_position_list[placeName].second_position === "") {
 			seat_position_list[placeName].second_position = socket.id;
 			socket.emit("seat_position", 2);
+			socket.emit("userconnected");
+			socket.broadcast.emit("userconnected");
 		}
 		else if (seat_position_list[placeName].first_position === "" && seat_position_list[placeName].second_position) {
 			socket.emit("seat_position", 1);
+			socket.emit("userconnected");
+			socket.broadcast.emit("userconnected");
 		}
 
-		
-		// console.log(`place Name : ${placeName}`);
-		// if (roomNum[placeName] == 1) {
-			
-
-		// 	console.log("preDefinedRole: ", preDefinedRole);
-		// 	console.log(`role1: ${preDefinedRole[placeName].role[0]}`);
-		// 	console.log(`recommendations: ${preDefinedRole[placeName].recommendations[0]}`);
-		// 	console.log(`situation: ${preDefinedRole[placeName].situation}`);
-		// 	socket.emit("role1", { situation: preDefinedRole[placeName].situation, role : preDefinedRole[placeName].role[0], recommendations: preDefinedRole[placeName].recommendations[0] });
-		// } else {
-		// 	console.log("preDefinedRole: ", preDefinedRole);
-
-		// 	console.log(`role2: ${preDefinedRole[placeName].role[1]}`);
-
-		// 	console.log(`recommendations: ${preDefinedRole[placeName].recommendations[1]}`);
-		// 	console.log(`situation: ${preDefinedRole[placeName].situation}`);
-		// 	socket.emit("role2", { situation: preDefinedRole[placeName].situation, role : preDefinedRole[placeName].role[1], recommendations: preDefinedRole[placeName].recommendations[1] });
-		// }
 
 	});
 
@@ -103,22 +90,24 @@ export function userDialogSocketEventHandler(socket: Socket) {
 		  console.log("disconnected~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 		  roomNum[placeName]--;
 		  // console.log("roomNum: ", roomNum[placeName]);
-		  socket.broadcast.emit("outcharacter");
+		  
 		//   socket.broadcast.emit("disconnected", roomNum[placeName]);
 		for (const key in seat_position_list) {
 			if (seat_position_list.hasOwnProperty(key)) {
 				const seatPosition = seat_position_list[key];
 				if (seatPosition.first_position === socket.id) {
 					seatPosition.first_position = "";
+					socket.broadcast.emit("outcharacter");
 				}
 				else if (seatPosition.second_position === socket.id) {
 					seatPosition.second_position = "";
+					socket.broadcast.emit("outcharacter");
 				}
 			}
 		}
 		console.log("seat_position_list: ", seat_position_list);
 		});
-	socket.broadcast.emit("userconnected");
+
 	
 	socket.emit("me", socket.id);
 	socket.on("otherchar", ({playerNickname: playerNickname, playerTexture:playerTexture}) =>{
@@ -127,10 +116,7 @@ export function userDialogSocketEventHandler(socket: Socket) {
 	socket.on("mychar", ({otherNickname: playerNickname, otherTexture:playerTexture}) =>{
 		socket.broadcast.emit("usercharacter",{otherNickname: playerNickname, otherTexture:playerTexture})
 	})
-	// socket.on("disconnect", () => {
-	// //   socket.broadcast.emit("callEnded");
-	//   console.log("disconnected~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-	// });
+	
   
 	socket.on("callUser", (data: { userToCall: any; signalData: any; from: any; name: any }) => {
 	  console.log("callUser: 서버에서 데이터를 받았음");
@@ -158,8 +144,3 @@ export function userDialogSocketEventHandler(socket: Socket) {
 	});
 
 }
-// 	socket.on("leaveCallEvent", () => {
-// 		socket.broadcast.emit("otheruserleave");
-// 	  });
-//   }
-  

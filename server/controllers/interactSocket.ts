@@ -29,6 +29,7 @@ import {
     translateText,
 } from "./interaction";
 
+
 export function interactSocketEventHandler(socket: Socket) {
     let chain: ConversationChain;
     let npcSentence: string;
@@ -87,6 +88,7 @@ export function interactSocketEventHandler(socket: Socket) {
             userNickname: string;
             npcName: string;
             audioDataBuffer: ArrayBuffer;
+            level: string;
         }) => {
 
             try {
@@ -148,7 +150,8 @@ export function interactSocketEventHandler(socket: Socket) {
                                     response = await convertTexttoSpeech(
                                         inputText,
                                         outputText,
-                                        data.npcName
+                                        data.npcName,
+                                        data.level
                                     )
                                         .then((res) => {
                                             socket.emit("totalResponse", res);
@@ -226,6 +229,38 @@ export function interactSocketEventHandler(socket: Socket) {
             }
         }
     );
+
+    socket.on(
+        "requestTTS", async (
+            sentence: string,
+            id: number,
+            NPCName: string,
+            level: string
+        ) => {
+        const trimmedSentence = sentence.split(':')[1]?.trim();
+        convertTexttoSpeech(
+            "",
+            trimmedSentence,
+            NPCName,
+            level
+        ).then((res) => {
+            const result: any = res;
+            result.id = id;
+            socket.emit("responseTTS", result);
+            console.log("responseTTS: ", result);
+        })
+            .catch((err) => {
+                console.log(
+                    "convert Text to Speech error: ",
+                    err
+                );
+            });
+
+    }
+
+    )
+
+
     socket.on("translation", async (text: string) => {
         console.log("translate start");
         const translatedText = await translateText(text);

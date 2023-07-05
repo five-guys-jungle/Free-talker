@@ -28,6 +28,8 @@ import {
     appendSentence,
     clearSentences,
     setCanRequestRecommend,
+    updateTTSLoading,
+    updateAudioUrl
 } from "../stores/sentenceBoxSlice";
 import { setRecord, setMessage, setMessageColor } from "../stores/recordSlice";
 import { reportOn, reportOff } from "../stores/reportOnoffSlice";
@@ -76,6 +78,7 @@ export default class AirportScene extends Phaser.Scene {
     recorder2: MediaRecorder | null = null;
     seatEvent: boolean = false;
     isAudioPlaying: boolean = false;
+    isAudioTransfered: boolean = false;
     isNpcSocketConnected: boolean = false;
     npcList: npcInfo[] = [];
     alreadyRecommended: boolean = false;
@@ -440,6 +443,7 @@ export default class AirportScene extends Phaser.Scene {
                             store.dispatch(clearSentences());
                             this.socket2 = io(`${serverUrl}/interaction`);
                             this.socket2.on("connect", () => {
+                                this.isAudioTransfered = false;
                                 const translationEvent = (e: Event) => {
                                     const customEvent = e as CustomEvent;
                                     console.log("translationEvent, customEvent.detail: ", customEvent.detail.message);
@@ -471,10 +475,23 @@ export default class AirportScene extends Phaser.Scene {
                                         setCanRequestRecommend(false)
                                     );
                                 };
+
+                                const requestTTSEvent = (e: Event) => {
+                                    const customEvent = e as CustomEvent;
+                                    this.socket2!.emit(
+                                        "requestTTS",
+                                        customEvent.detail.sentence,
+                                        customEvent.detail.id,
+                                        this.currNpcName,
+                                        this.level);
+                                };
+
+
                                 this.socket2!.on("disconnect", () => {
                                     console.log("disconnect, recommendBtnClicked: ", recommendBtnClicked);
                                     window.removeEventListener("recomButtonClicked", recommendBtnClicked);
                                     window.removeEventListener("translationEvent", translationEvent);
+                                    window.removeEventListener("requestTTS", requestTTSEvent);
                                 });
                                 console.log("recommendBtnClicked: ", recommendBtnClicked);
                                 this.currNpcName = npcInfo.name;
@@ -522,6 +539,7 @@ export default class AirportScene extends Phaser.Scene {
                                     this.audio.onended = () => {
                                         console.log("audio.onended");
                                         this.isAudioPlaying = false;
+                                        this.isAudioTransfered = false;
                                         store.dispatch(
                                             setMessage(
                                                 "D키를 눌러\n녹음을 시작하세요"
@@ -532,6 +550,7 @@ export default class AirportScene extends Phaser.Scene {
                                         );
                                     };
                                     this.audio.play();
+                                    this.isAudioTransfered = true;
                                 })
 
                                 window.addEventListener(
@@ -540,6 +559,7 @@ export default class AirportScene extends Phaser.Scene {
                                 window.addEventListener(
                                     "translationEvent", translationEvent
                                 );
+                                window.addEventListener("requestTTS", requestTTSEvent);
 
                                 this.socket2!.on(
                                     "speechToText",
@@ -646,6 +666,7 @@ export default class AirportScene extends Phaser.Scene {
                                         this.audio.onended = () => {
                                             console.log("audio.onended");
                                             this.isAudioPlaying = false;
+                                            this.isAudioTransfered = false;
                                             store.dispatch(
                                                 setMessage(
                                                     "D키를 눌러\n녹음을 시작하세요"
@@ -656,6 +677,7 @@ export default class AirportScene extends Phaser.Scene {
                                             );
                                         };
                                         this.audio.play();
+                                        this.isAudioTransfered = true;
                                     }
                                 );
 
@@ -699,8 +721,19 @@ export default class AirportScene extends Phaser.Scene {
                                         this.alreadyRecommended = true;
                                     }
                                 );
+                                this.socket2!.on(
+                                    "responseTTS", (data: { user: string, assitant: string, audioUrl: string, id: number }) => {
+                                        // If found, update its audio URL in the Redux store
+                                        store.dispatch(updateAudioUrl({ index: data.id, audioUrl: data.audioUrl }));
+                                        console.log(`responseTTS: audioUrl: ${data.audioUrl}`);
+
+                                    }
+                                );
+
+
                             });
                         } else {
+                            this.isAudioTransfered = false;
                             this.currNpcName = "";
                             // 이미 소켓이 연결되어 있는데 다시 한번 E키를 누른 경우 -> 대화 종료 상황
                             this.isNpcSocketConnected = false;
@@ -762,6 +795,7 @@ export default class AirportScene extends Phaser.Scene {
                 return;
             }
             if (this.isAudioPlaying) {
+                console.log("음성 재생중입니다.")
                 return;
             }
             for (let npcInfo of this.npcList) {
@@ -812,9 +846,10 @@ export default class AirportScene extends Phaser.Scene {
         // NPC의 음성 재생을 스킵하는 기능
         this.input.keyboard!.on("keydown-S", async () => {
             console.log("S key pressed, isAudioPlaying: ", this.isAudioPlaying);
-            if (this.isAudioPlaying) {
+            if (this.isAudioPlaying && this.isAudioTransfered) {
                 this.audio?.pause();
                 this.isAudioPlaying = false;
+                this.isAudioTransfered = false;
                 store.dispatch(setMessage("D키를 눌러\n녹음을 시작하세요"));
                 store.dispatch(setCanRequestRecommend(true));
                 this.audio = new Audio();
@@ -1052,6 +1087,7 @@ export default class AirportScene extends Phaser.Scene {
                             userNickname: this.userNickname,
                             npcName: this.currNpcName, // TODO: npc 이름 받아오기
                             audioDataBuffer: buffer,
+                            level: this.level,
                         });
                     });
                 };
