@@ -72,6 +72,10 @@ const FreeDialog = () => {
 				detail: { message: "exitcall" }
 			});
 			window.dispatchEvent(clickEvent);
+			const fullEvent = new CustomEvent('roomfull', {
+				detail: { message: "roomfull" }
+			});
+			window.dispatchEvent(fullEvent);
 		})
 
 
@@ -202,7 +206,7 @@ const FreeDialog = () => {
 			socket.current!.emit("leaveCallEvent", { to: caller });
 			console.log("leaveCallEvent");
 			
-			// Airport 씬으로 이벤트 전달
+			
 			window.dispatchEvent(new Event("exitcall"));
 			socket.current!.disconnect();
 

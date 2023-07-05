@@ -14,6 +14,7 @@ const roomNum: {
 	Mart: 0,
 	Restaurant: 0,
 	Cafe:0,
+	Cafe2:0,
 }
 let socketIdList:string[] = [];
 
@@ -32,6 +33,7 @@ const seat_position_list: {
 	Mart: new seat_position("", ""),
 	Restaurant: new seat_position("", ""),
 	Cafe: new seat_position("", ""),
+	Cafe2: new seat_position("", ""),
 	couch_park4: new seat_position("", ""),
 	couch_park5: new seat_position("", ""),
 	couch_park6: new seat_position("", ""),
@@ -60,18 +62,20 @@ export function userDialogSocketEventHandler(socket: Socket) {
 
 		if (seat_position_list[placeName].first_position === "" && seat_position_list[placeName].second_position === "") {
 			seat_position_list[placeName].first_position = socket.id;
-			console.log("-111111111111111`11111111111")
+			console.log("첫번째 케이스")
 			socket.emit("seat_position", 1);
 			socket.emit("userconnected");
 			socket.broadcast.emit("userconnected");
 		}
 		else if (seat_position_list[placeName].first_position && seat_position_list[placeName].second_position === "") {
 			seat_position_list[placeName].second_position = socket.id;
+			console.log("두번째 케이스")
 			socket.emit("seat_position", 2);
 			socket.emit("userconnected");
 			socket.broadcast.emit("userconnected");
 		}
 		else if (seat_position_list[placeName].first_position === "" && seat_position_list[placeName].second_position) {
+			seat_position_list[placeName].first_position = socket.id;
 			socket.emit("seat_position", 1);
 			socket.emit("userconnected");
 			socket.broadcast.emit("userconnected");
@@ -90,7 +94,7 @@ export function userDialogSocketEventHandler(socket: Socket) {
 		  console.log("disconnected~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 		  roomNum[placeName]--;
 		  // console.log("roomNum: ", roomNum[placeName]);
-		  
+		  console.log("seat_position_list: ", seat_position_list);
 		//   socket.broadcast.emit("disconnected", roomNum[placeName]);
 		for (const key in seat_position_list) {
 			if (seat_position_list.hasOwnProperty(key)) {
