@@ -323,12 +323,16 @@ export default class USAScene extends Phaser.Scene {
                 second_seat: { x: 2143, y: 1042 }
             },
             "Restaurant": {
-                first_seat: { x: 2290, y: 350 },
-                second_seat: { x: 2330, y: 350 }
+                first_seat: { x: 2134, y: 330 },
+                second_seat: { x: 2224, y: 330 }
             },
             "Cafe": {
-                first_seat: { x: 1210, y: 380 },
-                second_seat: { x: 1250, y: 380 }
+                first_seat: { x: 1170, y: 365 },
+                second_seat: { x: 1245, y: 365 }
+            },
+            "Cafe2": {
+                first_seat: { x: 1413, y: 365 },
+                second_seat: { x: 1488, y: 365 }
             },
 
         }
@@ -559,7 +563,7 @@ export default class USAScene extends Phaser.Scene {
                             window.addEventListener("seat", (event: any) => {
                                 console.log("event.detail: ", event.detail);
                                 console.log("seat event listener");
-                                if (event.detail.place_name === "Restaurant" || event.detail.place_name === "Cafe") {
+                                if (event.detail.place_name === "Restaurant" || event.detail.place_name === "Cafe" || event.detail.place_name === "Cafe2") {
                                     if(event.detail.seat_position === 1){
                                     this.player1!.anims.play(
                                         `${this.player1!.texture.key}_sit_left`,
@@ -1096,7 +1100,7 @@ export default class USAScene extends Phaser.Scene {
     playInteractionAnims() {
         for (let npcInfo of this.npcList) {
             if (Phaser.Math.Distance.Between(this.player1!.x, this.player1!.y, npcInfo.x, npcInfo.y) < 100) {
-                if (npcInfo.name === 'Mart' || npcInfo.name === 'coach_park') {
+                if (npcInfo.name === 'Mart' || npcInfo.name === 'coach_park'|| npcInfo.name === 'Cafe' || npcInfo.name === 'Cafe2') {
                     return;
                 }
                 this.interactionSprite?.setPosition(npcInfo.x, npcInfo.y - 50);
@@ -1684,9 +1688,9 @@ export default class USAScene extends Phaser.Scene {
 
         let interact_sprite11: npcInfo = {
             name: "Restaurant",
-            x: 2310,
-            y: 350,
-            texture: "Mart",
+            x: 2172,
+            y: 360,
+            texture: "Restaurant",
             sprite: null,
             role: "rolePlayingPlace",
             moving: false,
@@ -1698,13 +1702,25 @@ export default class USAScene extends Phaser.Scene {
             name: "Cafe",
             x: 1230,
             y: 380,
-            texture: "Mart",
+            texture: "Cafe",
             sprite: null,
             role: "rolePlayingPlace",
             moving: false,
         };
         interact_sprite12.sprite = this.physics.add.sprite(interact_sprite12.x, interact_sprite12.y, interact_sprite12.texture);
         this.npcList.push(interact_sprite12);
+
+        let interact_sprite13: npcInfo = {
+            name: "Cafe2",
+            x: 1473,
+            y: 380,
+            texture: "Cafe",
+            sprite: null,
+            role: "rolePlayingPlace",
+            moving: false,
+        };
+        interact_sprite13.sprite = this.physics.add.sprite(interact_sprite13.x, interact_sprite13.y, interact_sprite13.texture);
+        this.npcList.push(interact_sprite13);
 
         let interact_sprite8: npcInfo = {
             name: "taxi",
@@ -1820,16 +1836,27 @@ export default class USAScene extends Phaser.Scene {
         temp31.setScale(0.5);
         temp31.setDepth(100);
 
-        const temp12: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite12.x, interact_sprite12.y - 50, "arrowDown");
+        const temp12: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite12.x-20, interact_sprite12.y - 50, "arrowDown");
         temp12.setVisible(true);
         temp12.setScale(1.3);
         temp12.setDepth(100);
         temp12.play('arrowDownAnim', true);
 
-        const temp32: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite12.x + 30, interact_sprite12.y - 50, "E_keyboard");
+        const temp32: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite12.x + 10, interact_sprite12.y - 50, "E_keyboard");
         temp32.setVisible(true);
         temp32.setScale(0.5);
         temp32.setDepth(100);
+
+        const temp13: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite13.x-20, interact_sprite13.y - 50, "arrowDown");
+        temp13.setVisible(true);
+        temp13.setScale(1.3);
+        temp13.setDepth(100);
+        temp13.play('arrowDownAnim', true);
+
+        const temp33: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite13.x + 10, interact_sprite13.y - 50, "E_keyboard");
+        temp33.setVisible(true);
+        temp33.setScale(0.5);
+        temp33.setDepth(100);
 
 
     }

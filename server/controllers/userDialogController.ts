@@ -14,6 +14,7 @@ const roomNum: {
 	Mart: 0,
 	Restaurant: 0,
 	Cafe:0,
+	Cafe2:0,
 }
 let socketIdList:string[] = [];
 
@@ -32,6 +33,7 @@ const seat_position_list: {
 	Mart: new seat_position("", ""),
 	Restaurant: new seat_position("", ""),
 	Cafe: new seat_position("", ""),
+	Cafe2: new seat_position("", ""),
 	couch_park4: new seat_position("", ""),
 	couch_park5: new seat_position("", ""),
 	couch_park6: new seat_position("", ""),
