@@ -212,8 +212,8 @@ export default class Background extends Phaser.Scene {
     }
 
     createProgressBar() {
-        let progressBoxWidth = 320;
-        let progressBoxHeight = 50;
+        let progressBoxWidth = 320 * 1.2;
+        let progressBoxHeight = 50 * 1.2;
     
         this.progressBox = this.add.graphics();
         this.progressBox.fillStyle(0x222222, 0.8);
@@ -230,11 +230,12 @@ export default class Background extends Phaser.Scene {
         this.loadingText = this.make.text({
             x: this.cameras.main.width / 2,
             y: this.cameras.main.height / 2 - progressBoxHeight / 2 - 20, // Adjusted y position
-            text: 'Welcome to FreeTalker',
+            text: 'Welcome to FreeTalker\n\n\n',
             style: {
-                font: '20px monospace',
+                font: '50px monospace',
                 color: '#ffffff'
-            }
+            },
+            padding: { x: 20, y: 50 }
         });
         this.loadingText.setOrigin(0.5, 0.5);
     
@@ -243,9 +244,10 @@ export default class Background extends Phaser.Scene {
             y: this.cameras.main.height / 2 + progressBoxHeight / 2 + 20, // Adjusted y position
             text: '0%',
             style: {
-                font: '18px monospace',
+                font: '40px monospace',
                 color: '#ffffff'
-            }
+            },
+            padding: { x: 20, y: 50 }
         });
         this.percentText.setOrigin(0.5, 0.5);
     }
