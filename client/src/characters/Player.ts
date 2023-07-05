@@ -46,6 +46,9 @@ export class Player {
             // console.log(`${this.playerTexture}_sit_left`);
             this.sprite.anims.play(`${this.playerTexture}_sit_left`, true);
         }
+        else if (this.seat == 4) {
+            this.sprite.anims.play(`${this.playerTexture}_sit_right`, true);
+        }
         else if (this.seat == 2) {
             this.sprite.anims.play(`${this.playerTexture}_idle_down`, true);
         }

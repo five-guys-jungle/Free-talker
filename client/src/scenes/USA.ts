@@ -96,7 +96,7 @@ export default class USAScene extends Phaser.Scene {
     isReportOn: boolean = false;
     tweenDict: { [key: string]: Phaser.Tweens.Tween[] } = {};
     nowTween: Phaser.Tweens.Tween | null = null;
-    nowAnims: string = ""; 
+    nowAnims: string = "";
 
     constructor() {
         super("USAScene");
@@ -211,6 +211,8 @@ export default class USAScene extends Phaser.Scene {
             "layer1/Exteriors",
             tileset_exteriors
         )!;
+        const logo = map1.createLayer("logo/logo", tileset_logo)!;
+
         const exteriors_2 = map1.createLayer(
             "layer2/Exteriors",
             tileset_exteriors
@@ -219,7 +221,7 @@ export default class USAScene extends Phaser.Scene {
             "layer3/Exteriors",
             tileset_exteriors
         )!;
-        const logo = map1.createLayer("logo/logo", tileset_logo)!;
+
         const interiors_11 = map1.createLayer(
             "layer1/Interiors1",
             tileset_interiors_1
@@ -289,47 +291,48 @@ export default class USAScene extends Phaser.Scene {
 
         let USA_talkingzone: TalkingZone = {
             "couch_park1": {
-                first_seat: {x: 847, y: 1272},
-                second_seat: {x: 847, y: 1243}
+                first_seat: { x: 847, y: 1272 },
+                second_seat: { x: 847, y: 1243 }
             },
             "couch_park2": {
-                first_seat: {x: 847, y: 913},
-                second_seat: {x: 847, y: 889}
+                first_seat: { x: 847, y: 913 },
+                second_seat: { x: 847, y: 889 }
             },
             "couch_park3": {
-                first_seat: {x: 1667, y: 795},
-                second_seat: {x: 1727, y: 795}
+                first_seat: { x: 1667, y: 795 },
+                second_seat: { x: 1727, y: 795 }
             },
             "couch_park4": {
-                first_seat: {x: 1048, y: 795},
-                second_seat: {x: 1108, y: 795}
+                first_seat: { x: 1048, y: 795 },
+                second_seat: { x: 1108, y: 795 }
             },
             "couch_park5": {
-                first_seat: {x: 713, y: 1916},
-                second_seat: {x: 773, y: 1916}
+                first_seat: { x: 713, y: 1916 },
+                second_seat: { x: 773, y: 1916 }
             },
             "couch_park6": {
-                first_seat: {x: 374, y: 1916},
-                second_seat: {x: 434, y: 1916}
+                first_seat: { x: 374, y: 1916 },
+                second_seat: { x: 434, y: 1916 }
             },
             "couch_park7": {
-                first_seat: {x: 72, y: 1916},
-                second_seat: {x: 132, y: 1916}
+                first_seat: { x: 72, y: 1916 },
+                second_seat: { x: 132, y: 1916 }
             },
             "Mart": {
-                first_seat: {x: 2103, y: 1042},
-                second_seat: {x: 2143, y: 1042}
+                first_seat: { x: 2103, y: 1042 },
+                second_seat: { x: 2143, y: 1042 }
             },
             "Restaurant": {
-                first_seat: {x: 2290, y: 350},
-                second_seat: {x: 2330, y: 350}
+                first_seat: { x: 2290, y: 350 },
+                second_seat: { x: 2330, y: 350 }
             },
             "Cafe": {
-                first_seat: {x: 1210, y: 380},
-                second_seat: {x: 1250, y: 380}
+                first_seat: { x: 1210, y: 380 },
+                second_seat: { x: 1250, y: 380 }
             },
 
-    }
+        }
+
         createCharacterAnims(this.anims);
         if (this.socket) {
             this.socket.disconnect();
@@ -376,7 +379,7 @@ export default class USAScene extends Phaser.Scene {
             this.isReportOn = false;
         });
 
-        
+
 
 
         this.input.keyboard!.on("keydown-E", async () => {
@@ -421,36 +424,38 @@ export default class USAScene extends Phaser.Scene {
                                     this.player1!.anims.play(
                                         `${this.player1!.texture.key}_sit_left`,
                                         true
-                                );
-                                this.allPlayers[this.socket!.id].seat = 1;
-                                this.seatEvent = 1;
+                                    );
+                                    this.allPlayers[this.socket!.id].seat = 1;
+                                    this.seatEvent = 1;
                                 }
+
+
                                 else {
                                     this.player1!.anims.play(
                                         `${this.player1!.texture.key}_idle_down`,
                                         true
-                                );
-                                this.allPlayers[this.socket!.id].seat = 2;
-                                this.seatEvent = 2;
+                                    );
+                                    this.allPlayers[this.socket!.id].seat = 2;
+                                    this.seatEvent = 2;
                                 }
-                                
-                                
+
+
                                 if (event.detail.seat_position === 1) {
-                                 
-                                    
+
+
                                     this.allPlayers[this.socket!.id].x = USA_talkingzone[event.detail.place_name].first_seat.x;
                                     this.allPlayers[this.socket!.id].y = USA_talkingzone[event.detail.place_name].first_seat.y;
                                     this.player1!.setPosition(USA_talkingzone[event.detail.place_name].first_seat.x, USA_talkingzone[event.detail.place_name].first_seat.y);
                                 }
                                 else if (event.detail.seat_position === 2) {
-                                    
+
                                     this.allPlayers[this.socket!.id].x = USA_talkingzone[event.detail.place_name].second_seat.x;
                                     this.allPlayers[this.socket!.id].y = USA_talkingzone[event.detail.place_name].second_seat.y;
                                     this.player1!.setPosition(USA_talkingzone[event.detail.place_name].second_seat.x, USA_talkingzone[event.detail.place_name].second_seat.y);
                                 }
-                                
-                                
-                            },false);
+
+
+                            }, false);
 
                             window.addEventListener("exitcall", (e: Event) => {
                                 console.log("exitcall event listener");
@@ -475,6 +480,32 @@ export default class USAScene extends Phaser.Scene {
                                 // this.allPlayers[this.socket!.id].seat = 0;
                                 // this.seatEvent = 3;
                                 store.dispatch(openUSA());
+                            });
+                            window.addEventListener("roomfull", (e: Event) => {
+                                console.log("roomfull event listener");
+                                const camera = this.cameras.main;
+                                const messageText = '이미 다른 플레이가 이용중입니다';
+                                const message = this.add.text(0, 0, messageText, { color: 'e', fontSize: '20px' });
+                                message.setOrigin(0.5, 0.5);
+
+                                const padding = 10;  // 텍스트 주변에 더할 패딩 크기
+                                const boxWidth = message.width + (2 * padding);
+                                const boxHeight = message.height + (2 * padding);
+
+                                const box = this.add.rectangle(0, 0, boxWidth, boxHeight, 0xA7EEFF);  // 하늘색 배경 박스
+                                box.setOrigin(0.5, 0.5);
+
+                                // 배경 박스를 텍스트 아래에 두기
+                                message.setDepth(1);
+                                box.setDepth(0);
+
+                                const container = this.add.container(camera.scrollX + camera.width / 2, camera.scrollY + camera.height / 2, [box, message]);
+
+                                setTimeout(() => {
+                                    container.destroy();
+                                }, 2000);
+
+
                             });
                         } else {
                             this.player1!.setVelocity(0, 0);
@@ -501,6 +532,7 @@ export default class USAScene extends Phaser.Scene {
                         }
                     }
 
+
                     else if (npcInfo.role === "rolePlayingPlace") {
                         console.log("chair");
                         this.player1!.setVelocity(0, 0);
@@ -523,40 +555,50 @@ export default class USAScene extends Phaser.Scene {
                             window.addEventListener("seat", (event: any) => {
                                 console.log("event.detail: ", event.detail);
                                 console.log("seat event listener");
-                                if (event.detail.place_name === "couch_park1" || event.detail.place_name === "couch_park2") {
+                                if (event.detail.place_name === "Restaurant" || event.detail.place_name === "Cafe") {
+                                    if(event.detail.seat_position === 1){
                                     this.player1!.anims.play(
                                         `${this.player1!.texture.key}_sit_left`,
                                         true
-                                );
-                                this.allPlayers[this.socket!.id].seat = 1;
-                                this.seatEvent = 1;
+                                    );
+                                    this.allPlayers[this.socket!.id].seat = 1;
+                                    this.seatEvent = 1;
+                                    }
+                                    else if(event.detail.seat_position === 2){
+                                        this.player1!.anims.play(
+                                            `${this.player1!.texture.key}_sit_right`,
+                                            true
+                                        );
+                                        this.allPlayers[this.socket!.id].seat = 4;
+                                        this.seatEvent = 4;
+                                    }
                                 }
                                 else {
                                     this.player1!.anims.play(
                                         `${this.player1!.texture.key}_idle_down`,
                                         true
-                                );
-                                this.allPlayers[this.socket!.id].seat = 2;
-                                this.seatEvent = 2;
+                                    );
+                                    this.allPlayers[this.socket!.id].seat = 2;
+                                    this.seatEvent = 2;
                                 }
-                                
-                                
+
+
                                 if (event.detail.seat_position === 1) {
-                                 
-                                    
+
+
                                     this.allPlayers[this.socket!.id].x = USA_talkingzone[event.detail.place_name].first_seat.x;
                                     this.allPlayers[this.socket!.id].y = USA_talkingzone[event.detail.place_name].first_seat.y;
                                     this.player1!.setPosition(USA_talkingzone[event.detail.place_name].first_seat.x, USA_talkingzone[event.detail.place_name].first_seat.y);
                                 }
                                 else if (event.detail.seat_position === 2) {
-                                    
+
                                     this.allPlayers[this.socket!.id].x = USA_talkingzone[event.detail.place_name].second_seat.x;
                                     this.allPlayers[this.socket!.id].y = USA_talkingzone[event.detail.place_name].second_seat.y;
                                     this.player1!.setPosition(USA_talkingzone[event.detail.place_name].second_seat.x, USA_talkingzone[event.detail.place_name].second_seat.y);
                                 }
-                                
-                                
-                            },false);
+
+
+                            }, false);
 
 
                             window.addEventListener("exitcall", (e: Event) => {
@@ -576,7 +618,7 @@ export default class USAScene extends Phaser.Scene {
                                 this.cursors!.right.enabled = true;
                                 this.cursors!.up.enabled = true;
                                 this.cursors!.down.enabled = true;
-                                    
+
 
                                 valve_E = true;
 
@@ -645,9 +687,9 @@ export default class USAScene extends Phaser.Scene {
                             this.socket2 === null ||
                             this.socket2 === undefined
                         ) {
-                            if(npcInfo.moving){
-                                for(let tween of this.tweenDict[npcInfo.name]){
-                                    if(tween.isPlaying()){
+                            if (npcInfo.moving) {
+                                for (let tween of this.tweenDict[npcInfo.name]) {
+                                    if (tween.isPlaying()) {
                                         this.nowTween = tween;
                                         this.nowAnims = npcInfo.sprite?.anims.currentAnim?.key!;
                                         npcInfo.sprite!.anims.play(`${npcInfo.texture}_idle_down`, true);
@@ -759,110 +801,110 @@ export default class USAScene extends Phaser.Scene {
                                     this.audio.play();
                                     this.isAudioTransfered = true;
                                 })
-                                    console.log(
-                                        "connect, interaction socket.id: ",
-                                        this.socket2!.id
-                                    );
-                                    this.socket2!.on(
-                                        "speechToText",
-                                        (response: string) => {
-                                            if (
-                                                response === "" ||
-                                                response ===
-                                                    "convertSpeechToText Error" ||
-                                                response === "chain call error"
-                                            ) {
-                                                store.dispatch(
-                                                    setMessage(
-                                                        "다시 말씀해주세요"
-                                                    )
-                                                );
-                                                store.dispatch(
-                                                    setMessageColor("red")
-                                                );
-                                                setTimeout(() => {
-                                                    store.dispatch(
-                                                        setMessage(
-                                                            "D키를 눌러\n녹음을 시작하세요"
-                                                        )
-                                                    );
-                                                    store.dispatch(
-                                                        setMessageColor("black")
-                                                    );
-                                                }, 2500);
-                                                store.dispatch(
-                                                    setCanRequestRecommend(
-                                                        false
-                                                    )
-                                                );
-                                                store.dispatch(setRecord(true));
-                                                this.isAudioPlaying = false;
-                                            } else {
-                                                addCountUserSpeech();
-                                                console.log("USER: ", response);
-                                                console.log(
-                                                    "playerTexture",
-                                                    this.playerTexture
-                                                );
-                                                store.dispatch(
-                                                    appendMessage({
-                                                        playerId: this.playerId,
-                                                        name: this.userNickname,
-                                                        img: this.playerTexture,
-                                                        // img: "",
-                                                        side: "right",
-                                                        text: response,
-                                                    })
-                                                );
-                                            }
-                                        }
-                                    );
-                                    this.socket2!.on(
-                                        "npcResponse",
-                                        (response: string) => {
-                                            console.log("NPC: ", response);
+                                console.log(
+                                    "connect, interaction socket.id: ",
+                                    this.socket2!.id
+                                );
+                                this.socket2!.on(
+                                    "speechToText",
+                                    (response: string) => {
+                                        if (
+                                            response === "" ||
+                                            response ===
+                                            "convertSpeechToText Error" ||
+                                            response === "chain call error"
+                                        ) {
                                             store.dispatch(
-                                                appendMessage({
-                                                    playerId: this.playerId,
-                                                    name: npcInfo.name,
-                                                    img: npcInfo.texture,
-                                                    // img: "",
-                                                    side: "left",
-                                                    text: response,
-                                                })
+                                                setMessage(
+                                                    "다시 말씀해주세요"
+                                                )
                                             );
-                                            store.dispatch(clearSentences());
-                                            this.alreadyRecommended = false;
-                                        }
-                                    );
-                                    this.socket2!.on(
-                                        "totalResponse",
-                                        (response: any) => {
-                                            console.log(
-                                                "totalResponse event response: ",
-                                                response
+                                            store.dispatch(
+                                                setMessageColor("red")
                                             );
-                                            // this.isAudioPlaying = true;
-                                            this.audio = new Audio(
-                                                response.audioUrl
-                                            );
-                                            this.audio.onended = () => {
-                                                console.log("audio.onended");
-                                                this.isAudioPlaying = false;
-                                                this.isAudioTransfered = false;
+                                            setTimeout(() => {
                                                 store.dispatch(
                                                     setMessage(
                                                         "D키를 눌러\n녹음을 시작하세요"
                                                     )
                                                 );
                                                 store.dispatch(
-                                                    setCanRequestRecommend(true)
+                                                    setMessageColor("black")
                                                 );
-                                            };
-                                            this.audio.play();
-                                            this.isAudioTransfered = true;
+                                            }, 2500);
+                                            store.dispatch(
+                                                setCanRequestRecommend(
+                                                    false
+                                                )
+                                            );
+                                            store.dispatch(setRecord(true));
+                                            this.isAudioPlaying = false;
+                                        } else {
+                                            addCountUserSpeech();
+                                            console.log("USER: ", response);
+                                            console.log(
+                                                "playerTexture",
+                                                this.playerTexture
+                                            );
+                                            store.dispatch(
+                                                appendMessage({
+                                                    playerId: this.playerId,
+                                                    name: this.userNickname,
+                                                    img: this.playerTexture,
+                                                    // img: "",
+                                                    side: "right",
+                                                    text: response,
+                                                })
+                                            );
                                         }
-                                    );
+                                    }
+                                );
+                                this.socket2!.on(
+                                    "npcResponse",
+                                    (response: string) => {
+                                        console.log("NPC: ", response);
+                                        store.dispatch(
+                                            appendMessage({
+                                                playerId: this.playerId,
+                                                name: npcInfo.name,
+                                                img: npcInfo.texture,
+                                                // img: "",
+                                                side: "left",
+                                                text: response,
+                                            })
+                                        );
+                                        store.dispatch(clearSentences());
+                                        this.alreadyRecommended = false;
+                                    }
+                                );
+                                this.socket2!.on(
+                                    "totalResponse",
+                                    (response: any) => {
+                                        console.log(
+                                            "totalResponse event response: ",
+                                            response
+                                        );
+                                        // this.isAudioPlaying = true;
+                                        this.audio = new Audio(
+                                            response.audioUrl
+                                        );
+                                        this.audio.onended = () => {
+                                            console.log("audio.onended");
+                                            this.isAudioPlaying = false;
+                                            this.isAudioTransfered = false;
+                                            store.dispatch(
+                                                setMessage(
+                                                    "D키를 눌러\n녹음을 시작하세요"
+                                                )
+                                            );
+                                            store.dispatch(
+                                                setCanRequestRecommend(true)
+                                            );
+                                        };
+                                        this.audio.play();
+                                        this.isAudioTransfered = true;
+                                    }
+                                );
 
                                 this.socket2!.on(
                                     "grammarCorrection",
@@ -913,9 +955,9 @@ export default class USAScene extends Phaser.Scene {
                         } else {
                             this.isAudioTransfered = false;
                             // 이미 소켓이 연결되어 있는데 다시 한번 E키를 누른 경우 -> 대화 종료 상황
-                            if(npcInfo.moving){
+                            if (npcInfo.moving) {
                                 npcInfo.sprite!.anims.resume();
-                                npcInfo.sprite!.anims.play(this.nowAnims, true);   
+                                npcInfo.sprite!.anims.play(this.nowAnims, true);
                                 this.nowTween?.resume();
                                 this.nowTween = null;
                             }
@@ -1702,7 +1744,7 @@ export default class USAScene extends Phaser.Scene {
         temp3.setDepth(100);
         temp3.play('arrowDownAnim', true);
 
-        const temp23: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite3.x+30, interact_sprite3.y - 50, "E_keyboard");
+        const temp23: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite3.x + 30, interact_sprite3.y - 50, "E_keyboard");
         temp23.setVisible(true);
         temp23.setScale(0.5);
         temp23.setDepth(100);
@@ -1714,7 +1756,7 @@ export default class USAScene extends Phaser.Scene {
         temp4.play('arrowDownAnim', true);
 
 
-        const temp24: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite4.x+30, interact_sprite4.y - 50, "E_keyboard");
+        const temp24: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite4.x + 30, interact_sprite4.y - 50, "E_keyboard");
         temp24.setVisible(true);
         temp24.setScale(0.5);
         temp24.setDepth(100);
@@ -1725,7 +1767,7 @@ export default class USAScene extends Phaser.Scene {
         temp5.setDepth(100);
         temp5.play('arrowDownAnim', true);
 
-        const temp25: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite5.x+30, interact_sprite5.y - 50, "E_keyboard");
+        const temp25: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite5.x + 30, interact_sprite5.y - 50, "E_keyboard");
         temp25.setVisible(true);
         temp25.setScale(0.5);
         temp25.setDepth(100);
@@ -1736,7 +1778,7 @@ export default class USAScene extends Phaser.Scene {
         temp6.setDepth(100);
         temp6.play('arrowDownAnim', true);
 
-        const temp26: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite6.x+30, interact_sprite6.y - 50, "E_keyboard");
+        const temp26: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite6.x + 30, interact_sprite6.y - 50, "E_keyboard");
         temp26.setVisible(true);
         temp26.setScale(0.5);
         temp26.setDepth(100);
@@ -1747,7 +1789,7 @@ export default class USAScene extends Phaser.Scene {
         temp7.setDepth(100);
         temp7.play('arrowDownAnim', true);
 
-        const temp27: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite7.x+30, interact_sprite7.y - 50, "E_keyboard");
+        const temp27: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite7.x + 30, interact_sprite7.y - 50, "E_keyboard");
         temp27.setVisible(true);
         temp27.setScale(0.5);
         temp27.setDepth(100);
@@ -1758,18 +1800,18 @@ export default class USAScene extends Phaser.Scene {
         temp10.setDepth(100);
         temp10.play('arrowDownAnim', true);
 
-        const temp30: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite10.x+30, interact_sprite10.y - 50, "E_keyboard");
+        const temp30: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite10.x + 30, interact_sprite10.y - 50, "E_keyboard");
         temp30.setVisible(true);
         temp30.setScale(0.5);
         temp30.setDepth(100);
-        
+
         const temp11: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite11.x, interact_sprite11.y - 50, "arrowDown");
         temp11.setVisible(true);
         temp11.setScale(1.3);
         temp11.setDepth(100);
         temp11.play('arrowDownAnim', true);
 
-        const temp31: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite11.x+30, interact_sprite11.y - 50, "E_keyboard");
+        const temp31: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite11.x + 30, interact_sprite11.y - 50, "E_keyboard");
         temp31.setVisible(true);
         temp31.setScale(0.5);
         temp31.setDepth(100);
@@ -1780,7 +1822,7 @@ export default class USAScene extends Phaser.Scene {
         temp12.setDepth(100);
         temp12.play('arrowDownAnim', true);
 
-        const temp32: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite12.x+30, interact_sprite12.y - 50, "E_keyboard");
+        const temp32: Phaser.Physics.Arcade.Sprite = this.physics.add.sprite(interact_sprite12.x + 30, interact_sprite12.y - 50, "E_keyboard");
         temp32.setVisible(true);
         temp32.setScale(0.5);
         temp32.setDepth(100);
@@ -1845,7 +1887,14 @@ export default class USAScene extends Phaser.Scene {
                                         `${otherPlayers[key].playerTexture}_sit_left`,
                                         true
                                     );
-                                } else  {
+                                } else if (otherPlayers[key].seat == 4) {
+                                    console.log("he is seated")
+                                    //     `${otherPlayers[key].playerTexture}_idle_down`;
+                                    playerSprite.anims.play(
+                                        `${otherPlayers[key].playerTexture}_sit_right`,
+                                        true
+                                    );
+                                } else {
                                     // console.log("he is not seated")
                                     playerSprite.anims.play(
                                         `${otherPlayers[key].playerTexture}_idle_down`,
