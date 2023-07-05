@@ -7,6 +7,10 @@ import USAScene from "./USA";
 
 export default class Background extends Phaser.Scene {
     background!: Phaser.GameObjects.Image;
+    progressBar!: Phaser.GameObjects.Graphics;
+    progressBox!: Phaser.GameObjects.Graphics;
+    loadingText!: Phaser.GameObjects.Text;
+    percentText!: Phaser.GameObjects.Text;
 
     constructor() {
         super("background");
@@ -14,7 +18,32 @@ export default class Background extends Phaser.Scene {
     }
 
     preload() {
+        // Create progress bar and loading text
+        this.createProgressBar();
+
         console.log("preloading..............");
+    
+        // Add listener for load progress event to update progress bar
+        this.load.on('progress', (value: number) => {
+            this.progressBar.clear();
+            this.progressBar.fillStyle(0xffffff, 1);
+            this.progressBar.fillRect(
+                this.cameras.main.width / 2 - 320 / 2,
+                this.cameras.main.height / 2 - 50 / 2,
+                value * 320, // Adjust width based on progress
+                50
+            );
+            this.percentText.setText(parseInt(value * 100 + '', 10) + '%');
+        });
+        
+        // Add listener for load complete event
+        this.load.on('complete', () => {
+            this.progressBar.destroy();
+            this.progressBox.destroy();
+            this.loadingText.destroy();
+            this.percentText.destroy();
+        });
+
         this.load.image("background", "assets/backgrounds/sky.jpg");
         this.load.image(
             "statueOfLiberty",
@@ -180,7 +209,45 @@ export default class Background extends Phaser.Scene {
         console.log("Complete loading!!!!!!!!!!!!!!!");
     }
 
-
+    createProgressBar() {
+        let progressBoxWidth = 320;
+        let progressBoxHeight = 50;
+    
+        this.progressBox = this.add.graphics();
+        this.progressBox.fillStyle(0x222222, 0.8);
+        this.progressBox.fillRect(
+            this.cameras.main.width / 2 - progressBoxWidth / 2,
+            this.cameras.main.height / 2 - progressBoxHeight / 2,
+            progressBoxWidth,
+            progressBoxHeight
+        );
+    
+        this.progressBar = this.add.graphics();
+        this.progressBar.fillStyle(0xffffff, 1);
+    
+        this.loadingText = this.make.text({
+            x: this.cameras.main.width / 2,
+            y: this.cameras.main.height / 2 - progressBoxHeight / 2 - 20, // Adjusted y position
+            text: 'Welcome to FreeTalker',
+            style: {
+                font: '20px monospace',
+                color: '#ffffff'
+            }
+        });
+        this.loadingText.setOrigin(0.5, 0.5);
+    
+        this.percentText = this.make.text({
+            x: this.cameras.main.width / 2,
+            y: this.cameras.main.height / 2 + progressBoxHeight / 2 + 20, // Adjusted y position
+            text: '0%',
+            style: {
+                font: '18px monospace',
+                color: '#ffffff'
+            }
+        });
+        this.percentText.setOrigin(0.5, 0.5);
+    }
+    
     gamePause() {
         console.log("Game is paused");
         for (let scene of phaserGame.scene.getScenes()) {
