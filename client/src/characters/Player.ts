@@ -8,7 +8,7 @@ export class Player {
     sprite: Phaser.Physics.Arcade.Sprite;
     textObj: Phaser.GameObjects.Text | null = null;
     defaultVelocity: number = 200;
-    dashVelocity: number = 600;
+    dashVelocity: number = 400;
     dash: boolean = false;
     seat: number = 0;
     level: string = "intermediate";

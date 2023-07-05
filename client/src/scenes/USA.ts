@@ -85,7 +85,7 @@ export default class USAScene extends Phaser.Scene {
     npcList: npcInfo[] = [];
     alreadyRecommended: boolean = false;
     speed: number = 200;
-    dashSpeed: number = 600;
+    dashSpeed: number = 400;
     tilemapLayerList: Phaser.Tilemaps.TilemapLayer[] = [];
     currNpcName: string = "";
     beforeSleepX: number = this.initial_x;
@@ -353,10 +353,14 @@ export default class USAScene extends Phaser.Scene {
             color: "black",
             fontSize: "16px",
         });
-        this.userIdText = this.add.text(10, 10, "", {
+        this.userIdText = this.add.text(10, 10, this.userNickname, {
             color: "black",
             fontSize: "16px",
+            stroke: "black",
+            strokeThickness: 0.5,
         });
+        this.userIdText!.setOrigin(0.5, 0);
+        this.userIdText!.setPadding({ top: 10, bottom: 10 })
 
         let valve_E = true;
         // npc 와의 대화를 위한 키 설정
