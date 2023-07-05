@@ -496,8 +496,8 @@ export default class USAScene extends Phaser.Scene {
 
 
                                 valve_E = true;
-                                // this.allPlayers[this.socket!.id].seat = 0;
-                                // this.seatEvent = 3;
+                                this.allPlayers[this.socket!.id].seat = 0;
+                                this.seatEvent = 3;
                                 store.dispatch(openUSA());
                             });
                             window.addEventListener("roomfull", (e: Event) => {
@@ -640,8 +640,35 @@ export default class USAScene extends Phaser.Scene {
 
 
                                 valve_E = true;
+                                this.allPlayers[this.socket!.id].seat = 0;
+                                this.seatEvent = 3;
 
                                 store.dispatch(openUSA());
+                            });
+
+                            window.addEventListener("roomfull", (e: Event) => {
+                                console.log("roomfull event listener");
+                                const camera = this.cameras.main;
+                                const messageText = '이미 다른 플레이가 이용중입니다';
+                                const message = this.add.text(0, 0, messageText, { color: 'e', fontSize: '20px' });
+                                message.setOrigin(0.5, 0.5);
+
+                                const padding = 10;  // 텍스트 주변에 더할 패딩 크기
+                                const boxWidth = message.width + (2 * padding);
+                                const boxHeight = message.height + (2 * padding);
+
+                                const box = this.add.rectangle(0, 0, boxWidth, boxHeight, 0xA7EEFF);  // 하늘색 배경 박스
+                                box.setOrigin(0.5, 0.5);
+
+                                // 배경 박스를 텍스트 아래에 두기
+                                message.setDepth(1);
+                                box.setDepth(0);
+
+                                const container = this.add.container(camera.scrollX + camera.width / 2, camera.scrollY + camera.height / 2, [box, message]);
+
+                                setTimeout(() => {
+                                    container.destroy();
+                                }, 2000);
                             });
                         } else {
                             this.player1!.setVelocity(0, 0);
