@@ -4,6 +4,8 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 export interface Sentence {
     _id: number;
     sentence: string;
+    audioUrl?: string;
+    isTTSLoading?: boolean;
 }
 
 export interface SentenceBoxState {
@@ -21,7 +23,7 @@ export const sentenceBoxSlice = createSlice({
     reducers: {
         appendSentence: (state, action: PayloadAction<Sentence>) => {
             let prefix = "";
-            switch(action.payload._id) {
+            switch (action.payload._id) {
                 case 0:
                     prefix = "긍정😄 : ";
                     break;
@@ -34,21 +36,46 @@ export const sentenceBoxSlice = createSlice({
                 default:
                     prefix = "";
             }
-            state.sentences.push(
-                {
-                _id: action.payload._id,
-                sentence: prefix + action.payload.sentence,
-            });
+            if (action.payload._id === 3) {
+                state.sentences.push(
+                    {
+                        _id: action.payload._id,
+                        sentence: prefix + action.payload.sentence,
+                        audioUrl: "",
+                        isTTSLoading: true,
+                    });
+
+            } else {
+                state.sentences.push(
+                    {
+                        _id: action.payload._id,
+                        sentence: prefix + action.payload.sentence,
+                        audioUrl: action.payload.audioUrl,
+                        isTTSLoading: false,
+                    });
+            }
         },
         clearSentences: (state) => {
             state.sentences = [];
         },
         setCanRequestRecommend: (state, action: PayloadAction<boolean>) => {
             state.canRequestRecommend = action.payload;
+        },
+        updateAudioUrl: (state, action: PayloadAction<{ index: number, audioUrl: string }>) => {
+            const { index, audioUrl } = action.payload;
+            if (state.sentences[index]) {
+                state.sentences[index].audioUrl = audioUrl;
+            }
+        },
+        updateTTSLoading: (state, action: PayloadAction<{ index: number, isTTSLoading: boolean }>) => {
+            const { index, isTTSLoading } = action.payload;
+            if (state.sentences[index]) {
+                state.sentences[index].isTTSLoading = isTTSLoading;
+            }
         }
     },
 });
 
-export const { appendSentence, clearSentences, setCanRequestRecommend } = sentenceBoxSlice.actions;
+export const { appendSentence, clearSentences, setCanRequestRecommend, updateAudioUrl, updateTTSLoading } = sentenceBoxSlice.actions;
 
 export default sentenceBoxSlice.reducer;

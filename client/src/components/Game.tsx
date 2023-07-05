@@ -52,14 +52,14 @@ const Game = () => {
         {mode === FREEDIALOG && <FreeDialog />}
         {mode === REPORT && <Report />}
         {(mode === AIRPORT || mode === USA) && <ReportBook />}
-        {mode !== NPCDIALOG && mode !== USERDIALOG && mode !== FREEDIALOG && (
-            <ButtonContainer>
-                {(isClicked || keyGuideClicked) && <Overlay style={{ opacity: backgroundOpacity }} />}
-                <LevelButton />
-                <Guider />
-                <KeyGuider />
-            </ButtonContainer>
-        )}
+        {/* {mode !== NPCDIALOG && mode !== USERDIALOG && mode !== FREEDIALOG && ( */}
+        <ButtonContainer>
+            {(isClicked || keyGuideClicked) && <Overlay style={{ opacity: backgroundOpacity }} />}
+            <LevelButton />
+            <Guider />
+            <KeyGuider />
+        </ButtonContainer>
+        {/* )} */}
 
     </BackgroundDiv>;
 };

@@ -33,6 +33,7 @@ import {
     appendSentence,
     clearSentences,
     setCanRequestRecommend,
+    updateAudioUrl
 } from "../stores/sentenceBoxSlice";
 import { setRecord, setMessage, setMessageColor } from "../stores/recordSlice";
 import { reportOn, reportOff } from "../stores/reportOnoffSlice";
@@ -80,6 +81,7 @@ export default class USAScene extends Phaser.Scene {
     recorder2: MediaRecorder | null = null;
     seatEvent: number = 0;
     isAudioPlaying: boolean = false;
+    isAudioTransfered: boolean = false;
     isNpcSocketConnected: boolean = false;
     npcList: npcInfo[] = [];
     alreadyRecommended: boolean = false;
@@ -482,8 +484,8 @@ export default class USAScene extends Phaser.Scene {
 
 
                                 valve_E = true;
-                                this.allPlayers[this.socket!.id].seat = 0;
-                                this.seatEvent = 3;
+                                // this.allPlayers[this.socket!.id].seat = 0;
+                                // this.seatEvent = 3;
                                 store.dispatch(openUSA());
                             });
                         } else {
@@ -586,7 +588,7 @@ export default class USAScene extends Phaser.Scene {
                                 this.cursors!.right.enabled = true;
                                 this.cursors!.up.enabled = true;
                                 this.cursors!.down.enabled = true;
-                                    
+
 
                                 valve_E = true;
 
@@ -611,7 +613,8 @@ export default class USAScene extends Phaser.Scene {
 
 
                             valve_E = true;
-
+                            this.allPlayers[this.socket!.id].seat = 0;
+                            this.seatEvent = 3;
                             store.dispatch(openUSA());
                         }
                     } else if (npcInfo.name.includes("gate")) {
@@ -671,6 +674,7 @@ export default class USAScene extends Phaser.Scene {
                             store.dispatch(clearSentences());
                             this.socket2 = io(`${serverUrl}/interaction`);
                             this.socket2.on("connect", () => {
+                                this.isAudioTransfered = false;
                                 const translationEvent = (e: Event) => {
                                     const customEvent = e as CustomEvent;
                                     console.log("translationEvent, customEvent.detail: ", customEvent.detail.message);
@@ -702,10 +706,22 @@ export default class USAScene extends Phaser.Scene {
                                         setCanRequestRecommend(false)
                                     );
                                 };
+
+                                const requestTTSEvent = (e: Event) => {
+                                    const customEvent = e as CustomEvent;
+                                    this.socket2!.emit(
+                                        "requestTTS",
+                                        customEvent.detail.sentence,
+                                        customEvent.detail.id,
+                                        this.currNpcName,
+                                        this.level);
+                                };
+
                                 this.socket2!.on("disconnect", () => {
                                     console.log("disconnect, recommendBtnClicked: ", recommendBtnClicked);
                                     window.removeEventListener("recomButtonClicked", recommendBtnClicked);
                                     window.removeEventListener("translationEvent", translationEvent);
+                                    window.removeEventListener("requestTTS", requestTTSEvent);
                                 });
                                 this.currNpcName = npcInfo.name;
                                 console.log(
@@ -721,6 +737,7 @@ export default class USAScene extends Phaser.Scene {
                                 window.addEventListener(
                                     "translationEvent", translationEvent
                                 );
+                                window.addEventListener("requestTTS", requestTTSEvent);
 
                                 this.interacting = true;
                                 this.socket2!.emit("dialogStart", npcInfo.name, this.level);
@@ -755,6 +772,7 @@ export default class USAScene extends Phaser.Scene {
                                     this.audio.onended = () => {
                                         console.log("audio.onended");
                                         this.isAudioPlaying = false;
+                                        this.isAudioTransfered = false;
                                         store.dispatch(
                                             setMessage(
                                                 "D키를 눌러\n녹음을 시작하세요"
@@ -765,6 +783,7 @@ export default class USAScene extends Phaser.Scene {
                                         );
                                     };
                                     this.audio.play();
+                                    this.isAudioTransfered = true;
                                 })
                                 console.log(
                                     "connect, interaction socket.id: ",
@@ -872,9 +891,11 @@ export default class USAScene extends Phaser.Scene {
                                         this.audio = new Audio(
                                             response.audioUrl
                                         );
+
                                         this.audio.onended = () => {
                                             console.log("audio.onended");
                                             this.isAudioPlaying = false;
+                                            this.isAudioTransfered = false;
                                             store.dispatch(
                                                 setMessage(
                                                     "D키를 눌러\n녹음을 시작하세요"
@@ -885,7 +906,7 @@ export default class USAScene extends Phaser.Scene {
                                             );
                                         };
                                         this.audio.play();
-
+                                        this.isAudioTransfered = true;
                                     }
                                 );
 
@@ -934,8 +955,21 @@ export default class USAScene extends Phaser.Scene {
                                         this.alreadyRecommended = true;
                                     }
                                 );
+                                this.socket2!.on(
+                                    "responseTTS", (data: { user: string, assitant: string, audioUrl: string, id: number }) => {
+
+
+                                        // If found, update its audio URL in the Redux store
+                                        console.log(`index: ${data.id}`);
+                                        console.log(`responseTTS: audioUrl: ${data.audioUrl}`);
+                                        store.dispatch(updateAudioUrl({ index: data.id, audioUrl: data.audioUrl }));
+                                        console.log("responseTTS, dispatch event called!!");
+
+                                    }
+                                );
                             });
                         } else {
+                            this.isAudioTransfered = false;
                             // 이미 소켓이 연결되어 있는데 다시 한번 E키를 누른 경우 -> 대화 종료 상황
                             if (npcInfo.moving) {
                                 npcInfo.sprite!.anims.resume();
@@ -1060,9 +1094,10 @@ export default class USAScene extends Phaser.Scene {
         // NPC의 음성 재생을 스킵하는 기능
         this.input.keyboard!.on("keydown-S", async () => {
             console.log("S key pressed, isAudioPlaying: ", this.isAudioPlaying);
-            if (this.isAudioPlaying) {
+            if (this.isAudioPlaying && this.isAudioTransfered) {
                 this.audio?.pause();
                 this.isAudioPlaying = false;
+                this.isAudioTransfered = false;
                 store.dispatch(setMessage("D키를 눌러\n녹음을 시작하세요"));
                 store.dispatch(setCanRequestRecommend(true));
                 this.audio = new Audio();
@@ -1317,6 +1352,7 @@ export default class USAScene extends Phaser.Scene {
                             userNickname: this.userNickname,
                             npcName: this.currNpcName, // TODO: npc 이름 받아오기
                             audioDataBuffer: buffer,
+                            level: this.level,
                         });
                     });
                 };
@@ -1441,7 +1477,7 @@ export default class USAScene extends Phaser.Scene {
 
         //moving npc-----------------------------------------------------------------------------
         let npc9: npcInfo = {
-            name: "Barista",
+            name: "Minsook",
             x: 1155,
             y: 859,
             texture: "minsook",
@@ -1490,6 +1526,61 @@ export default class USAScene extends Phaser.Scene {
         }
 
         tweens[0].resume(); // Start the first animation
+        //-----------------------------------------------------------------------------
+        //moving npc-----------------------------------------------------------------------------
+        let npc10: npcInfo = {
+            name: "Doyoungboy",
+            x: 202,
+            y: 336,
+            texture: "doyoungboy",
+            sprite: null,
+            role: "npc",
+            moving: true,
+        };
+        npc10.sprite = this.physics.add.sprite(npc10.x, npc10.y, npc10.texture);
+        this.npcList.push(npc10);
+
+        let points2 = [
+            { x: 386, y: 480, anim: `${npc10.texture}_run_down` },
+            { x: 500, y: 370, anim: `${npc10.texture}_run_right` },
+            { x: 507, y: 660, anim: `${npc10.texture}_run_down` },
+            { x: 253, y: 530, anim: `${npc10.texture}_run_left` },
+            { x: 202, y: 336, anim: `${npc10.texture}_run_up` },
+        ];
+
+        let tweens2 = points2.map((point, index) =>
+            this.tweens.add({
+                targets: npc10.sprite,
+                x: point.x,
+                y: point.y,
+                ease: 'Linear',
+                duration: 5000,
+                repeat: -1,
+                onStart: () => {
+                    npc10.sprite!.anims.play(point.anim);
+                    // console.log("start, anim: ", point.anim);
+                },
+                onComplete: () => {
+                    console.log("complete");
+                },
+                onRepeat: () => {
+                    console.log("repeat");
+                    npc10.sprite!.anims.play(points2[(index + 1) % points2.length].anim, true);
+                    // console.log("repeat, anim: ", points[(index+1)%points.length].anim);
+                },
+                paused: index !== 0, // Only pause the animations that are not the first one
+            }));
+        this.tweenDict[npc10.name] = tweens2;
+
+        for (let i = 0; i < tweens2.length; i++) {
+            tweens2[i].on('repeat', () => {
+                tweens2[i].pause();
+                let nextTween = tweens2[(i + 1) % tweens2.length];
+                nextTween.resume(); // Resume the next animation
+            })
+        }
+
+        tweens2[0].resume(); // Start the first animation
         //-----------------------------------------------------------------------------
 
 

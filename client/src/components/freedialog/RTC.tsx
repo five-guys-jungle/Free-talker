@@ -8,83 +8,78 @@ import React, { useEffect, useRef, useState } from "react"
 import { useSelector, useDispatch } from "react-redux";
 import { CopyToClipboard } from "react-copy-to-clipboard"
 import Peer from "simple-peer"
-import {Instance} from "simple-peer"
+import { Instance } from "simple-peer"
 import io, { Socket } from "socket.io-client"
 import { setSocketNamespace } from "../../stores/socketSlice"
 import { current } from "@reduxjs/toolkit"
 import { TalkBoxState } from "../../stores/talkBoxSlice";
 import store, { RootState, useAppDispatch } from "../../stores";
-import {setUserCharacter, clearcharacters} from "../../stores/userboxslice";
+import { setUserCharacter, clearcharacters } from "../../stores/userboxslice";
 
 const FreeDialog = () => {
-    const [ me, setMe ] = useState("")
-	const [ stream, setStream ] = React.useState<MediaStream | undefined>(undefined)
-	const [ receivingCall, setReceivingCall ] = useState(false)
-	const [ caller, setCaller ] = useState("")
-	const [ callerSignal, setCallerSignal ] = useState<any>()
-	const [ callAccepted, setCallAccepted ] = useState(false)
-	const [ idToCall, setIdToCall ] = useState("")
-	const [ callEnded, setCallEnded] = useState(false)
-	const [ name, setName ] = useState("")
-	
+	const [me, setMe] = useState("")
+	const [stream, setStream] = React.useState<MediaStream | undefined>(undefined)
+	const [receivingCall, setReceivingCall] = useState(false)
+	const [caller, setCaller] = useState("")
+	const [callerSignal, setCallerSignal] = useState<any>()
+	const [callAccepted, setCallAccepted] = useState(false)
+	const [idToCall, setIdToCall] = useState("")
+	const [callEnded, setCallEnded] = useState(false)
+	const [name, setName] = useState("")
+
 
 
 	const dispatch = useAppDispatch();
 	const myVideo = React.useRef<HTMLVideoElement>(null);
 	const userVideo = React.useRef<HTMLVideoElement>(null);
 	const connectionRef = React.useRef<Instance | null>(null);
-    const socket = useRef<Socket | null>(null);
+	const socket = useRef<Socket | null>(null);
 
 	const socketNamespace = useSelector(
 		(state: { rtc: { socketNamespace: string } }) => state.rtc.socketNamespace
 	);
-    // const dispatch = useDispatch();
+	// const dispatch = useDispatch();
 	console.log("setSocketNamespace:::", socketNamespace);
 
-	
-	const {playerNickname, playerTexture} = useSelector((state: RootState) => {return {...state.user}});
-	let seatPosition : number
-	let place_name : string
-    useEffect(() => {
+
+	const { playerNickname, playerTexture } = useSelector((state: RootState) => { return { ...state.user } });
+	let seatPosition: number
+	let place_name: string
+	useEffect(() => {
 		socket.current = io(socketNamespace);
 		// socket.current = io("http://localhost:5000/freedialog/airport_chair1");
 		navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
-            setStream(stream)
-            if (myVideo.current) {
-                myVideo.current.srcObject = stream
+			setStream(stream)
+			if (myVideo.current) {
+				myVideo.current.srcObject = stream
 				console.log(myVideo.current.srcObject)
-            }
-        })
-		
+			}
+		})
+
 		let place_name = socketNamespace.substring(socketNamespace.lastIndexOf("/") + 1);
 		console.log("place_name:::", place_name);
 		place_name = place_name;
-		// socket.current!.emit("join", { place_name });
+	
 
 		socket.current!.emit("join", { place_name });
 		socket.current!.on("connect", () => {
-			
-			// socket.current!.on("joined", (current) => {
-			// 	console.log("current:::", current);
-			// 	num_User = current
-			// })
 
 			
-			})
+		})
 		socket.current!.on("roomFull", () => {
 			socket.current!.disconnect();
 			const clickEvent = new CustomEvent('exitcall', {
-				detail: { message: "exitcall"}
+				detail: { message: "exitcall" }
 			});
 			window.dispatchEvent(clickEvent);
 		})
-		
+
 
 		socket.current!.on("seat_position", (seat_position: number) => {
 			console.log("seat_position:::", seat_position);
 			seatPosition = seat_position;
 			const seatEvent = new CustomEvent('seat', {
-				detail: { 
+				detail: {
 					message: "seat",
 					seat_position: seat_position,
 					place_name: place_name
@@ -92,46 +87,35 @@ const FreeDialog = () => {
 			});
 			window.dispatchEvent(seatEvent);
 		}
-			)
+		)
 
-		
-			
-			socket.current!.emit("otherchar", {playerNickname: playerNickname, playerTexture:playerTexture});
-			socket.current!.on("otherusercharacter", ({playerNickname: playerNickname, playerTexture:playerTexture}) => {
-				console.log(playerNickname,playerTexture)
-				dispatch(setUserCharacter({playerNickname, playerTexture}));
-			})
-			// socket.current!.on("otheruserleave", () => {
-			// 	const clickEvent = new CustomEvent('exitcall', {
-			// 		detail: { message: "exitcall"}
-			// 	});
-			// 	window.dispatchEvent(clickEvent);
-				// socket.current!.disconnect();
-			// });
+
+
+	
+		socket.current!.on("otherusercharacter", ({ playerNickname: playerNickname, playerTexture: playerTexture }) => {
+			console.log(playerNickname, playerTexture)
+			dispatch(setUserCharacter({ playerNickname, playerTexture }));
+		})
+	
 		socket.current!.on("userconnected", () => {
-				console.log("connected~~~~~~~~~~~~~~~~~~~~~~~~~~!!!!!!!!!!!!");
-				socket.current!.emit("mychar", {otherNickname: playerNickname, otherTexture:playerTexture});
-				// callUser(idToCall);
-				// document.getElementById("call-btn")?.click();
-				// console.log("clickclickclick!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-			})
-			socket.current!.on("usercharacter", ({otherNickname: playerNickname, otherTexture:playerTexture}) => {
-				console.log(playerNickname, playerTexture);
-				dispatch(setUserCharacter({playerNickname, playerTexture}));
-			  });
-			socket.current!.on("outcharacter", () => {
-				console.log("outcharacter=========================================");
-
-				dispatch(clearcharacters());
-			});  
-		// });// 상대방 소켓 연결 이벤트 핸들러
-		
-		socket.current!.on("me", (id) => {
-			setMe(id);
-			console.log("id:::", id)
+			console.log("connected~~~~~~~~~~~~~~~~~~~~~~~~~~!!!!!!!!!!!!");
+			socket.current!.emit("otherchar", { playerNickname: playerNickname, playerTexture: playerTexture });
+			socket.current!.emit("mychar", { otherNickname: playerNickname, otherTexture: playerTexture });
+			
+			
+		})
+		socket.current!.on("usercharacter", ({ otherNickname: playerNickname, otherTexture: playerTexture }) => {
+			console.log(playerNickname, playerTexture);
+			dispatch(setUserCharacter({ playerNickname, playerTexture }));
 		});
+		socket.current!.on("outcharacter", () => {
+			console.log("outcharacter=========================================");
 
-        socket.current!.on("callUser", (data) => {
+			dispatch(clearcharacters());
+		});
+	
+
+		socket.current!.on("callUser", (data) => {
 			setReceivingCall(true);
 			setCaller(data.from);
 			setName(data.name);
@@ -144,30 +128,25 @@ const FreeDialog = () => {
 			if (connectionRef.current) {
 				connectionRef.current.destroy();
 				const clickEvent = new CustomEvent('exitcall', {
-							detail: { message: "exitcall"}
-						});
-						window.dispatchEvent(clickEvent);
-						socket.current!.disconnect();
+					detail: { message: "exitcall" }
+				});
+				window.dispatchEvent(clickEvent);
+				socket.current!.disconnect();
 			}
 		});
 		return () => {
-			// console.log("disconnect!!!!!")
-			// console.log("disconnect!!!!!", seatPosition, place_name)
-			// socket.current!.emit("standup", { 
-			// 	seat_position: seatPosition,
-			// 	place_name: place_name
-			//   });
-			socket.current!.disconnect();
 			
+			socket.current!.disconnect();
+
 		}
-	  
-	
+
+
 	}, []);
 
 
-       
 
-    const callUser = (id: string) => {
+
+	const callUser = (id: string) => {
 		console.log("id:", id)
 		const peer = new Peer({
 			initiator: true,
@@ -186,7 +165,7 @@ const FreeDialog = () => {
 		peer.on("stream", (stream) => {
 			console.log("video~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 			userVideo.current!.srcObject = stream;
-			
+
 		});
 		socket.current!.on("callAccepted", (signal) => {
 			setCallAccepted(true)
@@ -196,7 +175,7 @@ const FreeDialog = () => {
 		connectionRef.current = peer
 	}
 
-	const answerCall =() =>  {
+	const answerCall = () => {
 		setCallAccepted(true)
 		const peer = new Peer({
 			initiator: false,
@@ -216,120 +195,119 @@ const FreeDialog = () => {
 
 	const leaveCall = () => {
 		setCallEnded(true);
+		console.log("leaveCall");
 		if (connectionRef.current) {
 			connectionRef.current.destroy();
 			socket.current!.emit("callEnded"); // 서버로 callEnded 이벤트 전송
 			socket.current!.emit("leaveCallEvent", { to: caller });
-			socket.current!.emit("standup", { 
-				seatPosition,
-				place_name
-			  });
+			console.log("leaveCallEvent");
+			
 			// Airport 씬으로 이벤트 전달
 			window.dispatchEvent(new Event("exitcall"));
 			socket.current!.disconnect();
 
-		   
-			
+
+
 		}
-	  };
-	  useEffect(() => {
+	};
+	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
 			if (event.key === 'e' || event.key === 'E') {
 				leaveCall();
 			}
 		};
-	
+
 		window.addEventListener('keydown', handleKeyDown);
-	
+
 		return () => {
 			window.removeEventListener('keydown', handleKeyDown);
 		};
 	}, []);
 
-		return (
-			<>
-				<div style={{ 
-					display: 'flex', 
-					justifyContent: 'center', 
-					alignItems: 'center', 
-				}}>
-					
-					<div 
-						className="call-button" 
-						style={{ position: 'fixed', textAlign: 'center', top: '1.5%'}}>
-						
-						{callAccepted && !callEnded ? (
-						<div 
-							className="caller" 
-							style={{ 
-								display: 'inline-flex',
-								alignItems: 'center', 
-						}}>
+	return (
+		<>
+			<div style={{
+				display: 'flex',
+				justifyContent: 'center',
+				alignItems: 'center',
+			}}>
 
-							<IconButton 
-								color="secondary" 
-								aria-label="endcall" 
+				<div
+					className="call-button"
+					style={{ position: 'fixed', textAlign: 'center', top: '1.5%' }}>
+
+					{callAccepted && !callEnded ? (
+						<div
+							className="caller"
+							style={{
+								display: 'inline-flex',
+								alignItems: 'center',
+							}}>
+
+							<IconButton
+								color="secondary"
+								aria-label="endcall"
 								onClick={leaveCall}>
-								<PhoneIcon style={{ fontSize: "2em" }} /> 
+								<PhoneIcon style={{ fontSize: "2em" }} />
 							</IconButton>
 							<Typography variant="h5" align="center" style={{ fontFamily: "MaplestoryOTFLight", fontWeight: "bold" }}>통화를 종료하면 맵으로 돌아갑니다.</Typography>
-							</div>
-						) : receivingCall && !callAccepted ? null : (
-							<div
-								className="caller"
-								style={{ 
-									display: "inline-flex",
-									alignItems: "center", 
-									bottom: "5px" 
+						</div>
+					) : receivingCall && !callAccepted ? null : (
+						<div
+							className="caller"
+							style={{
+								display: "inline-flex",
+								alignItems: "center",
+								bottom: "5px"
 							}}>
-								<IconButton
-									className="call-btn"
-									color="primary"
-									aria-label="call"
-									onClick={() => callUser(idToCall)}>
-									<PhoneIcon style={{ fontSize: "2em" }} />
-								</IconButton>
-								<Typography variant="h5" align="center" style={{ fontFamily: "Poppins", fontWeight: "bold" }}>Make a call</Typography>
-							</div>
-						  )}
-						  
-						{receivingCall && !callAccepted && (
-							<div className="caller" style={{ display: 'inline-flex', alignItems: 'center', bottom : '5px' }}>
-								<Typography variant="h5" align="center" style={{ fontFamily: "Poppins", fontWeight: "bold" }}> Please answer the call ... </Typography>
-								<Button variant="contained" color="primary" onClick={answerCall} style={{marginLeft: '10px', fontFamily: "Poppins"}}>
-									Answer
-								</Button>
-							</div>
-						)}
+							<IconButton
+								className="call-btn"
+								color="primary"
+								aria-label="call"
+								onClick={() => callUser(idToCall)}>
+								<PhoneIcon style={{ fontSize: "2em" }} />
+							</IconButton>
+							<Typography variant="h5" align="center" style={{ fontFamily: "Poppins", fontWeight: "bold" }}>Make a call</Typography>
 						</div>
+					)}
 
-				</div>
-				<div className="container" style={{ 
-					flexDirection: "column", 
-					alignItems: "center", 
-					justifyContent: "center", 
-					paddingTop: "50px" 
-				}}> 					
-					<div className="video-container" style={{ 
-						display: "flex", 
-						flexDirection: "column", 
-						alignItems: "center", 
-						justifyContent: "center", 
-						width: "100%",
-						marginTop: "30px", 
-						transform: "scaleX(-1)" 
-					}}>
-						<div className="video" style={{ 
-							display: "flex", 
-							justifyContent: "center", 
-							alignItems: "center",
-							width: "100%",
-							height: "100%",
-							marginBottom: "30px",
-						}}>
-							{stream && <video playsInline muted ref={myVideo} autoPlay style={videoStyle} />}
+					{receivingCall && !callAccepted && (
+						<div className="caller" style={{ display: 'inline-flex', alignItems: 'center', bottom: '5px' }}>
+							<Typography variant="h5" align="center" style={{ fontFamily: "Poppins", fontWeight: "bold" }}> Please answer the call ... </Typography>
+							<Button variant="contained" color="primary" onClick={answerCall} style={{ marginLeft: '10px', fontFamily: "Poppins" }}>
+								Answer
+							</Button>
 						</div>
-						{/* <div className="video" style={{ 
+					)}
+				</div>
+
+			</div>
+			<div className="container" style={{
+				flexDirection: "column",
+				alignItems: "center",
+				justifyContent: "center",
+				paddingTop: "50px"
+			}}>
+				<div className="video-container" style={{
+					display: "flex",
+					flexDirection: "column",
+					alignItems: "center",
+					justifyContent: "center",
+					width: "100%",
+					marginTop: "30px",
+					transform: "scaleX(-1)"
+				}}>
+					<div className="video" style={{
+						display: "flex",
+						justifyContent: "center",
+						alignItems: "center",
+						width: "100%",
+						height: "100%",
+						marginBottom: "30px",
+					}}>
+						{stream && <video playsInline muted ref={myVideo} autoPlay style={videoStyle} />}
+					</div>
+					{/* <div className="video" style={{ 
 							display: "flex", 
 							justifyContent: "center", 
 							alignItems: "center",
@@ -341,29 +319,29 @@ const FreeDialog = () => {
 								(stream && <video playsInline muted ref={myVideo} autoPlay style={videoStyle} />)
 							}
 						</div> */}
-						<div className="video" style={{ 
-							display: "flex", 
-							justifyContent: "center", 
-							alignItems: "center",
-							width: "100%",
-							height: "100%",
-						}}>
-							{callAccepted && !callEnded ?
-								<video playsInline ref={userVideo} autoPlay style={videoStyle} /> :
-								null}
-						</div>
-
-
+					<div className="video" style={{
+						display: "flex",
+						justifyContent: "center",
+						alignItems: "center",
+						width: "100%",
+						height: "100%",
+					}}>
+						{callAccepted && !callEnded ?
+							<video playsInline ref={userVideo} autoPlay style={videoStyle} /> :
+							null}
 					</div>
-		
-					
-		
-				</div>
-			</>
-		)
-		
 
-				  }
+
+				</div>
+
+
+
+			</div>
+		</>
+	)
+
+
+}
 export default FreeDialog;
 
 const videoStyle = {
@@ -371,4 +349,4 @@ const videoStyle = {
 	margin: 'auto',
 	border: '10px solid #0D92C8', // 테두리 스타일 및 색상 설정
 	borderRadius: '50px', // 모서리를 10px로 둥글게 설정
-  };
+};

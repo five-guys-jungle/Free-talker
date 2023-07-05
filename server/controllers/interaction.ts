@@ -35,58 +35,14 @@ if (process.env.NODE_ENV === "production") {
 const serverUrl: string = process.env.SERVER_URL!;
 const openai = new OpenAIApi(configuration);
 
-console.log("cur_dir_name : ", __dirname);
+// console.log("cur_dir_name : ", __dirname);
 const keyPath = __dirname + "/../config/text-to-speech-key.json";
-// const keyPath = __dirname + "/../api-keys/project-test-388706-ac6d82af0f41.json";
 
 const client = new texttoSpeech.TextToSpeechClient({
     keyFilename: keyPath,
 });
 
 const s3Client = new S3Client({ region: "ap-northeast-2" });
-
-// const storage = multer.diskStorage({
-//     destination: (req, file, cb) => {
-//         cb(null, __dirname + "/../audio/user_audio"); // 음성 파일을 저장할 폴더 경로 지정
-//     },
-//     filename: (req, file, cb) => {
-//         cb(null, `${Date.now()}_${file.originalname}.mp3`); // 음성 파일 이름 지정
-//     },
-// });
-// export const upload = multer({ storage });
-
-// Function to process the user's voice input
-// export async function interact(req: Request, res: Response): Promise<void> {
-//     console.log("NPC Interaction Start.");
-//     const voiceFile = req.file;
-//     const chain = await createChain("ImmigrationOfficer", "intermediate");
-//     if (voiceFile && voiceFile.size > 0) {
-//         // Convert speech to text
-//         const audioFilePath = voiceFile.path;
-//         console.log(audioFilePath);
-//         let inputText: string;
-//         let outputText: string;
-
-//         inputText = await convertSpeechToText(audioFilePath);
-//         const correctedText = await grammarCorrection(inputText);
-
-//         console.log(`correctedText: ${correctedText}, inputText: ${inputText}`);
-
-//         outputText = await textCompletion(inputText, chain);
-//         const response = await convertTexttoSpeech(inputText, outputText);
-//         // console.log("response: ", response);
-//         res.json(response);
-
-//         // Call the ChatGPT API with the extracted text and process the response
-//         // Implement your logic to interact with the ChatGPT API
-
-//         // Call the Text to Speech API to generate the response audio
-//         // Implement your logic to convert text to speech using the appropriate libraries or APIs
-//         // Return the response to the user
-//     } else {
-//         res.status(400).json({ error: "NPC Interaction Fail." });
-//     }
-// }
 
 // Function to convert speech to text
 export async function convertSpeechToText(
@@ -240,16 +196,10 @@ export async function convertTexttoSpeech(
             audioConfig: {
                 audioEncoding: "MP3",
                 speakingRate: rate,
+                pitch: preDefinedVoiceType[npcName].pitch,
             },
         };
         const [response_audio]: any = await client.synthesizeSpeech(request);
-
-        // Convert audio content to a stream
-
-
-        // const audioStream = new Readable();
-        // audioStream.push(response_audio.audioContent);
-        // audioStream.push(null); // indicates end of file 
 
         // Define the bucket name and file name
         const bucketName = process.env.S3_BUCKET_NAME;
@@ -282,6 +232,8 @@ export async function convertTexttoSpeech(
         return { error: "text-to-speech request failed." };
     }
 }
+
+
 
 export async function grammarCorrection(inputText: string): Promise<string> {
     let response: any;

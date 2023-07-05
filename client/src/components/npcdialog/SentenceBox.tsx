@@ -6,13 +6,42 @@ import { setRecord } from "../../stores/recordSlice";
 import { RecordState } from "../../stores/recordSlice";
 import { TalkBoxState } from "../../stores/talkBoxSlice";
 import { css, keyframes } from 'styled-components';
+import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+import PauseIcon from '@material-ui/icons/Pause';
 
 interface SentenceViewProps {
     sentence: Sentence;
 }
 
 const SentenceView: React.FC<SentenceViewProps> = ({ sentence }) => {
-    const { sentence: sentenceText } = sentence;
+    const { sentence: sentenceText, audioUrl, isTTSLoading } = sentence;
+    const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
+
+    const requestTTS = (sentenceObject: Sentence) => {
+        const clickEvent = new CustomEvent('requestTTS', {
+            detail: { sentence: sentenceObject.sentence, id: sentenceObject._id }
+        });
+        window.dispatchEvent(clickEvent);
+    };
+
+    const pauseAudio = () => {
+        if (currentAudio) {
+            currentAudio.pause();
+            setCurrentAudio(null);
+        }
+    }
+
+    useEffect(() => {
+        console.log(`audioUrl: ${audioUrl}`)
+        if (audioUrl) {
+            console.log(`In If statement, audioUrl: ${audioUrl}`)
+            const audio = new Audio(audioUrl);
+            audio.onended = () => setCurrentAudio(null);
+            audio.play();
+            setCurrentAudio(audio);
+        }
+    }, [audioUrl]);
+
 
     return (
         <SentenceDiv>
@@ -21,6 +50,11 @@ const SentenceView: React.FC<SentenceViewProps> = ({ sentence }) => {
                     {/* <span className="label">추천문장: </span> */}
                     <span
                         className="value">{sentenceText}</span>
+                    {
+                        (audioUrl !== "") && currentAudio && currentAudio.src === audioUrl ?
+                            <PauseIcon onClick={pauseAudio} /> : (audioUrl !== "") ?
+                                <PlayArrowIcon onClick={() => requestTTS(sentence)} /> : <></>
+                    }
                 </div>
             </div>
         </SentenceDiv>
@@ -65,6 +99,7 @@ const SentenceList: React.FC = () => {
         // }
 
     };
+
     useEffect(() => {
         if (record) {
             const timer = setTimeout(() => {

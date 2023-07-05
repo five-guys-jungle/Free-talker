@@ -135,7 +135,7 @@ const RTCaudio = () => {
 		console.log("socket is connected: ", socket.current!.id);
 
 
-		socket.current!.emit("otherchar", { playerNickname: playerNickname, playerTexture: playerTexture });
+		
 		socket.current!.on("otherusercharacter", ({ playerNickname: playerNickname, playerTexture: playerTexture }) => {
 			console.log(playerNickname, playerTexture)
 			dispatch(setUserCharacter({ playerNickname, playerTexture }));
@@ -150,9 +150,8 @@ const RTCaudio = () => {
 		socket.current!.on("userconnected", () => {
 			console.log("connected~~~~~~~~~~~~~~~~~~~~~~~~~~!!!!!!!!!!!!");
 			socket.current!.emit("mychar", { otherNickname: playerNickname, otherTexture: playerTexture });
-			// callUser(idToCall);
-			// document.getElementById("call-btn")?.click();
-			// console.log("clickclickclick!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+			socket.current!.emit("otherchar", { playerNickname: playerNickname, playerTexture: playerTexture });
+			
 		})
 		socket.current!.on("usercharacter", ({ otherNickname: playerNickname, otherTexture: playerTexture }) => {
 			console.log(playerNickname, playerTexture);
@@ -190,7 +189,7 @@ const RTCaudio = () => {
 			}
 		});
 		return () => {
-			// socket.current!.emit("out_Role" , {playerRole: playerRole, placeName: placeName});
+			
 			socket.current!.emit("userExit", socket.current!.id);
 			socket.current!.disconnect();
 			store.dispatch(clearSituation());
@@ -235,31 +234,11 @@ const RTCaudio = () => {
 			peer.signal(signal)
 			// fetchData();
 		});
-		// try {
-		// 	const response = await axios.get(`${DB_URL}/userdialog/place`, {
-		// 		params: {
-		// 			placeName: placeName // placeName you want to send
-		// 		}
-		// 	});
-		// 	console.log(response.data);
-		// } catch (error) {
-		// 	console.error(`Error in sending placeName: ${error}`);
-		// }
+		
 		connectionRef.current = peer
 	}
 
-	// const fetchData = async () => {
-	// 	try {
-	// 		const response = await axios.get(`${DB_URL}/userdialog/place`, {
-	// 			params: {
-	// 				placeName: placeName // placeName you want to send
-	// 			}
-	// 		});
-	// 		console.log(response.data); // martChair -> 
-	// 	} catch (error) {
-	// 		console.error(`Error in sending placeName: ${error}`);
-	// 	}
-	// };
+	
 
 	const answerCall = async () => {
 		setCallAccepted(true)
@@ -308,18 +287,8 @@ const RTCaudio = () => {
 		store.dispatch(clearRecommendations());
 		const handleKeyDown = (event: KeyboardEvent) => {
 			if (event.key === 'e' || event.key === 'E') {
-				setCallEnded(true);
-
-				if (connectionRef.current) {
-					connectionRef.current.destroy();
-					socket.current!.emit("callEnded"); // 서버로 callEnded 이벤트 전송
-					// socket.current!.emit("out_Role2" , {playerRole: playerRole});
-					socket.current!.emit("leaveCallEvent", { to: caller });
-					// Airport 씬으로 이벤트 전달
-					socket.current!.emit("userExit", socket.current!.id);
-					window.dispatchEvent(new Event("exitcall"));
-					socket.current!.disconnect();
-				}
+				leaveCall();      
+				
 			}
 		};
 
