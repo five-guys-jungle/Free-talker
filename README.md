@@ -1,6 +1,6 @@
 # FreeTalker
 
-[![Logo0](./img/Logo2.png)](https://freetalker.site/)
+[![Logo0](./img/‎Logo2.png)](https://freetalker.site/)
 
 ## 목차
 [1. 프로젝트 개요](#프로젝트-개요)
