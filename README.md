@@ -30,34 +30,35 @@
 |:---:|:---:|
 |*메타버스에서 지루하지 않게!*|*AI와 회화를 연습한다면?*|
 ### **기능 설명**
-1. 유저들과 실시간으로 동기화되는 메타버스 공간 (공항, 미국 뉴욕 맵)
+**1. 유저들과 실시간으로 동기화되는 메타버스 공간 (공항, 미국 뉴욕 맵)**
 
 ![GIF1](./img/service1.gif)
 
-2. 다양한 AI NPC와의 영어 대화 기능
+**2. 다양한 AI NPC와의 영어 대화 기능**
 
-![Image1](./img/service2_1.png) ![Image2](./img/service2_2.png)
+<img src="./img/service2_1.png" alt="service2_1" width="65%">
+<img src="./img/service2_2.png" alt="service2_2" width="65%">
 
-3. NPC의 응답에 대해 적절한 문장 추천 기능
+**3. NPC의 응답에 대해 적절한 문장 추천 기능**
 
 ![GIF3](./img/service3.gif)
 
-4. NPC의 대화 난이도를 조절할 수 있는 기능
+**4. NPC의 대화 난이도를 조절할 수 있는 기능**
 
 ![Image3](./img/service4_1.png) ![Image4](./img/service4_2.png) ![Image5](./img/service4_3.png)
 
 
-5. NPC와의 대화 중 모르는 단어나 문장을 드레그 시 번역해 주는 기능
+**5. NPC와의 대화 중 모르는 단어나 문장을 드레그 시 번역해 주는 기능**
 
 ![GIF5](./img/service5.gif)
 
-6. NPC와의 대화 직후 대화 문장을 다시 듣거나 문법교정 평가를 받을 수 있는 평가 레포트 기능
+**6. NPC와의 대화 직후 대화 문장을 다시 듣거나 문법교정 평가를 받을 수 있는 평가 레포트 기능**
 
 ![Image6](./img/service6.png)
 
-7. 실제 유저와 화상 통화를 하며 영어 회회를 연습할 수 있는 Free talking 기능
+**7. 실제 유저와 화상 통화를 하며 영어 회회를 연습할 수 있는 Free talking 기능**
 
-8. 실제 유저와 음성 통화를 하며 주어진 상황과 역할에 맞게 상황극을 할 수 있는 Role playing 기능
+**8. 실제 유저와 음성 통화를 하며 주어진 상황과 역할에 맞게 상황극을 할 수 있는 Role playing 기능**
 
 
 
