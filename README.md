@@ -45,7 +45,7 @@
 
 **4. NPC의 대화 난이도를 조절할 수 있는 기능**
 
-![Image3](./img/service4_1.png) ![Image4](./img/service4_2.png) ![Image5](./img/service4_3.png)
+![Image3](./img/level.png) 
 
 
 **5. NPC와의 대화 중 모르는 단어나 문장을 드레그 시 번역해 주는 기능**
