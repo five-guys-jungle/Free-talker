@@ -12,24 +12,25 @@ const SituationBox: React.FC = () => {
 
   const ref = React.useRef<HTMLDivElement>(null);
   const situation = useSelector(
-        (state: { userDialog: UserDialogState }) =>
-            state.userDialog.situation
-    );
-  
+    (state: { userDialog: UserDialogState }) =>
+      state.userDialog.situation
+  );
+
   React.useEffect(() => {
     (ref.current as HTMLDivElement).ownerDocument.body.scrollTop = 0;
   }, []);
 
 
   return (
-    
+
     <Box sx={{ width: '70%', height: '60%', paddingBottom: '10%' }}>
       <Title>Situation Recommendation</Title>
-      <Box 
-        sx={{ 
-          overflow: 'auto', 
-          height: '100%', 
+      <Box
+        sx={{
+          overflow: 'auto',
+          height: '100%',
           backgroundColor: 'rgba(255,255,255, 0.5)',
+          fontSize: '1.1rem',
           // backgroundImage: 'linear-gradient(rgba(0,0,0, 0.2),rgba(255,255,255, 0.8), rgba(0,0,0, 0.2))',
           // padding: '20px',
           borderRadius: '10px',
@@ -38,13 +39,13 @@ const SituationBox: React.FC = () => {
           '@media screen and (max-width: 600px)': {
             borderRadius: '0px',
           }
-        }} 
+        }}
         ref={ref}
       >
-        <Typography 
-          className="Situation" 
-          style={{ fontSize : "25px", fontFamily: "Open Sans", fontWeight: "bold", wordBreak: "break-word", paddingTop: "10px", paddingLeft: "5%", paddingRight: "5%"  }}>
-            {situation}
+        <Typography
+          className="Situation"
+          style={{ fontSize: "1.0rem", fontFamily: "Open Sans", fontWeight: "bold", wordBreak: "break-word", paddingTop: "10px", paddingLeft: "5%", paddingRight: "5%" }}>
+          {situation}
         </Typography>
         {/* <List>
           {messages.map(({ primary, secondary }, index) => (

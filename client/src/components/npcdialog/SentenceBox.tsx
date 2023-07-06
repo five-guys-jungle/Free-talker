@@ -16,12 +16,35 @@ interface SentenceViewProps {
 const SentenceView: React.FC<SentenceViewProps> = ({ sentence }) => {
     const { sentence: sentenceText, audioUrl, isTTSLoading } = sentence;
     const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
+    const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false); // 버튼이 비활성화되었는지를 나타내는 상태
+    const [isCanPlay, setIsCanPlay] = useState<boolean>(false); // 재생 요청이 들어왔는지 나타내는 상태
+
 
     const requestTTS = (sentenceObject: Sentence) => {
+        if (isButtonDisabled) { // 만약 버튼이 비활성화 상태라면
+            return; // 아무 작업도 수행하지 않고 함수를 종료합니다.
+        }
+        setIsButtonDisabled(true); // 버튼을 비활성화 상태로 변경합니다.
+
         const clickEvent = new CustomEvent('requestTTS', {
             detail: { sentence: sentenceObject.sentence, id: sentenceObject._id }
         });
+        console.log("window dispatch event");
         window.dispatchEvent(clickEvent);
+    };
+
+    const audioReplaying = () => {
+        if (currentAudio) {
+            currentAudio.play();
+        } else {
+            const audio = new Audio(audioUrl);
+            audio.onended = () => {
+                // setIsButtonDisabled(false);
+                setCurrentAudio(null);
+            };
+            audio.play();
+            setCurrentAudio(audio);
+        }
     };
 
     const pauseAudio = () => {
@@ -34,12 +57,20 @@ const SentenceView: React.FC<SentenceViewProps> = ({ sentence }) => {
     useEffect(() => {
         console.log(`audioUrl: ${audioUrl}`)
         if (audioUrl) {
-            console.log(`In If statement, audioUrl: ${audioUrl}`)
+            console.log(`In If statement, audioUrl: ${audioUrl}`);
+            setIsCanPlay(true);
             const audio = new Audio(audioUrl);
-            audio.onended = () => setCurrentAudio(null);
+            audio.onended = () => {
+                // setIsButtonDisabled(false);
+                setCurrentAudio(null)
+            };
             audio.play();
             setCurrentAudio(audio);
         }
+
+        return () => {
+        }
+
     }, [audioUrl]);
 
 
@@ -53,7 +84,7 @@ const SentenceView: React.FC<SentenceViewProps> = ({ sentence }) => {
                     {
                         (audioUrl !== "") && currentAudio && currentAudio.src === audioUrl ?
                             <PauseIcon onClick={pauseAudio} /> : (audioUrl !== "") ?
-                                <PlayArrowIcon onClick={() => requestTTS(sentence)} /> : <></>
+                            <PlayArrowIcon onClick={isButtonDisabled ? audioReplaying : () => requestTTS(sentence)} /> : <></>
                     }
                 </div>
             </div>

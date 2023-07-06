@@ -288,12 +288,14 @@ export async function recommendExpressions(place: string) {
 export async function recommendNextResponses(
     previous: string,
     npcName: string = "airport immigration officer",
-    level: string = "intermediate"
+    level: string = "intermediate",
 ) {
     let response: any;
     let recommendations: string;
 
     try {
+        const prompt = preDefinedPrompt[npcName].message(level);
+
         response = await openai.createChatCompletion({
             model: "gpt-3.5-turbo",
             messages: [
@@ -376,12 +378,12 @@ export async function translateText(
                 {
                     role: "system",
                     // content: `transform this sentence '${text}' into form like this '[english word]: [korean word]\n'.`,
-                    content: `Translate this sentence '${text}' into korean without korean pronunciation.`,
+                    content: `Translate this sentence '${text}' into korean without explanation and korean pronunciation.`,
                 },
                 {
                     role: "user",
                     // content: `transform this sentence '${text}' into form like this '[english word]: [korean word]\n'.`,
-                    content: `Translate this sentence '${text}' into korean without pronunciation.`,
+                    content: `Translate this sentence '${text}' into korean without explanation and korean pronunciation.`,
                 },
             ],
             // messages: {`I'm currently at the ${place}, Recommend me three expressions I can reply to the ${previous} without any explanations`,}
