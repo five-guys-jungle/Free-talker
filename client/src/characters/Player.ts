@@ -42,7 +42,7 @@ export class Player {
         const dialgonalVelocity: number = velocity / Math.SQRT2;
 
         // console.log('Other player seat: ', this.seat);
-        if (this.seat ==1) {
+        if (this.seat == 1) {
             // console.log(`${this.playerTexture}_sit_left`);
             this.sprite.anims.play(`${this.playerTexture}_sit_left`, true);
         }
@@ -57,7 +57,7 @@ export class Player {
                 destination.x !== thisSprite.x ||
                 destination.y !== thisSprite.y
             ) {
-                console.log("Other player is moving, dash: ", this.dash);
+                // console.log("Other player is moving, dash: ", this.dash);
                 let distanceX: number = destination.x - thisSprite.x;
                 let distanceY: number = destination.y - thisSprite.y;
                 // left-up

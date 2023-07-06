@@ -89,7 +89,7 @@ export function freeDialogSocketEventHandler(socket: Socket) {
 		freeRoom_Num[temp]--;
 		console.log("freeRoom_Num: ", freeRoom_Num[temp]);
 
-		console.log("seat_position_list: ", seat_position_list);
+		// console.log("seat_position_list: ", seat_position_list);
 		for (const key in seat_position_list) {
 			if (seat_position_list.hasOwnProperty(key)) {
 				const seatPosition = seat_position_list[key];
@@ -104,7 +104,7 @@ export function freeDialogSocketEventHandler(socket: Socket) {
 				}
 			}
 		}
-		console.log("seat_position_list: ", seat_position_list);
+		// console.log("seat_position_list: ", seat_position_list);
 	}
 	);
 

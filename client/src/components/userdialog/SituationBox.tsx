@@ -30,7 +30,7 @@ const SituationBox: React.FC = () => {
           overflow: 'auto',
           height: '100%',
           backgroundColor: 'rgba(255,255,255, 0.5)',
-          fontSize: '1.1rem',
+          fontSize: '1.3rem',
           // backgroundImage: 'linear-gradient(rgba(0,0,0, 0.2),rgba(255,255,255, 0.8), rgba(0,0,0, 0.2))',
           // padding: '20px',
           borderRadius: '10px',
@@ -44,7 +44,7 @@ const SituationBox: React.FC = () => {
       >
         <Typography
           className="Situation"
-          style={{ fontSize: "1.0rem", fontFamily: "Open Sans", fontWeight: "bold", wordBreak: "break-word", paddingTop: "10px", paddingLeft: "5%", paddingRight: "5%" }}>
+          style={{ fontSize: "1.1rem", fontFamily: "Open Sans", fontWeight: "bold", wordBreak: "break-word", paddingTop: "10px", paddingLeft: "5%", paddingRight: "5%" }}>
           {situation}
         </Typography>
         {/* <List>

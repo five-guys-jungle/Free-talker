@@ -93,6 +93,8 @@ export default class AirportScene extends Phaser.Scene {
     interactionSpriteE: Phaser.Physics.Arcade.Sprite | null = null;
     audio: HTMLAudioElement | null = null;
     isReportOn: boolean = false;
+    beforeDisconnectX: number | null = null;
+    beforeDisconnectY: number | null = null;
 
     constructor() {
         super("AirportScene");
@@ -154,11 +156,12 @@ export default class AirportScene extends Phaser.Scene {
     }
 
     create() {
-        window.onbeforeunload = async () => {
-            console.log("beforeunload");
-            const body = { userId: this.playerId }
-            axios.post(`${DB_URL}/auth/logout`, body);
-        };
+        // window.onbeforeunload = async () => {
+        //     this.socket?.disconnect();
+        //     console.log("beforeunload");
+        //     const body = { userId: this.playerId }
+        //     axios.post(`${DB_URL}/auth/logout`, body);
+        // };
 
         this.background = this.add
             .image(this.initial_x, this.initial_y, "background")
@@ -878,27 +881,11 @@ export default class AirportScene extends Phaser.Scene {
             }
         }
     }
-    deleteNotVaildScoket() {
-        for (let key in this.allPlayers) {
-            // console.log(`allPlayer[${key}]: ${this.allPlayers[key]}, socket: ${this.socket}`);
-            if (
-                this.socket!.id !== key &&
-                this.userNickname === this.allPlayers[key].nickname
-            ) {
-                console.log(
-                    `allPlayer[${key}]: ${this.allPlayers[key]}, socket: ${this.socket}`
-                );
-                this.allPlayers[key].textObj?.destroy();
-                this.allPlayers[key].sprite.destroy();
-                delete this.allPlayers[key];
-            }
-        }
-    }
     update(time: number, delta: number) {
         this.background
             .setDisplaySize(this.cameras.main.width * 4, this.cameras.main.height * 4)
             .setOrigin(0.5, 0.5);
-        this.deleteNotVaildScoket();
+
         let speed: number = this.cursors?.shift.isDown
             ? this.dashSpeed
             : this.speed;
@@ -1199,39 +1186,59 @@ export default class AirportScene extends Phaser.Scene {
         this.socket = io(serverUrl);
 
         this.socket.on("connect", () => {
+            this.socket!.io.on("reconnect_error", (error) => {
+                console.log(`reconnect_error, socket id: ${this.socket!.id}`);
+            });
+            this.socket!.io.on("reconnect_failed", () => {
+                window.location.reload();
+                console.log(`reconnect_failed, socket id: ${this.socket!.id}`);
+            });
+
             console.log(`connect, socket.id: ${this.socket!.id}, 
             this.socket.recovered: ${this.socket!.recovered}`);
-            if (this.socket!.recovered) {
+            if (!this.scene.isActive()) {
                 this.scene.resume();
             }
-            else {
-                this.player1 = this.createPlayer({
-                    socketId: this.socket!.id,
-                    nickname: this.userNickname,
-                    playerTexture: this.playerTexture,
-                    x: this.initial_x,
-                    y: this.initial_y,
-                    scene: "AirportScene",
-                    dash: false,
-                    seat: 0,
-                });
-                this.player1!.x = this.beforeSleepX;
-                this.player1!.y = this.beforeSleepY;
 
-                this.cameras.main.startFollow(this.player1);
-                this.cameras.main.zoom = 1.2;
-
-                this.socket!.emit("connected", {
-                    socketId: this.socket!.id,
-                    nickname: this.userNickname,
-                    playerTexture: this.playerTexture,
-                    x: this.player1.x,
-                    y: this.player1.y,
-                    scene: "AirportScene",
-                    dash: false,
-                    seat: false,
-                });
+            if (this.socket!.recovered) {
+                // this.scene.resume();
+                //do nothing
             }
+            else {
+                if (this.beforeDisconnectX === null && this.beforeDisconnectY === null) {
+                    this.player1 = this.createPlayer({
+                        socketId: this.socket!.id,
+                        nickname: this.userNickname,
+                        playerTexture: this.playerTexture,
+                        x: this.initial_x,
+                        y: this.initial_y,
+                        scene: "AirportScene",
+                        dash: false,
+                        seat: 0,
+                    });
+                }
+                if (this.beforeDisconnectX !== null && this.beforeDisconnectY !== null) {
+                    this.player1!.x = this.beforeDisconnectX;
+                    this.player1!.y = this.beforeDisconnectY;
+                }
+                else {
+                    this.player1!.x = this.beforeSleepX;
+                    this.player1!.y = this.beforeSleepY;
+                }
+
+                this.cameras.main.startFollow(this.player1!);
+                this.cameras.main.zoom = 1.2;
+            }
+            this.socket!.emit("connected", {
+                socketId: this.socket!.id,
+                nickname: this.userNickname,
+                playerTexture: this.playerTexture,
+                x: this.player1!.x,
+                y: this.player1!.y,
+                scene: "AirportScene",
+                dash: false,
+                seat: false,
+            });
 
             this.socket!.on(
                 "updateAlluser",
@@ -1325,15 +1332,22 @@ export default class AirportScene extends Phaser.Scene {
                 }
             });
             this.socket!.on("disconnect", (reason: string) => {
+                if (this.beforeDisconnectX === null && this.beforeDisconnectY === null) {
+                    this.beforeDisconnectX = this.player1!.x;
+                    this.beforeDisconnectY = this.player1!.y;
+                }
+                else {
+                    this.beforeDisconnectX = null;
+                    this.beforeDisconnectY = null;
+                }
                 this.scene.pause();
                 console.log("client side disconnect, reason: ", reason);
-                // window.location.reload();
             });
             for (let platform of this.tilemapLayerList) {
                 this.physics.add.collider(this.player1!, platform);
             }
 
-            if (initial && !this.socket!.recovered) {
+            if (initial && !this.socket!.recovered && this.beforeDisconnectX === null && this.beforeDisconnectY === null) {
                 this.createAirportNpc();
             }
         });

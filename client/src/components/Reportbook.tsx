@@ -560,7 +560,10 @@ const ReportBook = (data: any) => {
                                                                                         <p style={{ color: "forestgreen", fontWeight: "bold", marginTop: "0px", marginBottom: "4px" }}>
                                                                                             Corrected
                                                                                             Sentence:{" "}
-
+                                                                                            :{" "}
+                                                                                            {
+                                                                                                correction.correction
+                                                                                            }
                                                                                         </p>
                                                                                     </div>
                                                                                 }

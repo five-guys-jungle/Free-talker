@@ -94,7 +94,7 @@ export function userDialogSocketEventHandler(socket: Socket) {
 		console.log("disconnected~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 		roomNum[placeName]--;
 		// console.log("roomNum: ", roomNum[placeName]);
-		console.log("seat_position_list: ", seat_position_list);
+		// console.log("seat_position_list: ", seat_position_list);
 		//   socket.broadcast.emit("disconnected", roomNum[placeName]);
 		for (const key in seat_position_list) {
 			if (seat_position_list.hasOwnProperty(key)) {
@@ -109,7 +109,7 @@ export function userDialogSocketEventHandler(socket: Socket) {
 				}
 			}
 		}
-		console.log("seat_position_list: ", seat_position_list);
+		// console.log("seat_position_list: ", seat_position_list);
 	});
 
 
