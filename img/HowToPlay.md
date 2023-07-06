@@ -1,6 +1,5 @@
 ## 사이트 접속
 ## https://freetalker.site/
----------------
 
 # How to play
 ![Alt text](freetalk.png)
