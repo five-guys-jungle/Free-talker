@@ -1,4 +1,6 @@
-# FreeTalker
+# FreeTalker  
+
+<div align="right">made by fiveguys</div>
 
 [![Logo0](./img/‎Logo2.png)](https://freetalker.site/)
 
