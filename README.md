@@ -66,4 +66,4 @@
 ![info0](./img/architecture.png)
 
 ## ***프로젝트 포스터***
-[![Logo](./img/나만무_free_talker_poster.png)](./poster/free_talker_poster.pdf)
+[![Log1](./img/나만무_free_talker_poster.png)](./poster/free_talker_poster.pdf)
