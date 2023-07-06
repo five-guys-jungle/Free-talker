@@ -8,6 +8,8 @@ import {
     DynamoDBClient,
     CreateTableCommand,
     ListTablesCommand,
+    UpdateItemCommand,
+    ScanCommand,
 } from "@aws-sdk/client-dynamodb";
 
 // import { User } from "../models/User";
@@ -24,6 +26,9 @@ export async function connectDB() {
             // await createTable("dialogs");
             await createReportTable("dialogs");
             console.log("DynamoDB에 연결되었습니다.");
+
+            // DB 연결 후 모든 유저의 토큰을 초기화합니다.
+            await resetAllTokens();
 
         } else {
             throw new Error("DYNAMODB_TABLE_NAME is not defined");
@@ -137,4 +142,45 @@ async function createTableIfNotExists(tableName: string) {
     const command = new CreateTableCommand(params);
     const response = await client.send(command);
     console.log(`테이블 ${tableName}이 생성되었습니다.`);
+}
+
+async function resetAllTokens() {
+    try {
+        // DynamoDB에서 모든 사용자를 가져옵니다.
+        const scanCommand = new ScanCommand({
+            TableName: tableName,
+        });
+        const data = await client.send(scanCommand);
+
+        // 'data.Items'가 'undefined'인 경우, 빈 배열로 설정합니다.
+        const items = data.Items || [];
+
+        // 각 사용자의 엑세스 토큰을 초기화합니다.
+        for (const item of items) {
+            if (item.userId && item.userId.S) {
+                const userId = item.userId.S; // 여기서 userId는 String 형태여야 합니다.
+
+                const updateParams = {
+                    ExpressionAttributeNames: {
+                        "#JWT": "accessToken"
+                    },
+                    ExpressionAttributeValues: {
+                        ":t": {
+                            "S": ""
+                        }
+                    },
+                    Key: {
+                        userId: { S: userId }
+                    },
+                    TableName: tableName,
+                    UpdateExpression: "SET #JWT = :t"
+                };
+
+                const response = await client.send(new UpdateItemCommand(updateParams));
+                console.log(`Reset token for userId ${userId}`);
+            }
+        }
+    } catch (err) {
+        console.log(err);
+    }
 }
