@@ -146,13 +146,13 @@ const SentenceList: React.FC = () => {
     const sentenceViews = sentences.map((sentence) => (
         <SentenceView key={sentence._id} sentence={sentence} />
     ));
-    const lastMessageName = useSelector(
+    const NPCName = useSelector(
         (state: { talkBox: TalkBoxState }) =>
-            state.talkBox.messages[state.talkBox.messages.length - 1]?.name
+            state.talkBox.messages[0]?.name
     );
     return (
         <div className="container" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100%", fontFamily: "Poppins" }}>
-            <DialogTitle>freetalk to the {lastMessageName || "NPC"} </DialogTitle>
+            <DialogTitle>freetalk to the {NPCName || "NPC"} </DialogTitle>
 
             {isOuterDivVisible && (
                 <SentenceOuterDiv>{sentenceViews}</SentenceOuterDiv>
