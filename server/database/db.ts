@@ -9,6 +9,7 @@ import {
     CreateTableCommand,
     ListTablesCommand,
     UpdateItemCommand,
+    UpdateTableCommand,
     ScanCommand,
 } from "@aws-sdk/client-dynamodb";
 
@@ -22,12 +23,13 @@ export async function connectDB() {
     try {
         if (typeof tableName === "string") {
             await createTable(tableName); // 테이블 생성 함수 호출
-
+            // const response = updateTableThroughput(tableName);
+            // console.log(response);
             // await createTable("dialogs");
             await createReportTable("dialogs");
             console.log("DynamoDB에 연결되었습니다.");
 
-            // DB 연결 후 모든 유저의 토큰을 초기화합니다.
+            // // DB 연결 후 모든 유저의 토큰을 초기화합니다.
             await resetAllTokens();
 
         } else {
@@ -46,6 +48,7 @@ async function createTable(tableName: string) {
             await createTableIfNotExists(tableName);
         } else {
             console.log(`${tableName} 테이블이 이미 존재합니다.`);
+            // updateTableThroughput(tableName);
         }
     } catch (error) {
         console.error("테이블 생성에 실패했습니다:", error);
@@ -142,6 +145,20 @@ async function createTableIfNotExists(tableName: string) {
     const command = new CreateTableCommand(params);
     const response = await client.send(command);
     console.log(`테이블 ${tableName}이 생성되었습니다.`);
+}
+
+async function updateTableThroughput(tableName: string) {
+    const params = {
+        TableName: tableName,
+        ProvisionedThroughput: {
+            ReadCapacityUnits: 20, // 증가시킬 읽기 처리량
+            WriteCapacityUnits: 50 // 증가시킬 쓰기 처리량
+        }
+    };
+
+    const command = new UpdateTableCommand(params);
+    const response = await client.send(command);
+    console.log(`테이블 ${tableName}의 처리량이 업데이트되었습니다.`);
 }
 
 async function resetAllTokens() {

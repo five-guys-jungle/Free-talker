@@ -1959,18 +1959,18 @@ export default class USAScene extends Phaser.Scene {
                 //do nothing
             }
             else {
-                if (this.beforeDisconnectX === null && this.beforeDisconnectY === null) {
-                    this.player1 = this.createPlayer({
-                        socketId: this.socket!.id,
-                        nickname: this.userNickname,
-                        playerTexture: this.playerTexture,
-                        x: this.initial_x,
-                        y: this.initial_y,
-                        scene: "USAScene",
-                        dash: false,
-                        seat: 0,
-                    });
-                }
+                // if (this.beforeDisconnectX === null && this.beforeDisconnectY === null) {
+                this.player1 = this.createPlayer({
+                    socketId: this.socket!.id,
+                    nickname: this.userNickname,
+                    playerTexture: this.playerTexture,
+                    x: this.initial_x,
+                    y: this.initial_y,
+                    scene: "USAScene",
+                    dash: false,
+                    seat: 0,
+                });
+                // }
                 if (this.beforeDisconnectX !== null && this.beforeDisconnectY !== null) {
                     this.player1!.x = this.beforeDisconnectX;
                     this.player1!.y = this.beforeDisconnectY;
