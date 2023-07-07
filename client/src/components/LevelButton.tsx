@@ -27,7 +27,7 @@ export default LevelButton;
 const StyledDiv = styled.div`
   padding: 10px;
   border-radius: 20px;
-  background-color: lightskyblue;
+  background-color: rgb(41, 121, 255);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -38,6 +38,6 @@ const StyledDiv = styled.div`
   color: white;
   width: 100px; 
   &:hover {
-    background-color: deepskyblue;
+    background-color: rgb(28, 84, 178);
   }
 `;

@@ -90,7 +90,7 @@ interface StyledButtonProps {
 const StyledButton = styled.button<StyledButtonProps>`
   padding: 10px;
   border-radius: 20px;
-  background-color: ${props => (props.isClicked ? 'lightskyblue' : 'transparent')};
+  background-color: ${props => (props.isClicked ? 'rgb(28, 84, 178)' : 'transparent')};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -101,7 +101,7 @@ const StyledButton = styled.button<StyledButtonProps>`
   font-size: 16px;
   font-weight: bold;
   ${props => !props.isClicked && css`
-    background-color: lightskyblue;
+    background-color: rgb(41, 121, 255);
     color: white;
   `}
 `;

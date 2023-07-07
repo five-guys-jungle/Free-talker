@@ -119,6 +119,13 @@ const ReportBook = (data: any) => {
         if (presentScene=="airport") store.dispatch(openAirport());
         else if (presentScene=="usa") store.dispatch(openUSA());
     };
+
+    const [refreshKey, setRefreshKey] = useState(0);
+    // const handleRefresh = () => {
+    //     setRefreshKey(prevKey => prevKey + 1);
+    //   };
+
+
     const handleDelete = (userId: string, timestamp: string) => {
         deleteDialog({
             userId: userId,
@@ -133,7 +140,9 @@ const ReportBook = (data: any) => {
         // setOpenbook(!openbook);
         if (presentScene=="airport") store.dispatch(openAirport());
         else if (presentScene=="usa") store.dispatch(openUSA());
-        handleBook();
+        setRefreshKey(prevKey => prevKey + 1);
+        console.log(refreshKey);
+        // handleBook();
     };
 
     function isArrayEmpty<T>(arr: T[]): boolean {
@@ -233,6 +242,8 @@ const ReportBook = (data: any) => {
                         nextEl: ".swiper-button-next",
                         prevEl: ".swiper-button-prev",
                         }}
+
+                        key={refreshKey}
                     >
                         {dialogsArr.dialogs.length == 0 && (
                             <SwiperSlide >
