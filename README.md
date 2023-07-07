@@ -1,4 +1,4 @@
-# FreeTalker  
+# Free Talker : AI 기반 영어회화 학습 메타버스  
 
 <div align="right">made by <span style="color:red">fiveguys</span></div>
 
