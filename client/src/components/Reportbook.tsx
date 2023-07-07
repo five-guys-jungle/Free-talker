@@ -144,7 +144,7 @@ const ReportBook = (data: any) => {
         else if (presentScene == "usa") store.dispatch(openUSA());
     };
 
-    const [refreshKey, setRefreshKey] = useState(0);
+    // const [refreshKey, setRefreshKey] = useState(0);
     // const handleRefresh = () => {
     //     setRefreshKey(prevKey => prevKey + 1);
     //   };
@@ -164,9 +164,9 @@ const ReportBook = (data: any) => {
         // setOpenbook(!openbook);
         if (presentScene=="airport") store.dispatch(openAirport());
         else if (presentScene=="usa") store.dispatch(openUSA());
-        setRefreshKey(prevKey => prevKey + 1);
-        console.log(refreshKey);
-        // handleBook();
+        // setRefreshKey(prevKey => prevKey + 1);
+        // console.log(refreshKey);
+        handleBook();
     };
 
     function isArrayEmpty<T>(arr: T[]): boolean {
@@ -267,7 +267,7 @@ const ReportBook = (data: any) => {
                             prevEl: ".swiper-button-prev",
                         }}
 
-                        key={refreshKey}
+                        // key={refreshKey}
                     >
                         {dialogsArr.dialogs.length == 0 && (
                             <SwiperSlide >
@@ -277,6 +277,21 @@ const ReportBook = (data: any) => {
                                             <div className="notebook__inner">
                                                 <div className="title">
                                                     <h1>REPORT</h1>
+                                                    <IconButton
+                                                            color="primary"
+                                                            onClick={handleBook}
+                                                            style={{
+                                                                gridArea: "s3",
+                                                                marginLeft:
+                                                                    "auto",
+                                                                marginTop:
+                                                                    "20px",
+                                                                width: "50px",
+                                                                height: "25px",
+                                                            }}
+                                                        >
+                                                            <DisabledByDefaultIcon/>
+                                                        </IconButton>
                                                     <h3>
                                                         &lt; 여행을 떠나보아요!
                                                         &gt;
