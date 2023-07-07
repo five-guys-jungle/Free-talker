@@ -253,6 +253,21 @@ const ReportBook = (data: any) => {
                                             <div className="notebook__inner">
                                                 <div className="title">
                                                     <h1>REPORT</h1>
+                                                    <IconButton
+                                                            color="primary"
+                                                            onClick={handleBook}
+                                                            style={{
+                                                                gridArea: "s3",
+                                                                marginLeft:
+                                                                    "auto",
+                                                                marginTop:
+                                                                    "20px",
+                                                                width: "50px",
+                                                                height: "25px",
+                                                            }}
+                                                        >
+                                                            <DisabledByDefaultIcon/>
+                                                        </IconButton>
                                                     <h3>
                                                         &lt; 여행을 떠나보아요!
                                                         &gt;
