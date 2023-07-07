@@ -120,7 +120,7 @@ const ReportBook = (data: any) => {
         else if (presentScene=="usa") store.dispatch(openUSA());
     };
 
-    const [refreshKey, setRefreshKey] = useState(0);
+    // const [refreshKey, setRefreshKey] = useState(0);
     // const handleRefresh = () => {
     //     setRefreshKey(prevKey => prevKey + 1);
     //   };
@@ -140,9 +140,9 @@ const ReportBook = (data: any) => {
         // setOpenbook(!openbook);
         if (presentScene=="airport") store.dispatch(openAirport());
         else if (presentScene=="usa") store.dispatch(openUSA());
-        setRefreshKey(prevKey => prevKey + 1);
-        console.log(refreshKey);
-        // handleBook();
+        // setRefreshKey(prevKey => prevKey + 1);
+        // console.log(refreshKey);
+        handleBook();
     };
 
     function isArrayEmpty<T>(arr: T[]): boolean {
@@ -243,7 +243,7 @@ const ReportBook = (data: any) => {
                         prevEl: ".swiper-button-prev",
                         }}
 
-                        key={refreshKey}
+                        // key={refreshKey}
                     >
                         {dialogsArr.dialogs.length == 0 && (
                             <SwiperSlide >
