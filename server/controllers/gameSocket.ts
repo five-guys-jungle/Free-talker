@@ -5,22 +5,20 @@ let players_airport: PlayerDictionary = {};
 let players_usa: PlayerDictionary = {};
 export function socketEventHandler(socket: Socket) {
     console.log("Client connected, id: ", socket.id);
+    // console.log("connect : ", socket);
     socket.on("connected", (data: Player) => {
         if (data.scene === "AirportScene") {
             data.socketId = socket.id;
             players_airport[socket.id] = data;
 
-            if (!socket.recovered) {
-                socket.emit("updateAlluser", players_airport);
-                socket.broadcast.emit("newPlayerConnected", players_airport[socket.id]);
-            }
+            socket.emit("updateAlluser", players_airport);
+            socket.broadcast.emit("newPlayerConnected", players_airport[socket.id]);
         } else if (data.scene === "USAScene") {
             data.socketId = socket.id;
             players_usa[socket.id] = data;
-            if (!socket.recovered) {
-                socket.emit("updateAlluser", players_usa);
-                socket.broadcast.emit("newPlayerConnected", players_usa[socket.id]);
-            }
+
+            socket.emit("updateAlluser", players_usa);
+            socket.broadcast.emit("newPlayerConnected", players_usa[socket.id]);
         }
     });
     socket.on("seat", (data: Player) => {
@@ -50,18 +48,17 @@ export function socketEventHandler(socket: Socket) {
             ", reason: ",
             reason
         );
-        if (reason !== "ping timeout") {
-            if (players_airport[socket.id] != null) {
-                let playerDeleted: Player = players_airport[socket.id];
-                delete players_airport[socket.id];
-                // console.log("players_airport: ", players_airport);
-                socket.broadcast.emit("playerDeleted", playerDeleted);
-            } else if (players_usa[socket.id] != null) {
-                let playerDeleted: Player = players_usa[socket.id];
-                delete players_usa[socket.id];
-                // console.log("players_usa: ", players_usa);
-                socket.broadcast.emit("playerDeleted", playerDeleted);
-            }
+
+        if (players_airport[socket.id] != null) {
+            let playerDeleted: Player = players_airport[socket.id];
+            delete players_airport[socket.id];
+            // console.log("players_airport: ", players_airport);
+            socket.broadcast.emit("playerDeleted", playerDeleted);
+        } else if (players_usa[socket.id] != null) {
+            let playerDeleted: Player = players_usa[socket.id];
+            delete players_usa[socket.id];
+            // console.log("players_usa: ", players_usa);
+            socket.broadcast.emit("playerDeleted", playerDeleted);
         }
     });
 }

@@ -29,15 +29,16 @@ import {
     translateText,
 } from "./interaction";
 
+
 export function interactSocketEventHandler(socket: Socket) {
     let chain: ConversationChain;
     let npcSentence: string;
-    console.log("Interaction socket connected, socketid: ", socket.id);
+    // console.log("Interaction socket connected, socketid: ", socket.id);
 
     const s3Client = new S3Client({ region: "ap-northeast-2" });
     socket.on("dialogStart", async (npcName: string, level: string) => {
         console.log("dialogStart");
-        console.log("level: ", level);
+        // console.log("level: ", level);
         // 소켓이 연결되면, 유저와 NPC 간의 Conversation Chain을 생성한다.
         await createChain(npcName, level)
             .then((res) => {
@@ -87,6 +88,7 @@ export function interactSocketEventHandler(socket: Socket) {
             userNickname: string;
             npcName: string;
             audioDataBuffer: ArrayBuffer;
+            level: string;
         }) => {
 
             try {
@@ -148,7 +150,8 @@ export function interactSocketEventHandler(socket: Socket) {
                                     response = await convertTexttoSpeech(
                                         inputText,
                                         outputText,
-                                        data.npcName
+                                        data.npcName,
+                                        data.level
                                     )
                                         .then((res) => {
                                             socket.emit("totalResponse", res);
@@ -203,11 +206,12 @@ export function interactSocketEventHandler(socket: Socket) {
         async (
             npcName: string,
             alreadyRecommended: boolean,
-            outputText: string
+            outputText: string,
+            level: string
         ) => {
             if (!alreadyRecommended) {
                 console.log("getRecommendedResponses start");
-                await recommendNextResponses(outputText, npcName)
+                await recommendNextResponses(outputText, npcName, level)
                     .then((res) => {
                         if (res === "ChatGPT API Error.") {
                             socket.emit("recommendedResponses", [outputText]);
@@ -226,6 +230,38 @@ export function interactSocketEventHandler(socket: Socket) {
             }
         }
     );
+
+    socket.on(
+        "requestTTS", async (
+            sentence: string,
+            id: number,
+            NPCName: string,
+            level: string
+        ) => {
+        const trimmedSentence = sentence.split(':')[1]?.trim();
+        convertTexttoSpeech(
+            "",
+            trimmedSentence,
+            NPCName,
+            level
+        ).then((res) => {
+            const result: any = res;
+            result.id = id;
+            socket.emit("responseTTS", result);
+            console.log("responseTTS: ", result);
+        })
+            .catch((err) => {
+                console.log(
+                    "convert Text to Speech error: ",
+                    err
+                );
+            });
+
+    }
+
+    )
+
+
     socket.on("translation", async (text: string) => {
         console.log("translate start");
         const translatedText = await translateText(text);

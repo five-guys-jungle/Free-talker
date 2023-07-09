@@ -61,73 +61,62 @@ export function freeDialogSocketEventHandler(socket: Socket) {
 
 		if (seat_position_list[place_name].first_position === "" && seat_position_list[place_name].second_position === "") {
 			seat_position_list[place_name].first_position = socket.id;
-			console.log("-111111111111111`11111111111")
 			socket.emit("seat_position", 1);
+			socket.emit("userconnected");
+			socket.broadcast.emit("userconnected");
+
 		}
 		else if (seat_position_list[place_name].first_position && seat_position_list[place_name].second_position === "") {
 			seat_position_list[place_name].second_position = socket.id;
 			socket.emit("seat_position", 2);
+			socket.emit("userconnected");
+			socket.broadcast.emit("userconnected");
 		}
 		else if (seat_position_list[place_name].first_position === "" && seat_position_list[place_name].second_position) {
 			socket.emit("seat_position", 1);
+			socket.emit("userconnected");
+			socket.broadcast.emit("userconnected");
 		}
 
 
 	});
-	// socket.on("standup", (data) => {
-	// 	console.log("standup: ", data);
-	// 	const place_name = data.place_name;
-	// 	if (data.seat_position == 1) {
-	// 		seat_position_list[place_name].first_position--;
-
-	// 	}
-	// 	else if (data.seat_position == 2) {
-	// 		seat_position_list[place_name].second_position--;
-	// 	}
-	// 	console.log("standup")
-
-	// 	console.log("standup: ", seat_position_list);
-	// })
+	
 
 	socket.on("disconnect", () => {
 		console.log("disconnected~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", socket.id);
-		//   socket.broadcast.emit("callEnded");
-		console.log("disconnected~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+		
+		
 		freeRoom_Num[temp]--;
 		console.log("freeRoom_Num: ", freeRoom_Num[temp]);
 
-		socket.broadcast.emit("outcharacter");
-		//   socket.broadcast.emit("disconnected", freeRoom_Num[place_name]);
-		console.log("seat_position_list: ", seat_position_list);
+		// console.log("seat_position_list: ", seat_position_list);
 		for (const key in seat_position_list) {
 			if (seat_position_list.hasOwnProperty(key)) {
 				const seatPosition = seat_position_list[key];
 				if (seatPosition.first_position === socket.id) {
 					seatPosition.first_position = "";
+					socket.broadcast.emit("outcharacter");
 					
 				}
 				else if (seatPosition.second_position === socket.id) {
 					seatPosition.second_position = "";
+					socket.broadcast.emit("outcharacter");
 				}
 			}
 		}
-		console.log("seat_position_list: ", seat_position_list);
+		// console.log("seat_position_list: ", seat_position_list);
 	}
 	);
 
-	socket.broadcast.emit("userconnected");
 
-	socket.emit("me", socket.id);
 	socket.on("otherchar", ({ playerNickname: playerNickname, playerTexture: playerTexture }) => {
+		console.log("otherchar: ", playerNickname, playerTexture);
 		socket.broadcast.emit("otherusercharacter", { playerNickname: playerNickname, playerTexture: playerTexture })
 	})
 	socket.on("mychar", ({ otherNickname: playerNickname, otherTexture: playerTexture }) => {
+		console.log	("mychar: ", playerNickname, playerTexture);	
 		socket.broadcast.emit("usercharacter", { otherNickname: playerNickname, otherTexture: playerTexture })
 	})
-	// socket.on("disconnect", () => {
-	// //   socket.broadcast.emit("callEnded");
-	//   console.log("disconnected~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-	// });
 
 	socket.on("callUser", (data: { userToCall: any; signalData: any; from: any; name: any }) => {
 		console.log("callUser: 서버에서 데이터를 받았음");

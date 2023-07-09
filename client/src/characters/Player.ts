@@ -8,7 +8,7 @@ export class Player {
     sprite: Phaser.Physics.Arcade.Sprite;
     textObj: Phaser.GameObjects.Text | null = null;
     defaultVelocity: number = 200;
-    dashVelocity: number = 600;
+    dashVelocity: number = 400;
     dash: boolean = false;
     seat: number = 0;
     level: string = "intermediate";
@@ -42,9 +42,12 @@ export class Player {
         const dialgonalVelocity: number = velocity / Math.SQRT2;
 
         // console.log('Other player seat: ', this.seat);
-        if (this.seat ==1) {
+        if (this.seat == 1) {
             // console.log(`${this.playerTexture}_sit_left`);
             this.sprite.anims.play(`${this.playerTexture}_sit_left`, true);
+        }
+        else if (this.seat == 4) {
+            this.sprite.anims.play(`${this.playerTexture}_sit_right`, true);
         }
         else if (this.seat == 2) {
             this.sprite.anims.play(`${this.playerTexture}_idle_down`, true);
@@ -54,7 +57,7 @@ export class Player {
                 destination.x !== thisSprite.x ||
                 destination.y !== thisSprite.y
             ) {
-                console.log("Other player is moving, dash: ", this.dash);
+                // console.log("Other player is moving, dash: ", this.dash);
                 let distanceX: number = destination.x - thisSprite.x;
                 let distanceY: number = destination.y - thisSprite.y;
                 // left-up

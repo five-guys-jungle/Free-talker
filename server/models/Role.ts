@@ -55,7 +55,7 @@ preDefinedRole["Restaurant"] = {
 
 preDefinedRole["Cafe"] = {
   role: ["Barista", "Customer"],
-  situation: "The customer is a tourist who is visiting the city for the first time and enters the Starbucks café to grab a coffee.",
+  situation: "The customer is a tourist who is visiting the city for the first time and enters the Starbucks cafe to grab a coffee.",
   recommendations: [
     [
       "You should try our seasonal special!",
@@ -74,6 +74,27 @@ preDefinedRole["Cafe"] = {
   ]
 }
 
+
+preDefinedRole["Cafe2"] = {
+  role: ["Barista", "Customer"],
+  situation: "The customer is a tourist who is visiting the city for the first time and enters the Starbucks cafe to grab a coffee.",
+  recommendations: [
+    [
+      "You should try our seasonal special!",
+      "How about our signature Caramel Macchiato?",
+      "I'm glad you enjoyed your coffee!",
+      "Sorry, would you like us to adjust the sweetness?",
+      "It was my pleasure, hope to see you again!"
+    ],
+    [
+      "What's unique in your menu?",
+      "I'm not sure what to pick, any suggestions?",
+      "This coffee tastes great!",
+      "This is too sweet for me.",
+      "Thanks for the help, you've been great.",
+    ]
+  ]
+}
 
 
 

@@ -6,13 +6,73 @@ import { setRecord } from "../../stores/recordSlice";
 import { RecordState } from "../../stores/recordSlice";
 import { TalkBoxState } from "../../stores/talkBoxSlice";
 import { css, keyframes } from 'styled-components';
+import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+import PauseIcon from '@material-ui/icons/Pause';
 
 interface SentenceViewProps {
     sentence: Sentence;
 }
 
 const SentenceView: React.FC<SentenceViewProps> = ({ sentence }) => {
-    const { sentence: sentenceText } = sentence;
+    const { sentence: sentenceText, audioUrl, isTTSLoading } = sentence;
+    const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
+    const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false); // 버튼이 비활성화되었는지를 나타내는 상태
+    const [isCanPlay, setIsCanPlay] = useState<boolean>(false); // 재생 요청이 들어왔는지 나타내는 상태
+
+
+    const requestTTS = (sentenceObject: Sentence) => {
+        if (isButtonDisabled) { // 만약 버튼이 비활성화 상태라면
+            return; // 아무 작업도 수행하지 않고 함수를 종료합니다.
+        }
+        setIsButtonDisabled(true); // 버튼을 비활성화 상태로 변경합니다.
+
+        const clickEvent = new CustomEvent('requestTTS', {
+            detail: { sentence: sentenceObject.sentence, id: sentenceObject._id }
+        });
+        console.log("window dispatch event");
+        window.dispatchEvent(clickEvent);
+    };
+
+    const audioReplaying = () => {
+        if (currentAudio) {
+            currentAudio.play();
+        } else {
+            const audio = new Audio(audioUrl);
+            audio.onended = () => {
+                // setIsButtonDisabled(false);
+                setCurrentAudio(null);
+            };
+            audio.play();
+            setCurrentAudio(audio);
+        }
+    };
+
+    const pauseAudio = () => {
+        if (currentAudio) {
+            currentAudio.pause();
+            setCurrentAudio(null);
+        }
+    }
+
+    useEffect(() => {
+        console.log(`audioUrl: ${audioUrl}`)
+        if (audioUrl) {
+            console.log(`In If statement, audioUrl: ${audioUrl}`);
+            setIsCanPlay(true);
+            const audio = new Audio(audioUrl);
+            audio.onended = () => {
+                // setIsButtonDisabled(false);
+                setCurrentAudio(null)
+            };
+            audio.play();
+            setCurrentAudio(audio);
+        }
+
+        return () => {
+        }
+
+    }, [audioUrl]);
+
 
     return (
         <SentenceDiv>
@@ -21,6 +81,11 @@ const SentenceView: React.FC<SentenceViewProps> = ({ sentence }) => {
                     {/* <span className="label">추천문장: </span> */}
                     <span
                         className="value">{sentenceText}</span>
+                    {
+                        (audioUrl !== "") && currentAudio && currentAudio.src === audioUrl ?
+                            <PauseIcon onClick={pauseAudio} /> : (audioUrl !== "") ?
+                            <PlayArrowIcon onClick={isButtonDisabled ? audioReplaying : () => requestTTS(sentence)} /> : <></>
+                    }
                 </div>
             </div>
         </SentenceDiv>
@@ -65,6 +130,7 @@ const SentenceList: React.FC = () => {
         // }
 
     };
+
     useEffect(() => {
         if (record) {
             const timer = setTimeout(() => {
@@ -80,13 +146,13 @@ const SentenceList: React.FC = () => {
     const sentenceViews = sentences.map((sentence) => (
         <SentenceView key={sentence._id} sentence={sentence} />
     ));
-    const lastMessageName = useSelector(
+    const NPCName = useSelector(
         (state: { talkBox: TalkBoxState }) =>
-            state.talkBox.messages[state.talkBox.messages.length - 1]?.name
+            state.talkBox.messages[0]?.name
     );
     return (
         <div className="container" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100%", fontFamily: "Poppins" }}>
-            <DialogTitle>freetalk to the {lastMessageName || "NPC"} </DialogTitle>
+            <DialogTitle>freetalk to the {NPCName || "NPC"} </DialogTitle>
 
             {isOuterDivVisible && (
                 <SentenceOuterDiv>{sentenceViews}</SentenceOuterDiv>

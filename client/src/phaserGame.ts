@@ -4,6 +4,9 @@ import Background from "./scenes/Background";
 import USAScene from "./scenes/USA";
 import Phaser from "phaser";
 import { GameType } from "./types";
+import axios from "axios";
+import dovenv from "dotenv";
+let DB_URL: string = process.env.REACT_APP_SERVER_URL!;
 
 // declare module '*.png';
 
@@ -33,5 +36,19 @@ const config = {
 };
 
 let phaserGame: GameType = new Phaser.Game(config);
+window.onbeforeunload = async () => {
+    for (let scene of phaserGame.scene.getScenes()) {
+        const sceneKey = scene.scene.key;
+        if (phaserGame.scene.isActive(sceneKey)) {
+            let activeScene = phaserGame.scene.getScene(sceneKey) as AirportScene | USAScene;
+            activeScene.socket?.disconnect();
+            console.log("beforeunload");
+            const body = { userId: activeScene.playerId }
+            axios.post(`${DB_URL}/auth/logout`, body);
+            break;
+        }
+    }
+};
+
 
 export default phaserGame;
