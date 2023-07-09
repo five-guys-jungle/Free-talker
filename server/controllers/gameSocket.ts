@@ -37,7 +37,7 @@ export function socketEventHandler(socket: Socket) {
             players_airport[socket.id] = data;
             socket.broadcast.emit("playerMoved", players_airport[socket.id]);
         } else if (data.scene === "USAScene") {
-            console.log("playerMovement, data: ", data);
+            // console.log("playerMovement, data: ", data);
             data.socketId = socket.id;
             players_usa[socket.id] = data;
             socket.broadcast.emit("playerMoved", players_usa[socket.id]);

@@ -1493,58 +1493,58 @@ export default class USAScene extends Phaser.Scene {
         npc8.sprite = this.physics.add.sprite(npc8.x, npc8.y, npc8.texture);
         this.npcList.push(npc8);
 
-        //moving npc-----------------------------------------------------------------------------
-        let npc9: npcInfo = {
-            name: "Minsook",
-            x: 1155,
-            y: 859,
-            texture: "minsook",
-            sprite: null,
-            role: "npc",
-            moving: true,
-        };
-        npc9.sprite = this.physics.add.sprite(npc9.x, npc9.y, npc9.texture);
-        this.npcList.push(npc9);
+        // //moving npc-----------------------------------------------------------------------------
+        // let npc9: npcInfo = {
+        //     name: "Minsook",
+        //     x: 1155,
+        //     y: 859,
+        //     texture: "minsook",
+        //     sprite: null,
+        //     role: "npc",
+        //     moving: true,
+        // };
+        // npc9.sprite = this.physics.add.sprite(npc9.x, npc9.y, npc9.texture);
+        // this.npcList.push(npc9);
 
-        let points = [
-            { x: 1594, y: 887, anim: `${npc9.texture}_run_right` },
-            { x: 1155, y: 859, anim: `${npc9.texture}_run_left` },
-        ];
+        // let points = [
+        //     { x: 1594, y: 887, anim: `${npc9.texture}_run_right` },
+        //     { x: 1155, y: 859, anim: `${npc9.texture}_run_left` },
+        // ];
 
-        let tweens = points.map((point, index) =>
-            this.tweens.add({
-                targets: npc9.sprite,
-                x: point.x,
-                y: point.y,
-                ease: 'Linear',
-                duration: 5000,
-                repeat: -1,
-                onStart: () => {
-                    npc9.sprite!.anims.play(point.anim);
-                    // console.log("start, anim: ", point.anim);
-                },
-                onComplete: () => {
-                    console.log("complete");
-                },
-                onRepeat: () => {
-                    console.log("repeat");
-                    npc9.sprite!.anims.play(points[(index + 1) % points.length].anim, true);
-                    // console.log("repeat, anim: ", points[(index+1)%points.length].anim);
-                },
-                paused: index !== 0, // Only pause the animations that are not the first one
-            }));
-        this.tweenDict[npc9.name] = tweens;
+        // let tweens = points.map((point, index) =>
+        //     this.tweens.add({
+        //         targets: npc9.sprite,
+        //         x: point.x,
+        //         y: point.y,
+        //         ease: 'Linear',
+        //         duration: 5000,
+        //         repeat: -1,
+        //         onStart: () => {
+        //             npc9.sprite!.anims.play(point.anim);
+        //             // console.log("start, anim: ", point.anim);
+        //         },
+        //         onComplete: () => {
+        //             console.log("complete");
+        //         },
+        //         onRepeat: () => {
+        //             console.log("repeat");
+        //             npc9.sprite!.anims.play(points[(index + 1) % points.length].anim, true);
+        //             // console.log("repeat, anim: ", points[(index+1)%points.length].anim);
+        //         },
+        //         paused: index !== 0, // Only pause the animations that are not the first one
+        //     }));
+        // this.tweenDict[npc9.name] = tweens;
 
-        for (let i = 0; i < tweens.length; i++) {
-            tweens[i].on('repeat', () => {
-                tweens[i].pause();
-                let nextTween = tweens[(i + 1) % tweens.length];
-                nextTween.resume(); // Resume the next animation
-            })
-        }
+        // for (let i = 0; i < tweens.length; i++) {
+        //     tweens[i].on('repeat', () => {
+        //         tweens[i].pause();
+        //         let nextTween = tweens[(i + 1) % tweens.length];
+        //         nextTween.resume(); // Resume the next animation
+        //     })
+        // }
 
-        tweens[0].resume(); // Start the first animation
-        //-----------------------------------------------------------------------------
+        // tweens[0].resume(); // Start the first animation
+        // //-----------------------------------------------------------------------------
         //moving npc-----------------------------------------------------------------------------
         let npc10: npcInfo = {
             name: "Doyoungboy",
