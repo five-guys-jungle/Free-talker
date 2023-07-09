@@ -30,7 +30,7 @@ export async function connectDB() {
             console.log("DynamoDB에 연결되었습니다.");
 
             // // DB 연결 후 모든 유저의 토큰을 초기화합니다.
-            await resetAllTokens();
+            // await resetAllTokens();
 
         } else {
             throw new Error("DYNAMODB_TABLE_NAME is not defined");
