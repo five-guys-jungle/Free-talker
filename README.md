@@ -20,7 +20,7 @@
 - 로컬 환경에서 사용시 빌드 및 실행 방법
 
 #### Team Fiveguys
-팀원: 신승훈(TL/BE), 윤진호(FE), 이도영(BE), 이민석(FE), 김상수(BE)
+팀원: 신승훈(https://github.com/ssh00n)(TL/BE), 윤진호(https://github.com/yjh4124)(FE), 이도영(https://github.com/poter0501)(BE), 이민석(https://github.com/ms827)(FE), 김상수(https://github.com/kiroostar98)(BE)
 
 ## ***서비스 소개***
 
