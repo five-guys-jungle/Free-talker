@@ -129,7 +129,7 @@ export async function createChain(npcName: string, level: string): Promise<Conve
             returnMessages: true,
             chatHistory: new RedisChatMessageHistory({
                 sessionId: new Date().toISOString(),
-                sessionTTL: 180,
+                sessionTTL: 300,
                 config: {
                     url: "redis://localhost:6379",
                 },
@@ -247,7 +247,7 @@ export async function grammarCorrection(inputText: string): Promise<string> {
             model: "text-davinci-003",
             prompt: `"You are a grammar checker that check the following text for spelling and grammar errors. If the text is grammatically correct then reply just “sounds good”. else correct this without any explanation. :\n\n${inputText}"`,
             temperature: 0,
-            max_tokens: 60,
+            max_tokens: 120,
             top_p: 1.0,
             frequency_penalty: 0.0,
             presence_penalty: 0.0,
@@ -272,7 +272,7 @@ export async function recommendExpressions(place: string) {
             model: "text-davinci-003",
             prompt: `Recommend me three expressions I can use in a ${place}."`,
             temperature: 0.5,
-            max_tokens: 60,
+            max_tokens: 120,
             top_p: 1.0,
             frequency_penalty: 0.0,
             presence_penalty: 0.0,
@@ -314,7 +314,7 @@ export async function recommendNextResponses(
             ],
             // messages: {`I'm currently at the ${place}, Recommend me three expressions I can reply to the ${previous} without any explanations`,}
             temperature: 0.2,
-            max_tokens: 120,
+            max_tokens: 180,
             top_p: 1.0,
             frequency_penalty: 0.0,
             presence_penalty: 0.0,

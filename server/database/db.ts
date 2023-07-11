@@ -13,9 +13,6 @@ import {
     ScanCommand,
 } from "@aws-sdk/client-dynamodb";
 
-// import { User } from "../models/User";
-import "dotenv/config";
-
 const tableName = process.env.DYNAMODB_TABLE_NAME;
 const client = new DynamoDBClient({ region: "ap-northeast-2" });
 
